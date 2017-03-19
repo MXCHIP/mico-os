@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+
+<project>
+  <fileVersion>2</fileVersion>
+  <fileChecksum>4255184301</fileChecksum>
+  <configuration>
+    <name>Lib_Helloworld_CM3</name>
+    <outputs>
+      <file>$PROJ_DIR$\..\..\src\src.c</file>
+      <file>$TOOLKIT_DIR$\inc\c\xmtx.h</file>
+      <file>$TOOLKIT_DIR$\inc\c\string.h</file>
+      <file>$TOOLKIT_DIR$\inc\c\stddef.h</file>
+      <file>$TOOLKIT_DIR$\inc\c\DLib_Product_string.h</file>
+      <file>$TOOLKIT_DIR$\inc\c\ctype.h</file>
+      <file>$TOOLKIT_DIR$\inc\c\stdint.h</file>
+      <file>$TOOLKIT_DIR$\inc\c\xtls.h</file>
+      <file>$TOOLKIT_DIR$\inc\c\stdlib.h</file>
+      <file>$TOOLKIT_DIR$\inc\c\wchar.h</file>
+      <file>$TOOLKIT_DIR$\inc\c\xlocale_lconv.h</file>
+      <file>$TOOLKIT_DIR$\inc\c\xlocalelist.h</file>
+      <file>$TOOLKIT_DIR$\inc\c\stdbool.h</file>
+      <file>$TOOLKIT_DIR$\inc\c\xlocale.h</file>
+      <file>$PROJ_DIR$\Lib_Helloworld_CM3\Obj\src.o</file>
+      <file>$PROJ_DIR$\Lib_Helloworld_CM3\Obj\lib_build.pbd</file>
+      <file>$PROJ_DIR$\Lib_Helloworld_CM3\Obj\src.pbi</file>
+      <file>$PROJ_DIR$\..\..\Lib_Helloworld.Cortex-M3.IAR.release.a</file>
+      <file>$TOOLKIT_DIR$\inc\c\yvals.h</file>
+      <file>$TOOLKIT_DIR$\inc\c\DLib_Defaults.h</file>
+      <file>$TOOLKIT_DIR$\inc\c\ysizet.h</file>
+      <file>$TOOLKIT_DIR$\inc\c\DLib_Threads.h</file>
+      <file>$TOOLKIT_DIR$\inc\c\DLib_Product.h</file>
+      <file>$TOOLKIT_DIR$\inc\c\DLib_Config_Full.h</file>
+      <file>$TOOLKIT_DIR$\inc\c\xencoding_limits.h</file>
+      <file>$TOOLKIT_DIR$\inc\c\ystdio.h</file>
+      <file>$TOOLKIT_DIR$\inc\c\locale.h</file>
+      <file>$TOOLKIT_DIR$\inc\c\ycheck.h</file>
+      <file>$TOOLKIT_DIR$\inc\c\stdio.h</file>
+      <file>$PROJ_DIR$\..\..\..\..\include\debug.h</file>
+      <file>$PROJ_DIR$\..\..\..\..\platform\EWARM\platform_toolchain.h</file>
+      <file>$PROJ_DIR$\..\..\..\..\platform\Cortex-M3\platform_assert.h</file>
+      <file>$PROJ_DIR$\..\..\..\..\include\common.h</file>
+      <file>$PROJ_DIR$\..\..\..\..\include\mico_rtos.h</file>
+      <file>$PROJ_DIR$\Lib_Helloworld_CM3\List\src.i</file>
+    </outputs>
+    <file>
+      <name>$PROJ_DIR$\..\..\src\src.c</name>
+      <outputs>
+        <tool>
+          <name>BICOMP</name>
+          <file> 16</file>
+        </tool>
+        <tool>
+          <name>ICCARM</name>
+          <file> 34 14</file>
+        </tool>
+      </outputs>
+      <inputs>
+        <tool>
+          <name>BICOMP</name>
+          <file> 27 18 23 29 20 24 21 8 3 31 32 25 22 2 30 4 13 26 10 33 28 19 6 12 5 7 9 11 1</file>
+        </tool>
+        <tool>
+          <name>ICCARM</name>
+          <file> 28 27 18 19 23 22 24 21 20 25 32 6 12 8 2 4 5 13 7 1 9 26 10 11 30 3 29 33 31</file>
+        </tool>
+      </inputs>
+    </file>
+    <file>
+      <name>[ROOT_NODE]</name>
+      <outputs>
+        <tool>
+          <name>IARCHIVE</name>
+          <file> 17</file>
+        </tool>
+      </outputs>
+    </file>
+  </configuration>
+  <configuration>
+    <name>Lib_Helloworld_CM4F</name>
+    <outputs>
+      <file>$PROJ_DIR$\..\..\src\src.c</file>
+      <file>$TOOLKIT_DIR$\inc\c\xmtx.h</file>
+      <file>$TOOLKIT_DIR$\inc\c\string.h</file>
+      <file>$TOOLKIT_DIR$\inc\c\stddef.h</file>
+      <file>$TOOLKIT_DIR$\inc\c\DLib_Product_string.h</file>
+      <file>$TOOLKIT_DIR$\inc\c\ctype.h</file>
+      <file>$TOOLKIT_DIR$\inc\c\stdint.h</file>
+      <file>$TOOLKIT_DIR$\inc\c\xtls.h</file>
+      <file>$TOOLKIT_DIR$\inc\c\stdlib.h</file>
+      <file>$TOOLKIT_DIR$\inc\c\wchar.h</file>
+      <file>$TOOLKIT_DIR$\inc\c\xlocale_lconv.h</file>
+      <file>$TOOLKIT_DIR$\inc\c\xlocalelist.h</file>
+      <file>$TOOLKIT_DIR$\inc\c\stdbool.h</file>
+      <file>$TOOLKIT_DIR$\inc\c\xlocale.h</file>
+      <file>$PROJ_DIR$\..\..\Lib_HomeKit_Server.Cortex-M4F.IAR.release.a</file>
+      <file>$PROJ_DIR$\..\..\Lib_Helloworld.Cortex-M4F.IAR.release.a</file>
+      <file>$PROJ_DIR$\..\..\..\..\platform\Cortex-M4\platform_assert.h</file>
+      <file>$PROJ_DIR$\Lib_Helloworld_CM4F\Obj\src.pbi</file>
+      <file>$PROJ_DIR$\Lib_Helloworld_CM4F\Obj\src.o</file>
+      <file>$PROJ_DIR$\Lib_Helloworld_CM4F\Obj\lib_build.pbd</file>
+      <file>$PROJ_DIR$\Lib_Helloworld_CM4F\List\src.i</file>
+      <file>$TOOLKIT_DIR$\inc\c\yvals.h</file>
+      <file>$TOOLKIT_DIR$\inc\c\DLib_Defaults.h</file>
+      <file>$TOOLKIT_DIR$\inc\c\ysizet.h</file>
+      <file>$TOOLKIT_DIR$\inc\c\DLib_Threads.h</file>
+      <file>$TOOLKIT_DIR$\inc\c\DLib_Product.h</file>
+      <file>$TOOLKIT_DIR$\inc\c\DLib_Config_Full.h</file>
+      <file>$TOOLKIT_DIR$\inc\c\xencoding_limits.h</file>
+      <file>$TOOLKIT_DIR$\inc\c\ystdio.h</file>
+      <file>$TOOLKIT_DIR$\inc\c\locale.h</file>
+      <file>$TOOLKIT_DIR$\inc\c\ycheck.h</file>
+      <file>$TOOLKIT_DIR$\inc\c\stdio.h</file>
+      <file>$PROJ_DIR$\..\..\..\..\include\debug.h</file>
+      <file>$PROJ_DIR$\..\..\..\..\platform\EWARM\platform_toolchain.h</file>
+      <file>$PROJ_DIR$\..\..\..\..\include\common.h</file>
+      <file>$PROJ_DIR$\..\..\..\..\include\mico_rtos.h</file>
+    </outputs>
+    <file>
+      <name>$PROJ_DIR$\..\..\src\src.c</name>
+      <outputs>
+        <tool>
+          <name>BICOMP</name>
+          <file> 17</file>
+        </tool>
+        <tool>
+          <name>ICCARM</name>
+          <file> 20 18</file>
+        </tool>
+      </outputs>
+      <inputs>
+        <tool>
+          <name>BICOMP</name>
+          <file> 30 21 26 32 23 27 24 8 3 16 34 28 25 2 33 4 13 29 10 35 31 22 6 12 5 7 9 11 1</file>
+        </tool>
+        <tool>
+          <name>ICCARM</name>
+          <file> 31 30 21 22 26 25 27 24 23 28 34 6 12 8 2 4 5 13 7 1 9 29 10 11 33 3 32 35 16</file>
+        </tool>
+      </inputs>
+    </file>
+    <file>
+      <name>[ROOT_NODE]</name>
+      <outputs>
+        <tool>
+          <name>IARCHIVE</name>
+          <file> 15</file>
+        </tool>
+      </outputs>
+    </file>
+  </configuration>
+</project>
+
+
