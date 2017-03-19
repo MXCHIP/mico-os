@@ -53,13 +53,13 @@ IMAGES_DOWNLOAD_RULES: $(APPS_HEADER_DEPENDENCY)
 ifneq ($(WIFI_FIRMWARE),)
 WIFI_FIRMWARE_DOWNLOAD: $(WIFI_FIRMWARE_DOWNLOAD_DEPENDENCY)
 	$(QUIET)$(ECHO) Downloading WIFI_FIRMWARE to partition: $(WIFI_FIRMWARE_PARTITION_TCL) size: $(WIFI_FIRMWARE_SIZE) bytes... 
-	$(call CONV_SLASHES,$(OPENOCD_FULL_NAME)) -f $(OPENOCD_CFG_PATH)interface/$(JTAG).cfg -f $(OPENOCD_CFG_PATH)$(HOST_OPENOCD)/$(HOST_OPENOCD).cfg -f demos/sub_build/spi_flash_write/sflash_write.tcl -c "sflash_write_file $(WIFI_FIRMWARE) $(WIFI_FIRMWARE_PARTITION_TCL) 0x0 $(SFLASH_APP_PLATFROM_BUS) 0" -c shutdown $(DOWNLOAD_LOG) 2>&1 && $(ECHO) Download complete && $(ECHO_BLANK_LINE) || $(ECHO) Download failed
+	$(call CONV_SLASHES,$(OPENOCD_FULL_NAME)) -f $(OPENOCD_CFG_PATH)interface/$(JTAG).cfg -f $(OPENOCD_CFG_PATH)$(HOST_OPENOCD)/$(HOST_OPENOCD).cfg -f $(MICO_OS_PATH)/sub_build/spi_flash_write/sflash_write.tcl -c "sflash_write_file $(WIFI_FIRMWARE) $(WIFI_FIRMWARE_PARTITION_TCL) 0x0 $(SFLASH_APP_PLATFROM_BUS) 0" -c shutdown $(DOWNLOAD_LOG) 2>&1 && $(ECHO) Download complete && $(ECHO_BLANK_LINE) || $(ECHO) Download failed
 endif
 
 ifneq ($(BT_PATCH_FIRMWARE),)
 BT_PATCH_FIRMWARE_DOWNLOAD: $(BT_PATCH_FIRMWARE_DOWNLOAD_DEPENDENCY)
 	$(QUIET)$(ECHO) Downloading BT_PATCH to partition: $(BT_PATCH_FIRMWARE_PARTITION_TCL) size: $(BT_PATCH_FIRMWARE_SIZE) bytes ... 
-	$(call CONV_SLASHES,$(OPENOCD_FULL_NAME)) -f $(OPENOCD_CFG_PATH)interface/$(JTAG).cfg -f $(OPENOCD_CFG_PATH)$(HOST_OPENOCD)/$(HOST_OPENOCD).cfg -f demos/sub_build/spi_flash_write/sflash_write.tcl -c "sflash_write_file $(BT_PATCH_FIRMWARE) $(BT_PATCH_FIRMWARE_PARTITION_TCL) 0x0 $(SFLASH_APP_PLATFROM_BUS) 0" -c shutdown $(DOWNLOAD_LOG) 2>&1 && $(ECHO) Download complete && $(ECHO_BLANK_LINE) || $(ECHO) Download failed
+	$(call CONV_SLASHES,$(OPENOCD_FULL_NAME)) -f $(OPENOCD_CFG_PATH)interface/$(JTAG).cfg -f $(OPENOCD_CFG_PATH)$(HOST_OPENOCD)/$(HOST_OPENOCD).cfg -f $(MICO_OS_PATH)/sub_build/spi_flash_write/sflash_write.tcl -c "sflash_write_file $(BT_PATCH_FIRMWARE) $(BT_PATCH_FIRMWARE_PARTITION_TCL) 0x0 $(SFLASH_APP_PLATFROM_BUS) 0" -c shutdown $(DOWNLOAD_LOG) 2>&1 && $(ECHO) Download complete && $(ECHO_BLANK_LINE) || $(ECHO) Download failed
 endif
 
 ifneq ($(FILESYSTEM_IMAGE),)

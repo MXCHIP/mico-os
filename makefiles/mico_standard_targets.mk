@@ -59,7 +59,7 @@ bootloader:
 download_bootloader: bootloader display_map_summary sflash_write_app
 	$(eval BOOTLOADER_IMAGE_SIZE := $(shell $(PYTHON) $(IMAGE_SIZE_SCRIPT) $(BOOTLOADER_OUTFILE_BIN)))
 	$(QUIET)$(ECHO) Downloading bootloader to partition: $(BOOTLOADER_FIRMWARE_PARTITION_TCL) size: $(BOOTLOADER_IMAGE_SIZE) bytes... 
-	$(call CONV_SLASHES, $(OPENOCD_FULL_NAME)) -f $(OPENOCD_CFG_PATH)interface/$(JTAG).cfg -f $(OPENOCD_CFG_PATH)$(HOST_OPENOCD)/$(HOST_OPENOCD).cfg -f demos/sub_build/spi_flash_write/sflash_write.tcl -c "sflash_write_file $(BOOTLOADER_OUTFILE_BIN) $(BOOTLOADER_FIRMWARE_PARTITION_TCL) 0x0 $(SFLASH_APP_PLATFROM_BUS) 0" -c shutdown $(DOWNLOAD_LOG) 2>&1 && $(ECHO) Download complete && $(ECHO_BLANK_LINE) || $(ECHO) Download failed	
+	$(call CONV_SLASHES, $(OPENOCD_FULL_NAME)) -f $(OPENOCD_CFG_PATH)interface/$(JTAG).cfg -f $(OPENOCD_CFG_PATH)$(HOST_OPENOCD)/$(HOST_OPENOCD).cfg -f $(MICO_OS_PATH)/sub_build/spi_flash_write/sflash_write.tcl -c "sflash_write_file $(BOOTLOADER_OUTFILE_BIN) $(BOOTLOADER_FIRMWARE_PARTITION_TCL) 0x0 $(SFLASH_APP_PLATFROM_BUS) 0" -c shutdown $(DOWNLOAD_LOG) 2>&1 && $(ECHO) Download complete && $(ECHO_BLANK_LINE) || $(ECHO) Download failed	
 	
 #$(QUIET)$(call CONV_SLASHES,$(OPENOCD_FULL_NAME)) -f $(OPENOCD_PATH)$(JTAG).cfg -f $(OPENOCD_PATH)$(HOST_OPENOCD).cfg -f $(OPENOCD_PATH)$(HOST_OPENOCD)-flash-app.cfg -c "verify_image_checksum $(BOOTLOADER_OUTFILE).stripped.elf" -c shutdown $(DOWNLOAD_LOG) 2>&1 && $(ECHO) No changes detected && $(ECHO_BLANK_LINE) || $(call CONV_SLASHES,$(OPENOCD_FULL_NAME)) -f $(OPENOCD_PATH)$(JTAG).cfg -f $(OPENOCD_PATH)$(HOST_OPENOCD).cfg -f $(OPENOCD_PATH)$(HOST_OPENOCD)-flash-app.cfg -c "flash write_image erase $(BOOTLOADER_OUTFILE).hex" -c shutdown $(DOWNLOAD_LOG) 2>&1 && $(ECHO) Download complete && $(ECHO_BLANK_LINE) || $(ECHO) "**** OpenOCD failed - ensure you have installed the driver from the drivers directory, and that the debugger is not running **** In Linux this may be due to USB access permissions. In a virtual machine it may be due to USB passthrough settings. Check in the task list that another OpenOCD process is not running. Check that you have the correct target and JTAG device plugged in. ****"
 
@@ -102,12 +102,12 @@ ifeq ($(BOOTLOADER_APP),1)
 download_app: $(STRIPPED_LINK_OUTPUT_FILE) display_map_summary sflash_write_app kill_openocd
 	$(eval IMAGE_SIZE := $(shell $(PYTHON) $(IMAGE_SIZE_SCRIPT) $(BIN_OUTPUT_FILE)))
 	$(QUIET)$(ECHO) Downloading bootloader to partition: $(BOOTLOADER_FIRMWARE_PARTITION_TCL) size: $(IMAGE_SIZE) bytes... 
-	$(call CONV_SLASHES, $(OPENOCD_FULL_NAME)) -f $(OPENOCD_CFG_PATH)interface/$(JTAG).cfg -f $(OPENOCD_CFG_PATH)$(HOST_OPENOCD)/$(HOST_OPENOCD).cfg -f demos/sub_build/spi_flash_write/sflash_write.tcl -c "sflash_write_file $(BIN_OUTPUT_FILE) $(BOOTLOADER_FIRMWARE_PARTITION_TCL) 0x0 $(SFLASH_APP_PLATFROM_BUS) 0" -c shutdown $(DOWNLOAD_LOG) 2>&1 && $(ECHO) Download complete && $(ECHO_BLANK_LINE) || $(ECHO) Download failed
+	$(call CONV_SLASHES, $(OPENOCD_FULL_NAME)) -f $(OPENOCD_CFG_PATH)interface/$(JTAG).cfg -f $(OPENOCD_CFG_PATH)$(HOST_OPENOCD)/$(HOST_OPENOCD).cfg -f $(MICO_OS_PATH)/sub_build/spi_flash_write/sflash_write.tcl -c "sflash_write_file $(BIN_OUTPUT_FILE) $(BOOTLOADER_FIRMWARE_PARTITION_TCL) 0x0 $(SFLASH_APP_PLATFROM_BUS) 0" -c shutdown $(DOWNLOAD_LOG) 2>&1 && $(ECHO) Download complete && $(ECHO_BLANK_LINE) || $(ECHO) Download failed
 else
 download_app: $(STRIPPED_LINK_OUTPUT_FILE) display_map_summary download_bootloader sflash_write_app kill_openocd
 	$(eval IMAGE_SIZE := $(shell $(PYTHON) $(IMAGE_SIZE_SCRIPT) $(BIN_OUTPUT_FILE)))
 	$(QUIET)$(ECHO) Downloading application to partition: $(APPLICATION_FIRMWARE_PARTITION_TCL) size: $(IMAGE_SIZE) bytes... 
-	$(call CONV_SLASHES, $(OPENOCD_FULL_NAME)) -f $(OPENOCD_CFG_PATH)interface/$(JTAG).cfg -f $(OPENOCD_CFG_PATH)$(HOST_OPENOCD)/$(HOST_OPENOCD).cfg -f demos/sub_build/spi_flash_write/sflash_write.tcl -c "sflash_write_file $(BIN_OUTPUT_FILE) $(APPLICATION_FIRMWARE_PARTITION_TCL) 0x0 $(SFLASH_APP_PLATFROM_BUS) 0" -c shutdown $(DOWNLOAD_LOG) 2>&1 && $(ECHO) Download complete && $(ECHO_BLANK_LINE) || $(ECHO) Download failed
+	$(call CONV_SLASHES, $(OPENOCD_FULL_NAME)) -f $(OPENOCD_CFG_PATH)interface/$(JTAG).cfg -f $(OPENOCD_CFG_PATH)$(HOST_OPENOCD)/$(HOST_OPENOCD).cfg -f $(MICO_OS_PATH)/sub_build/spi_flash_write/sflash_write.tcl -c "sflash_write_file $(BIN_OUTPUT_FILE) $(APPLICATION_FIRMWARE_PARTITION_TCL) 0x0 $(SFLASH_APP_PLATFROM_BUS) 0" -c shutdown $(DOWNLOAD_LOG) 2>&1 && $(ECHO) Download complete && $(ECHO_BLANK_LINE) || $(ECHO) Download failed
 endif
 
 ifeq (download,$(filter download,$(MAKECMDGOALS)))

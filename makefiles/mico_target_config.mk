@@ -13,6 +13,7 @@ CONFIG_FILE_DIR := build/$(CLEANED_BUILD_STRING)
 CONFIG_FILE := $(CONFIG_FILE_DIR)/config.mk
 
 COMPONENT_DIRECTORIES := $(MICO_OS_PATH) \
+                         $(MICO_OS_PATH)/sub_build \
                          $(MICO_OS_PATH)/board \
                          $(MICO_OS_PATH)/platform \
                          $(MICO_OS_PATH)/MiCO \
@@ -20,8 +21,7 @@ COMPONENT_DIRECTORIES := $(MICO_OS_PATH) \
                          $(MICO_OS_PATH)/MiCO/RTOS \
                          $(MICO_OS_PATH)/MiCO/Security/TLS \
                          $(MICO_OS_PATH)/libraries \
-                         . \
-                         ..
+                         . 
 
 MiCO_SDK_VERSION ?= $(MiCO_SDK_VERSION_MAJOR).$(MiCO_SDK_VERSION_MINOR).$(MiCO_SDK_VERSION_REVISION)
 
@@ -182,7 +182,7 @@ NET_FULL	    ?=$(strip $(foreach comp,$(subst .,/,$(COMPONENTS)),$(if $(wildcard
 RTOS_FULL       ?=$(strip $(foreach comp,$(subst .,/,$(COMPONENTS)),$(if $(wildcard $(MICO_OS_PATH)/MiCO/RTOS/$(comp)),$(comp),)))
 TLS_FULL        ?=$(strip $(foreach comp,$(subst .,/,$(COMPONENTS)),$(if $(wildcard $(MICO_OS_PATH)/MiCO/Security/TLS/$(comp)),$(comp),)))
 PLATFORM_FULL   :=$(strip $(foreach comp,$(subst .,/,$(COMPONENTS)),$(if $(wildcard $(MICO_OS_PATH)/board/$(comp)),$(comp),)))
-APP_FULL        :=$(strip $(foreach comp,$(subst .,/,$(COMPONENTS)),$(if $(wildcard $(SOURCE_ROOT)$(comp)),$(comp),)))
+APP_FULL        :=$(strip $(foreach comp,$(subst .,/,$(COMPONENTS)),$(if $(wildcard $(SOURCE_ROOT)$(comp) $(MICO_OS_PATH)/sub_build/$(comp)),$(comp),)))
 
 # APP is under SOURCE_ROOT
 ifndef APP_FULL
