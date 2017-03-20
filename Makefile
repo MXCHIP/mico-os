@@ -59,10 +59,10 @@ Usage: make <target> [download] [run | debug] [JTAG=xxx] [total] [VERBOSE=1]
 
   Notes
     * Component names are case sensitive
-    * 'MiCO', 'FreeRTOS', 'Lwip', 'wolfSSL' and 'release_log' are reserved component names
+    * 'MiCO', 'FreeRTOS', 'Lwip', 'wolfSSL'are reserved component names
     * Use 'moc' add 'mocOS', 'mocIP' and "mocTLS" to target
     * Component names MUST NOT include space or '@' characters
-    * Building for release_log is assumed unless '@release' or '@debug'is appended to the target
+    * Building for '@release_log' is assumed unless '@release' or '@debug'is appended to the target
 
   Example Usage
     Build for Debug
