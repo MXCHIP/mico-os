@@ -31,11 +31,12 @@ Usage: make <target> [download] [run | debug] [JTAG=xxx] [total] [VERBOSE=1]
 
   <target>
     One each of the following mandatory [and optional] components separated by '@'
-      * Application (apps in sub-directories are referenced by subdir.appname)
-      * Board ($(filter-out common  include README.txt,$(notdir $(wildcard board/*))))
-      * [RTOS] ($(notdir $(wildcard MiCO/RTOS/*)))
-      * [Network Stack] ($(notdir $(wildcard MiCO/net/*)))
-      * [debug | release] Building for debug or release configurations
+      * [Application] (Skip if app is under source code's root directory, or referenced by subdir.appname if apps in sub-directories)
+      * Board ($(filter-out common  include README.txt,$(notdir $(wildcard $(MICO_OS_PATH)/board/*))))
+      * [RTOS] ($(filter-out mico_rtos_common.c mico_rtos_common.h,$(notdir $(wildcard $(MICO_OS_PATH)/MiCO/RTOS/*))))
+      * [Network Stack] ($(notdir $(wildcard $(MICO_OS_PATH)/MiCO/net/*)))
+      * [TLS] ($(notdir $(wildcard $(MICO_OS_PATH)/MiCO/security/TLS/*)))
+      * [debug | release_log |release] Building for debug or release configurations, or a release build with log
       
   [download]
     Download firmware image to target platform
@@ -58,9 +59,10 @@ Usage: make <target> [download] [run | debug] [JTAG=xxx] [total] [VERBOSE=1]
 
   Notes
     * Component names are case sensitive
-    * 'MiCO', 'FreeRTOS', 'Lwip' and 'debug' are reserved component names
+    * 'MiCO', 'FreeRTOS', 'Lwip', 'wolfSSL' and 'release_log' are reserved component names
+    * Use 'moc' add 'mocOS', 'mocIP' and "mocTLS" to target
     * Component names MUST NOT include space or '@' characters
-    * Building for debug is assumed unless '@release' is appended to the target
+    * Building for release_log is assumed unless '@release' or '@debug'is appended to the target
 
   Example Usage
     Build for Debug

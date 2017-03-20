@@ -52,7 +52,8 @@ $(NAME)_COMPONENTS += drivers/MiCOKit_EXT
 $(NAME)_SOURCES := platform.c
 
 # MOC configuration
-VALID_OSNS_COMBOS   := mocOS-mocIP
+VALID_OSNS_COMBOS   := mocOS@mocIP
+VALID_TLS           := mocSSL
 MOC_APP_OFFSET      := 0x64000
 
 ifndef NO_WIFI_FIRMWARE

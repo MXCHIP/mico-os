@@ -52,10 +52,12 @@ $(NAME)_COMPONENTS += drivers/MiCOKit_EXT
 $(NAME)_SOURCES := platform.c
 
 # MOC configuration
-VALID_OSNS_COMBOS   := mocOS-mocIP
 MOC_APP_OFFSET      := 0x64000
 
 ifndef NO_WIFI_FIRMWARE
 WIFI_FIRMWARE := $(MICO_OS_PATH)/resources/wifi_firmware/$(WLAN_CHIP)/$(WLAN_CHIP)$(WLAN_CHIP_REVISION)$(WLAN_CHIP_BIN_TYPE)-$(WLAN_CHIP_FIRMWARE_VER).bin
 endif
+
+VALID_OSNS_COMBOS  := mocOS@mocIP
+VALID_TLS          := mocSSL
 

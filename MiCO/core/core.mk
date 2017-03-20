@@ -25,7 +25,7 @@ MICO_PREBUILT_LIBRARY := MiCO.$(MODULE).$(TOOLCHAIN_NAME).a
 endif
 
 
-ifneq ($(MOC),)  
+ifneq ($(filter $(subst ., ,$(COMPONENTS)),mocOS mocIP),)
 $(info MiCO core based on MOC ! )
 $(NAME)_SOURCES += moc_main.c \
                    ../../platform/MCU/$(HOST_MCU_FAMILY)/moc/moc_api.c 

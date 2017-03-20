@@ -131,6 +131,16 @@ $(eval COMPONENTS += $($(NAME)_COMPONENTS))
 $(if $(strip $(filter-out $(PROCESSED_COMPONENTS_LOCS),$(COMPONENTS))),$(eval $(call PROCESS_COMPONENT,$(filter-out $(PROCESSED_COMPONENTS_LOCS),$(COMPONENTS)))),)
 endef
 
+define PROCESS_COMPATIBILITY_CHECK
+$(eval $(if $(VALID_PLATFORMS), $(if $(filter $(VALID_PLATFORMS),$(PLATFORM)),,$(error $(APP) application does not support $(PLATFORM) platform)),))
+$(eval $(if $(INVALID_PLATFORMS), $(if $(filter $(INVALID_PLATFORMS),$(PLATFORM)),$(error $(APP) application does not support $(PLATFORM) platform)),))
+$(eval $(if $(VALID_OSNS_COMBOS), $(if $(filter $(VALID_OSNS_COMBOS),$(RTOS) $(RTOS)@$(NET)),,$(error $(APP) application does not support $(RTOS)-$(NET) combination, use $(VALID_OSNS_COMBOS))),))
+$(eval $(if $(VALID_BUILD_TYPES), $(if $(filter $(VALID_BUILD_TYPES),$(BUILD_TYPE)),,$(error $(APP) application does not support $(BUILD_TYPE) build)),))
+$(eval $(if $(VALID_BUSES), $(if $(filter $(VALID_BUSES),$(BUS)),,$(error $(PLATFORM) platform does not support $(BUS) bus type)),))
+$(eval $(if $(VALID_IMAGE_TYPES), $(if $(filter $(VALID_IMAGE_TYPES),$(IMAGE_TYPE)),,$(error $(APP) application does not support $(IMAGE_TYPE) build)),))
+$(eval $(if $(VALID_TLS), $(if $(filter $(VALID_TLS),$(TLS)),,$(error $(APP) application does not support $(TLS), use $(VALID_TLS))),))
+endef
+
 ##################################
 # Start of processing
 ##################################
@@ -169,9 +179,7 @@ endif
 
 # MOC define mocOS and mocIP
 ifneq ($(MOC),)
-RTOS_FULL := $(SOURCE_ROOT)MiCO/RTOS/mocOS
-NET_FULL  := $(SOURCE_ROOT)MiCO/net/mocIP
-TLS_FULL  := $(SOURCE_ROOT)MiCO/security/TLS/mocSSL
+COMPONENTS += mocOS mocIP mocSSL
 endif
 
 # Check if there are any unknown components; output error if so.
@@ -184,33 +192,37 @@ TLS_FULL        ?=$(strip $(foreach comp,$(subst .,/,$(COMPONENTS)),$(if $(wildc
 PLATFORM_FULL   :=$(strip $(foreach comp,$(subst .,/,$(COMPONENTS)),$(if $(wildcard $(MICO_OS_PATH)/board/$(comp)),$(comp),)))
 APP_FULL        :=$(strip $(foreach comp,$(subst .,/,$(COMPONENTS)),$(if $(wildcard $(SOURCE_ROOT)$(comp) $(MICO_OS_PATH)/sub_build/$(comp)),$(comp),)))
 
-# APP is under SOURCE_ROOT
-ifndef APP_FULL
-APP_FULL        :=$(strip $(foreach comp,$(subst .,/,$(COMPONENTS)),$(if $(wildcard $(SOURCE_ROOT)/../$(comp)),$(comp),)))
-endif
-
 NET			:=$(notdir $(NET_FULL))
 RTOS        :=$(notdir $(RTOS_FULL))
 TLS         :=$(notdir $(TLS_FULL))
 PLATFORM    :=$(notdir $(PLATFORM_FULL))
 APP         :=$(notdir $(APP_FULL))
 
+# APP is under SOURCE_ROOT, use SOURCE_ROOT as APP component
+ifeq ($(APP_FULL),)
+APP_FULL    := $(notdir $(abspath $(SOURCE_ROOT)))
+APP         :=$(notdir $(APP_FULL))
+COMPONENTS  += $(APP)
+COMPONENT_DIRECTORIES += ..
+endif
+
 PLATFORM_DIRECTORY := $(PLATFORM_FULL)
 
 # Define default RTOS and TCPIP stack
 ifndef RTOS
 RTOS := FreeRTOS
+COMPONENTS += $(RTOS)
 endif
 
 ifndef NET
 NET := LwIP
+COMPONENTS += $(NET)
 endif
 
 ifndef TLS
 TLS := wolfSSL
+COMPONENTS += $(TLS)
 endif
-
-COMPONENTS += $(RTOS) $(NET) $(TLS)
 
 EXTRA_CFLAGS :=    -DMiCO_SDK_VERSION_MAJOR=$(MiCO_SDK_VERSION_MAJOR) \
                    -DMiCO_SDK_VERSION_MINOR=$(MiCO_SDK_VERSION_MINOR) \
@@ -225,6 +237,7 @@ include $(MICO_OS_PATH)/board/$(PLATFORM_DIRECTORY)/$(notdir $(PLATFORM_DIRECTOR
 $(eval CURDIR := $(MICO_OS_PATH)/platform/MCU/$(HOST_MCU_FAMILY)/)
 include $(MICO_OS_PATH)/platform/MCU/$(HOST_MCU_FAMILY)/$(HOST_MCU_FAMILY).mk
 MAIN_COMPONENT_PROCESSING :=1
+$(eval $(call PROCESS_COMPATIBILITY_CHECK,))
 
 # Now we know the target architecture - include all toolchain makefiles and check one of them can handle the architecture
 CC :=
@@ -272,12 +285,7 @@ $(eval VALID_PLATFORMS := $(call EXPAND_WILDCARD_PLATFORMS,$(VALID_PLATFORMS)))
 $(eval INVALID_PLATFORMS := $(call EXPAND_WILDCARD_PLATFORMS,$(INVALID_PLATFORMS)))
 
 # Check for valid platform, OSNS combination, build type, image type and bus
-$(eval $(if $(VALID_PLATFORMS), $(if $(filter $(VALID_PLATFORMS),$(PLATFORM)),,$(error $(APP) application does not support $(PLATFORM) platform)),))
-$(eval $(if $(INVALID_PLATFORMS), $(if $(filter $(INVALID_PLATFORMS),$(PLATFORM)),$(error $(APP) application does not support $(PLATFORM) platform)),))
-$(eval $(if $(VALID_OSNS_COMBOS), $(if $(filter $(VALID_OSNS_COMBOS),$(RTOS) $(RTOS)-$(NET)),,$(error $(APP) application does not support $(RTOS)-$(NET) combination)),))
-$(eval $(if $(VALID_BUILD_TYPES), $(if $(filter $(VALID_BUILD_TYPES),$(BUILD_TYPE)),,$(error $(APP) application does not support $(BUILD_TYPE) build)),))
-$(eval $(if $(VALID_BUSES), $(if $(filter $(VALID_BUSES),$(BUS)),,$(error $(PLATFORM) platform does not support $(BUS) bus type)),))
-$(eval $(if $(VALID_IMAGE_TYPES), $(if $(filter $(VALID_IMAGE_TYPES),$(IMAGE_TYPE)),,$(error $(APP) application does not support $(IMAGE_TYPE) build)),))
+$(eval $(call PROCESS_COMPATIBILITY_CHECK,))
 
 REMOVE_FIRST = $(wordlist 2,$(words $(1)),$(1))
 

@@ -61,7 +61,7 @@ $(NAME)_CFLAGS += -Wno-implicit-function-declaration -Wno-unused-variable
 # These need to be forced into the final ELF since they are not referenced otherwise
 $(NAME)_LINK_FILES := ../../$(HOST_ARCH)/crt0_$(TOOLCHAIN_NAME).o
 
-ifneq ($(MOC),)
+ifneq ($(filter $(subst ., ,$(COMPONENTS)),mocOS),)
 ####################################################################################
 # MOC application
 ####################################################################################
@@ -116,7 +116,7 @@ DEFAULT_LINK_SCRIPT := $(TOOLCHAIN_NAME)/app_ram$(LINK_SCRIPT_SUFFIX)
 GLOBAL_DEFINES      += __JTAG_FLASH_WRITER_DATA_BUFFER_SIZE__=16384
 
 else
-ifneq ($(MOC),)  
+ifneq ($(filter $(subst ., ,$(COMPONENTS)),mocOS),)
 ####################################################################################
 # Building standard moc application
 ####################################################################################
