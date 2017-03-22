@@ -313,14 +313,39 @@ endif
 
 # MXCHIP internal only - Copy Eclipse .project file if it doesn't exist
 ifeq ($(wildcard $(SOURCE_ROOT)/.project),)
-ifneq ($(wildcard $(TOOLS_ROOT)/eclipse_project/$(HOST_OS)/.project),)
 
-$(info Copying Eclipse .project file to source tree root)
-
-$(shell $(CP) $(TOOLS_ROOT)/eclipse_project/$(HOST_OS)/.project $(SOURCE_ROOT) )
+$(info Create Eclipse .project file to source tree root)
+ECLIPSE_PROJECT_FILE := $(SOURCE_ROOT)/.project
+$(shell $(call WRITE_FILE_CREATE, $(ECLIPSE_PROJECT_FILE) ,<?xml version="1.0" encoding="UTF-8"?>))
+$(shell $(call WRITE_FILE_APPEND, $(ECLIPSE_PROJECT_FILE) ,<projectDescription>))
+$(shell $(call WRITE_FILE_APPEND, $(ECLIPSE_PROJECT_FILE) ,	<name>$(notdir $(abspath $(SOURCE_ROOT)))</name>))
+$(shell $(call WRITE_FILE_APPEND, $(ECLIPSE_PROJECT_FILE) ,	<comment></comment>))
+$(shell $(call WRITE_FILE_APPEND, $(ECLIPSE_PROJECT_FILE) ,	<projects>))
+$(shell $(call WRITE_FILE_APPEND, $(ECLIPSE_PROJECT_FILE) ,	</projects>))
+$(shell $(call WRITE_FILE_APPEND, $(ECLIPSE_PROJECT_FILE) ,	<buildSpec>))
+$(shell $(call WRITE_FILE_APPEND, $(ECLIPSE_PROJECT_FILE) ,		<buildCommand>))
+$(shell $(call WRITE_FILE_APPEND, $(ECLIPSE_PROJECT_FILE) ,			<name>org.eclipse.cdt.managedbuilder.core.genmakebuilder</name>))
+$(shell $(call WRITE_FILE_APPEND, $(ECLIPSE_PROJECT_FILE) ,			<triggers>clean$(comma)full$(comma)incremental$(comma)</triggers>))
+$(shell $(call WRITE_FILE_APPEND, $(ECLIPSE_PROJECT_FILE) ,			<arguments>))
+$(shell $(call WRITE_FILE_APPEND, $(ECLIPSE_PROJECT_FILE) ,			</arguments>))
+$(shell $(call WRITE_FILE_APPEND, $(ECLIPSE_PROJECT_FILE) ,		</buildCommand>))
+$(shell $(call WRITE_FILE_APPEND, $(ECLIPSE_PROJECT_FILE) ,		<buildCommand>))
+$(shell $(call WRITE_FILE_APPEND, $(ECLIPSE_PROJECT_FILE) ,			<name>org.eclipse.cdt.managedbuilder.core.ScannerConfigBuilder</name>))
+$(shell $(call WRITE_FILE_APPEND, $(ECLIPSE_PROJECT_FILE) ,			<triggers>full$(comma)incremental$(comma)</triggers>))
+$(shell $(call WRITE_FILE_APPEND, $(ECLIPSE_PROJECT_FILE) ,			<arguments>))
+$(shell $(call WRITE_FILE_APPEND, $(ECLIPSE_PROJECT_FILE) ,			</arguments>))
+$(shell $(call WRITE_FILE_APPEND, $(ECLIPSE_PROJECT_FILE) ,		</buildCommand>))
+$(shell $(call WRITE_FILE_APPEND, $(ECLIPSE_PROJECT_FILE) ,	</buildSpec>))
+$(shell $(call WRITE_FILE_APPEND, $(ECLIPSE_PROJECT_FILE) ,	<natures>))
+$(shell $(call WRITE_FILE_APPEND, $(ECLIPSE_PROJECT_FILE) ,		<nature>org.eclipse.cdt.core.cnature</nature>))
+$(shell $(call WRITE_FILE_APPEND, $(ECLIPSE_PROJECT_FILE) ,		<nature>org.eclipse.cdt.core.ccnature</nature>))
+$(shell $(call WRITE_FILE_APPEND, $(ECLIPSE_PROJECT_FILE) ,		<nature>org.eclipse.cdt.managedbuilder.core.managedBuildNature</nature>))
+$(shell $(call WRITE_FILE_APPEND, $(ECLIPSE_PROJECT_FILE) ,		<nature>org.eclipse.cdt.managedbuilder.core.ScannerConfigNature</nature>))
+$(shell $(call WRITE_FILE_APPEND, $(ECLIPSE_PROJECT_FILE) ,	</natures>))
+$(shell $(call WRITE_FILE_APPEND, $(ECLIPSE_PROJECT_FILE) ,</projectDescription>))
 
 endif
-endif
+
 # MXCHIP internal only - Copy Eclipse .cproject file if it doesn't exist
 ifeq ($(wildcard $(SOURCE_ROOT)/.cproject),)
 ifneq ($(wildcard $(TOOLS_ROOT)/eclipse_project/$(HOST_OS)/.cproject),)
