@@ -29,39 +29,41 @@ unset PWD
 unset OLDPWD
 unset SHLVL
 
+TOOLS_ROOT=${scriptdir}mico-os/MiCoder
+source ${scriptdir}mico-os/makefiles/scripts/tools_root
 
-linux32unamestr=`"${scriptdir}mico-os/MiCoder/cmd/Linux32/uname" 2> /dev/null`
-linux64unamestr=`"${scriptdir}mico-os/MiCoder/cmd/Linux64/uname" 2> /dev/null`
-osxunamestr=`"${scriptdir}mico-os/MiCoder/cmd/OSX/uname"  2> /dev/null`
-win32unamestr=`"${scriptdir}mico-os/MiCoder/cmd/Win32/uname.exe" -o 2> /dev/null`
+linux32unamestr=`"${TOOLS_ROOT}/cmd/Linux32/uname" 2> /dev/null`
+linux64unamestr=`"${TOOLS_ROOT}/cmd/Linux64/uname" 2> /dev/null`
+osxunamestr=`"${TOOLS_ROOT}/cmd/OSX/uname"  2> /dev/null`
+win32unamestr=`"${TOOLS_ROOT}/cmd/Win32/uname.exe" -o 2> /dev/null`
 
 if [ "$linux32unamestr" == "Linux" ] || [ "$linux64unamestr" == "Linux" ]; then
 # Linux
-linuxuname64str=`"${scriptdir}mico-os/MiCoder/cmd/Linux64/uname" -m 2> /dev/null`
+linuxuname64str=`"{TOOLS_ROOT}/cmd/Linux64/uname" -m 2> /dev/null`
 if [ "$linuxuname64str" == "x86_64" ]; then
 
 # Linux64
 #echo Host is Linux64
-"${scriptdir}mico-os/MiCoder/cmd/Linux64/make" "$@" HOST_OS=Linux64
+"${TOOLS_ROOT}/cmd/Linux64/make" "$@" HOST_OS=Linux64
 
 else
 
 # Linux32
 #echo Host is Linux32
-"${scriptdir}mico-os/MiCoder/cmd/Linux32/make" "$@" HOST_OS=Linux32
+"${TOOLS_ROOT}/cmd/Linux32/make" "$@" HOST_OS=Linux32
 
 fi
 elif [[ "$osxunamestr" == *Darwin* ]]; then
 
 #OSX
 #echo Host is OSX
-"${scriptdir}mico-os/MiCoder/cmd/OSX/make" "$@" HOST_OS=OSX
+"${TOOLS_ROOT}/cmd/OSX/make" "$@" HOST_OS=OSX
 
 elif [ "${win32unamestr}" == "MinGW" ]; then
 
 #MinGW / Cygwin
 #echo Host is MinGW
-"${scriptdir}mico-os/MiCoder/cmd/Win32/make.exe" "$@" HOST_OS=Win32
+"${TOOLS_ROOT}/cmd/Win32/make.exe" "$@" HOST_OS=Win32
 
 else
 echo Unknown host! 
