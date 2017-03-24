@@ -11,8 +11,8 @@
 scriptname=${0##*/}
 scriptdir=${0%*$scriptname}
 
-local_tools_root=$(cat .mbed 2> /dev/null| grep TOOLS_ROOT=)
-global_tools_root=$(cat ~/.mbed/.mbed 2> /dev/null| grep TOOLS_ROOT=)
+local_tools_root=$(cat .mico 2> /dev/null| grep TOOLS_ROOT=)
+global_tools_root=$(cat ~/.mico/.mico 2> /dev/null| grep TOOLS_ROOT=)
 
 # Rerun the script with environment cleared out
 if [ "$1" != "ENVCLEARED" ]; then
