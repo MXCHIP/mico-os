@@ -68,11 +68,11 @@ $(NAME)_LINK_FILES := wifi_nvram.o
 
 
 ifndef NO_WIFI_FIRMWARE
-#WIFI_FIRMWARE := resources/wifi_firmware/$(WLAN_CHIP)/$(WLAN_CHIP)$(WLAN_CHIP_REVISION)$(WLAN_CHIP_BIN_TYPE)-$(WLAN_CHIP_FIRMWARE_VER).bin
+#WIFI_FIRMWARE := $(MICO_OS_PATH)/resources/wifi_firmware/$(WLAN_CHIP)/$(WLAN_CHIP)$(WLAN_CHIP_REVISION)$(WLAN_CHIP_BIN_TYPE)-$(WLAN_CHIP_FIRMWARE_VER).bin
 endif
 
 #ifndef NO_BT_PATCH_IMAGE
-#BT_PATCH := resources/bt_patch/$(BT_CHIP)/$(BT_CHIP)$(BT_CHIP_REVISION).bin
+#BT_PATCH := $(MICO_OS_PATH)/resources/bt_patch/$(BT_CHIP)/$(BT_CHIP)$(BT_CHIP_REVISION).bin
 #endif
 
 WIFI_FIRMWARE_SECTOR_START    := 2      #0x2000

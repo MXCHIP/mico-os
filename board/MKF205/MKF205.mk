@@ -54,7 +54,7 @@ $(NAME)_COMPONENTS += drivers/keypad/gpio_button \
 $(NAME)_SOURCES := platform.c
 
 ifndef NO_WIFI_FIRMWARE
-WIFI_FIRMWARE := resources/wifi_firmware/$(WLAN_CHIP)/$(WLAN_CHIP)$(WLAN_CHIP_REVISION)$(WLAN_CHIP_BIN_TYPE)-$(WLAN_CHIP_FIRMWARE_VER).bin
+WIFI_FIRMWARE := $(MICO_OS_PATH)/resources/wifi_firmware/$(WLAN_CHIP)/$(WLAN_CHIP)$(WLAN_CHIP_REVISION)$(WLAN_CHIP_BIN_TYPE)-$(WLAN_CHIP_FIRMWARE_VER).bin
 endif
 
 WIFI_FIRMWARE_SECTOR_START    := 2      #0x2000

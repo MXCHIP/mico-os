@@ -16,7 +16,9 @@ ifneq ($(wildcard $(CURDIR)Lib_HomeKit_Server.$(HOST_ARCH).$(TOOLCHAIN_NAME).rel
 $(NAME)_PREBUILT_LIBRARY := Lib_HomeKit_Server.$(HOST_ARCH).$(TOOLCHAIN_NAME).release.a
 else
 # Build from source
-include $(CURDIR)homekit_server_src.mk
+Lib_HomeKit_Server_DIR := Lib_HomeKit_Server
+
+include $(CURDIR)Lib_HomeKit_Server/HomeKitServer_src.mk
 endif
 
 

@@ -7,6 +7,7 @@
 #  permission of MXCHIP Corporation.
 #
 
+export MAKEFILES_PATH := $(MICO_OS_PATH)/makefiles
 
 # Some possible inputs into this file
 #RTOS        : FreeRTOS, ThreadX
@@ -39,10 +40,12 @@ endif
 
 LIBRARY_NAME:=$(LIBRARY_NAME).$(HOST_ARCH)
 
+LIBRARY_OUTPUT_DIR ?= .
+
 CC :=
 
-include $(SOURCE_ROOT)makefiles/micoder_host_cmd.mk
-include $(SOURCE_ROOT)makefiles/micoder_toolchain_GCC.mk
+include $(MICO_OS_PATH)/makefiles/micoder_host_cmd.mk
+include $(MICO_OS_PATH)/makefiles/micoder_toolchain_GCC.mk
 
 ifndef CC
 $(error No matching toolchain found for architecture $(HOST_ARCH))
@@ -136,15 +139,15 @@ $(SOURCE_ROOT)build/$(NAME)/$(LIBRARY_NAME).a: $(OBJS)
 
 stripped_lib: $(SOURCE_ROOT)build/$(NAME)/$(LIBRARY_NAME).a Makefile
 ifdef NO_STRIP_LIBS
-	$(QUIET)$(CP) $(SOURCE_ROOT)/build/$(NAME)/$(LIBRARY_NAME).a $(LIBRARY_NAME).a
+	$(QUIET)$(CP) $(SOURCE_ROOT)/build/$(NAME)/$(LIBRARY_NAME).a $(LIBRARY_OUTPUT_DIR)/$(LIBRARY_NAME).a
 else
-	$(QUIET)$(STRIP) -g -o $(LIBRARY_NAME).a $(SOURCE_ROOT)/build/$(NAME)/$(LIBRARY_NAME).a
+	$(QUIET)$(STRIP) -g -o $(LIBRARY_OUTPUT_DIR)/$(LIBRARY_NAME).a $(SOURCE_ROOT)/build/$(NAME)/$(LIBRARY_NAME).a
 endif
 	$(QUIET)$(RM) -rf $(SOURCE_ROOT)/build/$(NAME)
 	$(QUIET)$(ECHO) ALL DONE
 
 clean:
-	$(QUIET)$(RM) -rf $(NAME)*.a
+	$(QUIET)$(RM) -rf $(LIBRARY_OUTPUT_DIR)/$(NAME)*.a
 
 else
 
