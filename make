@@ -11,6 +11,9 @@
 scriptname=${0##*/}
 scriptdir=${0%*$scriptname}
 
+local_tools_root=$(cat .mbed 2> /dev/null| grep TOOLS_ROOT=)
+global_tools_root=$(cat ~/.mbed/.mbed 2> /dev/null| grep TOOLS_ROOT=)
+
 # Rerun the script with environment cleared out
 if [ "$1" != "ENVCLEARED" ]; then
     exec -c "$scriptdir$scriptname" ENVCLEARED "$PATH" "$HOME" "$@"
@@ -28,6 +31,19 @@ unset TERM
 unset PWD
 unset OLDPWD
 unset SHLVL
+
+tools_root=
+if [ $local_tools_root ]; then 
+	tools_root=${local_tools_root}
+elif [ $global_tools_root ]; then 
+	tools_root=${global_tools_root}
+elif [ -d "mico-os/MiCoder" ]; then 
+	echo Use the mico-os root MiCoder
+else
+	echo Can not find tools directory!
+	exit
+fi
+echo ${tools_root} > mico-os/makefiles/scripts/tools_root
 
 TOOLS_ROOT=${scriptdir}mico-os/MiCoder
 source ${scriptdir}mico-os/makefiles/scripts/tools_root
