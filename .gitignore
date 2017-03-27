@@ -4,3 +4,4 @@ libraries/how_to_build_library/IDE/EWARM/Lib_Helloworld_CM3
 libraries/how_to_build_library/IDE/EWARM/Lib_Helloworld_CM4F
 libraries/how_to_build_library/IDE/EWARM/settings
 MiCoder
+tools_root
