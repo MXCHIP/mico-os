@@ -24,4 +24,4 @@
 
 NAME := App_template
 
-$(NAME)_SOURCES := template.c
+$(NAME)_SOURCES := main.c

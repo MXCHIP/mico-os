@@ -1,10 +1,10 @@
 /**
  ******************************************************************************
- * @file    template.c
- * @author  William Xu
+ * @file    main.c
+ * @author  
  * @version V1.0.0
- * @date    21-May-2015
- * @brief   template file!
+ * @date    
+ * @brief   
  ******************************************************************************
  *
  *  The MIT License

@@ -1,9 +1,9 @@
 /**
  ******************************************************************************
  * @file    mico_config.h
- * @author  William Xu
+ * @author  
  * @version V1.0.0
- * @date    05-May-2014
+ * @date    
  * @brief   This file provide constant definition and type declaration for MICO
  *          running.
  ******************************************************************************
