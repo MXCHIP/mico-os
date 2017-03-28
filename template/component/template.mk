@@ -25,4 +25,4 @@
 NAME := Lib_template
 
 $(NAME)_SOURCES := template.c
-GLOBAL_SOURCES := .
+GLOBAL_INCLUDES += .

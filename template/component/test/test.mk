@@ -25,4 +25,6 @@
 NAME := App_test
 
 $(NAME)_SOURCES := main.c
-$(NAME)_COMPONENTS += template
+
+COMPONENTS += $(notdir $(abspath $(SOURCE_ROOT)))
+COMPONENT_DIRECTORIES += ..
