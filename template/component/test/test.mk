@@ -26,5 +26,4 @@ NAME := App_test
 
 $(NAME)_SOURCES := main.c
 
-COMPONENTS += $(notdir $(abspath $(SOURCE_ROOT)))
-COMPONENT_DIRECTORIES += ..
+$(NAME)_COMPONENTS += hello_component
