@@ -31,10 +31,12 @@
  */
 
 #include "mico.h"
+#include "template.h"
 
 int application_start( void )
 {
-  // Add your code here
+  	// Add your code here
+	return 0;
 }
 
 

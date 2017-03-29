@@ -8,7 +8,6 @@
 #
 
 TOOLS_ROOT ?= $(SOURCE_ROOT)mico-os/MiCoder
-include $(MAKEFILES_PATH)/scripts/tools_root
 
 OPENOCD_PATH      := $(TOOLS_ROOT)/OpenOCD/
 OPENOCD_CFG_PATH  := $(MAKEFILES_PATH)/OpenOCD/
