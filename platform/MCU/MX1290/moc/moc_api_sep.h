@@ -148,6 +148,8 @@ typedef struct {
 	int  (*AesCbcDecrypt)(Aes* aes, uint8_t* out,
                                   const uint8_t* in, uint32_t sz);
 	void* (*ssl_nonblock_connect)(int fd, int calen, char*ca, int *errno, int timeout);
+	void (*ssl_set_client_cert)(const char *_cert_pem, const char *private_key_pem);
+	void* (*ssl_connect_sni)(int fd, int calen, char*ca, char *sni_servername, int *errno);
 } ssl_crypto_api_v1_t;
 
 typedef struct {

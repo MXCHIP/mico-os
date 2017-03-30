@@ -437,6 +437,8 @@ typedef struct mico_api_struct
 
 	char *(*sethostname)( char *name ); // set device name in dhcp table
 	int (*mico_wlan_monitor_no_easylink)(void);
+	void (*ssl_set_client_cert)(const char *cert_pem, const char *private_key_pem);
+	void* (*ssl_connect_sni)(int fd, int calen, char*ca, char *sni_servername, int *errno);
 } mico_api_t;
 
 typedef struct user_api_struct

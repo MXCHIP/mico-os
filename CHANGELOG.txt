@@ -1,6 +1,11 @@
 =====================================================================
 MiCO SDK - CHANGELOG
 =====================================================================
+Changes for MiCO v3.2.3
+* Platforms
+  * EMW3080B/C: Remove kernel debug info 
+  * EMW3080B/C: Add pin remapping apis
+
 Changes for MiCO v3.2.2
 * Bootloader
   * Flash image download may stalled when using bootloader is fixed

@@ -6,8 +6,8 @@
 #include "system_internal.h"
 #include "mico_app_define.h"
 
-//#define alink_platform_log(M, ...) custom_log("", M, ##__VA_ARGS__)
-#define alink_platform_log(M, ...)
+#define alink_platform_log(M, ...) custom_log("", M, ##__VA_ARGS__)
+// #define alink_platform_log(M, ...)
 
 #define UART_LOG_FAST
 

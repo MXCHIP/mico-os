@@ -43,9 +43,9 @@
 *                    Constants
 ******************************************************/
 
-#define HARDWARE_REVISION   "3080"
-#define DEFAULT_NAME        "EMW3080 Module"
-#define MODEL               "EMW3080"
+#define HARDWARE_REVISION   "3080B"
+#define DEFAULT_NAME        "EMW3080B Module"
+#define MODEL               "EMW3080B"
 
 /* MICO RTOS tick rate in Hz */
 #define MICO_DEFAULT_TICK_RATE_HZ                   (1000) 

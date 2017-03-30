@@ -148,8 +148,9 @@ BASIC_FILES:
 	$(QUIET)$(RM) -rf $(SDK_OUTPUT_DIR)/demos/test/auto_self_test
 	$(QUIET)$(RM) -rf $(SDK_OUTPUT_DIR)/demos/test/hardware_test_3080
 
-	$(QUIET)$(ECHO) Remove Alink application...
-	$(QUIET)$(RM) -rf $(SDK_OUTPUT_DIR)/demos/application/alink-x-jdsmart
+	$(QUIET)$(ECHO) Remove Alink application and libraries...
+	$(QUIET)$(RM) -rf $(SDK_OUTPUT_DIR)/demos/application/alink
+	$(QUIET)$(RM) -rf $(SDK_OUTPUT_DIR)libraries/protocols/alink
 
 	$(QUIET)$(ECHO) Remove unused documents...
 	$(QUIET)$(RM) -rf $(SDK_OUTPUT_DIR)document/EMW3162

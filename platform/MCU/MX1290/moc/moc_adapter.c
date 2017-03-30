@@ -131,6 +131,13 @@ mico_api_t *moc_adapter(new_mico_api_t *new_mico_api)
   mico_api.ssl_recv = _kernel_api.ssl_crypto_apis->ssl_recv;
   mico_api.ssl_close = _kernel_api.ssl_crypto_apis->ssl_close;
   mico_api.set_ssl_client_version = _kernel_api.ssl_crypto_apis->set_ssl_client_version;
+  mico_api.ssl_nonblock_connect = _kernel_api.ssl_crypto_apis->ssl_nonblock_connect;
+  mico_api.ssl_set_using_nonblock = _kernel_api.ssl_crypto_apis->ssl_set_using_nonblock;
+  mico_api.ssl_pending = _kernel_api.ssl_crypto_apis->ssl_pending;
+  mico_api.ssl_get_error = _kernel_api.ssl_crypto_apis->ssl_get_error;
+  mico_api.ssl_set_client_cert = _kernel_api.ssl_crypto_apis->ssl_set_client_cert;
+  mico_api.ssl_connect_sni = _kernel_api.ssl_crypto_apis->ssl_connect_sni;
+  
   mico_api.InitMd5 = (void (*)(md5_context*))_kernel_api.ssl_crypto_apis->InitMd5;
   mico_api.Md5Update = (void (*)(md5_context*,unsigned char*, int))_kernel_api.ssl_crypto_apis->Md5Update;
   mico_api.Md5Final = (void (*)(md5_context*,uint8_t*))_kernel_api.ssl_crypto_apis->Md5Final;
@@ -144,8 +151,7 @@ mico_api_t *moc_adapter(new_mico_api_t *new_mico_api)
   mico_api.AesSetIV = _kernel_api.ssl_crypto_apis->AesSetIV;
   mico_api.AesCbcEncrypt = _kernel_api.ssl_crypto_apis->AesCbcEncrypt;
   mico_api.AesCbcDecrypt = _kernel_api.ssl_crypto_apis->AesCbcDecrypt;
-  mico_api.ssl_nonblock_connect = _kernel_api.ssl_crypto_apis->ssl_nonblock_connect;
-  
+
   mico_api.wlan_get_mac_address = _kernel_api.wifi_apis->wlan_get_mac_address;
   mico_api.wlan_get_mac_address_by_interface = _kernel_api.wifi_apis->wlan_get_mac_address_by_interface;
   mico_api.mico_wlan_get_channel = _kernel_api.wifi_apis->mico_wlan_get_channel;

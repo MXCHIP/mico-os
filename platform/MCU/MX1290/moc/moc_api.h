@@ -441,6 +441,8 @@ typedef struct mico_api_struct
 	int (*ssl_get_error)(void* ssl, int ret);
 	void (*ssl_set_using_nonblock)(void* ssl, int nonblock);
 	void* (*ssl_nonblock_connect)(int fd, int calen, char*ca, int *errno, int timeout);
+	void (*ssl_set_client_cert)(const char *_cert_pem, const char *private_key_pem);
+	void* (*ssl_connect_sni)(int fd, int calen, char*ca, char *sni_servername, int *errno);
 } mico_api_t;
 
 typedef struct user_api_struct

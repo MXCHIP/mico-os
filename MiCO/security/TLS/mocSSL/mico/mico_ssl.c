@@ -119,3 +119,14 @@ void ssl_set_using_nonblock(void* ssl, int nonblock)
 {
 	 lib_api_p->ssl_set_using_nonblock(ssl, nonblock);
 }
+
+void ssl_set_client_cert(const char *cert_pem, const char *private_key_pem)
+{
+	lib_api_p->ssl_set_client_cert(cert_pem, private_key_pem);
+}
+
+void* ssl_connect_sni(int fd, int calen, char*ca, char *sni_servername, int *errno)
+{
+	return lib_api_p->ssl_connect_sni(fd, calen, ca, sni_servername, errno);
+}
+
