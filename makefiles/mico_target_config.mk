@@ -9,7 +9,7 @@
 
 include $(MAKEFILES_PATH)/micoder_host_cmd.mk
 
-CONFIG_FILE_DIR := build/$(CLEANED_BUILD_STRING)
+CONFIG_FILE_DIR := $(SOURCE_ROOT)build/$(CLEANED_BUILD_STRING)
 CONFIG_FILE := $(CONFIG_FILE_DIR)/config.mk
 
 COMPONENT_DIRECTORIES := $(MICO_OS_PATH) \
@@ -21,7 +21,7 @@ COMPONENT_DIRECTORIES := $(MICO_OS_PATH) \
                          $(MICO_OS_PATH)/MiCO/RTOS \
                          $(MICO_OS_PATH)/MiCO/Security/TLS \
                          $(MICO_OS_PATH)/libraries \
-                         . 
+                         $(SOURCE_ROOT)
 
 MiCO_SDK_VERSION ?= $(MiCO_SDK_VERSION_MAJOR).$(MiCO_SDK_VERSION_MINOR).$(MiCO_SDK_VERSION_REVISION)
 
@@ -40,7 +40,7 @@ $(eval COMP := $(word 1,$(1)))
 $(eval COMP_LOCATION := $(subst .,/,$(COMP)))
 $(eval COMP_MAKEFILE_NAME := $(notdir $(COMP_LOCATION)))
 # Find the component makefile in directory list
-$(eval TEMP_MAKEFILE := $(strip $(wildcard $(foreach dir, $(addprefix $(SOURCE_ROOT),$(COMPONENT_DIRECTORIES)), $(dir)/$(COMP_LOCATION)/$(COMP_MAKEFILE_NAME).mk))))
+$(eval TEMP_MAKEFILE := $(strip $(wildcard $(foreach dir, $(COMPONENT_DIRECTORIES), $(dir)/$(COMP_LOCATION)/$(COMP_MAKEFILE_NAME).mk))))
 
 # Check if component makefile was found - if not try downloading it and re-doing the makefile search
 $(if $(TEMP_MAKEFILE),,\
@@ -183,7 +183,7 @@ COMPONENTS += mocOS mocIP mocSSL
 endif
 
 # Check if there are any unknown components; output error if so.
-$(foreach comp, $(COMPONENTS), $(if $(wildcard $(foreach dir, $(addprefix $(SOURCE_ROOT),$(COMPONENT_DIRECTORIES)), $(dir)/$(subst .,/,$(comp)) ) ),,$(error Unknown component: $(comp))))
+$(foreach comp, $(COMPONENTS), $(if $(wildcard $(foreach dir, $(COMPONENT_DIRECTORIES), $(dir)/$(subst .,/,$(comp)) ) ),,$(error Unknown component: $(comp))))
 
 # Find the matching network, platform, RTOS and application from the build string components
 NET_FULL	    ?=$(strip $(foreach comp,$(subst .,/,$(COMPONENTS)),$(if $(wildcard $(MICO_OS_PATH)/MiCO/net/$(comp)),$(comp),)))
