@@ -10,8 +10,8 @@ if(system == 'win32'):
         if('openocd_mico.exe' in os.popen(tasklist).read()):
 		kill_cmd = taskkill+' /F /IM openocd_mico.exe'
 elif(system == 'darwin'):
-	if(os.system('ps xc | grep openocd_mico_run') == 0):
-		kill_cmd = 'killall openocd_mico_run'
+	if(os.system('/bin/ps xc | /usr/bin/grep openocd_mico_run') == 0):
+		kill_cmd = '/usr/bin/killall openocd_mico_run'
 elif(system == 'linux'):
 	if(os.system('ps xc | grep openocd_mico') == 0):
 		kill_cmd = 'killall openocd_mico'

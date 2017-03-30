@@ -9,11 +9,11 @@
 
 include $(MAKEFILES_PATH)/micoder_host_cmd.mk
 
-CONFIG_FILE := build/$(FRAPP)/config.mk
+CONFIG_FILE := $(SOURCE_ROOT)build/$(FRAPP)/config.mk
 
 include $(CONFIG_FILE)
 
-OUTPUT_DIR :=./build/$(FRAPP)/
+OUTPUT_DIR := $(SOURCE_ROOT)build/$(FRAPP)/
 OUTPUT_DIR_CONVD := $(call CONV_SLASHES,$(OUTPUT_DIR))
 
 SFLASHWRITER_TGT:=waf.sflash_write-NoOS-$(PLATFORM)-$(BUS)
@@ -24,16 +24,16 @@ SFLASHWRITER_TGT_DIR:=$(SFLASHWRITER_TGT)
 sflash_writer_app:
 	$(QUIET)$(ECHO) Building the Serial Flash Writer App $(SFLASHWRITER_TGT) $(FRAPP)
 	$(QUIET)$(ECHO_BLANK_LINE)
-	$(QUIET)$(MAKE) $(SILENT) -f $(SOURCE_ROOT)Makefile -s $(SFLASHWRITER_TGT) NO_BUILD_BOOTLOADER=1
+	$(QUIET)$(MAKE) $(SILENT) -f $(SOURCE_ROOT)mico-os/makefiles/Makefile -s $(SFLASHWRITER_TGT) NO_BUILD_BOOTLOADER=1
 	$(QUIET)$(ECHO) Done
 	$(QUIET)$(ECHO_BLANK_LINE)
 
-./build/$(SFLASHWRITER_TGT_DIR)/config.mk: sflash_writer_app
+$(SOURCE_ROOT)build/$(SFLASHWRITER_TGT_DIR)/config.mk: sflash_writer_app
 
 sflash_download: sflash_writer_app sflash
 	$(QUIET)$(ECHO) Downloading Serial Flash image
 	$(QUIET)$(ECHO_BLANK_LINE)
-	$(call CONV_SLASHES,$(OPENOCD_FULL_NAME)) -f $(OPENOCD_PATH)$(JTAG).cfg -f $(OPENOCD_PATH)$(HOST_OPENOCD).cfg -f apps/waf/sflash_write/sflash_write.tcl -c "sflash_write_file $(OUTPUT_DIR)sflash.bin 0x0 $(PLATFORM)-$(BUS) 1 0" -c shutdown
+	$(call CONV_SLASHES,$(OPENOCD_FULL_NAME)) -s $(SOURCE_ROOT) -f $(OPENOCD_PATH)$(JTAG).cfg -f $(OPENOCD_PATH)$(HOST_OPENOCD).cfg -f apps/waf/sflash_write/sflash_write.tcl -c "sflash_write_file $(OUTPUT_DIR)sflash.bin 0x0 $(PLATFORM)-$(BUS) 1 0" -c shutdown
 	$(QUIET)$(ECHO_BLANK_LINE)
 
 #pad_dct:

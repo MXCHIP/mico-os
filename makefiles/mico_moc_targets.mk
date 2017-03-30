@@ -15,7 +15,7 @@ include $(MICO_OS_PATH)/platform/MCU/$(HOST_MCU_FAMILY)/merge/gen_moc_images.mk
 
 ifeq (download,$(findstring download,$(MAKECMDGOALS)))
 EXTRA_POST_BUILD_TARGETS  += sflash_write_app
-OPENOCD_LOG_FILE ?= build/openocd_log.txt
+OPENOCD_LOG_FILE ?= $(SOURCE_ROOT)build/openocd_log.txt
 DOWNLOAD_LOG := >> $(OPENOCD_LOG_FILE)
 endif
 
@@ -29,20 +29,20 @@ ifneq (total,$(findstring total,$(MAKECMDGOALS)))
 download_app: gen_moc_images sflash_write_app kill_openocd
 	$(eval MOC_APP_OUTPUT_FILE_SIZE := $(shell $(PYTHON) $(IMAGE_SIZE_SCRIPT) $(MOC_APP_BIN_OUTPUT_FILE)))
 	$(QUIET)$(ECHO) Downloading MOC APP to partition: $(APPLICATION_FIRMWARE_PARTITION_TCL) offset: $(MOC_APP_OFFSET) size: $(MOC_APP_OUTPUT_FILE_SIZE) bytes...
-	$(call CONV_SLASHES, $(OPENOCD_FULL_NAME)) -f $(OPENOCD_CFG_PATH)interface/$(JTAG).cfg -f $(OPENOCD_CFG_PATH)$(HOST_OPENOCD)/$(HOST_OPENOCD).cfg -f $(MICO_OS_PATH)/sub_build/spi_flash_write/sflash_write.tcl -c "sflash_write_file $(MOC_APP_BIN_OUTPUT_FILE) $(APPLICATION_FIRMWARE_PARTITION_TCL) $(MOC_APP_OFFSET) $(SFLASH_APP_PLATFROM_BUS) 0" -c shutdown $(DOWNLOAD_LOG) 2>&1 && $(ECHO) Download complete && $(ECHO_BLANK_LINE) || $(ECHO) Download failed
+	$(call CONV_SLASHES, $(OPENOCD_FULL_NAME)) -s $(SOURCE_ROOT) -f $(OPENOCD_CFG_PATH)interface/$(JTAG).cfg -f $(OPENOCD_CFG_PATH)$(HOST_OPENOCD)/$(HOST_OPENOCD).cfg -f $(MICO_OS_PATH)/sub_build/spi_flash_write/sflash_write.tcl -c "sflash_write_file $(MOC_APP_BIN_OUTPUT_FILE) $(APPLICATION_FIRMWARE_PARTITION_TCL) $(MOC_APP_OFFSET) $(SFLASH_APP_PLATFROM_BUS) 0" -c shutdown $(DOWNLOAD_LOG) 2>&1 && $(ECHO) Download complete && $(ECHO_BLANK_LINE) || $(ECHO) Download failed
 else
 download_app: gen_moc_images sflash_write_app kill_openocd
 	$(eval MOC_BOOT_OUTPUT_FILE_SIZE := $(shell $(PYTHON) $(IMAGE_SIZE_SCRIPT) $(MOC_BOOT_BIN_FILE)))
 	$(QUIET)$(ECHO) Downloading MOC BOOT to partition: $(BOOTLOADER_FIRMWARE_PARTITION_TCL) size: $(MOC_BOOT_OUTPUT_FILE_SIZE) bytes... 
-	$(call CONV_SLASHES, $(OPENOCD_FULL_NAME)) -f $(OPENOCD_CFG_PATH)interface/$(JTAG).cfg -f $(OPENOCD_CFG_PATH)$(HOST_OPENOCD)/$(HOST_OPENOCD).cfg -f $(MICO_OS_PATH)/sub_build/spi_flash_write/sflash_write.tcl -c "sflash_write_file $(MOC_BOOT_BIN_FILE) $(BOOTLOADER_FIRMWARE_PARTITION_TCL) 0x0 $(SFLASH_APP_PLATFROM_BUS) 0" -c shutdown $(DOWNLOAD_LOG) 2>&1 && $(ECHO) Download complete && $(ECHO_BLANK_LINE) || $(ECHO) Download failed
+	$(call CONV_SLASHES, $(OPENOCD_FULL_NAME)) -s $(SOURCE_ROOT) -f $(OPENOCD_CFG_PATH)interface/$(JTAG).cfg -f $(OPENOCD_CFG_PATH)$(HOST_OPENOCD)/$(HOST_OPENOCD).cfg -f $(MICO_OS_PATH)/sub_build/spi_flash_write/sflash_write.tcl -c "sflash_write_file $(MOC_BOOT_BIN_FILE) $(BOOTLOADER_FIRMWARE_PARTITION_TCL) 0x0 $(SFLASH_APP_PLATFROM_BUS) 0" -c shutdown $(DOWNLOAD_LOG) 2>&1 && $(ECHO) Download complete && $(ECHO_BLANK_LINE) || $(ECHO) Download failed
 	
 	$(eval MOC_KERNEL_APP_OUTPUT_FILE_SIZE := $(shell $(PYTHON) $(IMAGE_SIZE_SCRIPT) $(MOC_KERNEL_APP_BIN_OUTPUT_FILE)))
 	$(QUIET)$(ECHO) Downloading MOC kernel and app to partition: $(APPLICATION_FIRMWARE_PARTITION_TCL) size: $(MOC_KERNEL_APP_OUTPUT_FILE_SIZE) bytes... 
-	$(call CONV_SLASHES, $(OPENOCD_FULL_NAME)) -f $(OPENOCD_CFG_PATH)interface/$(JTAG).cfg -f $(OPENOCD_CFG_PATH)$(HOST_OPENOCD)/$(HOST_OPENOCD).cfg -f $(MICO_OS_PATH)/sub_build/spi_flash_write/sflash_write.tcl -c "sflash_write_file $(MOC_KERNEL_APP_BIN_OUTPUT_FILE) $(APPLICATION_FIRMWARE_PARTITION_TCL) 0x0 $(SFLASH_APP_PLATFROM_BUS) 0" -c shutdown $(DOWNLOAD_LOG) 2>&1 && $(ECHO) Download complete && $(ECHO_BLANK_LINE) || $(ECHO) Download failed
+	$(call CONV_SLASHES, $(OPENOCD_FULL_NAME)) -s $(SOURCE_ROOT) -f $(OPENOCD_CFG_PATH)interface/$(JTAG).cfg -f $(OPENOCD_CFG_PATH)$(HOST_OPENOCD)/$(HOST_OPENOCD).cfg -f $(MICO_OS_PATH)/sub_build/spi_flash_write/sflash_write.tcl -c "sflash_write_file $(MOC_KERNEL_APP_BIN_OUTPUT_FILE) $(APPLICATION_FIRMWARE_PARTITION_TCL) 0x0 $(SFLASH_APP_PLATFROM_BUS) 0" -c shutdown $(DOWNLOAD_LOG) 2>&1 && $(ECHO) Download complete && $(ECHO_BLANK_LINE) || $(ECHO) Download failed
 
 	$(eval MOC_ATE_OUTPUT_FILE_SIZE := $(shell $(PYTHON) $(IMAGE_SIZE_SCRIPT) $(MOC_ATE_BIN_OUTPUT_FILE)))
 	$(QUIET)$(ECHO) Downloading MOC ATE to partition: $(ATE_FIRMWARE_PARTITION_TCL) size: $(MOC_ATE_OUTPUT_FILE_SIZE) bytes... 
-	$(call CONV_SLASHES, $(OPENOCD_FULL_NAME)) -f $(OPENOCD_CFG_PATH)interface/$(JTAG).cfg -f $(OPENOCD_CFG_PATH)$(HOST_OPENOCD)/$(HOST_OPENOCD).cfg -f $(MICO_OS_PATH)/sub_build/spi_flash_write/sflash_write.tcl -c "sflash_write_file $(MOC_ATE_BIN_OUTPUT_FILE) $(ATE_FIRMWARE_PARTITION_TCL) 0x0 $(SFLASH_APP_PLATFROM_BUS) 0" -c shutdown $(DOWNLOAD_LOG) 2>&1 && $(ECHO) Download complete && $(ECHO_BLANK_LINE) || $(ECHO) Download failed
+	$(call CONV_SLASHES, $(OPENOCD_FULL_NAME)) -s $(SOURCE_ROOT) -f $(OPENOCD_CFG_PATH)interface/$(JTAG).cfg -f $(OPENOCD_CFG_PATH)$(HOST_OPENOCD)/$(HOST_OPENOCD).cfg -f $(MICO_OS_PATH)/sub_build/spi_flash_write/sflash_write.tcl -c "sflash_write_file $(MOC_ATE_BIN_OUTPUT_FILE) $(ATE_FIRMWARE_PARTITION_TCL) 0x0 $(SFLASH_APP_PLATFROM_BUS) 0" -c shutdown $(DOWNLOAD_LOG) 2>&1 && $(ECHO) Download complete && $(ECHO_BLANK_LINE) || $(ECHO) Download failed
 endif
 
 copy_output_for_eclipse: build_done
@@ -63,7 +63,7 @@ $(if $(RTOS),,$(error No RTOS specified. Options are: $(notdir $(wildcard MiCO/R
 
 run: $(SHOULD_I_WAIT_FOR_DOWNLOAD)
 	$(QUIET)$(ECHO) Resetting target
-	$(QUIET)$(call CONV_SLASHES,$(OPENOCD_FULL_NAME)) -c "log_output $(OPENOCD_LOG_FILE)" -f $(OPENOCD_CFG_PATH)interface/$(JTAG).cfg -f $(OPENOCD_CFG_PATH)$(HOST_OPENOCD)/$(HOST_OPENOCD).cfg -c init -c "reset run" -c shutdown $(DOWNLOAD_LOG) 2>&1 && $(ECHO) Target running
+	$(QUIET)$(call CONV_SLASHES,$(OPENOCD_FULL_NAME)) -c "log_output $(OPENOCD_LOG_FILE)" -s $(SOURCE_ROOT) -f $(OPENOCD_CFG_PATH)interface/$(JTAG).cfg -f $(OPENOCD_CFG_PATH)$(HOST_OPENOCD)/$(HOST_OPENOCD).cfg -c init -c "reset run" -c shutdown $(DOWNLOAD_LOG) 2>&1 && $(ECHO) Target running
 
 
 debug: $(BUILD_STRING) $(SHOULD_I_WAIT_FOR_DOWNLOAD)

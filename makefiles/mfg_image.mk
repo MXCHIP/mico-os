@@ -44,10 +44,10 @@ OTA_TGT_DIR:=$(subst .,_,$(OTA_TGT))
 SFLASHWRITER_TGT_DIR:=$(subst .,_,$(SFLASHWRITER_TGT))
 
 ifneq ($(DO_DOWNLOAD),)
--include ./build/$(SFLASHWRITER_TGT_DIR)/config.mk
+-include $(SOURCE_ROOT)build/$(SFLASHWRITER_TGT_DIR)/config.mk
 endif
 
-OUTPUT_DIR :=./build/$(FRAPP)/
+OUTPUT_DIR :=$(SOURCE_ROOT)build/$(FRAPP)/
 OUTPUT_DIR_CONVD := $(call CONV_SLASHES,$(OUTPUT_DIR))
 
 
@@ -58,7 +58,7 @@ $(MAKECMDGOALS): concated_sflash_image  $(if $(DO_DOWNLOAD),download_sflash)
 ota_upgrade_app:
 	$(QUIET)$(ECHO) Building the OTA-Upgrade App $(OTA_TGT)
 	$(QUIET)$(ECHO_BLANK_LINE)
-	$(QUIET)$(MAKE) $(SILENT) -f $(SOURCE_ROOT)Makefile -s $(OTA_TGT) NO_BUILD_BOOTLOADER=1
+	$(QUIET)$(MAKE) $(SILENT) -f $(SOURCE_ROOT)mico-os/makefiles/Makefile -s $(OTA_TGT) NO_BUILD_BOOTLOADER=1
 	$(QUIET)$(ECHO_BLANK_LINE)
 
 
@@ -69,11 +69,11 @@ concated_sflash_image: $(if $(USE_OTA),ota_upgrade_app) pad_dct
 ifneq ($(strip $(USE_DCT)),)
 	$(QUIET)$(CAT) $(call CONV_SLASHES,$(DCT)) >> $(OUTPUT_DIR_CONVD)sflash.bin
 else
-	$(QUIET)$(PERL) -e "$(PERL_ESC_DOLLAR)x=-s'$(DCT)'; print \"\xff\" x $(PERL_ESC_DOLLAR)x;" > $(call CONV_SLASHES,./build/$(FRAPP)/blankDCT.bin)
-	$(QUIET)$(CAT) $(call CONV_SLASHES,./build/$(FRAPP)/blankDCT.bin) >> $(OUTPUT_DIR_CONVD)sflash.bin
+	$(QUIET)$(PERL) -e "$(PERL_ESC_DOLLAR)x=-s'$(DCT)'; print \"\xff\" x $(PERL_ESC_DOLLAR)x;" > $(call CONV_SLASHES,$(SOURCE_ROOT)build/$(FRAPP)/blankDCT.bin)
+	$(QUIET)$(CAT) $(call CONV_SLASHES,$(SOURCE_ROOT)build/$(FRAPP)/blankDCT.bin) >> $(OUTPUT_DIR_CONVD)sflash.bin
 endif
 ifneq ($(strip $(USE_OTA)),)
-	$(QUIET)$(CAT) $(call CONV_SLASHES,./build/$(OTA_TGT_DIR)/binary/$(OTA_TGT_DIR).stripped.elf) >> $(OUTPUT_DIR_CONVD)sflash.bin
+	$(QUIET)$(CAT) $(call CONV_SLASHES,$(SOURCE_ROOT)build/$(OTA_TGT_DIR)/binary/$(OTA_TGT_DIR).stripped.elf) >> $(OUTPUT_DIR_CONVD)sflash.bin
 endif
 	$(QUIET)$(ECHO_BLANK_LINE)
 
@@ -81,16 +81,16 @@ endif
 sflash_writer_app:
 	$(QUIET)$(ECHO) Building the Serial Flash Writer App
 	$(QUIET)$(ECHO_BLANK_LINE)
-	$(QUIET)$(MAKE) $(SILENT) -f $(SOURCE_ROOT)Makefile -s $(SFLASHWRITER_TGT) NO_BUILD_BOOTLOADER=1
+	$(QUIET)$(MAKE) $(SILENT) -f $(SOURCE_ROOT)mico-os/makefiles/Makefile -s $(SFLASHWRITER_TGT) NO_BUILD_BOOTLOADER=1
 	$(QUIET)$(ECHO) Done
 	$(QUIET)$(ECHO_BLANK_LINE)
 
-./build/$(SFLASHWRITER_TGT_DIR)/config.mk: sflash_writer_app
+$(SOURCE_ROOT)build/$(SFLASHWRITER_TGT_DIR)/config.mk: sflash_writer_app
 
 download_sflash: sflash_writer_app
 	$(QUIET)$(ECHO) Downloading Serial Flash image
 	$(QUIET)$(ECHO_BLANK_LINE)
-	$(call CONV_SLASHES,$(OPENOCD_FULL_NAME)) -f $(OPENOCD_PATH)$(JTAG).cfg -f $(OPENOCD_PATH)$(HOST_OPENOCD).cfg -f apps/waf/sflash_write/sflash_write.tcl -c "sflash_write_file $(OUTPUT_DIR)sflash.bin 0x0 $(PLATFORM)-$(BUS) 1 0" -c shutdown
+	$(call CONV_SLASHES,$(OPENOCD_FULL_NAME)) -s $(SOURCE_ROOT) -f $(OPENOCD_PATH)$(JTAG).cfg -f $(OPENOCD_PATH)$(HOST_OPENOCD).cfg -f apps/waf/sflash_write/sflash_write.tcl -c "sflash_write_file $(OUTPUT_DIR)sflash.bin 0x0 $(PLATFORM)-$(BUS) 1 0" -c shutdown
 	$(QUIET)$(ECHO_BLANK_LINE)
 
 pad_dct:

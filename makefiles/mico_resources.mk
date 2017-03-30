@@ -122,7 +122,7 @@ RESOURCE_DOWNLOADER_TARGET := $(if $(findstring sflash_write,$(APP)),,external_r
 RESOURCE_DOWNLOAD = download_all_resources
 
 download_all_resources: $(RESOURCES_DEPENDENCY) $(RESOURCE_DOWNLOADER_TARGET)
-	 $(OPENOCD_FULL_NAME) -f $(OPENOCD_PATH)$(JTAG).cfg -f $(OPENOCD_PATH)$(HOST_OPENOCD).cfg -f $($(SOURCE_ROOT)apps/waf/sflash_write/sflash_write.tcl -c "sflash_write_file $(FS_IMAGE) 0x0 $(PLATFORM)-$(BUS) 1 0" -c shutdown
+	 $(OPENOCD_FULL_NAME) -s $(SOURCE_ROOT) -f $(OPENOCD_PATH)$(JTAG).cfg -f $(OPENOCD_PATH)$(HOST_OPENOCD).cfg -f $($(SOURCE_ROOT)apps/waf/sflash_write/sflash_write.tcl -c "sflash_write_file $(FS_IMAGE) 0x0 $(PLATFORM)-$(BUS) 1 0" -c shutdown
 
 $(FS_IMAGE): $(RESOURCES_DEPENDENCY)
 	$(COMMON_TOOLS_PATH)mk_micofs32 $(FS_IMAGE) $(STAGING_DIR)
@@ -130,7 +130,7 @@ $(FS_IMAGE): $(RESOURCES_DEPENDENCY)
 
 
 SFLASH_WRITE_TARGET := waf.sflash_write-NoOS-$(PLATFORM)-$(BUS)
-SFLASH_WRITE_LOG_FILE ?= build/sflash_write.log
+SFLASH_WRITE_LOG_FILE ?= $(SOURCE_ROOT)build/sflash_write.log
 SFLASH_WRITE_OUTFILE := $(BUILD_DIR)/$(SFLASH_WRITE_TARGET)/binary/$(SFLASH_WRITE_TARGET)
 ifneq ($(VERBOSE),1)
 SFLASH_WRITE_REDIRECT	= > $(SFLASH_WRITE_LOG_FILE)
@@ -139,6 +139,6 @@ endif
 external_resource_downloader:
 	$(QUIET)$(ECHO) Building serial flash downloader
 	$(QUIET)$(ECHO_BLANK_LINE)
-	$(QUIET)$(MAKE) -r $(SILENT) -f $(SOURCE_ROOT)Makefile $(SFLASH_WRITE_TARGET) NO_BUILD_BOOTLOADER=1 -I$(OUTPUT_DIR)  SFLASH= $(SFLASH_WRITE_REDIRECT)
+	$(QUIET)$(MAKE) -r $(SILENT) -f $(SOURCE_ROOT)mico-os/makefiles/Makefile $(SFLASH_WRITE_TARGET) NO_BUILD_BOOTLOADER=1 -I$(OUTPUT_DIR)  SFLASH= $(SFLASH_WRITE_REDIRECT)
 
 endif
