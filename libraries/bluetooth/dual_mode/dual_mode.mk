@@ -5,7 +5,7 @@
 
 NAME := Lib_Bluetooth_Embedded_Dual_mode_Stack_for_$(BT_CHIP)$(BT_CHIP_REVISION)
 
-BTE_PLATFORM_DIR := ../BTE/mico_bt_platform
+BTE_PLATFORM_DIR := ../BTE_platform
 
 GLOBAL_INCLUDES += . \
                    ../include

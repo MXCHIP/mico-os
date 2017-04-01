@@ -198,14 +198,6 @@ TLS         :=$(notdir $(TLS_FULL))
 PLATFORM    :=$(notdir $(PLATFORM_FULL))
 APP         :=$(notdir $(APP_FULL))
 
-# APP is under SOURCE_ROOT, use SOURCE_ROOT as APP component
-ifeq ($(APP_FULL),)
-APP_FULL    := $(notdir $(abspath $(SOURCE_ROOT)))
-APP         :=$(notdir $(APP_FULL))
-COMPONENTS  += $(APP)
-COMPONENT_DIRECTORIES += ..
-endif
-
 PLATFORM_DIRECTORY := $(PLATFORM_FULL)
 
 # Define default RTOS and TCPIP stack
