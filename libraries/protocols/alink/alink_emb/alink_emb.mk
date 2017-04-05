@@ -11,7 +11,7 @@ NAME := Lib_Alink_emb
 
 GLOBAL_INCLUDES := .
 
-$(NAME)_SOURCES := alink_aws.c
+$(NAME)_SOURCES := alink_aws.c alink_aws_easylink.c
 
 ifeq ($(HOST_ARCH),Cortex-M4F)
 $(NAME)_PREBUILT_LIBRARY := lib_alink_emb_fpu.a

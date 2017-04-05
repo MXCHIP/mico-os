@@ -7,9 +7,9 @@
 #include "mico_app_define.h"
 
 #define alink_platform_log(M, ...) custom_log("", M, ##__VA_ARGS__)
-// #define alink_platform_log(M, ...)
+//#define alink_platform_log(M, ...)
 
-#define UART_LOG_FAST
+//#define UART_LOG_FAST
 
 #ifdef UART_LOG_FAST
 #define UART_BUFFER_LENGTH 100
@@ -1392,6 +1392,42 @@ int platform_wifi_get_rssi_dbm( void )
     LinkStatusTypeDef ap_state;
     micoWlanGetLinkStatus( &ap_state );
     return ap_state.wifi_strength;
+}
+
+/**
+ * @brief launch a wifi scan operation
+ *
+ * @param[in] cb @n pass ssid info(scan result) to this callback one by one
+ * @return 0 for wifi scan is done, otherwise return -1
+ * @see None.
+ * @note None.
+ */
+int platform_wifi_scan( platform_wifi_scan_result_cb_t cb )
+{
+    return 0;
+}
+
+/**
+ * @brief wifi module enter power saving mode for a period
+ *
+ * @param[in] timeout_ms @n during this period, wifi module enter power saving
+ *          mode
+ * @return 0 for success, -1 otherwise
+ * @see None.
+ * @note sample code
+ * int platform_wifi_low_power(int timeout_ms)
+ * {
+ *      wifi_enter_power_saving_mode();
+ *      msleep(timeout_ms);
+ *      wifi_exit_power_saving_mode();
+ *
+ *      return 0;
+ * }
+ */
+int platform_wifi_low_power( int timeout_ms )
+{
+    mico_rtos_thread_msleep(timeout_ms);
+    return 0;
 }
 
 /**

@@ -477,6 +477,7 @@ typedef struct user_api_struct
     void (*join_fail)( OSStatus err );
     void (*wifi_reboot_event)( void );
     void (*mico_rtos_stack_overflow)( char *taskname );
+    const platform_peripherals_pinmap_t *pinmaps;
 } user_api_t;
 
 #endif

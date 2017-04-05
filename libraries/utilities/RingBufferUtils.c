@@ -90,6 +90,9 @@ uint32_t ring_buffer_write( ring_buffer_t* ring_buffer, const uint8_t* data, uin
   
   /* Calculate the maximum amount we can copy */
   uint32_t amount_to_copy = MIN(data_length, (tail_to_end + ring_buffer->head) % ring_buffer->size);
+
+  /* Fix the bug when tail is at the end of buffer */
+  tail_to_end++;
   
   /* Copy as much as we can until we fall off the end of the buffer */
   memcpy(&ring_buffer->buffer[ring_buffer->tail], data, MIN(amount_to_copy, tail_to_end));

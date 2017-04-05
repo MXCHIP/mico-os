@@ -70,7 +70,58 @@ extern WEAK void PlatformEasyLinkButtonLongPressedCallback(void);
 /******************************************************
 *               Variables Definitions
 ******************************************************/
+const mico_pwm_pinmap_t pwm_pinmap[] = 
+{
+  [MICO_PWM_3] = {.pin = MICO_GPIO_12,},
+  [MICO_PWM_4] = {.pin = MICO_GPIO_13,},
+  [MICO_PWM_5] = {.pin = MICO_GPIO_14,},
+};
 
+const mico_spi_pinmap_t spi_pinmap[] =
+{ 
+  [MICO_SPI_1]  =
+  {
+    .mosi = MICO_GPIO_9,
+    .miso = MICO_GPIO_7,
+    .sclk = MICO_GPIO_10,
+    .ssel = MICO_GPIO_8,
+  },  
+};
+
+const mico_uart_pinmap_t uart_pinmap[] =
+{
+  [MICO_UART_1] =
+  {
+    .tx   = MICO_GPIO_9,
+    .rx   = MICO_GPIO_10,
+    .rts  = MICO_GPIO_7,
+    .cts  = MICO_GPIO_8, 
+  },
+  [MICO_UART_2] =
+  {
+    .tx   = MICO_GPIO_21,
+    .rx   = MICO_GPIO_22,
+    .rts  = MICO_GPIO_NONE,
+    .cts  = MICO_GPIO_NONE, 
+  },
+};
+
+const mico_i2c_pinmap_t i2c_pinmap[] =
+{
+  [MICO_I2C_1] =
+  {
+    .sda = MICO_GPIO_8,
+    .scl = MICO_GPIO_7,
+  }, 
+};
+
+const platform_peripherals_pinmap_t peripherals_pinmap = 
+{
+  .pwm_pinmap   = pwm_pinmap,
+  .spi_pinmap   = spi_pinmap,
+  .uart_pinmap  = uart_pinmap,
+  .i2c_pinmap   = i2c_pinmap, 
+};
 /******************************************************
 *               Function Definitions
 ******************************************************/

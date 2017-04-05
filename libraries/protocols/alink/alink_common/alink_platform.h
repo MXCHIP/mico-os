@@ -83,7 +83,14 @@ extern "C"
 #define STR_SHORT_LEN                   (32)
 #define STR_LONG_LEN                    (128)
 
+#ifndef ETH_ALEN
+#define ETH_ALEN                        (6)
+#endif
 
+/* ssid: 32 octets at most, include the NULL-terminated */
+#define PLATFORM_MAX_SSID_LEN           (32 + 1)
+/* password: 8-63 ascii */
+#define PLATFORM_MAX_PASSWD_LEN         (64 + 1)
 
 /** @} */ //end of platform_macro
 
@@ -857,6 +864,51 @@ char *platform_get_module_name(_OUT_ char name_str[PLATFORM_MODULE_NAME_LEN]);
  */
 int platform_wifi_get_rssi_dbm(void);
 
+/**
+ * @brief save wifi scan result
+ *
+ * @param[in] ssid @n name of AP
+ * @param[in] bssid @n mac address of AP
+ * @param[in] channel @n AP channel
+ * @param[in] rssi @n rssi range[-100, 0].
+ *          the higher the RSSI number, the stronger the signal.
+ * @return 0 for wifi scan is done, otherwise return -1
+ * @see None.
+ * @note None.
+ */
+typedef int platform_wifi_scan_result_cb_t(
+        const char ssid[PLATFORM_MAX_SSID_LEN],
+        const uint8_t bssid[ETH_ALEN],
+        uint8_t channel, char rssi);
+
+/**
+ * @brief launch a wifi scan operation
+ *
+ * @param[in] cb @n pass ssid info(scan result) to this callback one by one
+ * @return 0 for wifi scan is done, otherwise return -1
+ * @see None.
+ * @note None.
+ */
+int platform_wifi_scan(platform_wifi_scan_result_cb_t cb);
+
+/**
+ * @brief wifi module enter power saving mode for a period
+ *
+ * @param[in] timeout_ms @n during this period, wifi module enter power saving
+ *          mode
+ * @return 0 for success, -1 otherwise
+ * @see None.
+ * @note sample code
+ * int platform_wifi_low_power(int timeout_ms)
+ * {
+ *      wifi_enter_power_saving_mode();
+ *      msleep(timeout_ms);
+ *      wifi_exit_power_saving_mode();
+ *
+ *      return 0;
+ * }
+ */
+int platform_wifi_low_power(int timeout_ms);
 
 #define PLATFORM_MAC_LEN	(17 + 1)
 /**
@@ -885,7 +937,6 @@ char *platform_wifi_get_mac(_OUT_ char mac_str[PLATFORM_MAC_LEN]);
  * @note None.
  */
 uint32_t platform_wifi_get_ip(_OUT_ char ip_str[PLATFORM_IP_LEN]);
-
 
 #define PLATFORM_CID_LEN (64 + 1)
 /**

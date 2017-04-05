@@ -121,6 +121,40 @@ typedef enum
     MICO_PARTITION_SDS,
 } mico_user_partition_t;
 
+typedef struct
+{
+  mico_gpio_t pin;
+} mico_pwm_pinmap_t;
+
+typedef struct
+{
+  mico_gpio_t mosi; 
+  mico_gpio_t miso; 
+  mico_gpio_t sclk; 
+  mico_gpio_t ssel; 
+} mico_spi_pinmap_t;
+
+typedef struct
+{
+  mico_gpio_t tx;
+  mico_gpio_t rx;
+  mico_gpio_t rts;
+  mico_gpio_t cts;
+} mico_uart_pinmap_t;
+
+typedef struct
+{
+  mico_gpio_t sda;  
+  mico_gpio_t scl;
+} mico_i2c_pinmap_t;
+    
+typedef struct
+{
+  const mico_pwm_pinmap_t *pwm_pinmap;
+  const mico_spi_pinmap_t *spi_pinmap;
+  const mico_uart_pinmap_t *uart_pinmap;
+  const mico_i2c_pinmap_t *i2c_pinmap;
+} platform_peripherals_pinmap_t;
 
 #define STDIO_UART      MICO_UART_2
 #define STDIO_UART_BAUDRATE (115200) 

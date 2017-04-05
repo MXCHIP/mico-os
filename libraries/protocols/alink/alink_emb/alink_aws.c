@@ -5,8 +5,6 @@
 
 #define aws_log(format, ...)  custom_log("aws", format, ##__VA_ARGS__)
 
-static mico_Context_t *mico_context;
-
 static void aws_config_thread( uint32_t arg )
 {
     OSStatus err = kNoErr;
@@ -14,12 +12,16 @@ static void aws_config_thread( uint32_t arg )
     mico_system_delegate_config_will_start();
     aws_log("start alink_emb aws mode");
 
+    awss_easylink_start( );
     err = awss_start();
 
     if( err != kNoErr ){
         mico_system_delegate_config_will_stop();
         MicoSysLed(false);
         aws_log("aws timeout err %d", err);
+    }else{
+        aws_log("aws success");
+        awss_easylink_stop();
     }
 
     mico_rtos_delete_thread( NULL );
@@ -27,11 +29,8 @@ static void aws_config_thread( uint32_t arg )
 
 OSStatus start_aws_config_mode( void )
 {
-    mico_context = mico_system_context_get( );
-
-
     return mico_rtos_create_thread( NULL, MICO_APPLICATION_PRIORITY, "aws", aws_config_thread,
-                                    0x1000, 0 );
+                                    0x800, 0 );
 }
 
 
