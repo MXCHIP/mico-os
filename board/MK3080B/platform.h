@@ -173,8 +173,8 @@ typedef struct
 /* I/O connection <-> Peripheral Connections */
 #define BOOT_SEL        MICO_GPIO_19
 #define MFG_SEL         MICO_GPIO_NONE
-#define MICO_RF_LED     MICO_GPIO_NONE
-#define MICO_SYS_LED    MICO_GPIO_19
+#define MICO_RF_LED     MICO_GPIO_19
+#define MICO_SYS_LED    MICO_GPIO_NONE
 #define EasyLink_BUTTON MICO_GPIO_23
 
 typedef struct {

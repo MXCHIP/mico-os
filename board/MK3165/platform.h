@@ -292,7 +292,7 @@ typedef enum
 } mico_user_partition_t;
 
 #ifdef BOOTLOADER
-#define STDIO_UART       (MICO_UART_1)
+#define STDIO_UART       (MICO_UART_2)
 #define STDIO_UART_BAUDRATE (921600) 
 #else
 #define STDIO_UART       (MICO_UART_1)
