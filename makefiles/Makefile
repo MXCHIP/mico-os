@@ -13,7 +13,7 @@ export MiCO_SDK_VERSION_MAJOR    :=  3
 export MiCO_SDK_VERSION_MINOR    :=  2
 export MiCO_SDK_VERSION_REVISION :=  2
 
-export SOURCE_ROOT:=../../
+export SOURCE_ROOT ?= ./
 
 export MICO_OS_PATH := $(SOURCE_ROOT)mico-os
 export MAKEFILES_PATH := $(SOURCE_ROOT)mico-os/makefiles
