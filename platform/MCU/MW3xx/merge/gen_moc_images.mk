@@ -25,7 +25,7 @@ EXTRA_POST_BUILD_TARGETS += gen_moc_images
 
 #############################Generate MOC_KERNEL_APP_BIN_OUTPUT_FILE ################
 #moc kernel
-MOC_KERNEL_BIN_FILE := $(MICO_OS_PATH)/board/$(PLATFORM)/kernel.bin
+MOC_KERNEL_BIN_FILE := $(MICO_OS_PATH)/resources/moc_kernel/$(MODULE)/kernel.bin
 #MOC_KERNEL_BIN_FILE := ../../MiCO_nw310/wmsdk_bundle-3.3.33/bin/mw310_mxchip_defconfig/EMW3031/kernel.bin
 
 #moc user application

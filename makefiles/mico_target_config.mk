@@ -191,7 +191,7 @@ NET_FULL	    ?=$(strip $(foreach comp,$(subst .,/,$(COMPONENTS)),$(if $(wildcard
 RTOS_FULL       ?=$(strip $(foreach comp,$(subst .,/,$(COMPONENTS)),$(if $(wildcard $(MICO_OS_PATH)/MiCO/RTOS/$(comp)),$(comp),)))
 TLS_FULL        ?=$(strip $(foreach comp,$(subst .,/,$(COMPONENTS)),$(if $(wildcard $(MICO_OS_PATH)/MiCO/Security/TLS/$(comp)),$(comp),)))
 PLATFORM_FULL   :=$(strip $(foreach comp,$(subst .,/,$(COMPONENTS)),$(if $(wildcard $(MICO_OS_PATH)/board/$(comp)),$(MICO_OS_PATH)/board/$(comp),$(if $(wildcard $(SOURCE_ROOT)/board/$(comp)),$(SOURCE_ROOT)/board/$(comp),))))
-APP_FULL        :=$(strip $(foreach comp,$(subst .,/,$(COMPONENTS)),$(if $(wildcard $(SOURCE_ROOT)$(comp) $(MICO_OS_PATH)/sub_build/$(comp)),$(comp),)))
+APP_FULL        :=$(strip $(foreach comp,$(subst .,/,$(COMPONENTS)),$(if $(wildcard $(SOURCE_ROOT)$(comp)),$(SOURCE_ROOT)$(comp),$(if $(wildcard $(MICO_OS_PATH)/$(comp)),$(MICO_OS_PATH)/$(comp),))))
 
 NET			:=$(notdir $(NET_FULL))
 RTOS        :=$(notdir $(RTOS_FULL))
@@ -257,7 +257,7 @@ CURDIR :=
 $(eval $(call PROCESS_COMPONENT, $(COMPONENTS)))
 
 # Add some default values
-MiCO_SDK_INCLUDES += -I$(MICO_OS_PATH)/include -I$(SOURCE_ROOT)$(APP_FULL) -I.
+MiCO_SDK_INCLUDES += -I$(MICO_OS_PATH)/include -I$(APP_FULL) -I.
 MiCO_SDK_DEFINES += $(EXTERNAL_MiCO_GLOBAL_DEFINES)
 
 ALL_RESOURCES := $(sort $(foreach comp,$(PROCESSED_COMPONENTS),$($(comp)_RESOURCES_EXPANDED)))
@@ -336,6 +336,7 @@ $(CONFIG_FILE): $(MiCO_SDK_MAKEFILES) | $(CONFIG_FILE_DIR)
 	$(QUIET)$(call WRITE_FILE_APPEND, $(CONFIG_FILE) ,APP_FULL                  		:= $(APP_FULL))
 	$(QUIET)$(call WRITE_FILE_APPEND, $(CONFIG_FILE) ,NETWORK                   		:= $(NETWORK))
 	$(QUIET)$(call WRITE_FILE_APPEND, $(CONFIG_FILE) ,RTOS                      		:= $(RTOS))
+	$(QUIET)$(call WRITE_FILE_APPEND, $(CONFIG_FILE) ,MODULE                  			:= $(MODULE))
 	$(QUIET)$(call WRITE_FILE_APPEND, $(CONFIG_FILE) ,PLATFORM                  		:= $(PLATFORM))
 	$(QUIET)$(call WRITE_FILE_APPEND, $(CONFIG_FILE) ,HOST_MCU_FAMILY                  	:= $(HOST_MCU_FAMILY))
 	$(QUIET)$(call WRITE_FILE_APPEND, $(CONFIG_FILE) ,USB                       		:= $(USB))
