@@ -21,7 +21,8 @@ COMPONENT_DIRECTORIES := $(MICO_OS_PATH) \
                          $(MICO_OS_PATH)/MiCO/RTOS \
                          $(MICO_OS_PATH)/MiCO/Security/TLS \
                          $(MICO_OS_PATH)/libraries \
-                         $(SOURCE_ROOT)
+                         $(SOURCE_ROOT) \
+                         $(SOURCE_ROOT)/board
 
 MiCO_SDK_VERSION ?= $(MiCO_SDK_VERSION_MAJOR).$(MiCO_SDK_VERSION_MINOR).$(MiCO_SDK_VERSION_REVISION)
 
@@ -189,7 +190,7 @@ $(foreach comp, $(COMPONENTS), $(if $(wildcard $(foreach dir, $(COMPONENT_DIRECT
 NET_FULL	    ?=$(strip $(foreach comp,$(subst .,/,$(COMPONENTS)),$(if $(wildcard $(MICO_OS_PATH)/MiCO/net/$(comp)),$(comp),)))
 RTOS_FULL       ?=$(strip $(foreach comp,$(subst .,/,$(COMPONENTS)),$(if $(wildcard $(MICO_OS_PATH)/MiCO/RTOS/$(comp)),$(comp),)))
 TLS_FULL        ?=$(strip $(foreach comp,$(subst .,/,$(COMPONENTS)),$(if $(wildcard $(MICO_OS_PATH)/MiCO/Security/TLS/$(comp)),$(comp),)))
-PLATFORM_FULL   :=$(strip $(foreach comp,$(subst .,/,$(COMPONENTS)),$(if $(wildcard $(MICO_OS_PATH)/board/$(comp)),$(comp),)))
+PLATFORM_FULL   :=$(strip $(foreach comp,$(subst .,/,$(COMPONENTS)),$(if $(wildcard $(MICO_OS_PATH)/board/$(comp)),$(MICO_OS_PATH)/board/$(comp),$(if $(wildcard $(SOURCE_ROOT)/board/$(comp)),$(SOURCE_ROOT)/board/$(comp),))))
 APP_FULL        :=$(strip $(foreach comp,$(subst .,/,$(COMPONENTS)),$(if $(wildcard $(SOURCE_ROOT)$(comp) $(MICO_OS_PATH)/sub_build/$(comp)),$(comp),)))
 
 NET			:=$(notdir $(NET_FULL))
@@ -224,8 +225,8 @@ EXTRA_CFLAGS :=    -DMiCO_SDK_VERSION_MAJOR=$(MiCO_SDK_VERSION_MAJOR) \
                    -DPLATFORM=$(SLASH_QUOTE_START)$$(PLATFORM)$(SLASH_QUOTE_END)
 
 # Load platform makefile to make variables like WLAN_CHIP, HOST_OPENOCD & HOST_ARCH available to all makefiles
-$(eval CURDIR := $(MICO_OS_PATH)/board/$(PLATFORM_DIRECTORY)/)
-include $(MICO_OS_PATH)/board/$(PLATFORM_DIRECTORY)/$(notdir $(PLATFORM_DIRECTORY)).mk
+$(eval CURDIR := $(PLATFORM_DIRECTORY)/)
+include $(PLATFORM_DIRECTORY)/$(notdir $(PLATFORM_DIRECTORY)).mk
 $(eval CURDIR := $(MICO_OS_PATH)/platform/MCU/$(HOST_MCU_FAMILY)/)
 include $(MICO_OS_PATH)/platform/MCU/$(HOST_MCU_FAMILY)/$(HOST_MCU_FAMILY).mk
 MAIN_COMPONENT_PROCESSING :=1
