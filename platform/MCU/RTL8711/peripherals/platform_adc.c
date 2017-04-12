@@ -143,7 +143,7 @@ OSStatus platform_adc_init( const platform_adc_t* adc, uint32_t sample_cycle )
 
     require_action_quiet( adc != NULL, exit, err = kParamErr);
 
-    rtk_adc_init(&adc->obj);
+    analogin_init( &adc->obj, adc->pin );
 
 
 exit:
