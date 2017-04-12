@@ -52,7 +52,7 @@ int putchar(int ch)
   return ch;
 }
 #else
-#ifndef CONFIG_PLATFORM_8195A
+#if (!defined CONFIG_PLATFORM_8195A) || (defined MOC100) 
 size_t __write( int handle, const unsigned char * buffer, size_t size )
 {
   UNUSED_PARAMETER(handle);

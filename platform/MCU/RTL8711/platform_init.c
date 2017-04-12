@@ -75,7 +75,7 @@ extern platform_uart_driver_t platform_uart_drivers[];
 #ifndef MICO_DISABLE_STDIO
 static const mico_uart_config_t stdio_uart_config =
 {
-  .baud_rate    = 921600,
+  .baud_rate    = STDIO_UART_BAUDRATE,
   .data_width   = DATA_WIDTH_8BIT,
   .parity       = NO_PARITY,
   .stop_bits    = STOP_BITS_1,
@@ -293,31 +293,6 @@ WEAK void init_memory( void )
 
 void init_architecture( void )
 {
-#if 0
-  uint8_t i;
-  
-  RCC_APB1PeriphClockCmd(RCC_APB1Periph_PWR, ENABLE);
-  
-  /*STM32 wakeup by watchdog in standby mode, re-enter standby mode in this situation*/
-  if ( (PWR_GetFlagStatus(PWR_FLAG_SB) != RESET) && RCC_GetFlagStatus(RCC_FLAG_IWDGRST) != RESET){
-    RCC_ClearFlag();
-    PWR_EnterSTANDBYMode();
-  }
-  PWR_ClearFlag(PWR_FLAG_SB);
-  
-  /* Initialise the interrupt priorities to a priority lower than 0 so that the BASEPRI register can mask them */
-  for ( i = 0; i < 81; i++ )
-  {
-    NVIC ->IP[i] = 0xff;
-  }
-  
-  NVIC_PriorityGroupConfig( NVIC_PriorityGroup_4 );
-  
-  platform_init_peripheral_irq_priorities();
-  
-  /* Initialise GPIO IRQ manager */
-  platform_gpio_irq_manager_init();
-  
 #ifndef MICO_DISABLE_STDIO
 #ifndef NO_MICO_RTOS
   mico_rtos_init_mutex( &stdio_tx_mutex );
@@ -325,28 +300,15 @@ void init_architecture( void )
   mico_rtos_init_mutex( &stdio_rx_mutex );
   mico_rtos_unlock_mutex ( &stdio_rx_mutex );
 #endif
-  
+#if ( defined MOC100 )  
   ring_buffer_init  ( (ring_buffer_t*)&stdio_rx_buffer, (uint8_t*)stdio_rx_data, STDIO_BUFFER_SIZE );
   platform_uart_init( &platform_uart_drivers[STDIO_UART], &platform_uart_peripherals[STDIO_UART], &stdio_uart_config, (ring_buffer_t*)&stdio_rx_buffer );
 #endif
-  
-  /* Ensure 802.11 device is in reset. */
-  host_platform_init( );
+#endif
   
 #ifdef BOOTLOADER
   return;
 #endif
-#endif  
-#ifndef MICO_DISABLE_STDIO
-#ifndef NO_MICO_RTOS
-  mico_rtos_init_mutex( &stdio_tx_mutex );
-  mico_rtos_unlock_mutex ( &stdio_tx_mutex );
-  mico_rtos_init_mutex( &stdio_rx_mutex );
-  mico_rtos_unlock_mutex ( &stdio_rx_mutex );
-#endif
-  
-#endif
-  
   
 #ifndef MICO_DISABLE_MCU_POWERSAVE
   /* Initialise MCU powersave */
