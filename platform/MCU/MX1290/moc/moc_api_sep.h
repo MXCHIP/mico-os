@@ -188,6 +188,7 @@ typedef struct {
 	int (*mico_wlan_monitor_no_easylink)(void);
 	int (*wifi_set_country)(int country_code);
 	int (*wlan_rx_mgnt_set)(int enable, mgnt_handler_t cb);
+	void (*autoconfig_start)(int seconds, int mode);
 } wifi_api_v1_t;
 
 typedef struct {
