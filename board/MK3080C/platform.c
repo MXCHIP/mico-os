@@ -72,6 +72,7 @@ extern WEAK void PlatformEasyLinkButtonLongPressedCallback(void);
 ******************************************************/
 const mico_pwm_pinmap_t pwm_pinmap[] = 
 {
+
   [MICO_PWM_3] = {.pin = MICO_GPIO_12,},
   [MICO_PWM_4] = {.pin = MICO_GPIO_13,},
   [MICO_PWM_5] = {.pin = MICO_GPIO_14,},

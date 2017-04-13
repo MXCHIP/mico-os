@@ -285,3 +285,8 @@ int wlan_rx_mgnt_set(int enable, mgnt_handler_t cb)
 	return _kernel_api.wifi_apis->wlan_rx_mgnt_set(enable, cb);
 }
 
+void autoconfig_start(int seconds, int mode)
+{
+	_kernel_api.wifi_apis->autoconfig_start(seconds, mode);
+}
+
