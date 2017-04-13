@@ -12,7 +12,7 @@ SFLASH_REDIRECT	= > $(SFLASH_LOG_FILE)
 
 SFLASH_APP_TARGET := sub_build.spi_flash_write@NoRTOS@$(PLATFORM)
 SFLASH_APP_PLATFROM_BUS := $(PLATFORM)
-SFLASH_PREBUILD_APP := $(MICO_OS_PATH)/board/$(PLATFORM)/flash_prog.elf
+SFLASH_PREBUILD_APP := $(if $(wildcard $(MICO_OS_PATH)/board/$(PLATFORM)),$(MICO_OS_PATH)/board/$(PLATFORM),$(if $(wildcard $(SOURCE_ROOT)/board/$(PLATFORM)),$(SOURCE_ROOT)/board/$(PLATFORM),))/flash_prog.elf
 
 clean:
 	$(QUIET)$(RM) -rf $(SFLASH_PREBUILD_APP)
