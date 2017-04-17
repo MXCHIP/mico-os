@@ -18,7 +18,7 @@ else
 # Build from source
 Lib_HomeKit_Server_DIR := Lib_HomeKit_Server
 
-include $(CURDIR)Lib_HomeKit_Server/HomeKitServer_src.mk
+include $(CURDIR)Lib_HomeKit_Server/Lib_HomeKit_Server_src.mk
 endif
 
 

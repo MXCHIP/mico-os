@@ -67,20 +67,20 @@ MAKEFILES_DIR := $(TOOLS_ROOT)$(SOURCE_ROOT)/tools/makefiles
 # NOTE: The system builds each object twice - once with built-in functions disabled and bad functions poisoned to catch uses of these functions,
 #       Then again with built-in functions re-enabled to allow optimisations
 
-$(SOURCE_ROOT)build/$(NAME)/%.o: %.c Makefile
+$(SOURCE_ROOT)build/$(NAME)/%.o: %.c $(MAKEFILES_PATH)/mico_library_makefile.mk
 	$(QUIET)$(call MKDIR, $(dir $@))
 	$(QUIET)$(ECHO) Compiling $<
 	$(QUIET)$(CC) -I $(SOURCE_ROOT)/tools/makefiles -fno-builtin $(LIBRARY_POISON_H_INCLUSION) $(CFLAGS) -o $@ $<
 	$(QUIET)$(CC) $(CFLAGS) -o $@ $<
 
-$(SOURCE_ROOT)build/$(NAME)/%.o: %.cpp Makefile
+$(SOURCE_ROOT)build/$(NAME)/%.o: %.cpp $(MAKEFILES_PATH)/mico_library_makefile.mk
 	$(QUIET)$(call MKDIR, $(dir $@))
 	$(QUIET)$(ECHO) Compiling $<
 	$(QUIET)$(CC) $(CFLAGS) -o $@ $<
 	$(QUIET)$(CXX) -I $(SOURCE_ROOT)/tools/makefiles $(LIBRARY_POISON_H_INCLUSION) -fno-builtin $(CFLAGS) -o $@ $<
 	$(QUIET)$(CXX) $(CFLAGS) -o $@ $<
 
-$(SOURCE_ROOT)build/$(NAME)/%.o: %.S Makefile
+$(SOURCE_ROOT)build/$(NAME)/%.o: %.S $(MAKEFILES_PATH)/mico_library_makefile.mk
 	$(QUIET)$(call MKDIR, $(dir $@))
 	$(QUIET)$(ECHO) Assembling $<
 	$(QUIET)$(AS) $(ASMFLAGS) -o $@ $<
@@ -118,7 +118,6 @@ OBJS := $(addprefix $(SOURCE_ROOT)build/$(NAME)/,$(filter %.o,$(SOURCES:.cpp=.o)
 
 $(SOURCE_ROOT)build/$(NAME)/$(LIBRARY_NAME).a: $(OBJS)
 	$(QUIET)$(RM) $@
-	$(QUIET)$(ECHO) Making Library
 	$(if $(wordlist 1,50,     $(OBJS)),$(QUIET)$(AR) -rcs $@ $(wordlist 1,50,     $(OBJS)))
 	$(if $(wordlist 51,100,   $(OBJS)),$(QUIET)$(AR) -rcs $@ $(wordlist 51,100,   $(OBJS)))
 	$(if $(wordlist 101,150,  $(OBJS)),$(QUIET)$(AR) -rcs $@ $(wordlist 101,150,  $(OBJS)))
@@ -137,14 +136,14 @@ $(SOURCE_ROOT)build/$(NAME)/$(LIBRARY_NAME).a: $(OBJS)
 	$(if $(wordlist 751,1000, $(OBJS)),$(QUIET)$(AR) -rcs $@ $(wordlist 751,1000, $(OBJS)))
 
 
-stripped_lib: $(SOURCE_ROOT)build/$(NAME)/$(LIBRARY_NAME).a Makefile
+stripped_lib: $(SOURCE_ROOT)build/$(NAME)/$(LIBRARY_NAME).a $(MAKEFILES_PATH)/mico_library_makefile.mk
 ifdef NO_STRIP_LIBS
 	$(QUIET)$(CP) $(SOURCE_ROOT)/build/$(NAME)/$(LIBRARY_NAME).a $(LIBRARY_OUTPUT_DIR)/$(LIBRARY_NAME).a
 else
 	$(QUIET)$(STRIP) -g -o $(LIBRARY_OUTPUT_DIR)/$(LIBRARY_NAME).a $(SOURCE_ROOT)/build/$(NAME)/$(LIBRARY_NAME).a
 endif
 	$(QUIET)$(RM) -rf $(SOURCE_ROOT)/build/$(NAME)
-	$(QUIET)$(ECHO) ALL DONE
+	$(QUIET)$(ECHO) Make $(LIBRARY_NAME).a DONE
 
 clean:
 	$(QUIET)$(RM) -rf $(LIBRARY_OUTPUT_DIR)/$(NAME)*.a
