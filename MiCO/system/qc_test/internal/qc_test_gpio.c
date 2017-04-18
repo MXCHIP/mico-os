@@ -25,7 +25,7 @@
 *               Variables Definitions
 ******************************************************/
 
-extern const qc_test_gpio_pair_t *qc_test_gpio_pairs;
+extern const qc_test_gpio_pair_t qc_test_gpio_pairs[];
 extern const int qc_test_gpio_pairs_num;
 
 static int gpio_result = 0;
