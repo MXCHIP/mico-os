@@ -672,6 +672,12 @@ int wlan_inject_frame(const uint8_t *buff, size_t len)
 	return lib_api_p->wlan_inject_frame(buff, len);
 }
 
+OSStatus mico_wlan_send_mgnt(uint8_t *buffer, uint32_t length)
+{
+	// I don't know the return value;
+	lib_api_p->wlan_inject_frame(buffer, length);
+	return kNoErr;
+}
 
 void MicoMcuPowerSaveConfig(int enable)
 {
@@ -744,7 +750,8 @@ int send_easylink_minus(uint32_t ip, char *ssid, char *key)
 	return lib_api_p->send_easylink_minus(ip, ssid, key);
 }
 
-int mico_wlan_get_channel(void)
+OSStatus mico_wlan_get_channel( uint8_t *channel )
 {
-  return lib_api_p->mico_wlan_get_channel();
+  *channel = lib_api_p->mico_wlan_get_channel();
+  return kNoErr;
 }
