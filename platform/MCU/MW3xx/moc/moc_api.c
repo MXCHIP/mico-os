@@ -687,6 +687,12 @@ int wlan_inject_frame(const uint8_t *buff, size_t len)
 	return lib_api_p->wlan_inject_frame(buff, len);
 }
 
+OSStatus mico_wlan_send_mgnt(uint8_t *buffer, uint32_t length)
+{
+	// I don't know the return value;
+	lib_api_p->wlan_inject_frame(buffer, length);
+	return kNoErr;
+}
 
 void MicoMcuPowerSaveConfig(int enable)
 {

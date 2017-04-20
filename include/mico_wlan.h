@@ -609,12 +609,23 @@ int mico_wlan_stop_monitor(void);
  *  @detail This function change the monitor channel (from 1~13).
  *       it can change the channel dynamically, don't need restart monitor mode.
  */
-int mico_wlan_set_channel(int channel);
+OSStatus mico_wlan_set_channel( uint8_t channel );
+
+/** @brief  Get the monitor channel
+ * 
+ *  @detail This function get the monitor channel (from 1~13).
+ *       it can change the channel dynamically, don't need restart monitor mode.
+ */
+OSStatus mico_wlan_get_channel( uint8_t *channel );
 
 /** @brief  Register the monitor callback function
  *        Once received a 802.11 packet call the registered function to return the packet.
  */
 void mico_wlan_register_monitor_cb(monitor_cb_t fn);
+
+/** @brief  Send management frame
+ */
+OSStatus mico_wlan_send_mgnt(uint8_t *buffer, uint32_t length);
 
 /**@brief Add a custom IE to a WLAN interface
  *
