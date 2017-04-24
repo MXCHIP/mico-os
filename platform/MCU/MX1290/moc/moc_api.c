@@ -104,9 +104,9 @@ int mico_wlan_stop_monitor(void)
 {
 	return lib_api_p->mico_wlan_stop_monitor();
 }
-int mico_wlan_set_channel(int channel)
+int mico_wlan_set_channel(uint8_t channel)
 {
-	return lib_api_p->mico_wlan_set_channel(channel);
+	return lib_api_p->mico_wlan_set_channel((int)channel);
 }
 void mico_wlan_register_monitor_cb(monitor_cb_t fn)
 {
