@@ -276,6 +276,35 @@ typedef struct {
     int  user_data_len;
     char user_data[65];
 } easylink_result_t;
+    
+#pragma pack(1)
+typedef struct _wifi_mgmt_frame_tx
+{
+#ifdef MW310
+        /** Packet Length */
+        uint16_t frm_len;
+#endif
+        /** Frame Control */
+        uint16_t frm_ctl;
+        /** Duration ID */
+        uint16_t duration_id;
+        /** Address1 */
+        uint8_t addr1[6];
+        /** Address2 */
+        uint8_t addr2[6];
+        /** Address3 */
+        uint8_t addr3[6];
+#ifdef MW310
+        /** Address4 */
+        uint8_t addr4[6];
+#endif
+        /** Sequence Control */
+        uint16_t seq_ctl;
+        
+        /** Frame payload */
+        uint8_t payload[2];
+} wifi_mgmt_frame_tx;
+#pragma pack()
 
 /** @defgroup MICO_WLAN_GROUP_1 MiCO Basic Wlan Functions
   * @brief Provide Basic APIs for MiCO wlan functions
