@@ -30,6 +30,10 @@ static char *strndup(const char *str, int n)
    dst[n] = 0;
    return dst;
 }
+#else 
+  extern char* strndup(const char* str, size_t n);
+
+
 #endif
 
 static int host_is_ipv4(char *str)
