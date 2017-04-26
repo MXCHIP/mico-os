@@ -25,7 +25,7 @@
 *               Variables Definitions
 ******************************************************/
 
-extern const qc_test_gpio_pair_t *qc_test_gpio_pairs;
+extern const qc_test_gpio_pair_t qc_test_gpio_pairs[];
 extern const int qc_test_gpio_pairs_num;
 
 static int gpio_result = 0;
@@ -68,8 +68,19 @@ static OSStatus _gpio_test( const qc_test_gpio_pair_t* gpio_test_pair, int num )
 {
     int i;
     OSStatus err = kNoErr;
-
+    mico_gpio_t in, out;
+    qc_test_gpio_pair_t * gpio_test = gpio_test_pair;
+    
     gpio_result = 0;
+    for ( i = 0; i < num; i++ )
+    {
+        in  = gpio_test->input_pin;
+        out = gpio_test->output_pin;
+        MicoGpioInitialize(in,OUTPUT_OPEN_DRAIN_NO_PULL);
+        MicoGpioInitialize(out,OUTPUT_OPEN_DRAIN_NO_PULL);
+        gpio_test++;
+    }
+    
     for ( i = 0; i < num; i++ )
     {
         if ( kNoErr == _gpio_test_one( &gpio_test_pair[i] ) )
@@ -81,7 +92,7 @@ static OSStatus _gpio_test( const qc_test_gpio_pair_t* gpio_test_pair, int num )
             err = kGeneralErr;
         }
     }
-
+    
     return err;
 }
 

@@ -237,3 +237,8 @@ int ioctl(int s, long cmd, void *argp)
 	return lib_api_p->lwip_apis->lwip_ioctl(s, cmd, argp);
 }
 
+int fcntl(int s, long cmd, int argp)
+{
+    return lib_api_p->lwip_apis->lwip_fcntl(s, cmd, argp);
+}
+

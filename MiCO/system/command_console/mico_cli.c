@@ -41,7 +41,7 @@ static void task_Command( char *pcWriteBuffer, int xWriteBufferLen, int argc, ch
 
 
 
-#ifdef CONFIG_PLATFORM_8195A
+#if (defined CONFIG_PLATFORM_8195A) & (!defined MOC100)
 #define LOG_SERVICE_BUFLEN 100
 
 int wifi_set_mac_address(char * mac);
@@ -228,7 +228,7 @@ static int handle_input(char *inbuf)
     return 0;
 }
 
-#ifndef CONFIG_PLATFORM_8195A
+#if (!defined CONFIG_PLATFORM_8195A) | (defined MOC100)
 /* Perform basic tab-completion on the input buffer by string-matching the
 * current input line against the cli functions table.  The current input line
 * is assumed to be NULL-terminated. */
@@ -359,7 +359,7 @@ static void cli_main( uint32_t data )
     int ret;
     char *msg = NULL;
     
-#ifndef CONFIG_PLATFORM_8195A
+#if (!defined CONFIG_PLATFORM_8195A) | (defined MOC100)
     if (!get_input(pCli->inbuf, &pCli->bp))
       continue;
     msg = pCli->inbuf;
@@ -684,7 +684,7 @@ static const struct cli_command user_clis[1] = {
 };
 #endif
 
-#ifdef CONFIG_PLATFORM_8195A
+#if (defined CONFIG_PLATFORM_8195A) & (!defined MOC100)
 static void mac_command(char *pcWriteBuffer, int xWriteBufferLen,int argc, char **argv)
 {
   int i, n;

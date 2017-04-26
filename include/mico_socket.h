@@ -126,6 +126,11 @@ struct addrinfo {
 #define IPPROTO_UDP     17
 #define IPPROTO_UDPLITE 136
 
+#define F_GETFL 3
+#define F_SETFL 4
+
+#define O_NONBLOCK 1
+
 /*
  * Options for level IPPROTO_IP
  */
@@ -533,6 +538,8 @@ int close (int filedes);
 
 int shutdown(int s, int how);
 int ioctl(int s, long cmd, void *argp);
+int fcntl(int s, long cmd, int argp);
+
 
 /**
   * @}

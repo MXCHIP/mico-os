@@ -276,6 +276,35 @@ typedef struct {
     int  user_data_len;
     char user_data[65];
 } easylink_result_t;
+    
+#pragma pack(1)
+typedef struct _wifi_mgmt_frame_tx
+{
+#ifdef MW310
+        /** Packet Length */
+        uint16_t frm_len;
+#endif
+        /** Frame Control */
+        uint16_t frm_ctl;
+        /** Duration ID */
+        uint16_t duration_id;
+        /** Address1 */
+        uint8_t addr1[6];
+        /** Address2 */
+        uint8_t addr2[6];
+        /** Address3 */
+        uint8_t addr3[6];
+#ifdef MW310
+        /** Address4 */
+        uint8_t addr4[6];
+#endif
+        /** Sequence Control */
+        uint16_t seq_ctl;
+        
+        /** Frame payload */
+        uint8_t payload[2];
+} wifi_mgmt_frame_tx;
+#pragma pack()
 
 /** @defgroup MICO_WLAN_GROUP_1 MiCO Basic Wlan Functions
   * @brief Provide Basic APIs for MiCO wlan functions
@@ -609,12 +638,23 @@ int mico_wlan_stop_monitor(void);
  *  @detail This function change the monitor channel (from 1~13).
  *       it can change the channel dynamically, don't need restart monitor mode.
  */
-int mico_wlan_set_channel(int channel);
+OSStatus mico_wlan_set_channel( uint8_t channel );
+
+/** @brief  Get the monitor channel
+ * 
+ *  @detail This function get the monitor channel (from 1~13).
+ *       it can change the channel dynamically, don't need restart monitor mode.
+ */
+OSStatus mico_wlan_get_channel( uint8_t *channel );
 
 /** @brief  Register the monitor callback function
  *        Once received a 802.11 packet call the registered function to return the packet.
  */
 void mico_wlan_register_monitor_cb(monitor_cb_t fn);
+
+/** @brief  Send management frame
+ */
+OSStatus mico_wlan_send_mgnt(uint8_t *buffer, uint32_t length);
 
 /**@brief Add a custom IE to a WLAN interface
  *

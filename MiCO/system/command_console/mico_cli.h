@@ -96,7 +96,7 @@ int cli_unregister_commands(const struct cli_command *commands,
  */
 int cli_getchar(char *inbuf);
 
-#ifdef CONFIG_PLATFORM_8195A
+#if (defined CONFIG_PLATFORM_8195A) & (!defined MOC100)
 #define cli_putstr printf
 #define cli_printf printf
 #else
