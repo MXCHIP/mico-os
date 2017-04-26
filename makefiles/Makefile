@@ -10,8 +10,8 @@
 default: Help
 
 export MiCO_SDK_VERSION_MAJOR    :=  3
-export MiCO_SDK_VERSION_MINOR    :=  2
-export MiCO_SDK_VERSION_REVISION :=  2
+export MiCO_SDK_VERSION_MINOR    :=  5
+export MiCO_SDK_VERSION_REVISION :=  0
 
 export SOURCE_ROOT ?= ./
 
