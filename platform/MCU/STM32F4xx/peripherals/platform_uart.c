@@ -15,9 +15,9 @@
  ******************************************************************************
  */
 
-#include "platform.h"
+#include "mico_board.h"
 #include "platform_peripheral.h"
-#include "debug.h"
+#include "mico_debug.h"
 
 /******************************************************
 *                    Constants

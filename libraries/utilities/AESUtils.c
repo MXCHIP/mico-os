@@ -32,8 +32,8 @@
 
 #include "AESUtils.h"
 
-#include "common.h"
-#include "debug.h"
+#include "mico_common.h"
+#include "mico_debug.h"
 
 #if( AES_UTILS_HAS_COMMON_CRYPTO_GCM )
     #include <CommonCrypto/CommonCryptorSPI.h>

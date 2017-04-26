@@ -43,11 +43,12 @@ with open(map_file, 'r') as f:
 		module = module.replace('+', '\+')
 		# get module's sections's address and size
 		if(module == '*fill*'):
-			sections = map(lambda arg : {'address':int(arg[0], 16), 'size':int(arg[1], 16)}, re.findall('\*fill\*\s+(0x\w+)\s+(0x\w+)\s+\n', mem_map))
+			sections = map(lambda arg : {'address':int(arg[0], 16), 'size':int(arg[1], 16)}, re.findall('\*fill\*\s+(0x\w+)\s+(0x\w+).+\n', mem_map))
 		else:
-			sections = map(lambda arg : {'address':int(arg[0], 16), 'size':int(arg[1], 16)}, re.findall('(0x\w+)\s+(0x\w+)\s+.+[/\\\]'+module+'(\(.+\.o\))?\n', mem_map))
+			sections = map(lambda arg : {'address':int(arg[0], 16), 'size':int(arg[1], 16)}, re.findall('(0x\w+)\s+(0x\w+).+[/\\\]'+module+'(\(.+\.o\))?\n', mem_map))
 		if(not sections):
 			continue
+
 
 		def ram_size(arg):
 			for ram_info in ram_config:

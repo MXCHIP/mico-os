@@ -12,7 +12,8 @@
 #include "mico.h"
 #include "mico_cli.h"
 #include "stdarg.h"
-#include "platform_config.h"
+#include "mico_board.h"
+#include "mico_board_conf.h"
 #include "tftp_ota/tftp.h"
 
 
@@ -767,7 +768,7 @@ int cli_init(void)
   memset((void *)pCli, 0, sizeof(struct cli_st));
   
   ring_buffer_init  ( (ring_buffer_t*)&cli_rx_buffer, (uint8_t*)cli_rx_data, INBUF_SIZE );
-  MicoUartInitialize( CLI_UART, &cli_uart_config, (ring_buffer_t*)&cli_rx_buffer );
+  MicoUartInitialize( MICO_CLI_UART, &cli_uart_config, (ring_buffer_t*)&cli_rx_buffer );
   
   /* add our built-in commands */
   if (cli_register_commands(&built_ins[0],
@@ -823,14 +824,14 @@ int cli_printf(const char *msg, ...)
 int cli_putstr(const char *msg)
 {
   if (msg[0] != 0)
-    MicoUartSend( CLI_UART, (const char*)msg, strlen(msg) );
+    MicoUartSend( MICO_CLI_UART, (const char*)msg, strlen(msg) );
   
   return 0;
 }
 
 int cli_getchar(char *inbuf)
 {
-  if (MicoUartRecv(CLI_UART, inbuf, 1, MICO_WAIT_FOREVER) == 0)
+  if (MicoUartRecv(MICO_CLI_UART, inbuf, 1, MICO_WAIT_FOREVER) == 0)
     return 1;
   else
     return 0;

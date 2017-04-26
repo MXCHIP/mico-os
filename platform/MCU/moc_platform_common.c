@@ -17,10 +17,10 @@
 
 #include <stdint.h>
 #include <string.h>
-#include "common.h"
+#include "mico_common.h"
 #include "platform_peripheral.h"
 #include "mico_platform.h"
-#include "platform_config.h"
+#include "mico_board_conf.h"
 #include "platform_logging.h"
 #if 0
 #ifndef BOOTLOADER

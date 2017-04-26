@@ -15,8 +15,8 @@
  ******************************************************************************
  */
 
-#include "common.h"
-#include "debug.h"
+#include "mico_common.h"
+#include "mico_debug.h"
 #include "hsb2rgb_led.h"
 #include "rgb_led.h"
 

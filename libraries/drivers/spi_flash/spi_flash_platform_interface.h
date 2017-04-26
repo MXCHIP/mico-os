@@ -19,7 +19,7 @@
 #ifndef INCLUDED_SPI_FLASH_PLATFORM_INTERFACE_H
 #define INCLUDED_SPI_FLASH_PLATFORM_INTERFACE_H
 
-#include "common.h"
+#include "mico_common.h"
 
 #ifdef __cplusplus
  extern "C" {

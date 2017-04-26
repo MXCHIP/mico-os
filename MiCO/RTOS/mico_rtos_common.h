@@ -59,9 +59,6 @@ extern "C" {
 extern OSStatus mico_rtos_init  ( void );
 extern OSStatus mico_rtos_deinit( void );
 
-/* Entry point for user Application */
-extern void application_start          ( void );
-
 
 #ifdef __cplusplus
 } /* extern "C" */

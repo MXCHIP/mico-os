@@ -1,5 +1,5 @@
-#include "debug.h"
-#include "common.h"
+#include "mico_debug.h"
+#include "mico_common.h"
 #include "moc_api.h"
 #include "moc_api_sep.h"
 

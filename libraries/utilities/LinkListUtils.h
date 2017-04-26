@@ -31,7 +31,7 @@
 
 #pragma once
 
-#include "common.h"
+#include "mico_common.h"
 
 #ifdef __cplusplus
 extern "C" {

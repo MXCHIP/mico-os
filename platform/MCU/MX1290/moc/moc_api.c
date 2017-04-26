@@ -1,4 +1,4 @@
-#include "common.h"
+#include "mico_common.h"
 #include "moc_api.h"
 
 extern const mico_api_t *lib_api_p;

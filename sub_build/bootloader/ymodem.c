@@ -57,7 +57,7 @@ extern uint8_t FileName[];
   */
 static int32_t Receive_Byte (uint8_t *c, uint32_t timeout)
 {
-  if (MicoUartRecv( STDIO_UART, c, 1, timeout )!=kNoErr)
+  if (MicoUartRecv( MICO_STDIO_UART, c, 1, timeout )!=kNoErr)
     return -1;
   else
     return 0;
@@ -70,7 +70,7 @@ static int32_t Receive_Byte (uint8_t *c, uint32_t timeout)
   */
 static uint32_t Send_Byte (uint8_t c)
 {
-  MicoUartSend( STDIO_UART, &c, 1 );
+  MicoUartSend( MICO_STDIO_UART, &c, 1 );
   return 0;
 }
 

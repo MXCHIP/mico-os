@@ -17,10 +17,10 @@
 
 #include <stdint.h>
 #include <string.h>
-#include "common.h"
+#include "mico_common.h"
 #include "platform_peripheral.h"
 #include "mico_platform.h"
-#include "platform_config.h"
+#include "mico_board_conf.h"
 #include "platform_logging.h"
 
 #ifndef BOOTLOADER
@@ -490,7 +490,7 @@ OSStatus MicoUartInitialize( mico_uart_t uart, const mico_uart_config_t* config,
 
 #ifndef MICO_DISABLE_STDIO
   /* Interface is used by STDIO. Uncomment MICO_DISABLE_STDIO to overcome this */
-  if ( uart == STDIO_UART )
+  if ( uart == MICO_STDIO_UART )
   {
     return kGeneralErr;
   }

@@ -16,7 +16,7 @@
  */
 
 #include "platform_logging.h"
-#include "platform.h"
+#include "mico_board.h"
 #include "spi_flash.h"
 #include "spi_flash_internal.h"
 #include "spi_flash_platform_interface.h"

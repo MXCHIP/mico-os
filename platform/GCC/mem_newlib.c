@@ -34,7 +34,7 @@ struct mxchip_mallinfo {
   int allocted_memory; /* total allocated space */
   int free_memory; /* total free space */
 };
-#if 1
+#ifndef   __MBED__
 /* sbrk
  * Increase program data space.
  * Malloc and related functions depend on this
@@ -161,15 +161,6 @@ struct mxchip_mallinfo* mico_memory_info(void)
 #endif // MOC
 
 #else
-
-caddr_t _sbrk( int incr )
-{
-    return (caddr_t) -1;
-}
-
-void _exit(int __status )
-{
-}
 
 struct mxchip_mallinfo *mxchip_memory_info(void);
 

@@ -34,7 +34,7 @@
 #ifndef __SecurityUtils_h__
 #define __SecurityUtils_h__
 
-#include "common.h"
+#include "mico_common.h"
 
 //===========================================================================================================================
 //  memcmp_constant_time

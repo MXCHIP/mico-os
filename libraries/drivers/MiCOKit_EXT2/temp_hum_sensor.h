@@ -18,7 +18,7 @@
 #ifndef __TEMP_HUM_SENSOR_H_
 #define __TEMP_HUM_SENSOR_H_
 
-#include "common.h"
+#include "mico_common.h"
 
 
 /** @addtogroup MICO_Drivers_interface

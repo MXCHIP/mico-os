@@ -18,7 +18,7 @@
 #include "platform_logging.h"
 #include "platform_mcu_peripheral.h" /* Include MCU-specific types */
 #include "RingBufferUtils.h"
-#include "platform_config.h"
+#include "mico_board_conf.h"
 
 #ifdef __cplusplus
 extern "C" {

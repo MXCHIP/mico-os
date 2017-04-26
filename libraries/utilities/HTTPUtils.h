@@ -34,7 +34,7 @@
 #ifndef __HTTPUtils_h__
 #define __HTTPUtils_h__
 
-#include "common.h"
+#include "mico_common.h"
 #include "mico_socket.h"
 
 #include "URLUtils.h"

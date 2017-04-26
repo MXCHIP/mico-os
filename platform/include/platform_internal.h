@@ -11,7 +11,7 @@
 #ifndef __PlatformInternal_h__
 #define __PlatformInternal_h__
 
-#include "common.h"
+#include "mico_common.h"
 
 void init_clocks( void );
 void init_memory( void );

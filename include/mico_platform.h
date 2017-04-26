@@ -35,9 +35,9 @@
 #ifndef __MICOPLATFORM_H__
 #define __MICOPLATFORM_H__
 
-#include "common.h"
+#include "mico_common.h"
 
-#include "platform.h" /* This file is unique for each platform */
+#include "mico_board.h" /* This file is unique for each platform */
 #include "platform_peripheral.h"
 
 #ifdef __cplusplus
@@ -54,21 +54,22 @@ typedef platform_spi_slave_command_t            mico_spi_slave_command_t;
 
 typedef platform_spi_slave_data_buffer_t        mico_spi_slave_data_buffer_t;
 
-
+#include "MiCODrivers/mico_gpio.h"
+#include "MiCODrivers/mico_wdg.h"
+#include "MiCODrivers/mico_uart.h"
 
 #include "MiCODrivers/MiCODriverI2c.h"
 #include "MiCODrivers/MiCODriverSpi.h"
-#include "MiCODrivers/MiCODriverUart.h"
-#include "MiCODrivers/MiCODriverGpio.h"
 #include "MiCODrivers/MiCODriverPwm.h"
 #include "MiCODrivers/MiCODriverRtc.h"
-#include "MiCODrivers/MiCODriverWdg.h"
 #include "MiCODrivers/MiCODriverAdc.h"
 #include "MiCODrivers/MiCODriverRng.h"
 #include "MiCODrivers/MiCODriverFlash.h"
 #include "MiCODrivers/MiCODriverMFiAuth.h"
 
-#define mico_mcu_powersave_config MicoMcuPowerSaveConfig
+#define MicoMcuPowerSaveConfig mico_mcu_powersave_config
+
+#define MicoSystemReboot mico_system_reboot
 
 #ifdef USE_MICO_SPI_FLASH
 extern const mico_spi_device_t mico_spi_flash;
@@ -96,7 +97,7 @@ extern const mico_spi_device_t mico_spi_flash;
   * @param    none
   * @return   none
   */
-void MicoSystemReboot(void);
+void mico_system_reboot(void);
 
 
 /** @brief    Software reboot the MICO hardware
@@ -120,7 +121,7 @@ void MicoSystemStandBy(uint32_t secondsToWakeup);
   * @param    enable : 1 = enable MCU powersave, 0 = disable MCU powersave
   * @return   none
   */
-void MicoMcuPowerSaveConfig( int enable );
+void mico_mcu_powersave_config( int enable );
 
 
 /** @brief    Set MiCO system led on/off state

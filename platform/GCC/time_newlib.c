@@ -9,7 +9,7 @@
  */
 
 #include "sys/time.h"
-#include "common.h"
+#include "mico_common.h"
 #include "mico_system.h"
 
 int _gettimeofday( struct timeval * __p, void * __tz )

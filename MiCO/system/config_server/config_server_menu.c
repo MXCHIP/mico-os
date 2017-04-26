@@ -17,7 +17,7 @@
  */
 
 #include "mico.h"
-#include "platform_config.h"
+#include "mico_board_conf.h"
 
 #include "json_c/json.h"
 

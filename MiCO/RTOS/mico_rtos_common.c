@@ -23,13 +23,13 @@
 
 #include <string.h>
 #include <stdlib.h>
-#include "debug.h"
-#include "rtos.h"
+#include "mico_debug.h"
+#include "mico_rtos_internal.h"
 #include "platform_core.h"
 #include "mico_rtos.h"
-#include "common.h"
+#include "mico_common.h"
 #include "mico_rtos_common.h"
-#include "platform_config.h"
+#include "mico_board_conf.h"
 
 /******************************************************
  *                      Macros
@@ -76,6 +76,9 @@ mico_worker_thread_t mico_worker_thread;
 /******************************************************
  *               Function Definitions
  ******************************************************/
+
+/* Entry point for user Application */
+extern int application_start( void );
 
 OSStatus mico_rtos_init( void )
 {

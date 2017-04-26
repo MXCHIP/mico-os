@@ -16,7 +16,7 @@
  */
 
 #include "platform_peripheral.h"
-#include "platform.h"
+#include "mico_board.h"
 
 /******************************************************
  *                   Macros

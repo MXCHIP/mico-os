@@ -31,8 +31,8 @@
  */
 
 #include "mico.h"
-#include "platform.h"
-#include "platform_config.h"
+#include "mico_board.h"
+#include "mico_board_conf.h"
 #include "CheckSumUtils.h"
 
 typedef int Log_Status;					

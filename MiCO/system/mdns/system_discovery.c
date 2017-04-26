@@ -18,7 +18,7 @@
 #include "mico.h"
 #include "system_internal.h"
 
-#include "platform_config.h"
+#include "mico_board_conf.h"
 #include "StringUtils.h"
 
 OSStatus system_discovery_init( system_context_t * const inContext )

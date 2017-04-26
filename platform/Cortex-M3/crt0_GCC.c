@@ -111,7 +111,7 @@ void _start_init( void )
 
     /* TODO: make this an unconditional goto?, so that return address stuff doesn't get put on the stack. (what happens if main returns in this case?) */
     init_architecture();
-    init_platform();
+
     for ( ctor_num = 0; ctor_num < link_constructors_size/sizeof(constructor_ptr_t); ctor_num++ )
     {
         link_constructors_location[ctor_num]();

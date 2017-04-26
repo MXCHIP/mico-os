@@ -32,7 +32,7 @@
 #ifndef __MICOWLAN_H__
 #define __MICOWLAN_H__
 
-#include "common.h"
+#include "mico_common.h"
 
 #ifdef __cplusplus
 extern "C" {

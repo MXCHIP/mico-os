@@ -16,9 +16,9 @@
  ******************************************************************************
  */
 
-#include "common.h"
+#include "mico_common.h"
 #include "mico_config.h"
-#include "platform_config.h"
+#include "mico_board_conf.h"
 
 #ifdef MICO_DEFAULT_APPLICATION_STACK_SIZE
 uint32_t  app_stack_size = MICO_DEFAULT_APPLICATION_STACK_SIZE; 

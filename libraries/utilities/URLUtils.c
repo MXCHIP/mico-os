@@ -29,8 +29,8 @@
  ******************************************************************************
  */
 
-#include "common.h"
-#include "debug.h"
+#include "mico_common.h"
+#include "mico_debug.h"
 
 #include "StringUtils.h"
 

@@ -15,8 +15,8 @@
  ******************************************************************************
  */
 
-#include "platform.h"
-#include "platform_config.h"
+#include "mico_board.h"
+#include "mico_board_conf.h"
 #include "platform_peripheral.h"
 
 /******************************************************

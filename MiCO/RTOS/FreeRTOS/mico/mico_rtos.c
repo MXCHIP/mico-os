@@ -20,11 +20,11 @@
 #include <stdlib.h>
 #include "mico_rtos.h"
 #include "qc_test.h"
-#include "rtos.h"
+#include "mico_rtos_internal.h"
 #include "mico_rtos_common.h"
 #include "FreeRTOS.h"
 #include "projdefs.h"
-#include "debug.h"
+#include "mico_debug.h"
 #include "platform_core.h"
 #include "queue.h"
 #include "semphr.h"
@@ -32,7 +32,7 @@
 #include "mico_FreeRTOS_systick.h"
 #include "FreeRTOSConfig.h"
 #include "timers.h"
-#include "crt0.h"
+
 
 /******************************************************
  *                      Macros
@@ -105,6 +105,8 @@ typedef struct
 extern void mico_rtos_stack_overflow(char *taskname);
 extern bool MicoShouldEnterMFGMode(void);
 
+extern void mico_board_init(void);
+extern int __real_main(void);
 
 static void application_thread_main( void *arg );
 
@@ -139,7 +141,7 @@ uint32_t mico_rtos_max_priorities = RTOS_HIGHEST_PRIORITY - RTOS_LOWEST_PRIORITY
  *  Called from the crt0 _start function
  *
  */
-int main( void )
+int __wrap_main( void )
 {
     max_syscall_int_prio = (1 << (8 - CFG_PRIO_BITS));
     ms_to_tick_ratio = (uint32_t)( 1000 / mico_tick_rate_hz );
@@ -150,7 +152,7 @@ int main( void )
  * When using GCC, this is done in crt0_GCC.c
  */
     init_architecture( );
-    init_platform( );
+
 #endif /* #elif defined ( __IAR_SYSTEMS_ICC__ ) */
 
     /* Create an initial thread */
@@ -166,10 +168,11 @@ int main( void )
 static void application_thread_main( void *arg )
 {
     UNUSED_PARAMETER( arg );
+    mico_board_init( );
     if ( MicoShouldEnterMFGMode( ) )
         mico_system_qc_test( );
     else
-        application_start( );
+        __real_main( );
 
     vTaskDelete( NULL );
 }

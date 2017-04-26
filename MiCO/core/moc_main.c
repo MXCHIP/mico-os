@@ -15,7 +15,7 @@
  *  permission of MXCHIP Corporation.
  ******************************************************************************
  */
-#include "common.h"
+#include "mico_common.h"
 #include "moc_api.h"
 #include "mico_platform.h"
 

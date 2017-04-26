@@ -36,7 +36,7 @@
 /* Includes ------------------------------------------------------------------*/
 #include "mico.h"
 #include "ymodem.h"
-#include "platform_config.h"
+#include "mico_board_conf.h"
 #include "platform_internal.h"
 #include "StringUtils.h"
 #include "bootloader.h"
@@ -166,7 +166,7 @@ void SerialUpload(mico_flash_t flash, uint32_t flashdestination, char * fileName
   uint8_t key;
   
   printf("Select Receive File\n\r");
-  MicoUartRecv( STDIO_UART, &key, 1, MICO_NEVER_TIMEOUT );
+  MicoUartRecv( MICO_STDIO_UART, &key, 1, MICO_NEVER_TIMEOUT );
   
   if (key == CRC16)
   {

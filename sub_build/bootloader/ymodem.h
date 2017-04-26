@@ -35,8 +35,8 @@
 #define __YMODEM_H_
 
 /* Includes ------------------------------------------------------------------*/
-#include "platform.h"
-#include "common.h"
+#include "mico_board.h"
+#include "mico_common.h"
 /* Exported types ------------------------------------------------------------*/
 /* Exported constants --------------------------------------------------------*/
 /* Exported macro ------------------------------------------------------------*/

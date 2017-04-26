@@ -18,8 +18,8 @@
 
 
 #include "platform_peripheral.h"
-#include "platform.h"
-#include "platform_config.h"
+#include "mico_board.h"
+#include "mico_board_conf.h"
 #include "platform_logging.h"
 #include <string.h> // For memcmp
 #include "crt0.h"
@@ -242,7 +242,7 @@ void init_architecture( void )
 #endif
 
   ring_buffer_init  ( (ring_buffer_t*)&stdio_rx_buffer, (uint8_t*)stdio_rx_data, STDIO_BUFFER_SIZE );
-  platform_uart_init( &platform_uart_drivers[STDIO_UART], &platform_uart_peripherals[STDIO_UART], &stdio_uart_config, (ring_buffer_t*)&stdio_rx_buffer );
+  platform_uart_init( &platform_uart_drivers[MICO_STDIO_UART], &platform_uart_peripherals[MICO_STDIO_UART], &stdio_uart_config, (ring_buffer_t*)&stdio_rx_buffer );
 #endif
 
   /* Ensure 802.11 device is in reset. */
@@ -271,8 +271,8 @@ OSStatus stdio_hardfault( char* data, uint32_t size )
 #ifndef MICO_DISABLE_STDIO
   uint32_t idx;
   for(idx = 0; idx < size; idx++){
-    while ( ( platform_uart_peripherals[ STDIO_UART ].port->SR & USART_SR_TXE ) == 0 );
-    platform_uart_peripherals[ STDIO_UART ].port->DR = (data[idx] & (uint16_t)0x01FF);
+    while ( ( platform_uart_peripherals[ MICO_STDIO_UART ].port->SR & USART_SR_TXE ) == 0 );
+    platform_uart_peripherals[ MICO_STDIO_UART ].port->DR = (data[idx] & (uint16_t)0x01FF);
     
   }
 #endif

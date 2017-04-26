@@ -18,7 +18,7 @@
 
 #pragma once
 
-#include "common.h"
+#include "mico_common.h"
 #include "mico_rtos.h"
 #include "mico_wlan.h"
 
@@ -33,7 +33,7 @@
 #include "mico_config.h"
 #endif
 
-#include "platform_config.h"
+#include "mico_board_conf.h"
 
 
 #ifdef __cplusplus

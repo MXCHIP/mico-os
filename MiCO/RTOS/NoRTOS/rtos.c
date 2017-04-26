@@ -18,7 +18,7 @@
  ******************************************************************************
  */
 
-#include "common.h"
+#include "mico_common.h"
 #include "platform_peripheral.h"
 
 /******************************************************
@@ -62,9 +62,10 @@ typedef volatile struct _noos_mutex_t
 
 
 /******************************************************
- *               Static Function Declarations
+ *               Function Declarations
  ******************************************************/
 
+extern int __real_main(void);
 
 /******************************************************
  *               Variable Definitions
@@ -79,6 +80,16 @@ noos_mutex_t mutex_pool[MUTEX_POOL_NUM];
 /******************************************************
  *               Function Definitions
  ******************************************************/
+#ifndef __MBED__
+int __wrap_main( void )
+{
+    mico_board_init( );
+
+    __real_main( );
+
+    return 0;
+}
+#endif
 
 OSStatus semaphore_pool_alloc( noos_semaphore_t **semaphore )
 {

@@ -33,7 +33,7 @@
 #ifndef __TimeUtils_h__
 #define __TimeUtils_h__
 
-#include "common.h"
+#include "mico_common.h"
 
 
 /** @addtogroup MICO_Middleware_Interface

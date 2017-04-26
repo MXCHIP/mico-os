@@ -31,9 +31,10 @@
 
 
 #include "mico.h"
-#include "platform.h"
+#include "mico_board.h"
+#include "mico_board_conf.h"
+
 #include "platform_internal.h"
-#include "platform_config.h"
 #include "bootloader.h"
 
 #define boot_log(M, ...) custom_log("BOOT", M, ##__VA_ARGS__)

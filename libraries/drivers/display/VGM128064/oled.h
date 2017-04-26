@@ -19,7 +19,7 @@
 #define __OLED_H_
 
 #include "mico.h"
-#include "platform.h"
+#include "mico_board.h"
 
 /** @defgroup MICO_Drivers_interface MiCO Drivers Interface
   * @brief Provide driver interface for MiCO external devices

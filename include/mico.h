@@ -45,9 +45,13 @@
 #ifndef __MICO_H_
 #define __MICO_H_
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /* MiCO SDK APIs */
-#include "debug.h"
-#include "common.h"
+#include "mico_debug.h"
+#include "mico_common.h"
 #include "mico_rtos.h"
 #include "mico_wlan.h"
 #include "mico_socket.h"
@@ -125,6 +129,13 @@ OSStatus MicoInit( void );
   * @return Point to the identifier 
   */
 const uint8_t* mico_generate_cid( uint8_t *length );
+
+/* Entry point for user Application */
+int main( void );
+
+#ifdef __cplusplus
+} /*"C" */
+#endif
 
 #endif /* __MICO_H_ */
 

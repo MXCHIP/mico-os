@@ -19,7 +19,7 @@
 
 #include <string.h>
 #include <stdlib.h>
-#include "common.h"
+#include "mico_common.h"
 #include "lwip/sockets.h"
 #include "lwip/netdb.h"
 

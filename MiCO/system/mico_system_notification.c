@@ -18,7 +18,7 @@
  */
 
 
-#include "common.h"
+#include "mico_common.h"
 #include "mico.h"
 
 typedef struct _Notify_list{

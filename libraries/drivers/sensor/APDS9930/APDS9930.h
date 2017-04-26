@@ -19,7 +19,7 @@
 #ifndef __APDS9930_H_
 #define __APDE9930_H_
 
-#include "platform.h"
+#include "mico_board.h"
 
 /** @addtogroup MICO_Drivers_interface
   * @{

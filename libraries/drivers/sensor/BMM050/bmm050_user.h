@@ -19,7 +19,7 @@
 #define __BMM050_USER_H_
 
 #include "mico_platform.h"
-#include "platform.h"
+#include "mico_board.h"
 
 
 /** @addtogroup MICO_Drivers_interface
