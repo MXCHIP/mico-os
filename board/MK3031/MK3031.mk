@@ -58,6 +58,6 @@ ifndef NO_WIFI_FIRMWARE
 WIFI_FIRMWARE := $(MICO_OS_PATH)/resources/wifi_firmware/$(WLAN_CHIP)/$(WLAN_CHIP)$(WLAN_CHIP_REVISION)$(WLAN_CHIP_BIN_TYPE)-$(WLAN_CHIP_FIRMWARE_VER).bin
 endif
 
-VALID_OSNS_COMBOS  := mocOS@mocIP
-VALID_TLS          := mocSSL
+VALID_OSNS_COMBOS  := mocOS@mocIP NoRTOS@LwIP
+VALID_TLS          := mocSSL wolfSSL
 
