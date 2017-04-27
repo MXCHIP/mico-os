@@ -377,8 +377,8 @@ const platform_adc_t platform_adc_peripherals[] =
 */
 const platform_gpio_t wifi_control_pins[] =
 {
-  [WIFI_PIN_RESET]           = { GPIOA, 8 },
-  [WIFI_PIN_32K_CLK]         = { GPIOA, 9 },
+  [WIFI_PIN_RESET]           = { GPIOA, 9 },
+  [WIFI_PIN_32K_CLK]         = { GPIOA, 8 },
 };
 
 /* Wi-Fi SDIO bus pins. Used by platform/MCU/STM32F2xx/EMW1062_driver/wlan_SDIO.c */
