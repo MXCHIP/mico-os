@@ -536,9 +536,42 @@ int recvfrom (int socket, void *buffer, size_t size, int flags, struct sockaddr 
   */
 int close (int filedes);
 
-int shutdown(int s, int how);
-int ioctl(int s, long cmd, void *argp);
-int fcntl(int s, long cmd, int argp);
+/**
+  * @brief
+  * @attention  Never doing operations on one socket in different MICO threads
+  * @details    The shutdown function shuts down the connection of socket socket.
+  * 			The argument how specifies what action to perform.
+  * @param      filedes: A file descriptor.
+  * @param		how: 0 	 Stop receiving data for this socket. If further data arrives, reject it.
+  *					 1 	 Stop trying to transmit data from this socket. Discard any data waiting to be sent.
+  *					 	 Stop looking for acknowledgement of data already sent; don't retransmit it if it is lost.
+  * @retval     Returns zero on success.  On error, -1 is returned.
+  */
+int shutdown(int filedes, int how);
+
+/**
+  * @brief      The ioctl function performs the generic I/O operation command on filedes.
+  * @attention  Never doing operations on one socket in different MICO threads
+  * @details    A third argument is usually present, either a single number or a pointer to a structure.
+  * 			The meaning of this argument.
+  * @param      filedes: A file descriptor.
+  * @param		command:Command
+  * @retval     The returned value, and any error codes depends upon the command used.
+  * 			Often -1 is returned for a failure.
+  */
+int ioctl(int filedes, int command, ...);
+
+/**
+  * @brief      The fcntl function performs the operation specified by command on the file descriptor filedes.
+  * @attention  Never doing operations on one socket in different MICO threads
+  * @details    Some commands require additional arguments to be supplied. These additional arguments and
+  * 			the return value and error conditions are given in the detailed descriptions of the individual commands.
+  * @param      filedes: A file descriptor.
+  * @param		command:Command
+  * @retval     The returned value, and any error codes depends upon the command used.
+  * 			Often -1 is returned for a failure.
+  */
+int fcntl(int filedes, int command, ...);
 
 
 /**
