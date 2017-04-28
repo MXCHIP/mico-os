@@ -72,6 +72,8 @@ const struct flash_device_config fl_dev_list[] = {
 		256},
 	{"MX25V1635F", 0xc22315, 2 * MEGA_BYTE, 4 * KILO_BYTE, 64 * KILO_BYTE,
 		256},/*yhb added */
+  {"FM25Q16A", 0xa14015, 2 * MEGA_BYTE, 4 * KILO_BYTE, 64 * KILO_BYTE,
+    256},/*swyang added */
 };
 
 /*@} end of group FLASH_Private_Variables */

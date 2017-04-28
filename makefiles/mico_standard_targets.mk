@@ -44,6 +44,7 @@ ifneq (total,$(findstring total,$(MAKECMDGOALS)))
 BOOTLOADER_APP:=0
 BOOTLOADER_SUB_BUILD:=0
 else
+include $(PLATFORM_DIRECTORY)/gen_standard_images.mk
 BOOTLOADER_APP:=0
 BOOTLOADER_SUB_BUILD:=1
 endif #$(total,$(findstring total,$(MAKECMDGOALS)))

@@ -401,6 +401,7 @@ int FLASH_SetCmdType_QuadModeRead(uint32_t jedecID)
 	case 0xef4018:
 	case 0xc84016:
 	case 0xc84018:
+  case 0xa14015:
 		FLASHC->FCCR.BF.CMD_TYPE = FLASHC_HW_CMD_FRQIOC;
 	break;
 #ifdef CONFIG_VARIANT_MW310

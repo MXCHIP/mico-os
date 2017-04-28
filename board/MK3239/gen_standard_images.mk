@@ -21,43 +21,28 @@
 #  IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 ############################################################################### 
 
-NAME := Board_MK3031
+EXTRA_POST_BUILD_TARGETS += gen_standard_images
 
-WLAN_CHIP            	:= mw30x
-WLAN_CHIP_REVISION   	:= _uapsta
-WLAN_CHIP_FAMILY     	:= MW3xx
-WLAN_CHIP_FIRMWARE_VER  := 14.76.36.p84
+#bootloader
+BOOT_BIN_FILE    := $(BOOTLOADER_OUTFILE_BIN)
+BOOT_OFFSET      := 0x0
 
-MODULE              	:= 3031
-HOST_MCU_FAMILY      	:= MW3xx
-HOST_MCU_VARIANT     	:= MW310
-HOST_MCU_PART_NUMBER 	:= 
+#application 
+APP_BIN_FILE :=$(BIN_OUTPUT_FILE)
+APP_OFFSET:= 0x8000
 
-BUS := MW310
+#ate firmware
 
-# Extra build target in mico_moc_targets.mk, create MOC images and download
-EXTRA_TARGET_MAKEFILES +=  $(MAKEFILES_PATH)/mico_moc_targets.mk
+#wifi firmware
 
-# Global includes
-GLOBAL_INCLUDES  := .
+# Required to build Full binary file
+GEN_COMMON_BIN_OUTPUT_FILE_SCRIPT:= $(SCRIPTS_PATH)/gen_common_bin_output_file.py
 
-# Global defines
-GLOBAL_DEFINES += $$(if $$(NO_CRLF_STDIO_REPLACEMENT),,CRLF_STDIO_REPLACEMENT)
-GLOBAL_LDFLAGS += -L $(MICO_OS_PATH)/board/MK$(MODULE)
+MOC_ALL_BIN_OUTPUT_FILE :=$(LINK_OUTPUT_FILE:$(LINK_OUTPUT_SUFFIX)=.all$(BIN_OUTPUT_SUFFIX))
 
-# Components
-$(NAME)_COMPONENTS += drivers/MiCOKit_EXT
-
-# Source files
-$(NAME)_SOURCES := platform.c
-
-# MOC configuration
-MOC_APP_OFFSET      := 0x64000
-
-ifndef NO_WIFI_FIRMWARE
-WIFI_FIRMWARE := $(MICO_OS_PATH)/resources/wifi_firmware/$(WLAN_CHIP)/$(WLAN_CHIP)$(WLAN_CHIP_REVISION)$(WLAN_CHIP_BIN_TYPE)-$(WLAN_CHIP_FIRMWARE_VER).bin
-endif
-
-VALID_OSNS_COMBOS  := mocOS@mocIP NoRTOS@LwIP
-VALID_TLS          := mocSSL wolfSSL
+gen_standard_images: build_done
+	$(QUIET)$(ECHO) Generate Standard Flash Images: $(MOC_ALL_BIN_OUTPUT_FILE)
+	$(QUIET)$(RM) $(MOC_ALL_BIN_OUTPUT_FILE)
+	$(PYTHON) $(GEN_COMMON_BIN_OUTPUT_FILE_SCRIPT) -o $(MOC_ALL_BIN_OUTPUT_FILE) -f $(BOOT_OFFSET) $(BOOT_BIN_FILE)              
+	$(PYTHON) $(GEN_COMMON_BIN_OUTPUT_FILE_SCRIPT) -o $(MOC_ALL_BIN_OUTPUT_FILE) -f $(APP_OFFSET)  $(APP_BIN_FILE)
 
