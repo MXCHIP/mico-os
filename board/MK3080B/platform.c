@@ -147,6 +147,9 @@ void init_platform( void )
     MicoGpioInitialize( (mico_gpio_t)MICO_SYS_LED, OUTPUT_PUSH_PULL );
     MicoGpioOutputLow( (mico_gpio_t)MICO_SYS_LED );
 
+    MicoGpioInitialize( (mico_gpio_t)MICO_RF_LED, OUTPUT_PUSH_PULL );
+    MicoGpioOutputHigh( (mico_gpio_t)MICO_RF_LED );
+
     //	Initialise EasyLink buttons
     init.gpio = EasyLink_BUTTON;
     init.pressed_func = PlatformEasyLinkButtonClickedCallback;
