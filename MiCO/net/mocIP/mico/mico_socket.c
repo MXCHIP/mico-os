@@ -19,6 +19,7 @@
 
 #include <string.h>
 #include <stdlib.h>
+#include <stdarg.h>
 #include "common.h"
 #include "moc_api.h"
 
@@ -232,13 +233,21 @@ int shutdown(int s, int how)
 	return lib_api_p->lwip_apis->lwip_shutdown(s, how);
 }
 
-int ioctl(int s, long cmd, void *argp)
+int ioctl(int s, int cmd, ...)
 {
-	return lib_api_p->lwip_apis->lwip_ioctl(s, cmd, argp);
+	va_list ap;
+	va_start( ap, cmd );
+	void *para = va_arg( ap, void *);
+	va_end( ap );
+    return lib_api_p->lwip_apis->lwip_ioctl(s, cmd, para);
 }
 
-int fcntl(int s, long cmd, int argp)
+int fcntl(int s, int cmd, ...)
 {
-    return lib_api_p->lwip_apis->lwip_fcntl(s, cmd, argp);
+	va_list ap;
+	va_start( ap, cmd );
+	int para = va_arg( ap, int);
+	va_end( ap );
+    return lib_api_p->lwip_apis->lwip_fcntl(s, cmd, para);
 }
 
