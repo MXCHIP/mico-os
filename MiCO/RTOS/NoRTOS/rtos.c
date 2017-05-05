@@ -66,6 +66,7 @@ typedef volatile struct _noos_mutex_t
  ******************************************************/
 
 extern int __real_main(void);
+extern void mico_board_init(void);
 
 /******************************************************
  *               Variable Definitions

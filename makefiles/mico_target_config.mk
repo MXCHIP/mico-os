@@ -227,8 +227,19 @@ EXTRA_CFLAGS :=    -DMiCO_SDK_VERSION_MAJOR=$(MiCO_SDK_VERSION_MAJOR) \
 # Load platform makefile to make variables like WLAN_CHIP, HOST_OPENOCD & HOST_ARCH available to all makefiles
 $(eval CURDIR := $(PLATFORM_DIRECTORY)/)
 include $(PLATFORM_DIRECTORY)/$(notdir $(PLATFORM_DIRECTORY)).mk
+
+ifneq ($(MBED_SUPPORT),)
+include $(MICO_OS_PATH)/platform/mbed/mbed.mk
+
+TARGETS := $(foreach target, $(MBED_TARGETS), TARGET_$(target))
+$(eval DIRS := $(shell $(PYTHON) $(LIST_SUB_DIRS_SCRIPT) mico-os/platform/mbed/targets))
+$(foreach DIR, $(DIRS), $(if $(filter $(notdir $(DIR)), $(TARGETS)), $(eval include $(DIR)/$(notdir $(DIR)).mk),))
+
+else
 $(eval CURDIR := $(MICO_OS_PATH)/platform/MCU/$(HOST_MCU_FAMILY)/)
 include $(MICO_OS_PATH)/platform/MCU/$(HOST_MCU_FAMILY)/$(HOST_MCU_FAMILY).mk
+endif
+
 MAIN_COMPONENT_PROCESSING :=1
 $(eval $(call PROCESS_COMPATIBILITY_CHECK,))
 

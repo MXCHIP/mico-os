@@ -149,8 +149,8 @@ CLIB_LDFLAGS_NANO_FLOAT:= --specs=nano.specs -u _printf_float
 # Chip specific flags for GCC
 
 ifeq ($(HOST_ARCH),Cortex-M4F)
-CPU_CFLAGS     := -mthumb -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -D__CORTEX_M4F
-CPU_CXXFLAGS   := -mthumb -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -D__CORTEX_M4F
+CPU_CFLAGS     := -mthumb -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -D__CORTEX_M4 -D__FPU_PRESENT=1
+CPU_CXXFLAGS   := -mthumb -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -D__CORTEX_M4 -D__FPU_PRESENT=1
 CPU_ASMFLAGS   := -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard
 CPU_LDFLAGS    := -mthumb -mcpu=cortex-m4 -Wl,-A,thumb
 CLIB_LDFLAGS_NANO       += -mfpu=fpv4-sp-d16 -mfloat-abi=hard
