@@ -312,7 +312,7 @@ typedef struct
 
 typedef struct
 {
-    mico_flash_t               partition_owner;
+    int32_t                    partition_owner;
     const char*                partition_description;
     uint32_t                   partition_start_addr;
     uint32_t                   partition_length;

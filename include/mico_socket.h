@@ -129,7 +129,7 @@ struct addrinfo {
 #define F_GETFL 3
 #define F_SETFL 4
 
-#define O_NONBLOCK 1
+
 
 /*
  * Options for level IPPROTO_IP
@@ -248,6 +248,8 @@ struct timeval {
     long      tv_sec;     /* seconds */
     long      tv_usec;    /* and microseconds */
 };
+
+#define O_NONBLOCK 1
 
 #define FD_SETSIZE        64    /**< MAX fd number is 64 in MICO. */
 #define howmany(x, y)   (((x) + ((y) - 1)) / (y))

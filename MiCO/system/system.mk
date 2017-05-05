@@ -17,8 +17,12 @@ $(NAME)_SOURCES := mico_system_init.c \
                    mico_system_time.c \
                    mico_system_power_daemon.c \
                    system_misc.c 
-                   
+
+ifneq ($(MBED_SUPPORT),)
+$(NAME)_SOURCES  += command_console/mico_cli.cpp          
+else       
 $(NAME)_SOURCES  += command_console/mico_cli.c
+endif
 $(NAME)_INCLUDES += command_console
 
 $(NAME)_SOURCES += config_server/config_server_menu.c \

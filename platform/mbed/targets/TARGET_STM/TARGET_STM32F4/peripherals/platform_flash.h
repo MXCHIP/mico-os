@@ -43,13 +43,6 @@ int iflash_protect(uint32_t StartAddress, uint32_t EndAddress, bool enable);
 #endif
 
 
-
-#ifdef USE_MICO_SPI_FLASH
-static OSStatus spiFlashErase(uint32_t StartAddress, uint32_t EndAddress);
-#endif
-
-
-
 #ifdef USE_QUAD_SPI_FLASH
 
 int qsflash_erase( uint32_t StartAddress, uint32_t EndAddress );

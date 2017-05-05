@@ -54,6 +54,17 @@ typedef platform_spi_slave_command_t            mico_spi_slave_command_t;
 
 typedef platform_spi_slave_data_buffer_t        mico_spi_slave_data_buffer_t;
 
+typedef int32_t mico_gpio_t;  /**< MiCO GPIO peripheral handle, MICO_GPIO_XX define by board/<board_name>/board.h. */
+typedef int32_t mico_spi_t;   /**< MiCO SPI peripheral handle, MICO_SPI_XX define by board/<board_name>/board.h. */
+typedef int32_t mico_adc_t;   /**< MiCO ADC peripheral handle, MICO_ADC_XX define by board/<board_name>/board.h. */
+typedef int32_t mico_i2c_t;   /**< MiCO I2C peripheral handle, MICO_I2C_XX define by board/<board_name>/board.h. */
+typedef int32_t mico_pwm_t;   /**< MiCO PWM peripheral handle, MICO_PWM_XX define by board/<board_name>/board.h. */
+typedef int32_t mico_uart_t;  /**< MiCO UART peripheral handle, MICO_UART_XX define by board/<board_name>/board.h. */
+
+typedef int32_t mico_flash_t;
+typedef int32_t mico_partition_t;
+
+
 #include "MiCODrivers/mico_gpio.h"
 #include "MiCODrivers/mico_wdg.h"
 #include "MiCODrivers/mico_uart.h"
@@ -74,6 +85,7 @@ typedef platform_spi_slave_data_buffer_t        mico_spi_slave_data_buffer_t;
 #ifdef USE_MICO_SPI_FLASH
 extern const mico_spi_device_t mico_spi_flash;
 #endif
+
 
 /** @defgroup MICO_PLATFORM  MICO Hardware Abstract Layer APIs
 *   @brief Control hardware peripherals on different platfroms using standard HAL API functions

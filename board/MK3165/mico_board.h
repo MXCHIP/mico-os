@@ -204,7 +204,7 @@ EMW3165 on EMB-3165-A platform pin definitions ...
 +---------------+----+--------------------+--------------+----------------+ 
 */
 
-typedef enum
+enum
 {
     MICO_SYS_LED, 
     MICO_RF_LED, 
@@ -239,59 +239,59 @@ typedef enum
     MICO_GPIO_38,
     MICO_GPIO_MAX, /* Denotes the total number of GPIO port aliases. Not a valid GPIO alias */
     MICO_GPIO_NONE,
-} mico_gpio_t;
+};
 
-typedef enum
+enum
 {
   MICO_SPI_1,
   MICO_SPI_MAX, /* Denotes the total number of SPI port aliases. Not a valid SPI alias */
   MICO_SPI_NONE,
-} mico_spi_t;
+};
 
-typedef enum
+enum
 {
     MICO_I2C_1,
     MICO_I2C_MAX, /* Denotes the total number of I2C port aliases. Not a valid I2C alias */
     MICO_I2C_NONE,
-} mico_i2c_t;
+};
 
-typedef enum
+enum
 {
     MICO_PWM_MAX, /* Denotes the total number of PWM port aliases. Not a valid PWM alias */
     MICO_PWM_NONE,
-} mico_pwm_t;
+};
 
-typedef enum
+enum
 {
     MICO_ADC_1,
     MICO_ADC_2,
     MICO_ADC_MAX, /* Denotes the total number of ADC port aliases. Not a valid ADC alias */
     MICO_ADC_NONE,
-} mico_adc_t;
+};
 
-typedef enum
+enum
 {
     MICO_UART_1,
     MICO_UART_2,
     MICO_UART_MAX, /* Denotes the total number of UART port aliases. Not a valid UART alias */
     MICO_UART_NONE,
-} mico_uart_t;
+};
 
-typedef enum
+enum
 {
   MICO_FLASH_EMBEDDED,
   MICO_FLASH_SPI,
   MICO_FLASH_MAX,
   MICO_FLASH_NONE,
-} mico_flash_t;
+};
 
-typedef enum
+enum
 {
   MICO_PARTITION_FILESYS,
   MICO_PARTITION_USER_MAX
-} mico_user_partition_t;
+};
 
-typedef enum
+enum
 {
     MICO_PARTITION_ERROR = -1,
     MICO_PARTITION_BOOTLOADER = MICO_PARTITION_USER_MAX,
@@ -303,7 +303,7 @@ typedef enum
     MICO_PARTITION_PARAMETER_2,
     MICO_PARTITION_MAX,
     MICO_PARTITION_NONE,
-} mico_partition_t;
+};
 
 #ifdef BOOTLOADER
 #define MICO_STDIO_UART       (MICO_UART_2)

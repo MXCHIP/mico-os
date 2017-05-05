@@ -17,7 +17,6 @@
 #include <sys/stat.h>
 #include <sys/times.h>
 #include <sys/unistd.h>
-#include "stdio_newlib.h"
 
 #include "mico.h"
 

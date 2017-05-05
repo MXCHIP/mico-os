@@ -26,10 +26,6 @@
 #include "mico_rtos.h"
 #include "platform_init.h"
 
-#ifdef __GNUC__
-#include "../../GCC/stdio_newlib.h"
-#endif /* ifdef __GNUC__ */
-
 
 /******************************************************
 *                      Macros

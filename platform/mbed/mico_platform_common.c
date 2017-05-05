@@ -62,8 +62,8 @@ extern platform_gpio_irq_driver_t       platform_gpio_irq_drivers[];
 extern const platform_i2c_t             platform_i2c_peripherals[];
 extern platform_i2c_driver_t            platform_i2c_drivers[];
 // extern const platform_pwm_t             platform_pwm_peripherals[];
-// extern const platform_spi_t             platform_spi_peripherals[];
-// extern platform_spi_driver_t            platform_spi_drivers[];
+extern const platform_spi_t             platform_spi_peripherals[];
+extern platform_spi_driver_t            platform_spi_drivers[];
 extern const platform_uart_t            platform_uart_peripherals[];
 extern platform_uart_driver_t           platform_uart_drivers[];
 // extern WEAK platform_spi_slave_driver_t platform_spi_slave_drivers[];
@@ -347,91 +347,94 @@ void MicoSystemStandBy( uint32_t secondsToWakeup )
 //   return (OSStatus) platform_rtc_set_time( time );
 // }
 
-// OSStatus MicoSpiInitialize( const mico_spi_device_t* spi )
-// {
-//   platform_spi_config_t config;
-//   OSStatus              err = kNoErr;
+OSStatus MicoSpiInitialize( const mico_spi_device_t* spi )
+{
+    platform_spi_config_t config;
+    OSStatus err = kNoErr;
 
-//   if ( spi->port >= MICO_SPI_NONE )
-//     return kUnsupportedErr;
+    if ( spi->port >= MICO_SPI_NONE )
+        return kUnsupportedErr;
 
-// #ifdef MICO_WIFI_SHARE_SPI_BUS
-//   if( platform_spi_peripherals[spi->port].port == wifi_spi.port )
-//   {
-//     return platform_wlan_spi_init( &platform_gpio_pins[spi->chip_select] );
-//   }
-// #endif
+#ifdef MICO_WIFI_SHARE_SPI_BUS
+    if( platform_spi_peripherals[spi->port].port == wifi_spi.port )
+    {
+        return platform_wlan_spi_init( &platform_gpio_pins[spi->chip_select] );
+    }
+#endif
 
-//   if( platform_spi_drivers[spi->port].spi_mutex == NULL)
-//     mico_rtos_init_mutex( &platform_spi_drivers[spi->port].spi_mutex );
-  
-//   config.chip_select = &platform_gpio_pins[spi->chip_select];
-//   config.speed       = spi->speed;
-//   config.mode        = spi->mode;
-//   config.bits        = spi->bits;
+    if ( platform_spi_drivers[spi->port].spi_mutex == NULL )
+        mico_rtos_init_mutex( &platform_spi_drivers[spi->port].spi_mutex );
 
-//   mico_rtos_lock_mutex( &platform_spi_drivers[spi->port].spi_mutex );
-//   err = platform_spi_init( &platform_spi_drivers[spi->port], &platform_spi_peripherals[spi->port], &config );
-//   mico_rtos_unlock_mutex( &platform_spi_drivers[spi->port].spi_mutex );
+    config.cs = &platform_gpio_pins[spi->chip_select];
+    config.cs_drv = &platform_gpio_drivers[spi->chip_select];
+    config.speed = spi->speed;
+    config.mode = spi->mode;
+    config.bits = spi->bits;
 
-//   return err;
-// }
+    mico_rtos_lock_mutex( &platform_spi_drivers[spi->port].spi_mutex );
+    err = platform_spi_init( &platform_spi_drivers[spi->port], &platform_spi_peripherals[spi->port], &config );
+    mico_rtos_unlock_mutex( &platform_spi_drivers[spi->port].spi_mutex );
 
-// OSStatus MicoSpiFinalize( const mico_spi_device_t* spi )
-// {
-//   OSStatus err = kNoErr;
+    return err;
+}
 
-//   if ( spi->port >= MICO_SPI_NONE )
-//     return kUnsupportedErr;
+OSStatus MicoSpiFinalize( const mico_spi_device_t* spi )
+{
+    OSStatus err = kNoErr;
 
-// #ifdef MICO_WIFI_SHARE_SPI_BUS
-//   if( platform_spi_peripherals[spi->port].port == wifi_spi.port )
-//   {
-//       return kUnsupportedErr;
-//     //return platform_wlan_spi_deinit( &platform_gpio_pins[spi->chip_select] );
-//   }
-// #endif
+    if ( spi->port >= MICO_SPI_NONE )
+        return kUnsupportedErr;
 
-//   if( platform_spi_drivers[spi->port].spi_mutex == NULL)
-//     mico_rtos_init_mutex( &platform_spi_drivers[spi->port].spi_mutex );
-  
-//   mico_rtos_lock_mutex( &platform_spi_drivers[spi->port].spi_mutex );
-//   err = platform_spi_deinit( &platform_spi_drivers[spi->port] );
-//   mico_rtos_unlock_mutex( &platform_spi_drivers[spi->port].spi_mutex );
+#ifdef MICO_WIFI_SHARE_SPI_BUS
+    if( platform_spi_peripherals[spi->port].port == wifi_spi.port )
+    {
+        return kUnsupportedErr;
+        //return platform_wlan_spi_deinit( &platform_gpio_pins[spi->chip_select] );
+    }
+#endif
 
-//   return err;
-// }
+    if ( platform_spi_drivers[spi->port].spi_mutex == NULL )
+        mico_rtos_init_mutex( &platform_spi_drivers[spi->port].spi_mutex );
 
-// OSStatus MicoSpiTransfer( const mico_spi_device_t* spi, const mico_spi_message_segment_t* segments, uint16_t number_of_segments )
-// {
-//   platform_spi_config_t config;
-//   OSStatus err = kNoErr;
+    mico_rtos_lock_mutex( &platform_spi_drivers[spi->port].spi_mutex );
+    err = platform_spi_deinit( &platform_spi_drivers[spi->port] );
+    mico_rtos_unlock_mutex( &platform_spi_drivers[spi->port].spi_mutex );
 
-//   if ( spi->port >= MICO_SPI_NONE )
-//     return kUnsupportedErr;
+    return err;
+}
 
-// #ifdef MICO_WIFI_SHARE_SPI_BUS
-//   if( platform_spi_peripherals[spi->port].port == wifi_spi.port )
-//   {
-//     return platform_wlan_spi_transfer( &platform_gpio_pins[spi->chip_select], segments, number_of_segments );
-//   }
-// #endif
+OSStatus MicoSpiTransfer( const mico_spi_device_t* spi, const mico_spi_message_segment_t* segments,
+                          uint16_t number_of_segments )
+{
+    platform_spi_config_t config;
+    OSStatus err = kNoErr;
 
-//   if( platform_spi_drivers[spi->port].spi_mutex == NULL)
-//     mico_rtos_init_mutex( &platform_spi_drivers[spi->port].spi_mutex );
+    if ( spi->port >= MICO_SPI_NONE )
+        return kUnsupportedErr;
 
-//   config.chip_select = &platform_gpio_pins[spi->chip_select];
-//   config.speed       = spi->speed;
-//   config.mode        = spi->mode;
-//   config.bits        = spi->bits;
+#ifdef MICO_WIFI_SHARE_SPI_BUS
+    if( platform_spi_peripherals[spi->port].port == wifi_spi.port )
+    {
+        return platform_wlan_spi_transfer( &platform_gpio_pins[spi->chip_select], segments, number_of_segments );
+    }
+#endif
 
-//   mico_rtos_lock_mutex( &platform_spi_drivers[spi->port].spi_mutex );
-//   err = platform_spi_init( &platform_spi_drivers[spi->port], &platform_spi_peripherals[spi->port], &config );
-//   err = platform_spi_transfer( &platform_spi_drivers[spi->port], &config, segments, number_of_segments );
-//   mico_rtos_unlock_mutex( &platform_spi_drivers[spi->port].spi_mutex );
+    if ( platform_spi_drivers[spi->port].spi_mutex == NULL )
+        mico_rtos_init_mutex( &platform_spi_drivers[spi->port].spi_mutex );
 
-//   return err;
-// }
+    config.cs = &platform_gpio_pins[spi->chip_select];
+    config.cs_drv = &platform_gpio_drivers[spi->chip_select];
+    config.speed = spi->speed;
+    config.mode = spi->mode;
+    config.bits = spi->bits;
+
+    mico_rtos_lock_mutex( &platform_spi_drivers[spi->port].spi_mutex );
+    err = platform_spi_init( &platform_spi_drivers[spi->port], &platform_spi_peripherals[spi->port], &config );
+    err = platform_spi_transfer( &platform_spi_drivers[spi->port], &config, segments, number_of_segments );
+    mico_rtos_unlock_mutex( &platform_spi_drivers[spi->port].spi_mutex );
+
+    return err;
+}
 
 // OSStatus MicoSpiSlaveInitialize( mico_spi_t spi, const mico_spi_slave_config_t* config )
 // {

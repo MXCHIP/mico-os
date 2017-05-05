@@ -57,37 +57,35 @@ extern OSStatus host_platform_init( void );
 const platform_gpio_t platform_gpio_pins[] =
 {
   /* Common GPIOs for internal use */
-   [FLASH_PIN_QSPI_CS ]                = { QSPI_CS },
-   [FLASH_PIN_QSPI_CLK]                = { QSPI_CLK },
-   [FLASH_PIN_QSPI_D0]                 = { QSPI_D0 },
-   [FLASH_PIN_QSPI_D1]                 = { QSPI_D1 },
-   [FLASH_PIN_QSPI_D2]                 = { QSPI_D2 },
-   [FLASH_PIN_QSPI_D3]                 = { QSPI_D3 },
+//    [MICO_SYS_LED]                      = { GPIOB,  13 },
+//    [MICO_RF_LED]                       = { GPIOB,  8 },
+//    [BOOT_SEL]                          = { GPIOB,  1 },
+//    [MFG_SEL]                           = { GPIOB,  0 },
+//    [EasyLink_BUTTON]                   = { GPIOA,  1 },
+//    [STDIO_UART_RX]                     = { GPIOA,  3 },
+//    [STDIO_UART_TX]                     = { GPIOA,  2 },
+    [FLASH_PIN_SPI_CS  ]                = { SFLASH_CS },
 
   /* GPIOs for external use */
-  [MICO_GPIO_2]                       = { MBED_GPIO_2 },
-  [MICO_GPIO_4]                       = { MBED_GPIO_4 },   // SPI_MOSI
-  [MICO_GPIO_5]                       = { MBED_GPIO_5 },   // SPI_CS
-  [MICO_GPIO_6]                       = { MBED_GPIO_6 },   // SPI_SCK
-  [MICO_GPIO_7]                       = { MBED_GPIO_7 },   // SPI_MISO
-  [MICO_GPIO_8]                       = { MBED_GPIO_8 },   // UART_TXD_DEBUG
-  [MICO_GPIO_9]                       = { MBED_GPIO_9 },   // EASY LINK
-  [MICO_GPIO_12]                      = { MBED_GPIO_12 },   // UART_RXD_DEBUG
-  [MICO_GPIO_14]                      = { MBED_GPIO_14 },   // WL_HOST_WAKE
-  [MICO_GPIO_16]                      = { MBED_GPIO_16 },
-  [MICO_GPIO_17]                      = { MBED_GPIO_17 },   // I2C_SCL
-  [MICO_GPIO_18]                      = { MBED_GPIO_18 },   // I2C_SDA
-  [MICO_GPIO_19]                      = { MBED_GPIO_19 },
-  [MICO_GPIO_27]                      = { MBED_GPIO_27 },   //
-  [MICO_GPIO_29]                      = { MBED_GPIO_29 },   // UART_RXD_USER
-  [MICO_GPIO_30]                      = { MBED_GPIO_30 },   // UART_TXD_USER
-  [MICO_GPIO_31]                      = { MBED_GPIO_31 },   // RF LED
-  [MICO_GPIO_33]                      = { MBED_GPIO_33 },   // SYS LED
-  [MICO_GPIO_34]                      = { MBED_GPIO_34 },
-  [MICO_GPIO_35]                      = { MBED_GPIO_35 },
-  [MICO_GPIO_36]                      = { MBED_GPIO_36 },
-  [MICO_GPIO_37]                      = { MBED_GPIO_37 },
-  [MICO_GPIO_38]                      = { MBED_GPIO_38 },   // ADC_1
+    [MICO_GPIO_2]                       = { MBED_GPIO_2 },
+    [MICO_GPIO_8]                       = { MBED_GPIO_8 },   // UART_TXD_DEBUG
+    [MICO_GPIO_9]                       = { MBED_GPIO_9 },   // EASY LINK
+    [MICO_GPIO_12]                      = { MBED_GPIO_12 },   // UART_RXD_DEBUG
+    [MICO_GPIO_14]                      = { MBED_GPIO_14 },   // WL_HOST_WAKE
+    [MICO_GPIO_16]                      = { MBED_GPIO_16 },
+    [MICO_GPIO_17]                      = { MBED_GPIO_17 },   // I2C_SCL
+    [MICO_GPIO_18]                      = { MBED_GPIO_18 },   // I2C_SDA
+    [MICO_GPIO_19]                      = { MBED_GPIO_19 },
+    [MICO_GPIO_27]                      = { MBED_GPIO_27 },   //
+    [MICO_GPIO_29]                      = { MBED_GPIO_29 },   // UART_RXD_USER
+    [MICO_GPIO_30]                      = { MBED_GPIO_30 },   // UART_TXD_USER
+    [MICO_GPIO_31]                      = { MBED_GPIO_31 },   // RF LED
+    [MICO_GPIO_33]                      = { MBED_GPIO_33 },   // SYS LED
+    [MICO_GPIO_34]                      = { MBED_GPIO_34 },
+    [MICO_GPIO_35]                      = { MBED_GPIO_35 },
+    [MICO_GPIO_36]                      = { MBED_GPIO_36 },
+    [MICO_GPIO_37]                      = { MBED_GPIO_37 },
+    [MICO_GPIO_38]                      = { MBED_GPIO_38 },   // ADC_1
 };
 
 platform_gpio_driver_t      platform_gpio_drivers[MICO_GPIO_MAX];
@@ -128,163 +126,129 @@ platform_gpio_irq_driver_t  platform_gpio_irq_drivers[MICO_GPIO_MAX];
 const platform_uart_t platform_uart_peripherals[MICO_UART_MAX];
 platform_uart_driver_t platform_uart_drivers[MICO_UART_MAX];
 
-// const platform_spi_t platform_spi_peripherals[] =
-// {
-//   [MICO_SPI_1]  =
-//   {
-//     .port                         = SPI2,
-//     .gpio_af                      = GPIO_AF_SPI2,
-//     .peripheral_clock_reg         = RCC_APB1Periph_SPI2,
-//     .peripheral_clock_func        = RCC_APB1PeriphClockCmd,
-//     .pin_mosi                     = &platform_gpio_pins[MICO_GPIO_4],
-//     .pin_miso                     = &platform_gpio_pins[MICO_GPIO_7],
-//     .pin_clock                    = &platform_gpio_pins[MICO_GPIO_6],
-//     .tx_dma =
-//     {
-//       .controller                 = DMA1,
-//       .stream                     = DMA1_Stream4,
-//       .channel                    = DMA_Channel_0,
-//       .irq_vector                 = DMA1_Stream4_IRQn,
-//       .complete_flags             = DMA_HISR_TCIF4,
-//       .error_flags                = ( DMA_HISR_TEIF4 | DMA_HISR_FEIF4 ),
-//     },
-//     .rx_dma =
-//     {
-//       .controller                 = DMA1,
-//       .stream                     = DMA1_Stream3,
-//       .channel                    = DMA_Channel_0,
-//       .irq_vector                 = DMA1_Stream3_IRQn,
-//       .complete_flags             = DMA_LISR_TCIF3,
-//       .error_flags                = ( DMA_LISR_TEIF3 | DMA_LISR_FEIF3 | DMA_LISR_DMEIF3 ),
-//     },
-//   }
-// };
+const platform_spi_t platform_spi_peripherals[] =
+{
+    [MICO_SPI_1]  =
+    {
+        .mbed_scl_pin     = SFLASH_SCL,
+        .mbed_mosi_pin    = SFLASH_MOSI,
+        .mbed_miso_pin    = SFLASH_MISO,
+    }
+};
 
-// platform_spi_driver_t platform_spi_drivers[MICO_SPI_MAX];
+platform_spi_driver_t platform_spi_drivers[MICO_SPI_MAX];
 
 
 /* Flash memory devices */
 const platform_flash_t platform_flash_peripherals[] =
 {
-   [MICO_FLASH_EMBEDDED] =
-   {
-     .flash_type                   = FLASH_TYPE_EMBEDDED,
-     .flash_start_addr             = 0x08000000,
-     .flash_length                 = 0x100000,
-   },
-   [MICO_FLASH_QSPI] =
-   {
-     .flash_type                   = FLASH_TYPE_QSPI,
-     .flash_start_addr             = 0x000000,
-     .flash_length                 = 0x200000,
-   },
+  [MICO_FLASH_EMBEDDED] =
+  {
+    .flash_type                   = FLASH_TYPE_EMBEDDED,
+    .flash_start_addr             = 0x08000000,
+    .flash_length                 = 0x80000,
+  },
+  [MICO_FLASH_SPI] =
+  {
+    .flash_type                   = FLASH_TYPE_SPI,
+    .flash_start_addr             = 0x000000,
+    .flash_length                 = 0x200000,
+  },
 };
 
 platform_flash_driver_t platform_flash_drivers[MICO_FLASH_MAX];
 
 /* Logic partition on flash devices */
-const platform_logic_partition_t mico_partitions[] =
+const mico_logic_partition_t mico_partitions[] =
 {
-    [MICO_PARTITION_BOOTLOADER] =
-    {
-        .partition_owner = MICO_FLASH_EMBEDDED,
-        .partition_description = "Bootloader",
-        .partition_start_addr = 0x08000000,
-        .partition_length = 0x8000,    //32k bytes
-        .partition_options = PAR_OPT_READ_EN | PAR_OPT_WRITE_DIS,
-    },
-    [MICO_PARTITION_APPLICATION] =
-    {
-        .partition_owner = MICO_FLASH_EMBEDDED,
-        .partition_description = "Application",
-        .partition_start_addr = 0x08008000,
-        .partition_length = 0xF8000,   //992k bytes
-        .partition_options = PAR_OPT_READ_EN | PAR_OPT_WRITE_DIS,
-    },
-    [MICO_PARTITION_ATE] =
-    {
-        .partition_owner = MICO_FLASH_EMBEDDED,
-        .partition_description = "ATEFirmware",
-        .partition_start_addr = 0x080A0000,
-        .partition_length = 0x60000, //384k bytes
-        .partition_options = PAR_OPT_READ_EN | PAR_OPT_WRITE_DIS,
-    },
-    [MICO_PARTITION_PARAMETER_1] =
-    {
-        .partition_owner = MICO_FLASH_QSPI,
-        .partition_description = "PARAMETER1",
-        .partition_start_addr = 0x0,
-        .partition_length = 0x1000, // 4k bytes
-        .partition_options = PAR_OPT_READ_EN | PAR_OPT_WRITE_EN,
-    },
-    [MICO_PARTITION_PARAMETER_2] =
-    {
-        .partition_owner = MICO_FLASH_QSPI,
-        .partition_description = "PARAMETER2",
-        .partition_start_addr = 0x1000,
-        .partition_length = 0x1000, //4k bytes
-        .partition_options = PAR_OPT_READ_EN | PAR_OPT_WRITE_EN,
-    },
-    [MICO_PARTITION_RF_FIRMWARE] =
-    {
-        .partition_owner = MICO_FLASH_QSPI,
-        .partition_description = "RF Firmware",
-        .partition_start_addr = 0x2000,
-        .partition_length = 0x6E000,  //440k bytes
-        .partition_options = PAR_OPT_READ_EN | PAR_OPT_WRITE_DIS,
-    },
-    [MICO_PARTITION_OTA_TEMP] =
-    {
-        .partition_owner = MICO_FLASH_QSPI,
-        .partition_description = "OTA Storage",
-        .partition_start_addr = 0x70000,
-        .partition_length = 0x98000, //608k bytes
-        .partition_options = PAR_OPT_READ_EN | PAR_OPT_WRITE_EN,
-    },
-    [MICO_PARTITION_FILESYS] =
-    {
-        .partition_owner = MICO_FLASH_QSPI,
-        .partition_description = "FILESYS",
-        .partition_start_addr = 0x118000,
-        .partition_length = 0x0E8000, //928k bytes
-        .partition_options = PAR_OPT_READ_EN | PAR_OPT_WRITE_EN,
-    }
+  [MICO_PARTITION_BOOTLOADER] =
+  {
+    .partition_owner           = MICO_FLASH_EMBEDDED,
+    .partition_description     = "Bootloader",
+    .partition_start_addr      = 0x08000000,
+    .partition_length          =     0x8000,    //32k bytes
+    .partition_options         = PAR_OPT_READ_EN | PAR_OPT_WRITE_DIS,
+  },
+  [MICO_PARTITION_APPLICATION] =
+  {
+    .partition_owner           = MICO_FLASH_EMBEDDED,
+    .partition_description     = "Application",
+    .partition_start_addr      = 0x0800C000,
+    .partition_length          =    0x74000,   //464k bytes
+    .partition_options         = PAR_OPT_READ_EN | PAR_OPT_WRITE_DIS,
+  },
+  [MICO_PARTITION_RF_FIRMWARE] =
+  {
+    .partition_owner           = MICO_FLASH_SPI,
+    .partition_description     = "RF Firmware",
+    .partition_start_addr      = 0x2000,
+    .partition_length          = 0x3E000,  //248k bytes
+    .partition_options         = PAR_OPT_READ_EN | PAR_OPT_WRITE_DIS,
+  },
+  [MICO_PARTITION_OTA_TEMP] =
+  {
+    .partition_owner           = MICO_FLASH_SPI,
+    .partition_description     = "OTA Storage",
+    .partition_start_addr      = 0x40000,
+    .partition_length          = 0x70000, //448k bytes
+    .partition_options         = PAR_OPT_READ_EN | PAR_OPT_WRITE_EN,
+  },
+  [MICO_PARTITION_PARAMETER_1] =
+  {
+    .partition_owner           = MICO_FLASH_SPI,
+    .partition_description     = "PARAMETER1",
+    .partition_start_addr      = 0x0,
+    .partition_length          = 0x1000, // 4k bytes
+    .partition_options         = PAR_OPT_READ_EN | PAR_OPT_WRITE_EN,
+  },
+  [MICO_PARTITION_PARAMETER_2] =
+  {
+    .partition_owner           = MICO_FLASH_SPI,
+    .partition_description     = "PARAMETER1",
+    .partition_start_addr      = 0x1000,
+    .partition_length          = 0x1000, //4k bytes
+    .partition_options         = PAR_OPT_READ_EN | PAR_OPT_WRITE_EN,
+  },
+  [MICO_PARTITION_FILESYS] =
+  {
+    .partition_owner           = MICO_FLASH_SPI,
+    .partition_description     = "FILESYS",
+    .partition_start_addr      = 0x100000,
+    .partition_length          = 0x100000, //1M bytes
+    .partition_options         = PAR_OPT_READ_EN | PAR_OPT_WRITE_EN,
+  }
 };
 
-// #if defined ( USE_MICO_SPI_FLASH )
-// const mico_spi_device_t mico_spi_flash =
-// {
-//   .port        = MICO_SPI_1,
-//   .chip_select = FLASH_PIN_SPI_CS,
-//   .speed       = 40000000,
-//   .mode        = (SPI_CLOCK_RISING_EDGE | SPI_CLOCK_IDLE_HIGH | SPI_USE_DMA | SPI_MSB_FIRST ),
-//   .bits        = 8
-// };
-// #endif
 
-/** Wi-Fi control pins. Used by platform/MCU/wlan_platform_common.c
- */
+#if defined ( USE_MICO_SPI_FLASH )
+const mico_spi_device_t mico_spi_flash =
+{
+    .port = MICO_SPI_1,
+    .chip_select = FLASH_PIN_SPI_CS,
+    .speed = 40000000,
+    .mode = (SPI_CLOCK_RISING_EDGE | SPI_CLOCK_IDLE_HIGH | SPI_USE_DMA | SPI_MSB_FIRST),
+    .bits = 8
+};
+#endif
+
 const platform_gpio_t wifi_control_pins[] =
 {
-    [WIFI_PIN_RESET      ] = { PA_8 },
-    [WIFI_PIN_32K_CLK    ] = { PA_9 },
+  [WIFI_PIN_RESET]        = { PB_14 },
 };
+platform_gpio_driver_t wifi_control_pin_drivers[WIFI_PIN_CONTROL_MAX];
 
-platform_gpio_driver_t      wifi_control_pin_drivers[WIFI_PIN_CONTROL_MAX];
-
-/* Wi-Fi SDIO bus pins. Used by platform/MCU/STM32F4xx/wlan_bus_driver/wlan_SDIO.c */
+/* Wi-Fi SDIO bus pins. Used by platform/MCU/STM32F2xx/EMW1062_driver/wlan_SDIO.c */
 const platform_gpio_t wifi_sdio_pins[] =
 {
   [WIFI_PIN_SDIO_OOB_IRQ] = { SDIO_OOB_IRQ },
-  [WIFI_PIN_SDIO_CLK    ] = { SDIO_CLK },
-  [WIFI_PIN_SDIO_CMD    ] = { SDIO_CMD },
-  [WIFI_PIN_SDIO_D0     ] = { SDIO_D0 },
-  [WIFI_PIN_SDIO_D1     ] = { SDIO_D1 },
-  [WIFI_PIN_SDIO_D2     ] = { SDIO_D2 },
-  [WIFI_PIN_SDIO_D3     ] = { SDIO_D3 },
+  [WIFI_PIN_SDIO_CLK    ] = { SDIO_CLK     },
+  [WIFI_PIN_SDIO_CMD    ] = { SDIO_CMD     },
+  [WIFI_PIN_SDIO_D0     ] = { SDIO_D0      },
+  [WIFI_PIN_SDIO_D1     ] = { SDIO_D1      },
+  [WIFI_PIN_SDIO_D2     ] = { SDIO_D2      },
+  [WIFI_PIN_SDIO_D3     ] = { SDIO_D3      },
 };
-
-platform_gpio_driver_t      wifi_sdio_pin_drivers[WIFI_PIN_SDIO_MAX];
+platform_gpio_driver_t wifi_sdio_pin_drivers[WIFI_PIN_SDIO_MAX];
 
 
 // /* Bluetooth control pins.*/

@@ -106,6 +106,8 @@ Porting Notes
 #define UART_WAKEUP_MASK_POSN   0
 #define UART_WAKEUP_DISABLE    (0 << UART_WAKEUP_MASK_POSN) /**< UART can not wakeup MCU from stop mode */
 #define UART_WAKEUP_ENABLE     (1 << UART_WAKEUP_MASK_POSN) /**< UART can wake up MCU from stop mode */
+
+#define THUMB2_PC 1
  
 /******************************************************
  *                   Enumerations
@@ -234,6 +236,16 @@ typedef enum
  */
 typedef void (*platform_gpio_irq_callback_t)( void* arg );
 
+/**
+ * IRQ callback handler  with argument
+ */
+typedef void (*platform_irq_callback)(void* context);
+
+/**
+ * IRQ handler that generate IRQ routine with argument
+ */
+typedef void* platform_irq_handle;
+
 /******************************************************
  *                    Structures
  ******************************************************/
@@ -293,15 +305,18 @@ typedef struct
 typedef struct
 {
     PinName        mbed_scl_pin;
-    PinName        mbed_cs_pin;
     PinName        mbed_mosi_pin;
     PinName        mbed_miso_pin;
 } platform_spi_t;
 
 typedef struct
 {
-    spi_t*           spi_obj;
-    mico_mutex_t     spi_mutex;
+    spi_t                   spi_obj;
+    platform_spi_t*         peripheral;
+    mico_semaphore_t        transfer_complete;
+    int                     event;
+    mico_mutex_t            spi_mutex;
+    platform_irq_handle irq;
 } platform_spi_driver_t;
 
 /* peripherals only for mico */
@@ -336,10 +351,11 @@ typedef struct
  */
 typedef struct
 {
-    uint32_t               speed;
-    uint8_t                mode;
-    uint8_t                bits;
-    const platform_gpio_t* chip_select;
+    uint32_t                speed;
+    uint8_t                 mode;
+    uint8_t                 bits;
+    const platform_gpio_t*  cs;
+    platform_gpio_driver_t* cs_drv;
 } platform_spi_config_t;
 
 #pragma pack(1)
@@ -422,7 +438,7 @@ typedef struct
 
 typedef struct
 {
-    mico_flash_t               partition_owner;
+    int32_t                    partition_owner;
     const char*                partition_description;
     uint32_t                   partition_start_addr;
     uint32_t                   partition_length;
@@ -623,7 +639,7 @@ uint32_t platform_uart_get_length_in_buffer( platform_uart_driver_t* driver );
 //  *
 //  * @return @ref OSStatus
 //  */
-// OSStatus platform_spi_init( platform_spi_driver_t* driver, const platform_spi_t* peripheral, const platform_spi_config_t* config );
+OSStatus platform_spi_init( platform_spi_driver_t* driver, const platform_spi_t* peripheral, const platform_spi_config_t* config );
 // OSStatus platform_wlan_spi_init( const platform_gpio_t* chip_select );
 
 
@@ -632,7 +648,7 @@ uint32_t platform_uart_get_length_in_buffer( platform_uart_driver_t* driver );
 //  *
 //  * @return @ref OSStatus
 //  */
-// OSStatus platform_spi_deinit( platform_spi_driver_t* driver );
+OSStatus platform_spi_deinit( platform_spi_driver_t* driver );
 // OSStatus platform_wlan_spi_deinit( const platform_gpio_t* chip_select );
 
 
@@ -641,7 +657,7 @@ uint32_t platform_uart_get_length_in_buffer( platform_uart_driver_t* driver );
 //  *
 //  * @return @ref OSStatus
 //  */
-// OSStatus platform_spi_transfer( platform_spi_driver_t* driver, const platform_spi_config_t* config, const platform_spi_message_segment_t* segments, uint16_t number_of_segments );
+OSStatus platform_spi_transfer( platform_spi_driver_t* driver, const platform_spi_config_t* config, const platform_spi_message_segment_t* segments, uint16_t number_of_segments );
 // OSStatus platform_wlan_spi_transfer( const platform_gpio_t* chip_select, const platform_spi_message_segment_t* segments, uint16_t number_of_segments );
 
 
@@ -972,6 +988,15 @@ OSStatus platform_flash_read( const platform_flash_t *peripheral, volatile uint3
 //  */
 // OSStatus platform_flash_enable_protect( const platform_flash_t *peripheral, uint32_t start_address, uint32_t end_address );
 // OSStatus platform_flash_disable_protect( const platform_flash_t *peripheral, uint32_t start_address, uint32_t end_address );
+
+void platform_irq_init( platform_irq_handle *irq, void* context, platform_irq_callback callback);
+
+inline uint32_t platform_irq_entry( platform_irq_handle *irq )
+{
+    return (((uint32_t) (*irq)) | THUMB2_PC);
+}
+
+void platform_irq_deinit( platform_irq_handle *irq );
 
 
 

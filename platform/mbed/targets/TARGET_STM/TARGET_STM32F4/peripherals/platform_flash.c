@@ -84,7 +84,7 @@ OSStatus platform_flash_erase( const platform_flash_t *peripheral, uint32_t star
   }
 #ifdef USE_MICO_SPI_FLASH
   else if( peripheral->flash_type == FLASH_TYPE_SPI ){
-    err = spiFlashErase( start_address, end_address );
+    err = sflash_erase( &sflash_handle, start_address, end_address );
     require_noerr(err, exit);
   }
 #else
@@ -247,4 +247,6 @@ OSStatus platform_flash_disable_protect( const platform_flash_t *peripheral, uin
 exit:
   return err;  
 }
+
+
 

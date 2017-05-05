@@ -123,6 +123,17 @@ int sflash_chip_erase( const sflash_handle_t* const handle );
  */ 
 int sflash_sector_erase( const sflash_handle_t* const handle, unsigned long device_address );
 
+/**
+ * @brief Erase part date of SPI flash
+ *
+ * @param  handle: handle of spi flash to be earsed
+ * @param  start_addr: start address of spi flash to be erased
+ * @param  end_addr: end address of spi flash to be erased
+ *
+ * @return  0       : on success.
+ * @return  none    : if an error occurred
+ */
+int sflash_erase( const sflash_handle_t* const handle, uint32_t start_addr, uint32_t end_addr);
 
 /**
  * @brief  Get size of SPI flash
