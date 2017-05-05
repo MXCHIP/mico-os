@@ -709,35 +709,35 @@ OSStatus MicoFlashRead( mico_partition_t partition, volatile uint32_t* off_set, 
     return err;
 }
 
-// OSStatus MicoFlashEnableSecurity( mico_partition_t partition, uint32_t off_set, uint32_t size )
-// {
-//   OSStatus err = kNoErr;
-//   uint32_t start_addr, end_addr;
-//   mico_logic_partition_t *partition_info;
+OSStatus MicoFlashEnableSecurity( mico_partition_t partition, uint32_t off_set, uint32_t size )
+{
+  OSStatus err = kNoErr;
+  uint32_t start_addr, end_addr;
+  mico_logic_partition_t *partition_info;
 
-//   require_quiet( size != 0, exit);
-//   require_action_quiet( partition > MICO_PARTITION_ERROR && partition < MICO_PARTITION_MAX, exit, err = kParamErr );
+  require_quiet( size != 0, exit);
+  require_action_quiet( partition > MICO_PARTITION_ERROR && partition < MICO_PARTITION_MAX, exit, err = kParamErr );
 
-//   partition_info = MicoFlashGetInfo( partition );
-//   require_action_quiet( partition_info->partition_owner != MICO_FLASH_NONE, exit, err = kNotFoundErr );
+  partition_info = MicoFlashGetInfo( partition );
+  require_action_quiet( partition_info->partition_owner != MICO_FLASH_NONE, exit, err = kNotFoundErr );
 
-//   start_addr = partition_info->partition_start_addr + off_set;
-//   end_addr = partition_info->partition_start_addr + off_set + size - 1;
-//   require_action_quiet( end_addr < partition_info->partition_start_addr + partition_info->partition_length, exit, err = kParamErr );
+  start_addr = partition_info->partition_start_addr + off_set;
+  end_addr = partition_info->partition_start_addr + off_set + size - 1;
+  require_action_quiet( end_addr < partition_info->partition_start_addr + partition_info->partition_length, exit, err = kParamErr );
 
-//   if( platform_flash_drivers[ partition_info->partition_owner ].initialized == false )
-//   {
-//     err =  MicoFlashInitialize( partition );
-//     require_noerr_quiet( err, exit );
-//   }
+  if( platform_flash_drivers[ partition_info->partition_owner ].initialized == false )
+  {
+    err =  MicoFlashInitialize( partition );
+    require_noerr_quiet( err, exit );
+  }
 
-//   mico_rtos_lock_mutex( &platform_flash_drivers[ partition_info->partition_owner ].flash_mutex );
-//   err = platform_flash_enable_protect( &platform_flash_peripherals[ partition_info->partition_owner ], start_addr, end_addr);
-//   mico_rtos_unlock_mutex( &platform_flash_drivers[ partition_info->partition_owner ].flash_mutex );
+  mico_rtos_lock_mutex( &platform_flash_drivers[ partition_info->partition_owner ].flash_mutex );
+  err = platform_flash_enable_protect( &platform_flash_peripherals[ partition_info->partition_owner ], start_addr, end_addr);
+  mico_rtos_unlock_mutex( &platform_flash_drivers[ partition_info->partition_owner ].flash_mutex );
   
-// exit:
-//   return err;
-// }
+exit:
+  return err;
+}
 
 char *mico_get_bootloader_ver( void )
 {
@@ -750,59 +750,59 @@ char *mico_get_bootloader_ver( void )
     return ver;
 }
 
-// #ifdef BOOTLOADER 
-// #include "bootloader.h"
+#ifdef BOOTLOADER
+#include "bootloader.h"
 
-// void mico_set_bootload_ver(void)
-// {
-//    uint8_t ver[33];
-//    mico_logic_partition_t *boot_partition = MicoFlashGetInfo( MICO_PARTITION_BOOTLOADER );
-//    uint32_t flashaddr =  boot_partition->partition_length - 0x20;
-//    int i;
+void mico_set_bootload_ver(void)
+{
+    uint8_t ver[33];
+    mico_logic_partition_t *boot_partition = MicoFlashGetInfo( MICO_PARTITION_BOOTLOADER );
+    uint32_t flashaddr = boot_partition->partition_length - 0x20;
+    int i;
 
-//    memset(ver, 0, sizeof(ver));
-//    MicoFlashRead( MICO_PARTITION_BOOTLOADER, &flashaddr, (uint8_t *)ver , 32);
-//    for(i=0;i<32;i++) {
-//        if (ver[i] != 0xFF)
-//            return;
-//    }
-//    snprintf((char *)ver, 33, "%s %s %d", MODEL, Bootloader_REVISION , STDIO_UART_BAUDRATE);
-//    flashaddr =  boot_partition->partition_length - 0x20;
-//    MicoFlashDisableSecurity( MICO_PARTITION_BOOTLOADER, 0x0, boot_partition->partition_length );
-//    MicoFlashWrite( MICO_PARTITION_BOOTLOADER, &flashaddr, ver , 32);
-// }
+    memset(ver, 0, sizeof(ver));
+    MicoFlashRead( MICO_PARTITION_BOOTLOADER, &flashaddr, (uint8_t *)ver , 32);
+    for(i=0;i<32;i++) {
+        if (ver[i] != 0xFF)
+        return;
+    }
+    snprintf((char *)ver, 33, "%s %s %d", MODEL, Bootloader_REVISION , STDIO_UART_BAUDRATE);
+    flashaddr = boot_partition->partition_length - 0x20;
+    MicoFlashDisableSecurity( MICO_PARTITION_BOOTLOADER, 0x0, boot_partition->partition_length );
+    MicoFlashWrite( MICO_PARTITION_BOOTLOADER, &flashaddr, ver , 32);
+}
 
-// OSStatus MicoFlashDisableSecurity( mico_partition_t partition, uint32_t off_set, uint32_t size )
-// {
-//   OSStatus err = kNoErr;
-//   uint32_t start_addr, end_addr;
-//   mico_logic_partition_t *partition_info;
+OSStatus MicoFlashDisableSecurity( mico_partition_t partition, uint32_t off_set, uint32_t size )
+{
+    OSStatus err = kNoErr;
+    uint32_t start_addr, end_addr;
+    mico_logic_partition_t *partition_info;
 
-//   require_quiet( size != 0, exit);
-//   require_action_quiet( partition > MICO_PARTITION_ERROR && partition < MICO_PARTITION_MAX, exit, err = kParamErr );
+    require_quiet( size != 0, exit);
+    require_action_quiet( partition > MICO_PARTITION_ERROR && partition < MICO_PARTITION_MAX, exit, err = kParamErr );
 
-//   partition_info = MicoFlashGetInfo( partition );
-//   require_action_quiet( partition_info->partition_owner != MICO_FLASH_NONE, exit, err = kNotFoundErr );
+    partition_info = MicoFlashGetInfo( partition );
+    require_action_quiet( partition_info->partition_owner != MICO_FLASH_NONE, exit, err = kNotFoundErr );
 
-//   start_addr = partition_info->partition_start_addr + off_set;
-//   end_addr = partition_info->partition_start_addr + off_set + size - 1;
-//   require_action_quiet( end_addr < partition_info->partition_start_addr + partition_info->partition_length, exit, err = kParamErr );
+    start_addr = partition_info->partition_start_addr + off_set;
+    end_addr = partition_info->partition_start_addr + off_set + size - 1;
+    require_action_quiet( end_addr < partition_info->partition_start_addr + partition_info->partition_length, exit, err = kParamErr );
 
-//   if( platform_flash_drivers[ partition_info->partition_owner ].initialized == false )
-//   {
-//     err =  MicoFlashInitialize( partition );
-//     require_noerr_quiet( err, exit );
-//   }
+    if( platform_flash_drivers[ partition_info->partition_owner ].initialized == false )
+    {
+        err = MicoFlashInitialize( partition );
+        require_noerr_quiet( err, exit );
+    }
 
-//   mico_rtos_lock_mutex( &platform_flash_drivers[ partition_info->partition_owner ].flash_mutex );
-//   err = platform_flash_disable_protect( &platform_flash_peripherals[ partition_info->partition_owner ], start_addr, end_addr);
-//   mico_rtos_unlock_mutex( &platform_flash_drivers[ partition_info->partition_owner ].flash_mutex );
-  
-// exit:
-//   return err;
-// }
+    mico_rtos_lock_mutex( &platform_flash_drivers[ partition_info->partition_owner ].flash_mutex );
+    err = platform_flash_disable_protect( &platform_flash_peripherals[ partition_info->partition_owner ], start_addr, end_addr);
+    mico_rtos_unlock_mutex( &platform_flash_drivers[ partition_info->partition_owner ].flash_mutex );
 
-// #endif
+    exit:
+    return err;
+}
+
+#endif
 
 // uint64_t mico_nanosecond_clock_value( void )
 // {

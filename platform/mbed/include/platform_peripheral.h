@@ -982,12 +982,12 @@ OSStatus platform_flash_write( const platform_flash_t *peripheral, volatile uint
  */
 OSStatus platform_flash_read( const platform_flash_t *peripheral, volatile uint32_t* start_address, uint8_t* data ,uint32_t length  );
 
-// /**
-//  * Flash protect operation
-//  *
-//  */
-// OSStatus platform_flash_enable_protect( const platform_flash_t *peripheral, uint32_t start_address, uint32_t end_address );
-// OSStatus platform_flash_disable_protect( const platform_flash_t *peripheral, uint32_t start_address, uint32_t end_address );
+/**
+ * Flash protect operation
+ *
+ */
+OSStatus platform_flash_enable_protect( const platform_flash_t *peripheral, uint32_t start_address, uint32_t end_address );
+OSStatus platform_flash_disable_protect( const platform_flash_t *peripheral, uint32_t start_address, uint32_t end_address );
 
 void platform_irq_init( platform_irq_handle *irq, void* context, platform_irq_callback callback);
 

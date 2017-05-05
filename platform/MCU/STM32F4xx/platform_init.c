@@ -83,69 +83,6 @@ mico_mutex_t        stdio_tx_mutex;
 /******************************************************
 *               Function Definitions
 ******************************************************/
-#if defined ( __ICCARM__ )
-static inline void __jump_to( uint32_t addr )
-{
-  __asm( "MOV R1, #0x00000001" );
-  __asm( "ORR R0, R0, R1" );  /* Last bit of jump address indicates whether destination is Thumb or ARM code */
-  __asm( "BLX R0" );
-}
-
-
-#elif defined ( __GNUC__ )
-__attribute__( ( always_inline ) ) static __INLINE void __jump_to( uint32_t addr )
-{
-  addr |= 0x00000001;  /* Last bit of jump address indicates whether destination is Thumb or ARM code */
-  __ASM volatile ("BX %0" : : "r" (addr) );
-}
-
-
-#elif defined ( __CC_ARM )
-static void __asm __jump_to( uint32_t addr )
-{
-                   
-
-  
-  MOV R1, #0x00000001
-  ORR R0, R0, R1  /* Last bit of jump address indicates whether destination is Thumb or ARM code */
-  BLX R0
-}
-#endif
-
-void startApplication( uint32_t app_addr )
-{
-  uint32_t* stack_ptr;
-  uint32_t* start_ptr;
-  
-  if (((*(volatile uint32_t*)app_addr) & 0x2FF80000 ) != 0x20000000)
-  app_addr += 0x200;
-  /* Test if user code is programmed starting from address "ApplicationAddress" */
-  if (((*(volatile uint32_t*)app_addr) & 0x2FF80000 ) == 0x20000000)
-  { 
-    SysTick->CTRL &= ~SysTick_CTRL_ENABLE_Msk;
-
-    /* Clear all interrupt enabled by bootloader */
-    for (int i = 0; i < 8; i++ )
-        NVIC->ICER[i] = 0xFFFFFFFF;
-    
-    stack_ptr = (uint32_t*) app_addr;  /* Initial stack pointer is first 4 bytes of vector table */
-    start_ptr = ( stack_ptr + 1 );  /* Reset vector is second 4 bytes of vector table */
-
-    #if defined ( __ICCARM__)
-    __ASM( "MOV LR,        #0xFFFFFFFF" );
-    __ASM( "MOV R1,        #0x01000000" );
-    __ASM( "MSR APSR_nzcvq,     R1" );
-    __ASM( "MOV R1,        #0x00000000" );
-    __ASM( "MSR PRIMASK,   R1" );
-    __ASM( "MSR FAULTMASK, R1" );
-    __ASM( "MSR BASEPRI,   R1" );
-    __ASM( "MSR CONTROL,   R1" );
-    #endif
-    
-    __set_MSP( *stack_ptr );
-    __jump_to( *start_ptr );
-  }  
-}
 
 void platform_mcu_reset( void )
 {

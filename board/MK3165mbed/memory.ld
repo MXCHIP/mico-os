@@ -25,7 +25,9 @@
 
 MEMORY
 { 
-  BL_FLASH  (rx)  : ORIGIN = 0x08000000, LENGTH = 32K
-  FLASH     (rx)  : ORIGIN = 0x0800C000, LENGTH = 512K - 48k
+  FLASH (rx)      : ORIGIN = 0x08000000, LENGTH = 512K
   RAM       (rwx) : ORIGIN = 0x20000198, LENGTH = 128k - 0x198
+  /* MiCO application needs a bootloader */
+  BL_FLASH  (rx)  : ORIGIN = 0x08000000, LENGTH = 32K
+  APP_FLASH (rx)  : ORIGIN = 0x0800C000, LENGTH = 512K - 48k
 }

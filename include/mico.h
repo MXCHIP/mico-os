@@ -133,6 +133,19 @@ const uint8_t* mico_generate_cid( uint8_t *length );
 /* Entry point for user Application */
 int main( void );
 
+/**
+ *  Start the application at the given address. This function does
+ *  not return. It is the applications responsibility for flushing to
+ *  or powering down external components such as filesystems or
+ *  socket connections before calling this function. For Cortex-M
+ *  devices this function powers down generic system components such as
+ *  the NVIC and set the vector table to that of the new image followed
+ *  by jumping to the reset handler of the new image.
+ *
+ *  @param address    Starting address of next application to run
+ */
+void mico_start_application(uintptr_t address);
+
 #ifdef __cplusplus
 } /*"C" */
 #endif

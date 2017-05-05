@@ -34,7 +34,7 @@
 #include "mico_board.h"
 #include "mico_board_conf.h"
 
-#include "platform_internal.h"
+//#include "platform_internal.h"
 #include "bootloader.h"
 
 #define boot_log(M, ...) custom_log("BOOT", M, ##__VA_ARGS__)
@@ -115,18 +115,13 @@ WEAK bool MicoShouldEnterATEMode( void )
 void bootloader_start_app( uint32_t app_addr )
 {
   enable_protection( );
-  startApplication( app_addr );
+  mico_start_application( app_addr );
 }
 
 
 int main(void)
 {
   mico_logic_partition_t *partition;
-  
-  init_clocks();
-  init_memory();
-  init_architecture();
-  init_platform_bootloader();
 
   mico_set_bootload_ver();
   

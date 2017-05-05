@@ -414,20 +414,20 @@ void mico_board_init( void )
    }
  }
 
-// bool MicoShouldEnterMFGMode(void)
-// {
-//   if(MicoGpioInputGet((mico_gpio_t)BOOT_SEL)==false && MicoGpioInputGet((mico_gpio_t)MFG_SEL)==false)
-//     return true;
-//   else
-//   return false;
-// }
+bool MicoShouldEnterMFGMode( void )
+{
+    if ( mico_gpio_input_get( (mico_gpio_t) BOOT_SEL ) == false && mico_gpio_input_get( (mico_gpio_t) MFG_SEL ) == false )
+        return true;
+    else
+        return false;
+}
 
-// bool MicoShouldEnterBootloader(void)
-// {
-//   if(MicoGpioInputGet((mico_gpio_t)BOOT_SEL)==false && MicoGpioInputGet((mico_gpio_t)MFG_SEL)==true)
-//     return true;
-//   else
-//   return false;
-// }
+bool MicoShouldEnterBootloader( void )
+{
+    if ( mico_gpio_input_get( (mico_gpio_t) BOOT_SEL ) == false && mico_gpio_input_get( (mico_gpio_t) MFG_SEL ) == true )
+        return true;
+    else
+        return false;
+}
 
 
