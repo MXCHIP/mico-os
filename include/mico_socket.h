@@ -129,7 +129,7 @@ struct addrinfo {
 #define F_GETFL 3
 #define F_SETFL 4
 
-//#define O_NONBLOCK 1
+#define O_NONBLOCK 1
 
 /*
  * Options for level IPPROTO_IP
