@@ -10,7 +10,7 @@
 NAME = stm32f4
 
 # Host architecture is ARM Cortex M4
-HOST_ARCH := Cortex-M4F
+HOST_ARCH := Cortex-M4
 
 # Host MCU alias for OpenOCD
 HOST_OPENOCD := stm32f4x

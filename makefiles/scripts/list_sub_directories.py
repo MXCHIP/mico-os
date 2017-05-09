@@ -30,7 +30,7 @@ def main():
 
     for root, dirs, files in os.walk(ROOT_DIR):  
     	root_dir = root[0:len(root)]
-        print(root_dir)  
+        print(root_dir)
 
 #    print image_size
     sys.stdout.flush()
