@@ -97,26 +97,26 @@ url_field_t *url_parse (const char *str)
       }
       else
          goto __fail;
-      pch = strchr(str, '@');   /* parse user info */
-      if (pch)
-      {
-         pch = strchr(str, ':');
-         if (pch)
-         {
-            url->username = strndup(str, pch - str);
-            str = pch + 1;
-            pch = strchr(str, '@');
-            if (pch)
-            {
-               url->password = strndup(str, pch - str);
-               str = pch + 1;
-            }
-            else
-               goto __fail;
-         }
-         else
-            goto __fail;
-      }
+//      pch = strchr(str, '@');   /* parse user info */
+//      if (pch)
+//      {
+//         pch = strchr(str, ':');
+//         if (pch)
+//         {
+//            url->username = strndup(str, pch - str);
+//            str = pch + 1;
+//            pch = strchr(str, '@');
+//            if (pch)
+//            {
+//               url->password = strndup(str, pch - str);
+//               str = pch + 1;
+//            }
+//            else
+//               goto __fail;
+//         }
+//         else
+//            goto __fail;
+//      }
       if (str[0] == '[')        /* parse host info */
       {
          str++;
