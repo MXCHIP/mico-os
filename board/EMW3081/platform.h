@@ -203,8 +203,6 @@ typedef enum
 #define Arduino_SPI         (MICO_SPI_NONE)
 #define Arduino_UART        (MICO_UART_1)
 
-#define USE_MiCOKit_EXT
-
 #ifdef USE_MiCOKit_EXT
 #define MICO_I2C_CP         (Arduino_I2C)
 #include "MiCOKit_EXT/micokit_ext_def.h"
