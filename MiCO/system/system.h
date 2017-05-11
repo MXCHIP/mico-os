@@ -28,6 +28,7 @@
 #define CONFIG_MODE_WAC                         (4)
 #define CONFIG_MODE_USER                        (5)
 #define CONFIG_MODE_AWS                         (6)
+#define CONFIG_MODE_AIRKISS                     (7)
 
 #ifndef MICO_PREBUILT_LIBS
 #include "mico_config.h"
