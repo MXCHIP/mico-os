@@ -418,7 +418,9 @@ exit:
 OSStatus platform_uart_transmit_bytes( platform_uart_driver_t* driver, const uint8_t* data_out, uint32_t size )
 {
   OSStatus err = kNoErr;
-  
+#ifndef NO_MICO_RTOS
+  mico_rtos_lock_mutex(&driver->tx_mutex);
+#endif
   if( size == 1 )
   {
      tmp_data_out = *data_out;
@@ -466,6 +468,9 @@ OSStatus platform_uart_transmit_bytes( platform_uart_driver_t* driver, const uin
 
 exit:  
   platform_mcu_powersave_enable();
+#ifndef NO_MICO_RTOS
+  mico_rtos_unlock_mutex(&driver->tx_mutex);
+#endif
   return err;
 }
 
