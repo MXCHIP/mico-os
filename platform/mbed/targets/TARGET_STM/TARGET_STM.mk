@@ -9,10 +9,14 @@
 
 NAME = stm
 
-SOURCE_DIR := ../../mbed-os/targets/TARGET_STM
+###############################################
+# Use abslute path to reference mico-os codes #
+###############################################
 
-SOURCE_SRC   := $(notdir $(wildcard $(CURDIR)/$(SOURCE_DIR)/*.c))
+SOURCE_DIR := mico-os/platform/mbed/mbed-os/targets/TARGET_STM
 
-$(NAME)_SOURCES := $(foreach code, $(SOURCE_SRC), $(addprefix $(SOURCE_DIR)/,$(code)))
+SOURCE_SRC := $(notdir $(wildcard $(SOURCE_DIR)/*.c))
 
-GLOBAL_INCLUDES := $(SOURCE_DIR)
+$(NAME)_ABS_SOURCES := $(foreach code, $(SOURCE_SRC), $(addprefix $(SOURCE_DIR)/,$(code)))
+
+GLOBAL_ABS_INCLUDES := $(SOURCE_DIR)
