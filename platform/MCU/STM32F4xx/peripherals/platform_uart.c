@@ -74,7 +74,7 @@ static const uint32_t uart_peripheral_clocks[NUMBER_OF_UART_PORTS] =
 };
 
 /* UART interrupt vectors */
-#if defined (STM32F401xx) || defined (STM32F411xE) || defined (STM32F412xG)
+#if defined (STM32F401xx) || defined (STM32F411xE)
 static const IRQn_Type uart_irq_vectors[NUMBER_OF_UART_PORTS] =
 {
     [0] = USART1_IRQn,
