@@ -1330,9 +1330,9 @@ mico_bt_result_t mico_bt_dev_write_eir (uint8_t *p_buff, uint16_t len);
  *
  * @param[in]       enable      : Pin Code Only Mode is enable or not.
  *
- * @return          mico_ble_result_t
+ * @return          mico_bt_result_t
  */
-mico_ble_result_t mico_bt_dev_set_pin_code_only(mico_bool_t enable);
+mico_bt_result_t mico_bt_dev_set_pin_code_only(mico_bool_t enable);
 
 /**
  * Function         mico_bt_dev_set_security_mode 
