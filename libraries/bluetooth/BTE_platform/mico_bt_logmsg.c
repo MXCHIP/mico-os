@@ -79,7 +79,6 @@ void
 ScrLog(UINT32 trace_set_mask, const char *fmt_str, ...)
 {
     char buffer[256]; // Save stack space - make global
-    char timeBuf[16];
     va_list ap;
 
 
@@ -93,11 +92,7 @@ ScrLog(UINT32 trace_set_mask, const char *fmt_str, ...)
     vsprintf(buffer, fmt_str, ap);
     va_end(ap);
 
-    //printf("%s\r\n",  buffer);
     printlog("BTLOG",  buffer);
-//    mico_rtos_lock_mutex(&global_trace_mutex);
-//    WPRINT_APP_INFO(("%s\r\n",  buffer)); // Append user message with time
-//    mico_rtos_unlock_mutex(&global_trace_mutex);
 }
 
 

@@ -63,7 +63,7 @@ mico_bt_smart_advertising_report_callback_t app_scan_report_callback;
 mico_bt_dev_ble_io_caps_req_t  default_io_caps_ble  =
 {
     .bd_addr      = { 0 },
-    .local_io_cap = BTM_IO_CAPABILIES_NONE,
+    .local_io_cap = BTM_IO_CAPABILITIES_NONE,
     .oob_data     = 0,
     .auth_req     = BTM_LE_AUTH_REQ_BOND|BTM_LE_AUTH_REQ_MITM, /* BTM_LE_AUTH_REQ_SC_MITM_BOND */
     .max_key_size = 16,
