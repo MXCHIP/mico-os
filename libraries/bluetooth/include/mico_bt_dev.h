@@ -273,12 +273,12 @@ enum mico_bt_sec_level_e
 /** Pairing IO Capabilities */
 enum mico_bt_dev_io_cap_e
 {
-    BTM_IO_CAPABILIES_DISPLAY_ONLY,             /**< Display Only        */
-    BTM_IO_CAPABILIES_DISPLAY_AND_KEYBOARD,     /**< Display Yes/No      */
-    BTM_IO_CAPABILIES_KEYBOARD_ONLY,            /**< Keyboard Only       */
-    BTM_IO_CAPABILIES_NONE,                     /**< No Input, No Output */
-    BTM_IO_CAPABILIES_KEYBOARD_DISPLAY,         /**< Keyboard display    */
-    BTM_IO_CAPABILIES_MAX
+    BTM_IO_CAPABILITIES_DISPLAY_ONLY,             /**< Display Only        */
+    BTM_IO_CAPABILITIES_DISPLAY_AND_KEYBOARD,     /**< Display Yes/No      */
+    BTM_IO_CAPABILITIES_KEYBOARD_ONLY,            /**< Keyboard Only       */
+    BTM_IO_CAPABILITIES_NONE,                     /**< No Input, No Output */
+    BTM_IO_CAPABILITIES_KEYBOARD_DISPLAY,         /**< Keyboard display    */
+    BTM_IO_CAPABILITIES_MAX
 };
 typedef uint8_t mico_bt_dev_io_cap_t;          /**< IO capabilities (see #mico_bt_dev_io_cap_e) */
 
@@ -1324,17 +1324,15 @@ mico_bt_result_t mico_bt_dev_write_eir (uint8_t *p_buff, uint16_t len);
 
 
 /**
- * Function         mico_bt_dev_set_security_mode 
+ * Function         mico_bt_dev_set_pin_code_only 
  * 
- *                  The latecy Bluetooth Security Mode: 
- *                  The Simple Secure Pairing Mode -- SSP mode.
+ *                  Set the latency pairing mode.
  *
- * @param[in]       mode        : security mode. see detail #mico_bt_security_mode_t
- * @param[in]       enable      : SSP Mode is enable or not.
+ * @param[in]       enable      : Pin Code Only Mode is enable or not.
  *
- * @return          void
+ * @return          mico_ble_result_t
  */
-void mico_bt_dev_set_security_mode(mico_bt_security_mode_t mode, mico_bool_t enable);
+mico_ble_result_t mico_bt_dev_set_pin_code_only(mico_bool_t enable);
 
 /**
  * Function         mico_bt_dev_set_security_mode 
