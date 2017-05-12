@@ -27,7 +27,9 @@ $(NAME)_SOURCES += config_server/config_server_menu.c \
 $(NAME)_SOURCES += easylink/system_easylink_delegate.c \
                    easylink/system_easylink_wac.c \
                    easylink/system_easylink.c \
-                   easylink/airkiss_config.c
+                   easylink/airkiss_config.c \
+                   easylink/airkiss_discovery/airkiss_discovery.c
+
 
 $(NAME)_SOURCES += mdns/mico_mdns.c \
                    mdns/system_discovery.c
@@ -39,5 +41,9 @@ $(NAME)_LINK_FILES := mico_system_power_daemon.o
 
 $(NAME)_COMPONENTS := system/qc_test system/easylink/MFi_WAC
 
+ifeq ($(HOST_ARCH),Cortex-M4F)
+$(NAME)_PREBUILT_LIBRARY := easylink/airkiss_discovery/lib_airkiss/libairkiss_fpu.a
+else
 $(NAME)_PREBUILT_LIBRARY := easylink/airkiss_discovery/lib_airkiss/libairkiss.a
+endif
 
