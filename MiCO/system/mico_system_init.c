@@ -60,6 +60,8 @@ static OSStatus system_config_mode_worker( void *arg )
 #elif ( MICO_WLAN_CONFIG_MODE == CONFIG_MODE_AWS)
     err = start_aws_config_mode( );
     require_noerr( err, exit );
+#elif ( MICO_WLAN_CONFIG_MODE == CONFIG_MODE_AIRKISS)
+    err = system_airkiss_start( in_context );
 #else
     #error "Wi-Fi configuration mode is not defined"
 #endif
