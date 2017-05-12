@@ -41,5 +41,9 @@ $(NAME)_LINK_FILES := mico_system_power_daemon.o
 
 $(NAME)_COMPONENTS := system/qc_test system/easylink/MFi_WAC
 
+ifeq ($(HOST_ARCH),Cortex-M4F)
+$(NAME)_PREBUILT_LIBRARY := easylink/airkiss_discovery/lib_airkiss/libairkiss_fpu.a
+else
 $(NAME)_PREBUILT_LIBRARY := easylink/airkiss_discovery/lib_airkiss/libairkiss.a
+endif
 
