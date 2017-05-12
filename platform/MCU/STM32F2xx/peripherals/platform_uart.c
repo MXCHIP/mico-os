@@ -173,10 +173,12 @@ OSStatus platform_uart_init( platform_uart_driver_t* driver, const platform_uart
 
     case FLOW_CONTROL_RTS:
       uart_init_structure.USART_HardwareFlowControl = USART_HardwareFlowControl_RTS;
+      driver->is_flow_control = true;
       break;
 
     case FLOW_CONTROL_CTS_RTS:
       uart_init_structure.USART_HardwareFlowControl = USART_HardwareFlowControl_RTS_CTS;
+      driver->is_flow_control = true;
       break;
 
     default:
@@ -271,7 +273,10 @@ OSStatus platform_uart_init( platform_uart_driver_t* driver, const platform_uart
     /* Note that the ring_buffer should've been initialised first */
     driver->rx_buffer = optional_ring_buffer;
     driver->rx_size   = 0;
-    receive_bytes( driver, optional_ring_buffer->buffer, optional_ring_buffer->size, 0 );
+    driver->peripheral->rx_dma_config.stream->CR |= DMA_SxCR_CIRC;
+    // Enabled individual byte interrupts so progress can be updated
+    USART_ClearITPendingBit( driver->peripheral->port, USART_IT_RXNE );
+    USART_ITConfig( driver->peripheral->port, USART_IT_RXNE, ENABLE );
   }
   else
   {
@@ -397,6 +402,13 @@ OSStatus platform_uart_receive_bytes( platform_uart_driver_t* driver, uint8_t* d
 
   if ( driver->rx_buffer != NULL)
   {
+
+      if( ( driver->is_flow_control == true  ) &&  ( driver->is_recv_over_flow == true ) )
+      {
+          driver->is_recv_over_flow = false;
+          USART_ITConfig( driver->peripheral->port, USART_IT_RXNE, ENABLE );
+      }
+
     while ( expected_data_size != 0 )
     {
       uint32_t transfer_size = MIN( driver->rx_buffer->size / 2, expected_data_size );
@@ -560,20 +572,32 @@ uint8_t platform_uart_get_port_number( USART_TypeDef* uart )
 
 void platform_uart_irq( platform_uart_driver_t* driver )
 {
+    uint8_t recv_byte = 0;
   platform_uart_port_t* uart = (platform_uart_port_t*) driver->peripheral->port;
 
-  // Clear all interrupts. It's safe to do so because only RXNE interrupt is enabled
-  uart->SR = (uint16_t) ( uart->SR | 0xffff );
-
-  // Update tail
-  driver->rx_buffer->tail = driver->rx_buffer->size - driver->peripheral->rx_dma_config.stream->NDTR;
-
-  // Notify thread if sufficient data are available
+  /* Receive new data */
+    if ( USART_GetITStatus( uart, USART_IT_RXNE ) == SET )
+    {
+          if ( ring_buffer_is_full( driver->rx_buffer ) == 0 )
+          {
+              recv_byte = USART_ReceiveData( uart );
+              ring_buffer_write( driver->rx_buffer, &recv_byte, 1 );
   if ( ( driver->rx_size > 0 ) && ( ring_buffer_used_space( driver->rx_buffer ) >= driver->rx_size ) )
   {
       mico_rtos_set_semaphore( &driver->rx_complete );
       driver->rx_size = 0;
   }
+          } else
+          {
+              if( driver->is_flow_control == true ){
+                USART_ITConfig( driver->peripheral->port, USART_IT_RXNE, DISABLE );
+                driver->is_recv_over_flow = true;
+              }else{
+                  USART_ReceiveData( uart );
+              }
+          }
+    }
+
 }
 
 void platform_uart_tx_dma_irq( platform_uart_driver_t* driver )

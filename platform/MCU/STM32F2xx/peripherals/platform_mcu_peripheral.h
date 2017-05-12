@@ -199,6 +199,8 @@ typedef struct
     volatile uint32_t          rx_size;
     volatile OSStatus          last_receive_result;
     volatile OSStatus          last_transmit_result;
+    volatile bool              is_flow_control;
+    volatile bool              is_recv_over_flow;
 } platform_uart_driver_t;
 
 typedef struct
