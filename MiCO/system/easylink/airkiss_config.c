@@ -11,7 +11,7 @@
 
 static airkiss_context_t akcontex;
 static mico_config_source_t source = CONFIG_BY_NONE;
-const airkiss_config_t akconf = {
+const airkiss_config_t akconf_fn = {
     (airkiss_memset_fn) &memset,
     (airkiss_memcpy_fn) &memcpy,
     (airkiss_memcmp_fn) &memcmp,
@@ -137,7 +137,7 @@ void airkiss_conf_thread( uint32_t inContext )
     require_noerr_string( ret, exit, "ERROR: Unable to init airkiss connect sem." );
 
     airkiss_state = AIRKISS_STATUS_CONTINUE;
-    ret = airkiss_init( &akcontex, &akconf );
+    ret = airkiss_init( &akcontex, &akconf_fn );
     require_noerr_string( ret, exit, "ERROR: airkiss init return." );
 
     mico_wlan_register_monitor_cb( monitor_cb );
