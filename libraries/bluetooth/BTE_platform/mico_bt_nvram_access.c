@@ -28,7 +28,6 @@
 #include "bt_trace.h"
 
 #include "mico_bt_dev.h"
-#include "mico_bt_constants.h"
 
 #include "mico_bt_nvram_access.h"
 

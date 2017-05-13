@@ -182,7 +182,7 @@ const platform_uart_t platform_uart_peripherals[] =
     .pin_tx                       = &platform_gpio_pins[MICO_GPIO_30],
     .pin_rx                       = &platform_gpio_pins[MICO_GPIO_29],
     .pin_cts                      = &platform_gpio_pins[MICO_GPIO_35],
-    .pin_rts                      = &platform_gpio_pins[MICO_GPIO_34],
+    .pin_rts                      = &platform_gpio_pins[MICO_GPIO_36],
     .tx_dma_config =
     {
       .controller                 = DMA2,
