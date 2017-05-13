@@ -7,7 +7,9 @@
 #  permission of MXCHIP Corporation.
 #
 
-LIBRARY_NAME :=$(NAME)
+BLUETOOTH_LIB_TYPE ?= dual_mode
+
+NAME := BTE_$(BLUETOOTH_LIB_TYPE)
 
 ################################################################################
 # Supported variants                                                           #
@@ -19,10 +21,9 @@ SUPPORTED_BT_CHIPS           := 43438A0 43438A1
 # Default settings                                                             #
 ################################################################################
 
-COMPLETE_BT_CHIP_NAME := BCM$(BT_CHIP)$(BT_CHIP_REVISION)
+#COMPLETE_BT_CHIP_NAME := BCM$(BT_CHIP)$(BT_CHIP_REVISION)
 
 BTEDIR := ../BTE
-INCLUDE_PATH_PREFIX := ../
 PROTO_DISP_DIR := ../BTE/proto_disp
 
 BTESOURCES := \
@@ -176,10 +177,9 @@ GKI_SOURCES := \
 UDRV_SOURCES := \
 		$(BTEDIR)/Components/udrv/mico/userial_mico.c
 		
-ifdef PROTO_DBG
 PROTODISP_SOURCES := \
-		$(PROTO_DISP_DIR)/hcidisp.c 
-endif
+		$(PROTO_DISP_DIR)/hcidisp.c \
+		$(PROTO_DISP_DIR)/sdpdisp.c
 
 PROTODISP_INCLUDES := \
 		$(PROTO_DISP_DIR)
@@ -206,8 +206,7 @@ BTEINCLUDES := \
 		$(BTEDIR)/Components/rpc/include \
         $(BTEDIR)/Components/gki/mico \
 		$(BTEDIR)/Components/gki/common \
-		$(BTEDIR)/Components/udrv/include \
-		$(BTEDIR)/mico
+		$(BTEDIR)/Components/udrv/include 
 		
 
 $(NAME)_SOURCES := 	\
@@ -220,12 +219,17 @@ $(NAME)_SOURCES := 	\
 					$(UDRV_SOURCES)
 					
 
-$(NAME)_SOURCES +=	$(BTEDIR)/Projects/bte/embedded/mico/lib/mico_post_reset.c
+$(NAME)_SOURCES +=	$(BTEDIR)/Projects/bte/embedded/mico/lib/mico_post_reset.c \
+					$(BTEDIR)/Projects/bte/embedded/mico/lib/mico_stubs.c
 	
 
 $(NAME)_INCLUDES := $(BTEINCLUDES) \
-                    $(BTEDIR)/Projects/bte/main
+					$(PROTODISP_INCLUDES) \
+                    $(BTEDIR)/Projects/bte/main \
+					../include \
+					.
                     
+$(NAME)_CFLAGS += -Wno-unused-function -Wno-unused-variable -Wno-unused-value -Wno-unused-label    
 
 $(NAME)_DEFINES := MICO_BTE_LIB
 

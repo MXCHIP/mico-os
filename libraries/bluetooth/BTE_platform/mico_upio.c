@@ -111,7 +111,7 @@ UDRV_API tUPIO_STATE UPIO_Read( tUPIO_TYPE type, tUPIO pio )
 {
 #if HCILP_INCLUDED
 	//DRV_TRACE_DEBUG1("UPIO_Read %d", pio);
-	return platform_gpio_input_get(mico_bt_control_pins[MICO_BT_PIN_HOST_WAKE]) ? UPIO_OFF : UPIO_OFF;
+	return platform_gpio_input_get(mico_bt_control_pins[MICO_BT_PIN_HOST_WAKE]) ? UPIO_ON : UPIO_OFF;
 #else
     return UPIO_OFF;
 #endif

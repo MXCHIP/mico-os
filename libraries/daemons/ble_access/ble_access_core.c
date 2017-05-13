@@ -132,7 +132,7 @@ static OSStatus ble_access_send_command             (const ble_access_device_t *
  */
 
 /* SmartBridge security settings */
-const mico_bt_smart_security_settings_t security_settings = {
+const mico_bt_smart_security_settings_t ble_access_security_settings = {
     .timeout_second              = 15,
     .io_capabilities             = BT_SMART_IO_DISPLAY_ONLY,//BT_SMART_IO_NO_INPUT_NO_OUTPUT,
     .authentication_requirements = AUTHENTICATION_REQUIREMENTS,
@@ -143,7 +143,7 @@ const mico_bt_smart_security_settings_t security_settings = {
 };
 
 /* SmartBridge connection settings */
-static const mico_bt_smart_connection_settings_t connection_settings = {
+static const mico_bt_smart_connection_settings_t ble_access_connection_settings = {
     .timeout_second                = 10,
     .filter_policy                 = FILTER_POLICY_WHITE_LIST,
     .interval_min                  = 32,//MICO_BT_CFG_DEFAULT_CONN_MIN_INTERVAL,
@@ -900,20 +900,20 @@ static OSStatus ble_access_connection_handler(void* arg)
 #endif
 
     /* If there is a previously sotred device, then connect to it */
-    if (security_settings.authentication_requirements != BT_SMART_AUTH_REQ_NONE) {
+    if (ble_access_security_settings.authentication_requirements != BT_SMART_AUTH_REQ_NONE) {
         if (mico_bt_dev_find_bonded_device((uint8_t *)remote_device->address) == MICO_FALSE) {
             ble_access_log("Bond info isn't found, Initiate pairing request.");
-            mico_bt_smartbridge_enable_pairing(&dev->socket, &security_settings, NULL);
+            mico_bt_smartbridge_enable_pairing(&dev->socket, &ble_access_security_settings, NULL);
         } else {
             ble_access_log("Bond info is found. Encrypt use bond info");
-            mico_bt_smartbridge_set_bond_info(&dev->socket, &security_settings, NULL);
+            mico_bt_smartbridge_set_bond_info(&dev->socket, &ble_access_security_settings, NULL);
         }
     }
 
     parms.device_id = ble_access_calculate_device_id(remote_device->address);
 
     /* connect */
-    err = mico_bt_smartbridge_connect(&dev->socket, remote_device, &connection_settings, 
+    err = mico_bt_smartbridge_connect(&dev->socket, remote_device, &ble_access_connection_settings, 
                                       ble_access_disconnection_handler,
                                       ble_access_notification_handler);
     require_noerr_string(err, exit, "The Peer Device connect failed");
@@ -1228,10 +1228,10 @@ OSStatus ble_access_auto_conn_parms_handler(const mico_bt_device_address_t devic
     parm->auto_disconn_callback = ble_access_disconnection_handler;
     parm->notification_callback = ble_access_notification_handler;
     memcpy((void *)&parm->conn_settings,
-           (void *)&connection_settings,
+           (void *)&ble_access_connection_settings,
            sizeof(mico_bt_smart_connection_settings_t));
-    memcpy((void *)&parm->security_settings,
-           (void *)&security_settings,
+    memcpy((void *)&parm->ble_access_security_settings,
+           (void *)&ble_access_security_settings,
            sizeof(mico_bt_smart_security_settings_t));
 
 exit:
