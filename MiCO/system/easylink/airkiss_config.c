@@ -101,6 +101,20 @@ OSStatus system_airkiss_start( system_context_t * const inContext )
     return err;
 }
 
+void system_airkiss_stop( )
+{
+    
+    if ( airkiss_thread_handler )
+    {
+        system_log("Airkiss processing, force stop..");
+        airkiss_thread_force_exit = true;
+        mico_rtos_thread_force_awake( &airkiss_thread_handler );
+        mico_rtos_thread_join( &airkiss_thread_handler );
+    }
+    
+    mico_wlan_stop_monitor( );
+}
+
 static void monitor_cb( uint8_t * frame, int len )
 {
     int ret;
