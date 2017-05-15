@@ -4,7 +4,7 @@
 #include "lwip_api_define.h"
 #include "mico.h"
 
-#define INTERFACE_VERSION 1
+#define INTERFACE_VERSION 2
 
 typedef void (*ssl_Logging_cb)( const int logLevel,
                                 const char * const logMessage );
