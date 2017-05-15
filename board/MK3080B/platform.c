@@ -70,6 +70,14 @@ extern WEAK void PlatformEasyLinkButtonLongPressedCallback(void);
 /******************************************************
 *               Variables Definitions
 ******************************************************/
+const mico_gpio_init_t gpio_init[] =
+{
+  {MICO_GPIO_12, INPUT_PULL_UP, 0},
+  {MICO_GPIO_13, INPUT_PULL_UP, 0},
+  {MICO_GPIO_14, INPUT_PULL_UP, 0},
+  {MICO_GPIO_NC, 0, 0}
+};
+
 const mico_pwm_pinmap_t pwm_pinmap[] = 
 {
   [MICO_PWM_1] = {.pin = MICO_GPIO_1, },

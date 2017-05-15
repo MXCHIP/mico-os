@@ -478,6 +478,7 @@ typedef struct user_api_struct
     void (*wifi_reboot_event)( void );
     void (*mico_rtos_stack_overflow)( char *taskname );
     const platform_peripherals_pinmap_t *pinmaps;
+    const mico_gpio_init_t *gpio_init;
 } user_api_t;
 
 typedef enum {
