@@ -4,7 +4,7 @@
 #include "lwip_api_define.h"
 #include "mico.h"
 
-#define INTERFACE_VERSION 1
+#define INTERFACE_VERSION 2
 
 typedef void (*ssl_Logging_cb)( const int logLevel,
                                 const char * const logMessage );
@@ -478,6 +478,7 @@ typedef struct user_api_struct
     void (*wifi_reboot_event)( void );
     void (*mico_rtos_stack_overflow)( char *taskname );
     const platform_peripherals_pinmap_t *pinmaps;
+    const mico_gpio_init_t *gpio_init;
 } user_api_t;
 
 typedef enum {

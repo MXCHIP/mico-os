@@ -89,6 +89,7 @@ const mico_api_t *lib_api_p = NULL;
 extern uint32_t _ram_end_;
 #ifdef CONFIG_CPU_MX1290
 extern const platform_peripherals_pinmap_t peripherals_pinmap;
+extern const mico_gpio_init_t gpio_init[];
 #endif
 
 #if defined ( __ICCARM__ )
@@ -130,7 +131,8 @@ USED const user_api_t user_handler = {
     .mico_rtos_stack_overflow = mico_rtos_stack_overflow,
 #ifdef CONFIG_CPU_MX1290
     .pinmaps = &peripherals_pinmap,
-#endif    
+    .gpio_init = gpio_init,
+#endif
 };
 
 #if defined ( __ICCARM__ )
