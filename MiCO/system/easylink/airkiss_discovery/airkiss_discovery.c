@@ -56,7 +56,7 @@ OSStatus airkiss_discovery_start( char *appid, char *deviceid )
   _appid = appid;
   _deviceid = deviceid;
 
-  err = mico_rtos_create_thread(NULL, MICO_APPLICATION_PRIORITY, "ak discovery", ak_discovery_thread, 0x800, NULL );
+  err = mico_rtos_create_thread(NULL, MICO_APPLICATION_PRIORITY, "ak discovery", ak_discovery_thread, 0x800, (mico_thread_arg_t)0 );
   require_noerr_string( err, exit, "ERROR: Unable to start the airkiss discovery thread." );
   _started = true;
   

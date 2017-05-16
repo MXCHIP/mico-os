@@ -27,8 +27,14 @@ $(NAME)_SOURCES += config_server/config_server_menu.c \
 $(NAME)_SOURCES += easylink/system_easylink_delegate.c \
                    easylink/system_easylink_wac.c \
                    easylink/system_easylink.c \
+                   easylink/system_easylink_usr.c \
+                   easylink/system_easylink_softap.c \
                    easylink/airkiss_config.c \
-                   easylink/airkiss_discovery/airkiss_discovery.c
+                   easylink/airkiss_discovery/airkiss_discovery.c \
+                   easylink/internal/easylink_bonjour.c
+#                   easylink/internal/easylink_softap.c
+                   
+$(NAME)_INCLUDES += easylink/internal
 
 
 $(NAME)_SOURCES += mdns/mico_mdns.c \

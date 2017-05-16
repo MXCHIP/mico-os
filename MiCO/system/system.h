@@ -22,13 +22,25 @@
 #include "mico_rtos.h"
 #include "mico_wlan.h"
 
-#define CONFIG_MODE_EASYLINK                    (1)
-#define CONFIG_MODE_SOFT_AP                     (2)
-#define CONFIG_MODE_EASYLINK_WITH_SOFTAP        (3)
-#define CONFIG_MODE_WAC                         (4)
-#define CONFIG_MODE_USER                        (5)
-#define CONFIG_MODE_AWS                         (6)
-#define CONFIG_MODE_AIRKISS                     (7)
+/* Build-in wlan configuration functions */
+#define _CONFIG_MONITOR   ( 1 << 4 )   /**< Setup monitor mode to capture Wi-Fi MAC packages,
+                                            used for airkiss, HiLink, AWS... */
+#define _CONFIG_EASYLINK  ( 1 << 5 )   /**< Setup MXCHIP EasyLink config mode. */
+#define _CONFIG_SOFTAP    ( 1 << 6 )   /**< Setup an access point that a cell phone can connect
+                                            and send config data. */
+
+#define CONFIG_MODE_NONE                        (0)
+#define CONFIG_MODE_USER                        (1)
+#define CONFIG_MODE_WAC                         (2)
+#define CONFIG_MODE_AWS                         (3)
+#define CONFIG_MODE_AIRKISS                     (4)
+#define CONFIG_MODE_EASYLINK                    (5)
+#define CONFIG_MODE_SOFTAP                      (6)
+#define CONFIG_MODE_EASYLINK_WITH_SOFTAP        (6)  //Legacy definition, not supported any more
+#define CONFIG_MODE_MONITOR                     (_CONFIG_MONITOR)
+#define CONFIG_MODE_MONITOR_EASYLINK            (_CONFIG_MONITOR|_CONFIG_EASYLINK)
+
+
 
 #ifndef MICO_PREBUILT_LIBS
 #include "mico_config.h"
@@ -36,26 +48,25 @@
 
 #include "platform_config.h"
 
+//#if ( MICO_WLAN_CONFIG_MODE & _CONFIG_EASYLINK)
+//#warning "_CONFIG_EASYLINK"
+//#endif
+//
+//#if (MICO_WLAN_CONFIG_MODE & _CONFIG_SOFTAP)
+//#warning "_CONFIG_SOFTAP"
+//#endif
+//
+//#if (MICO_WLAN_CONFIG_MODE & _CONFIG_MONITOR)
+//#warning "_CONFIG_MONITOR"
+//#endif
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-#ifndef MiCO_SDK_VERSION_MAJOR
-#define MiCO_SDK_VERSION_MAJOR      (3)
-#endif
-
-#ifndef MiCO_SDK_VERSION_MINOR
-#define MiCO_SDK_VERSION_MINOR      (0)
-#endif
-
-#ifndef MiCO_SDK_VERSION_REVISION
-#define MiCO_SDK_VERSION_REVISION   (0)
-#endif
-
-#if MICO_WLAN_CONFIG_MODE != CONFIG_MODE_EASYLINK
-#define EasyLink_Needs_Reboot
-#endif
+//#if MICO_WLAN_CONFIG_MODE != CONFIG_MODE_EASYLINK && MICO_WLAN_CONFIG_MODE != CONFIG_MODE_USER
+//#define EasyLink_Needs_Reboot
+//#endif
 
 #define maxSsidLen          32
 #define maxKeyLen           64
@@ -93,11 +104,6 @@ enum  config_state_type_e{
   /*If MFG_MODE_AUTO is enabled and MICO settings are erased (maybe a fresh device just has 
     been programmed or MICO settings is damaged), module will enter MFG mode when powered on. */
   mfgConfigured,
-#ifdef EasyLink_Needs_Reboot
-  /*All settings are in default state and triggered by external, module will enter easylink
-    mode. Trigger source is selected by MICO_WLAN_CONFIG_MODE_TRIGGER */
-  unConfigured2
-#endif
 };
 typedef uint8_t config_state_type_t;
 

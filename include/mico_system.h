@@ -258,6 +258,28 @@ OSStatus mico_system_delegate_config_recv_auth_data( char * userInfo );
   */
 void mico_system_delegate_config_success( mico_config_source_t source );
 
+OSStatus mico_easylink_wac_start( mico_Context_t * const inContext );
+
+OSStatus mico_easylink_wac_stop( void );
+
+OSStatus mico_easylink_start( mico_Context_t * const inContext );
+
+OSStatus mico_easylink_stop( void );
+
+OSStatus mico_easylink_usr_start( mico_Context_t * const inContext );
+
+OSStatus mico_easylink_usr_stop( void );
+
+OSStatus mico_easylink_softap_start( mico_Context_t * const inContext );
+
+OSStatus mico_easylink_softap_stop( void );
+
+OSStatus mico_easylink_monitor_start( mico_Context_t * const inContext );
+
+OSStatus mico_easylink_monitor_stop( void );
+
+
+
 /** @} */
 
 

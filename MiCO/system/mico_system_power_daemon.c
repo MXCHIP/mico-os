@@ -45,14 +45,6 @@ USED void PlatformEasyLinkButtonClickedCallback(void)
     needs_update = true;
   }
 
-#if (MICO_WLAN_CONFIG_MODE_TRIGGER) && (MICO_WLAN_CONFIG_MODE_TRIGGER == CONFIG_MODE_TRIGGER_EASYLINK_BTN )
-  /* Enter easylink mode temporary in un-configed mode by EasyLink button*/
-  if(sys_context->flashContentInRam.micoSystemConfig.configured == unConfigured){
-      sys_context->flashContentInRam.micoSystemConfig.configured = unConfigured2;
-      needs_update = true;
-  }
-#endif
-
   mico_system_power_perform( &sys_context->flashContentInRam, eState_Software_Reset );
 #else
   mico_system_wlan_start_autoconf( );

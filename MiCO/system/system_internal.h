@@ -65,11 +65,7 @@ void system_connect_wifi_normal( system_context_t * const inContext );
 
 void system_connect_wifi_fast( system_context_t * const inContext);
 
-OSStatus system_easylink_wac_start( system_context_t * const inContext );
 
-OSStatus system_easylink_wac_stop( void );
-
-OSStatus system_easylink_start( system_context_t * const inContext );
 
 OSStatus MICORestoreMFG                 ( void );
 
