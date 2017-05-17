@@ -262,21 +262,13 @@ OSStatus mico_easylink_wac_start( mico_Context_t * const inContext );
 
 OSStatus mico_easylink_wac_stop( void );
 
-OSStatus mico_easylink_start( mico_Context_t * const inContext );
+OSStatus mico_easylink( mico_Context_t * const in_context, mico_bool_t enable );
 
-OSStatus mico_easylink_stop( void );
+OSStatus mico_easylink_usr( mico_Context_t * const in_context, mico_bool_t enable );
 
-OSStatus mico_easylink_usr_start( mico_Context_t * const inContext );
+OSStatus mico_easylink_softap( mico_Context_t * const in_context, mico_bool_t enable );
 
-OSStatus mico_easylink_usr_stop( void );
-
-OSStatus mico_easylink_softap_start( mico_Context_t * const inContext );
-
-OSStatus mico_easylink_softap_stop( void );
-
-OSStatus mico_easylink_monitor_start( mico_Context_t * const inContext );
-
-OSStatus mico_easylink_monitor_stop( void );
+OSStatus mico_easylink_monitor( mico_Context_t * const in_context, mico_bool_t enable );
 
 
 

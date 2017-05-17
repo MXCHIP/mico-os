@@ -114,8 +114,6 @@ static void easylink_extra_data_cb( int datalen, char* data, system_context_t * 
     char *debugString;
     struct in_addr ipv4_addr;
 
-    require_action( inContext, exit, err = kParamErr );
-
     debugString = DataToHexStringWithSpaces( (const uint8_t *) data, datalen );
     system_log("Get user info: %s", debugString);
     free( debugString );
@@ -179,23 +177,22 @@ static void easylink_extra_data_cb( int datalen, char* data, system_context_t * 
     return;
 }
 
-static void easylink_thread( uint32_t inContext )
+static void easylink_thread( uint32_t arg )
 {
     OSStatus err = kNoErr;
-    system_context_t *Context = (system_context_t *) inContext;
+    system_context_t *context = (system_context_t *) arg;
 
     easylinkIndentifier = 0x0;
     easylink_success = false;
-
     easylink_thread_force_exit = false;
 
     source = CONFIG_BY_NONE;
-    mico_system_notify_register( mico_notify_EASYLINK_WPS_COMPLETED, (void *) easylink_complete_cb, (void *) inContext );
-    mico_system_notify_register( mico_notify_EASYLINK_GET_EXTRA_DATA, (void *) easylink_extra_data_cb, (void *) inContext );
-    mico_system_notify_register( mico_notify_WIFI_STATUS_CHANGED, (void *) easylink_wifi_status_cb, (void *) inContext );
+    mico_system_notify_register( mico_notify_EASYLINK_WPS_COMPLETED,    (void *) easylink_complete_cb,      context );
+    mico_system_notify_register( mico_notify_EASYLINK_GET_EXTRA_DATA,   (void *) easylink_extra_data_cb,    context );
+    mico_system_notify_register( mico_notify_WIFI_STATUS_CHANGED,       (void *) easylink_wifi_status_cb,   context );
 
-    mico_rtos_init_semaphore( &easylink_sem, 1 );
-    mico_rtos_init_semaphore( &easylink_connect_sem, 1 );
+    mico_rtos_init_semaphore( &easylink_sem,            1 );
+    mico_rtos_init_semaphore( &easylink_connect_sem,    1 );
 
 restart:
     mico_system_delegate_config_will_start( );
@@ -217,9 +214,9 @@ restart:
     /* EasyLink Success */
     if ( easylink_success == true )
     {
-        mico_system_delegate_config_recv_ssid( Context->flashContentInRam.micoSystemConfig.ssid,
-                                               Context->flashContentInRam.micoSystemConfig.user_key );
-        system_connect_wifi_normal( Context );
+        mico_system_delegate_config_recv_ssid( context->flashContentInRam.micoSystemConfig.ssid,
+                                               context->flashContentInRam.micoSystemConfig.user_key );
+        system_connect_wifi_normal( context );
 
         /* Wait for station connection */
         while( mico_rtos_get_semaphore( &easylink_connect_sem, 0 ) == kNoErr );
@@ -237,7 +234,7 @@ restart:
         mico_system_delegate_config_success( source );
 
         /* Start bonjour service for new device discovery */
-        err = easylink_bonjour_start( Station, easylinkIndentifier, Context );
+        err = easylink_bonjour_start( Station, easylinkIndentifier, context );
         require_noerr( err, exit );
         SetTimer( 60 * 1000, easylink_remove_bonjour );
 
@@ -246,10 +243,10 @@ restart:
     else /* EasyLink failed */
     {
         /* so roll back to previous settings  (if it has) and connect */
-        if(Context->flashContentInRam.micoSystemConfig.configured != unConfigured) {
+        if ( context->flashContentInRam.micoSystemConfig.configured != unConfigured ) {
             system_log("Roll back to previous settings");
-            MICOReadConfiguration( Context );
-            system_connect_wifi_normal( Context );
+            MICOReadConfiguration( context );
+            system_connect_wifi_normal( context );
         }
         else {
             /*module should power down in default setting*/
@@ -273,37 +270,32 @@ exit:
     mico_rtos_delete_thread( NULL );
 }
 
-OSStatus mico_easylink_stop( void )
+OSStatus mico_easylink( mico_Context_t * const in_context, mico_bool_t enable )
 {
-    easylink_remove_bonjour();
+    OSStatus err = kUnknownErr;
+
+    require_action( in_context, exit, err = kNotPreparedErr );
+
+    easylink_remove_bonjour( );
 
     /* easylink thread existed? stop! */
-    if( easylink_thread_handler )
-    {
+    if ( easylink_thread_handler ) {
         system_log("EasyLink processing, force stop..");
         easylink_thread_force_exit = true;
         mico_rtos_thread_force_awake( &easylink_thread_handler );
         mico_rtos_thread_join( &easylink_thread_handler );
     }
 
-    return kNoErr;
-}
+    if ( enable == MICO_TRUE ) {
+        err = mico_rtos_create_thread( &easylink_thread_handler, MICO_APPLICATION_PRIORITY, "EASYLINK", easylink_thread,
+                                       0x1000, (mico_thread_arg_t) in_context );
+        require_noerr_string( err, exit, "ERROR: Unable to start the EasyLink thread." );
 
+        /* Make sure easylink is already running, and waiting for sem trigger */
+        mico_rtos_delay_milliseconds( 100 );
+    }
 
-OSStatus mico_easylink_start( mico_Context_t * const inContext )
-{
-    OSStatus err = kUnknownErr;
-
-    mico_easylink_stop( );
-
-    err = mico_rtos_create_thread( &easylink_thread_handler, MICO_APPLICATION_PRIORITY, "EASYLINK", easylink_thread,
-                                   0x1000, (mico_thread_arg_t) inContext );
-    require_noerr_string( err, exit, "ERROR: Unable to start the EasyLink thread." );
-
-    /* Make sure easylink is already running, and waiting for sem trigger */
-    mico_rtos_delay_milliseconds(100);
-
-exit:
+    exit:
     return err;
 }
 

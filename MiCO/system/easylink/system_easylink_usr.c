@@ -100,37 +100,33 @@ exit:
     mico_rtos_delete_thread( NULL );
 }
 
-OSStatus mico_easylink_usr_stop( void )
+OSStatus mico_easylink_usr( mico_Context_t * const in_context, mico_bool_t enable )
 {
-    easylink_remove_bonjour();
+    OSStatus err = kUnknownErr;
 
-    /* easylink usr thread existed? stop! */
-    if( easylink_usr_thread_handler )
-    {
+    require_action( in_context, exit, err = kNotPreparedErr );
+
+    easylink_remove_bonjour( );
+
+    /* easylink thread existed? stop! */
+    if ( easylink_usr_thread_handler ) {
+        /* easylink usr thread existed? stop! */
         system_log("EasyLink usr processing, force stop..");
         easylink_thread_force_exit = true;
         mico_rtos_thread_force_awake( &easylink_usr_thread_handler );
         mico_rtos_thread_join( &easylink_usr_thread_handler );
     }
 
-    return kNoErr;
-}
+    if ( enable == MICO_TRUE ) {
+        err = mico_rtos_create_thread( &easylink_usr_thread_handler, MICO_APPLICATION_PRIORITY, "EASYLINK USR",
+                                       easylink_usr_thread, 0x1000, (mico_thread_arg_t) in_context );
+        require_noerr_string( err, exit, "ERROR: Unable to start the EasyLink usr thread." );
 
-OSStatus mico_easylink_usr_start( mico_Context_t * const inContext )
-{
-    system_log_trace();
-    OSStatus err = kUnknownErr;
+        /* Make sure easylink is already running, and waiting for sem trigger */
+        mico_rtos_delay_milliseconds( 100 );
+    }
 
-    mico_easylink_usr_stop();
-
-    err = mico_rtos_create_thread( &easylink_usr_thread_handler, MICO_APPLICATION_PRIORITY, "EASYLINK USR", easylink_usr_thread,
-                                   0x1000, (mico_thread_arg_t) inContext );
-    require_noerr_string( err, exit, "ERROR: Unable to start the EasyLink usr thread." );
-
-    /* Make sure easylink thread is running */
-    mico_rtos_delay_milliseconds(20);
-
-exit:
+    exit:
     return err;
 }
 

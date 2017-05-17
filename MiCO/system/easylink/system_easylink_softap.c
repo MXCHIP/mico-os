@@ -260,40 +260,36 @@ exit:
     mico_rtos_delete_thread( NULL );
 }
 
-OSStatus mico_easylink_softap_stop( void )
+OSStatus mico_easylink_softap( mico_Context_t * const in_context, mico_bool_t enable )
 {
-    easylink_remove_bonjour();
+    OSStatus err = kUnknownErr;
 
-    /* easylink usr thread existed? stop! */
-    if( easylink_softap_thread_handler )
-    {
-        system_log("EasyLink usr processing, force stop..");
+    require_action( in_context, exit, err = kNotPreparedErr );
+
+    easylink_remove_bonjour( );
+
+    /* easylink soft thread existed? stop! */
+    if ( easylink_softap_thread_handler ) {
+        system_log("EasyLink SoftAP processing, force stop..");
         easylink_thread_force_exit = true;
         mico_rtos_thread_force_awake( &easylink_softap_thread_handler );
         mico_rtos_thread_join( &easylink_softap_thread_handler );
     }
 
-    return kNoErr;
-}
+    if ( enable == MICO_TRUE ) {
+        /* Start config server */
+        err = config_server_start( );
+        require_noerr( err, exit );
 
-OSStatus mico_easylink_softap_start( mico_Context_t * const inContext )
-{
-    OSStatus err = kUnknownErr;
+        err = mico_rtos_create_thread( &easylink_softap_thread_handler, MICO_APPLICATION_PRIORITY, "EASYLINK AP",
+                                       easylink_softap_thread, 0x1000, (mico_thread_arg_t) in_context );
+        require_noerr_string( err, exit, "ERROR: Unable to start the EasyLink thread." );
 
-    mico_easylink_softap_stop();
+        /* Make sure easylink softap is already running, and waiting for sem trigger */
+        mico_rtos_delay_milliseconds( 1000 );
+    }
 
-    /* Start config server */
-    err = config_server_start( );
-    require_noerr( err, exit );
-
-    err = mico_rtos_create_thread( &easylink_softap_thread_handler, MICO_APPLICATION_PRIORITY, "EASYLINK AP", easylink_softap_thread,
-                                   0x1000, (mico_thread_arg_t) inContext );
-    require_noerr_string( err, exit, "ERROR: Unable to start the EasyLink thread." );
-
-    /* Make sure easylink softap is already running, and waiting for sem trigger */
-    mico_rtos_delay_milliseconds(1000);
-
-exit:
+    exit:
     return err;
 }
 

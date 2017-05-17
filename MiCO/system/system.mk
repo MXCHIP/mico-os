@@ -29,10 +29,10 @@ $(NAME)_SOURCES += easylink/system_easylink_delegate.c \
                    easylink/system_easylink.c \
                    easylink/system_easylink_usr.c \
                    easylink/system_easylink_softap.c \
+                   easylink/system_easylink_monitor.c \
                    easylink/airkiss_config.c \
                    easylink/airkiss_discovery/airkiss_discovery.c \
                    easylink/internal/easylink_bonjour.c
-#                   easylink/internal/easylink_softap.c
                    
 $(NAME)_INCLUDES += easylink/internal
 
