@@ -97,3 +97,29 @@ WEAK OSStatus mico_system_delegate_config_recv_auth_data(char * anthData  )
   (void)(anthData);
   return kNoErr;
 }
+
+WEAK void mico_easylink_monitor_delegate_will_start( void )
+{
+
+}
+
+WEAK void mico_easylink_monitor_delegate_stoped( void )
+{
+
+}
+
+WEAK void mico_easylink_monitor_delegate_connect_success( mico_config_source_t source )
+{
+    UNUSED_PARAMETER( source );
+}
+
+WEAK void mico_easylink_monitor_delegate_channel_changed( uint8_t currnet_channel )
+{
+    UNUSED_PARAMETER( currnet_channel );
+}
+
+WEAK void mico_easylink_monitor_delegate_package_recved( uint8_t * frame, int len )
+{
+    UNUSED_PARAMETER( frame );
+    UNUSED_PARAMETER( len );
+}

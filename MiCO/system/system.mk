@@ -30,8 +30,6 @@ $(NAME)_SOURCES += easylink/system_easylink_delegate.c \
                    easylink/system_easylink_usr.c \
                    easylink/system_easylink_softap.c \
                    easylink/system_easylink_monitor.c \
-                   easylink/airkiss_config.c \
-                   easylink/airkiss_discovery/airkiss_discovery.c \
                    easylink/internal/easylink_bonjour.c
                    
 $(NAME)_INCLUDES += easylink/internal
@@ -47,9 +45,5 @@ $(NAME)_LINK_FILES := mico_system_power_daemon.o
 
 $(NAME)_COMPONENTS := system/qc_test system/easylink/MFi_WAC
 
-ifeq ($(HOST_ARCH),Cortex-M4F)
-$(NAME)_PREBUILT_LIBRARY := easylink/airkiss_discovery/lib_airkiss/libairkiss_fpu.a
-else
-$(NAME)_PREBUILT_LIBRARY := easylink/airkiss_discovery/lib_airkiss/libairkiss.a
-endif
+
 

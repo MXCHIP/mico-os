@@ -37,9 +37,6 @@ static bool easylink_thread_force_exit = false;
 /* Perform easylink and connect to wlan */
 static void easylink_softap_thread( uint32_t inContext );
 
-static mico_config_source_t source = CONFIG_BY_NONE;
-
-
 /* MiCO callback when WiFi status is changed */
 static void easylink_wifi_status_cb( WiFiEvent event, system_context_t * const inContext )
 {
@@ -150,8 +147,6 @@ void easylink_softap_thread( uint32_t inContext )
 
     easylink_thread_force_exit = false;
 
-    source = CONFIG_BY_NONE;
-
     mico_system_notify_register( mico_notify_WIFI_STATUS_CHANGED, (void *) easylink_wifi_status_cb, (void *) inContext );
 
     mico_rtos_init_semaphore( &easylink_sem, 1 );
@@ -213,7 +208,7 @@ restart:
 
         /*SSID or Password is not correct, module cannot connect to wlan, so restart EasyLink again*/
         require_noerr_action_string( err, restart, micoWlanSuspend(), "Re-start easylink softap mode" );
-        mico_system_delegate_config_success( source );
+        mico_system_delegate_config_success( CONFIG_BY_SOFT_AP );
 
         /* Start bonjour service for new device discovery */
         err = easylink_bonjour_start( Station, easylinkIndentifier, context );

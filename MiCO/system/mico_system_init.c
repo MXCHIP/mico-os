@@ -52,16 +52,16 @@ static OSStatus system_config_mode_worker( void *arg )
     err = mico_easylink( in_context, MICO_TRUE );
 #elif ( MICO_WLAN_CONFIG_MODE == CONFIG_MODE_SOFTAP)
     err = mico_easylink_softap( in_context, MICO_TRUE );
-#elif ( MICO_WLAN_CONFIG_MODE == CONFIG_MODE_EASYLINK_MONITOR)
+#elif ( MICO_WLAN_CONFIG_MODE == CONFIG_MODE_MONITOR)
     err = mico_easylink_monitor( in_context, MICO_TRUE );
+#elif ( MICO_WLAN_CONFIG_MODE == CONFIG_MODE_MONITOR_EASYLINK)
+    err = mico_easylink_monitor_with_easylink( in_context, MICO_TRUE );
 #elif ( MICO_WLAN_CONFIG_MODE == CONFIG_MODE_USER)
-    err = mico_easylink_usr_start( in_context );
+    err = mico_easylink_usr( in_context, MICO_TRUE );
 #elif ( MICO_WLAN_CONFIG_MODE == CONFIG_MODE_WAC)
-    err = mico_easylink_wac_start( in_context );
+    err = mico_easylink_wac( in_context, MICO_TRUE );
 #elif ( MICO_WLAN_CONFIG_MODE == CONFIG_MODE_AWS)
     err = start_aws_config_mode( );
-#elif ( MICO_WLAN_CONFIG_MODE == CONFIG_MODE_AIRKISS)
-    err = system_airkiss_start( in_context );
 #endif
     require_noerr( err, exit );
 exit:
