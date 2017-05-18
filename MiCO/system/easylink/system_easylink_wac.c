@@ -28,12 +28,16 @@
 
 const char *eaProtocols[1] = {EA_PROTOCOL};
 
-OSStatus system_easylink_wac_start( system_context_t * const inContext )
+OSStatus mico_easylink_wac( mico_Context_t * const inContext, mico_bool_t enable )
 {
     OSStatus err = kNoErr;
     IPStatusTypedef para;
     uint8_t major_ver, minor_ver, revision;
     
+    if( enable == FALSE ) {
+        return mfi_wac_stop();
+    }
+
     mfi_wac_lib_version( &major_ver, &minor_ver, &revision );
     system_log( "Import MFi WAC library v%d.%d.%d", major_ver, minor_ver, revision );
 
@@ -54,7 +58,7 @@ OSStatus system_easylink_wac_start( system_context_t * const inContext )
     WAC_Params->firmwareRevision =  FIRMWARE_REVISION;
     WAC_Params->hardwareRevision =  HARDWARE_REVISION;
     WAC_Params->serialNumber =      SERIAL_NUMBER;
-    WAC_Params->name =              inContext->flashContentInRam.micoSystemConfig.name;
+    WAC_Params->name =              inContext->micoSystemConfig.name;
     WAC_Params->model =             MODEL;
     WAC_Params->manufacturer =      MANUFACTURER;
 
@@ -62,16 +66,10 @@ OSStatus system_easylink_wac_start( system_context_t * const inContext )
     WAC_Params->eaBundleSeedID =    BUNDLE_SEED_ID;
     WAC_Params->eaProtocols =       (char **)eaProtocols;
 
-    err = mfi_wac_start( &inContext->flashContentInRam, WAC_Params, MICO_I2C_CP, 1200 );
+    err = mfi_wac_start( inContext, WAC_Params, MICO_I2C_CP, 1200 );
     require_noerr(err, exit);
     
 exit:
     free(WAC_Params);
     return err; 
 }
-
-OSStatus system_easylink_wac_stop( void )
-{
-  return mfi_wac_stop();
-}
-

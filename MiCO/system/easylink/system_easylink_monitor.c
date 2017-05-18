@@ -1,9 +1,9 @@
 /**
  ******************************************************************************
- * @file    system_easylink.c
+ * @file    system_easylink_monitor.c
  * @author  William Xu
  * @version V1.0.0
- * @date    20-July-2015
+ * @date    20-May-2017
  * @brief   This file provide the easylink function for quick provisioning and
  *          first time configuration.
  ******************************************************************************
@@ -35,16 +35,24 @@ static void easylink_complete_cb( network_InitTypeDef_st *nwkpara, system_contex
 static void easylink_extra_data_cb( int datalen, char* data, system_context_t * const inContext );
 
 /* Thread perform easylink and connect to wlan */
-static void easylink_thread( uint32_t inContext ); /* Perform easylink and connect to wlan */
+static void easylink_monitor_thread( uint32_t inContext ); /* Perform easylink and connect to wlan */
+
+extern void mico_wlan_monitor_no_easylink(void);
 
 /******************************************************
  *               Variables Definitions
  ******************************************************/
+
+static mico_timed_event_t _monitor_timed_check;
+static uint8_t wlan_channel = 1;
+static mico_bool_t wlan_channel_walker = MICO_TRUE;
+static uint32_t wlan_channel_walker_interval = 100;
+
 static mico_semaphore_t easylink_sem;         /**< Used to suspend thread while easylink. */
 static mico_semaphore_t easylink_connect_sem; /**< Used to suspend thread while connection. */
 static bool easylink_success = false;         /**< true: connect to wlan, false: start soft ap mode or roll back to previous settings */
-static uint32_t easylinkIndentifier = 0;      /**< Unique for an easylink instance. */
-static mico_thread_t easylink_thread_handler = NULL;
+static uint32_t easylink_id = 0;      /**< Unique for an easylink instance. */
+static mico_thread_t easylink_monitor_thread_handler = NULL;
 static bool easylink_thread_force_exit = false;
 
 static mico_config_source_t source = CONFIG_BY_NONE;
@@ -60,8 +68,8 @@ static void easylink_wifi_status_cb( WiFiEvent event, system_context_t * const i
     {
         case NOTIFY_STATION_UP:
             /* Connected to AP, means that the wlan configuration is right, update configuration in flash and update
-             bongjour txt record with new "easylinkIndentifier" */
-            easylink_bonjour_update( Station, easylinkIndentifier, inContext );
+             bongjour txt record with new "easylink_id" */
+            easylink_bonjour_update( Station, easylink_id, inContext );
             inContext->flashContentInRam.micoSystemConfig.configured = allConfigured;
             mico_system_context_update( &inContext->flashContentInRam ); //Update Flash content
             mico_rtos_set_semaphore( &easylink_connect_sem ); //Notify Easylink thread
@@ -133,7 +141,7 @@ static void easylink_extra_data_cb( int datalen, char* data, system_context_t * 
 
     /* Read identifier */
     identifier = (uint32_t *) &data[index];
-    easylinkIndentifier = *identifier;
+    easylink_id = *identifier;
 
     /* Identifier: 1 x uint32_t or Identifier/localIp/netMask/gateWay/dnsServer: 5 x uint32_t */
     ipInfoCount = (datalen - index) / sizeof(uint32_t);
@@ -144,7 +152,7 @@ static void easylink_extra_data_cb( int datalen, char* data, system_context_t * 
     if ( ipInfoCount == 1 )
     { //Use DHCP to obtain local ip address
         inContext->flashContentInRam.micoSystemConfig.dhcpEnable = true;
-        system_log("Get auth info: %s, EasyLink identifier: %lx", data, easylinkIndentifier);
+        system_log("Get auth info: %s, EasyLink identifier: %lx", data, easylink_id);
     } else
     { //Use static ip address
         inContext->flashContentInRam.micoSystemConfig.dhcpEnable = false;
@@ -157,7 +165,7 @@ static void easylink_extra_data_cb( int datalen, char* data, system_context_t * 
         ipv4_addr.s_addr = *(identifier+4);
         strcpy( (char *) inContext->micoStatus.dnsServer, inet_ntoa( ipv4_addr ) );
 
-        system_log("Get auth info: %s, EasyLink identifier: %lx, local IP info:%s %s %s %s ", data, easylinkIndentifier, inContext->flashContentInRam.micoSystemConfig.localIp,
+        system_log("Get auth info: %s, EasyLink identifier: %lx, local IP info:%s %s %s %s ", data, easylink_id, inContext->flashContentInRam.micoSystemConfig.localIp,
             inContext->flashContentInRam.micoSystemConfig.netMask, inContext->flashContentInRam.micoSystemConfig.gateWay,inContext->flashContentInRam.micoSystemConfig.dnsServer);
     }
     mico_rtos_unlock_mutex( &inContext->flashContentInRam_mutex );
@@ -177,12 +185,38 @@ static void easylink_extra_data_cb( int datalen, char* data, system_context_t * 
     return;
 }
 
-static void easylink_thread( uint32_t arg )
+static OSStatus _monitor_timed_check_cb(void *arg)
+{
+    mico_time_t current;
+
+    mico_time_get_time( &current );
+    if ( current > (mico_time_t) arg ) {
+        easylink_success = false;
+        mico_rtos_set_semaphore( &easylink_sem );
+    }
+
+    if( wlan_channel_walker == MICO_TRUE){
+        mico_wlan_set_channel( wlan_channel );
+        mico_easylink_monitor_delegate_channel_changed( wlan_channel );
+        wlan_channel++;
+        if ( wlan_channel >= 14 ) wlan_channel = 1;
+    }
+
+    return kNoErr;
+}
+
+static void monitor_cb( uint8_t * frame, int len )
+{
+    mico_easylink_monitor_delegate_package_recved( frame, len );
+}
+
+static void easylink_monitor_thread( uint32_t arg )
 {
     OSStatus err = kNoErr;
     system_context_t *context = (system_context_t *) arg;
 
-    easylinkIndentifier = 0x0;
+    mico_time_t current;
+    easylink_id = 0x0;
     easylink_success = false;
     easylink_thread_force_exit = false;
 
@@ -194,19 +228,30 @@ static void easylink_thread( uint32_t arg )
     mico_rtos_init_semaphore( &easylink_sem,            1 );
     mico_rtos_init_semaphore( &easylink_connect_sem,    1 );
 
+    mico_wlan_register_monitor_cb( monitor_cb );
+
 restart:
     mico_system_delegate_config_will_start( );
-    system_log("Start easylink combo mode");
-    micoWlanStartEasyLinkPlus( EasyLink_TimeOut / 1000 );
+    system_log("Start easylink monitor mode");
+    mico_easylink_monitor_delegate_will_start( );
+
+    mico_wlan_start_monitor( );
+
+    wlan_channel_walker = MICO_TRUE;
+    mico_time_get_time( &current );
+    mico_rtos_register_timed_event( &_monitor_timed_check, MICO_NETWORKING_WORKER_THREAD, _monitor_timed_check_cb,
+                                    wlan_channel_walker_interval, (void *)(current + EasyLink_TimeOut) );
+
     while( mico_rtos_get_semaphore( &easylink_sem, 0 ) == kNoErr );
     err = mico_rtos_get_semaphore( &easylink_sem, MICO_WAIT_FOREVER );
+
+    mico_rtos_deregister_timed_event( &_monitor_timed_check );
+    mico_wlan_stop_monitor( );
+    mico_easylink_monitor_delegate_stoped();
 
     /* Easylink force exit by user, clean and exit */
     if( err != kNoErr && easylink_thread_force_exit )
     {
-        system_log("EasyLink waiting for terminate");
-        micoWlanStopEasyLinkPlus( );
-        mico_rtos_get_semaphore( &easylink_sem, 3000 );
         system_log("EasyLink canceled by user");
         goto exit;
     }
@@ -231,12 +276,15 @@ restart:
 
         /*SSID or Password is not correct, module cannot connect to wlan, so restart EasyLink again*/
         require_noerr_action_string( err, restart, micoWlanSuspend(), "Re-start easylink combo mode" );
-        mico_system_delegate_config_success( source );
 
         /* Start bonjour service for new device discovery */
-        err = easylink_bonjour_start( Station, easylinkIndentifier, context );
+        err = easylink_bonjour_start( Station, easylink_id, context );
         require_noerr( err, exit );
         SetTimer( 60 * 1000, easylink_remove_bonjour );
+
+        source = (source == CONFIG_BY_NONE) ? CONFIG_BY_MONITOR : source;
+        mico_system_delegate_config_success( source );
+        mico_easylink_monitor_delegate_connect_success( source );
 
         goto exit;
     }
@@ -266,11 +314,39 @@ exit:
 
     mico_rtos_deinit_semaphore( &easylink_sem );
     mico_rtos_deinit_semaphore( &easylink_connect_sem );
-    easylink_thread_handler = NULL;
+    easylink_monitor_thread_handler = NULL;
     mico_rtos_delete_thread( NULL );
 }
 
-OSStatus mico_easylink( mico_Context_t * const in_context, mico_bool_t enable )
+OSStatus mico_easylink_monitor_channel_walker( mico_bool_t enable, uint32_t interval )
+{
+    wlan_channel_walker = enable;
+
+    if( enable == MICO_TRUE ) wlan_channel_walker_interval = interval;
+
+    return kNoErr;
+}
+
+OSStatus mico_easylink_monitor_save_result( network_InitTypeDef_st *nwkpara )
+{
+    system_context_t * context = system_context( );
+
+    if( context == NULL ) return kNotPreparedErr;
+
+    memcpy( context->flashContentInRam.micoSystemConfig.ssid, nwkpara->wifi_ssid, maxSsidLen );
+    memset( context->flashContentInRam.micoSystemConfig.bssid, 0x0, 6 );
+    memcpy( context->flashContentInRam.micoSystemConfig.user_key, nwkpara->wifi_key, maxKeyLen );
+    context->flashContentInRam.micoSystemConfig.user_keyLength = strlen( nwkpara->wifi_key );
+    context->flashContentInRam.micoSystemConfig.dhcpEnable = true;
+
+    system_log("Get SSID: %s, Key: %s", context->flashContentInRam.micoSystemConfig.ssid, context->flashContentInRam.micoSystemConfig.user_key);
+
+    easylink_success = true;
+    mico_rtos_set_semaphore( &easylink_sem );
+    return kNoErr;
+}
+
+OSStatus mico_easylink_monitor_with_easylink( mico_Context_t * const in_context, mico_bool_t enable )
 {
     OSStatus err = kUnknownErr;
 
@@ -279,17 +355,17 @@ OSStatus mico_easylink( mico_Context_t * const in_context, mico_bool_t enable )
     easylink_remove_bonjour( );
 
     /* easylink thread existed? stop! */
-    if ( easylink_thread_handler ) {
-        system_log("EasyLink processing, force stop..");
+    if ( easylink_monitor_thread_handler ) {
+        system_log("EasyLink monitor processing, force stop..");
         easylink_thread_force_exit = true;
-        mico_rtos_thread_force_awake( &easylink_thread_handler );
-        mico_rtos_thread_join( &easylink_thread_handler );
+        mico_rtos_thread_force_awake( &easylink_monitor_thread_handler );
+        mico_rtos_thread_join( &easylink_monitor_thread_handler );
     }
 
     if ( enable == MICO_TRUE ) {
-        err = mico_rtos_create_thread( &easylink_thread_handler, MICO_APPLICATION_PRIORITY, "EASYLINK", easylink_thread,
-                                       0x1000, (mico_thread_arg_t) in_context );
-        require_noerr_string( err, exit, "ERROR: Unable to start the EasyLink thread." );
+        err = mico_rtos_create_thread( &easylink_monitor_thread_handler, MICO_APPLICATION_PRIORITY, "EASYLINK",
+                                       easylink_monitor_thread, 0x1000, (mico_thread_arg_t) in_context );
+        require_noerr_string( err, exit, "ERROR: Unable to start the EasyLink monitor thread." );
 
         /* Make sure easylink is already running, and waiting for sem trigger */
         mico_rtos_delay_milliseconds( 100 );
@@ -298,6 +374,14 @@ OSStatus mico_easylink( mico_Context_t * const in_context, mico_bool_t enable )
     exit:
     return err;
 }
+
+
+OSStatus mico_easylink_monitor( mico_Context_t * const in_context, mico_bool_t enable )
+{
+    mico_wlan_monitor_no_easylink();
+    return mico_easylink_monitor_with_easylink( in_context, enable );
+}
+
 
 
 //#endif

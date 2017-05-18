@@ -182,7 +182,7 @@ typedef enum{
   CONFIG_BY_EASYLINK_V2,      /**< Wlan configured by EasyLink revision 2.0 */
   CONFIG_BY_EASYLINK_PLUS,    /**< Wlan configured by EasyLink Plus */    
   CONFIG_BY_EASYLINK_MINUS,   /**< Wlan configured by EasyLink Minus */       
-  CONFIG_BY_AIRKISS,          /**< Wlan configured by airkiss from wechat Tencent inc. */   
+  CONFIG_BY_MONITOR,          /**< Wlan configured by airkiss from wechat Tencent inc. */
   CONFIG_BY_SOFT_AP,          /**< Wlan configured by EasyLink soft ap mode */
   CONFIG_BY_WAC,              /**< Wlan configured by wireless accessory configuration from Apple inc. */
   CONFIG_BY_USER,             /**< Wlan configured by user defined functions. */
@@ -224,13 +224,6 @@ void mico_system_delegate_config_will_start( void );
 void mico_system_delegate_config_will_stop( void );
 
 /**
-  * @brief  Inform the application that EasyLink soft ap mode will start
-  * @note   This a delegate function, can be completed by developer.
-  * @retval None
-  */
-void mico_system_delegate_soft_ap_will_start( void );
-
-/**
   * @brief  Inform the application that ssid and key are received from 
   *         EasyLink client
   * @note   This a delegate function, can be completed by developer.
@@ -257,6 +250,121 @@ OSStatus mico_system_delegate_config_recv_auth_data( char * userInfo );
   * @retval None
   */
 void mico_system_delegate_config_success( mico_config_source_t source );
+
+/**
+  * @brief  Start wlan configuration mode: Apple MFi WAC protocol
+  * @param  inContext: MiCO system core data, initialized by @ref mico_system_context_init
+  * @retval kNoErr is returned on success, otherwise, kXXXErr is returned.
+  */
+OSStatus mico_easylink_wac( mico_Context_t * const inContext, mico_bool_t enable );
+
+/**
+  * @brief  Start wlan configuration mode: EasyLink protocol
+  * @param  inContext: MiCO system core data, initialized by @ref mico_system_context_init
+  * @param  enable: MICO_TRUE to start and MICO_FALSE to stop
+  * @retval kNoErr is returned on success, otherwise, kXXXErr is returned.
+  */
+OSStatus mico_easylink( mico_Context_t * const in_context, mico_bool_t enable );
+
+/**
+  * @brief  Start wlan configuration mode: User mode, setup a routine that monitor wlan
+  *         connection, once wlan is connected, save inContext content to flash. Developer
+  *         only need to find a way to get ssid and password, and tell easylink user routine
+  *         to handle the unfinished jobs.
+  * @param  inContext: MiCO system core data, initialized by @ref mico_system_context_init
+  * @param  enable: MICO_TRUE to start and MICO_FALSE to stop
+  * @retval kNoErr is returned on success, otherwise, kXXXErr is returned.
+  */
+OSStatus mico_easylink_usr( mico_Context_t * const in_context, mico_bool_t enable );
+
+/**
+  * @brief  Tell EasyLink usr routine that wlan configuration is received.
+  * @param  nwkpara: Wlan configurations
+  * @retval kNoErr is returned on success, otherwise, kXXXErr is returned.
+  */
+OSStatus mico_easylink_usr_save_result( network_InitTypeDef_st *nwkpara );
+
+/**
+  * @brief  Start wlan configuration mode: EasyLink softap protocol
+  * @param  inContext: MiCO system core data, initialized by @ref mico_system_context_init
+  * @param  enable: MICO_TRUE to start and MICO_FALSE to stop
+  * @retval kNoErr is returned on success, otherwise, kXXXErr is returned.
+  */
+OSStatus mico_easylink_softap( mico_Context_t * const in_context, mico_bool_t enable );
+
+/**
+  * @brief  Start wlan configuration mode: EasyLink monitor protocol. Developer should
+  *         complete mico_easylink_monitor_delegate_xxx functions to fulfill whole wlan
+  *         monitor protocols, link: airkiss, Hi-link, Ali AWS, smart-config...
+  * @param  inContext: MiCO system core data, initialized by @ref mico_system_context_init
+  * @param  enable: MICO_TRUE to start and MICO_FALSE to stop
+  * @retval kNoErr is returned on success, otherwise, kXXXErr is returned.
+  */
+OSStatus mico_easylink_monitor( mico_Context_t * const in_context, mico_bool_t enable );
+
+/**
+  * @brief  Start wlan configuration mode: EasyLink monitor protocol with EasyLink compatible
+  * @param  inContext: MiCO system core data, initialized by @ref mico_system_context_init
+  * @param  enable: MICO_TRUE to start and MICO_FALSE to stop
+  * @retval kNoErr is returned on success, otherwise, kXXXErr is returned.
+  */
+OSStatus mico_easylink_monitor_with_easylink( mico_Context_t * const in_context, mico_bool_t enable );
+
+/**
+  * @brief  Tell EasyLink monitor routine that wlan configuration is received.
+  * @note   Only useful in EasyLink user mode and EasyLink monitor mode, where analyzing is
+  *         outside the EasyLink routine
+  * @param  nwkpara: Wlan configurations
+  * @retval kNoErr is returned on success, otherwise, kXXXErr is returned.
+  */
+OSStatus mico_easylink_monitor_save_result( network_InitTypeDef_st *nwkpara );
+
+/**
+  * @brief  Tell EasyLink monitor routine that change wlan channel periodically
+  * @param  enable: MICO_TRUE to enable channel walker and MICO_FALSE to stop
+  * @param  interval: Time internal channel is changed, unit: milliseconds
+  * @retval kNoErr is returned on success, otherwise, kXXXErr is returned.
+  */
+OSStatus mico_easylink_monitor_channel_walker( mico_bool_t enable, uint32_t interval );
+
+/**
+  * @brief  Execute before wlan monitor mode will start
+  * @note   This a delegate function, can be completed by developer.
+  * @retval none
+  */
+void mico_easylink_monitor_delegate_will_start( void );
+
+/**
+  * @brief  Execute before wlan monitor mode is stopped
+  * @note   This a delegate function, can be completed by developer.
+  * @retval none
+  */
+void mico_easylink_monitor_delegate_stoped( void );
+
+/**
+  * @brief  Execute when wlan channel is changed
+  * @note   This a delegate function, can be completed by developer.
+  * @param  currnet_channel: Current monitoring wlan channel 1-13
+  * @retval none
+  */
+void mico_easylink_monitor_delegate_channel_changed( uint8_t currnet_channel );
+
+/**
+  * @brief  Execute when wlan mac package is received
+  * @note   This a delegate function, can be completed by developer.
+  * @param  frame: Point to the package
+  * @param  len: Package length
+  * @retval none
+  */
+void mico_easylink_monitor_delegate_package_recved( uint8_t * frame, int len );
+
+/**
+  * @brief  Execute when access point is connected in monitor mode
+  * @note   This a delegate function, can be completed by developer.
+  * @note   source: wlan configuration method, user monitor extension or build-in easylink
+  * @retval none
+  */
+void mico_easylink_monitor_delegate_connect_success( mico_config_source_t source );
 
 /** @} */
 

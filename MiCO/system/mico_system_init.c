@@ -44,27 +44,28 @@ static mico_worker_thread_t wlan_autoconf_worker_thread;
 static OSStatus system_config_mode_worker( void *arg )
 {
     OSStatus err = kNoErr;
-    system_context_t* in_context = system_context();
+    mico_Context_t* in_context = mico_system_context_get();
     require( in_context, exit );
 
     micoWlanPowerOn();
-#if (MICO_WLAN_CONFIG_MODE == CONFIG_MODE_EASYLINK) || \
-    (MICO_WLAN_CONFIG_MODE == CONFIG_MODE_SOFT_AP) ||  \
-    (MICO_WLAN_CONFIG_MODE == CONFIG_MODE_USER) ||  \
-    (MICO_WLAN_CONFIG_MODE == CONFIG_MODE_EASYLINK_WITH_SOFTAP)
-    err = system_easylink_start( in_context );
-    require_noerr( err, exit );
+#if (MICO_WLAN_CONFIG_MODE == CONFIG_MODE_EASYLINK)
+    err = mico_easylink( in_context, MICO_TRUE );
+#elif ( MICO_WLAN_CONFIG_MODE == CONFIG_MODE_SOFTAP)
+    err = mico_easylink_softap( in_context, MICO_TRUE );
+#elif ( MICO_WLAN_CONFIG_MODE == CONFIG_MODE_MONITOR)
+    err = mico_easylink_monitor( in_context, MICO_TRUE );
+#elif ( MICO_WLAN_CONFIG_MODE == CONFIG_MODE_MONITOR_EASYLINK)
+    err = mico_easylink_monitor_with_easylink( in_context, MICO_TRUE );
+#elif ( MICO_WLAN_CONFIG_MODE == CONFIG_MODE_USER)
+    err = mico_easylink_usr( in_context, MICO_TRUE );
 #elif ( MICO_WLAN_CONFIG_MODE == CONFIG_MODE_WAC)
-    err = system_easylink_wac_start( in_context );
-    require_noerr( err, exit );
+    err = mico_easylink_wac( in_context, MICO_TRUE );
 #elif ( MICO_WLAN_CONFIG_MODE == CONFIG_MODE_AWS)
     err = start_aws_config_mode( );
-    require_noerr( err, exit );
-#elif ( MICO_WLAN_CONFIG_MODE == CONFIG_MODE_AIRKISS)
-    err = system_airkiss_start( in_context );
 #else
     #error "Wi-Fi configuration mode is not defined"
 #endif
+    require_noerr( err, exit );
 exit:
     return err;
 }
@@ -101,7 +102,7 @@ OSStatus mico_system_init( mico_Context_t* in_context )
   cli_init();
 #endif
 
-  /* Network PHY driver and tcp/ip static init */
+  /* Network PHY driver and tcp/ip stack init */
   err = system_network_daemen_start( sys_context );
   require_noerr( err, exit ); 
 
@@ -113,27 +114,18 @@ OSStatus mico_system_init( mico_Context_t* in_context )
 #endif
 
   if( sys_context->flashContentInRam.micoSystemConfig.configured == unConfigured){
-#if (MICO_WLAN_CONFIG_MODE_TRIGGER) &&  (MICO_WLAN_CONFIG_MODE_TRIGGER != CONFIG_MODE_TRIGGER_AUTO )
-    system_log("Empty configuration. Start configuration mode by external trigger");
-    micoWlanPowerOff();
-#else
     system_log("Empty configuration. Starting configuration mode...");
     err = mico_system_wlan_start_autoconf( );
     require_noerr( err, exit );
-#endif
   }
 #ifdef EasyLink_Needs_Reboot
-  else if( sys_context->flashContentInRam.micoSystemConfig.configured == unConfigured2 ){
-      system_log("Empty configuration. Starting configuration mode by external trigger");
-      err = mico_system_wlan_start_autoconf( );
-      require_noerr( err, exit );
-  }
   else if( sys_context->flashContentInRam.micoSystemConfig.configured == wLanUnConfigured ){
       system_log("Re-config wlan configuration. Starting configuration mode...");
       err = mico_system_wlan_start_autoconf( );
       require_noerr( err, exit );
   }
 #endif
+
 #ifdef MFG_MODE_AUTO
   else if( sys_context->flashContentInRam.micoSystemConfig.configured == mfgConfigured ){
     system_log( "Enter MFG mode automatically" );
