@@ -403,11 +403,11 @@ bool MicoShouldEnterMFGMode(void)
   if(MicoGpioInputGet((mico_gpio_t)BOOT_SEL)==false && MicoGpioInputGet((mico_gpio_t)MFG_SEL)==false)
     return true;
   else {
-#ifndef BOOTLOADER 
-	if (mfg_test_for_app()) {
-		return true;
-	}
-#endif
+//#ifndef BOOTLOADER 
+//	if (mfg_test_for_app()) {
+//		return true;
+//	}
+//#endif
 
 	return false;
   }
