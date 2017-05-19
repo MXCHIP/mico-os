@@ -19,7 +19,7 @@ COMPONENT_DIRECTORIES := $(MICO_OS_PATH) \
                          $(MICO_OS_PATH)/MiCO \
                          $(MICO_OS_PATH)/MiCO/net \
                          $(MICO_OS_PATH)/MiCO/RTOS \
-                         $(MICO_OS_PATH)/MiCO/Security/TLS \
+                         $(MICO_OS_PATH)/MiCO/security/TLS \
                          $(MICO_OS_PATH)/libraries \
                          $(SOURCE_ROOT) \
                          $(SOURCE_ROOT)/board
