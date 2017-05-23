@@ -22,15 +22,6 @@
 
 #include "system_internal.h"
 
-#ifdef AIRKISS_DISCOVERY_ENABLE
-#include "easylink/airkiss_discovery.h"
-#endif
-
-#if MICO_WLAN_CONFIG_MODE == CONFIG_MODE_AWS
-#include "alink_aws.h"
-#endif
-
-
 extern system_context_t* sys_context;
 #ifndef  EasyLink_Needs_Reboot
 static mico_worker_thread_t wlan_autoconf_worker_thread;

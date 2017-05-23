@@ -23,14 +23,14 @@
 #include "mico_wlan.h"
 
 /* Build-in wlan configuration functions */
-#define CONFIG_MODE_NONE                        (0)
-#define CONFIG_MODE_USER                        (1)
-#define CONFIG_MODE_WAC                         (2)
-#define CONFIG_MODE_EASYLINK                    (3)
-#define CONFIG_MODE_SOFTAP                      (4)
-#define CONFIG_MODE_EASYLINK_WITH_SOFTAP        (4)  //Legacy definition, not supported any more
-#define CONFIG_MODE_MONITOR                     (5)
-#define CONFIG_MODE_MONITOR_EASYLINK            (6)
+#define CONFIG_MODE_NONE                        (1)
+#define CONFIG_MODE_USER                        (2)
+#define CONFIG_MODE_WAC                         (3)
+#define CONFIG_MODE_EASYLINK                    (4)
+#define CONFIG_MODE_SOFTAP                      (5)
+#define CONFIG_MODE_EASYLINK_WITH_SOFTAP        (5)  //Legacy definition, not supported any more
+#define CONFIG_MODE_MONITOR                     (6)
+#define CONFIG_MODE_MONITOR_EASYLINK            (7)
 
 
 
