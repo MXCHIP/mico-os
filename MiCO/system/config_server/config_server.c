@@ -18,6 +18,7 @@
 #include "mico.h"
 #include "system_internal.h"
 #include "mico_board.h"
+#include "easylink_internal.h"
 
 #include "SocketUtils.h"
 #include "HTTPUtils.h"
@@ -37,7 +38,7 @@ typedef struct _configContext_t{
   CRC16_Context crc16_contex;
 } configContext_t;
 
-extern OSStatus     ConfigIncommingJsonMessage( const char *input, bool *need_reboot, mico_Context_t * const inContext );
+extern OSStatus     ConfigIncommingJsonMessage( int fd, const char *input, bool *need_reboot, mico_Context_t * const inContext );
 extern json_object* ConfigCreateReportJsonMessage( mico_Context_t * const inContext );
 
 static void localConfiglistener_thread(uint32_t inContext);
@@ -49,7 +50,7 @@ static void onClearHTTPHeader(struct _HTTPHeader_t * httpHeader, void * userCont
 bool is_config_server_established = false;
 
 /* Defined in uAP config mode */
-extern OSStatus     ConfigIncommingJsonMessageUAP( const uint8_t *input, size_t size, system_context_t * const inContext );
+extern OSStatus ConfigIncommingJsonMessageUAP( int fd, const uint8_t *input, size_t size, system_context_t * const inContext );
 extern system_context_t* sys_context;
 
 static mico_semaphore_t close_listener_sem = NULL, close_client_sem[ MAX_TCP_CLIENT_PER_SERVER ] = { NULL };
@@ -524,29 +525,14 @@ OSStatus _LocalConfigRespondInComingMessage(int fd, HTTPHeader_t* inHeader, syst
     }
     goto exit;
   }
-#if (MICO_WLAN_CONFIG_MODE == CONFIG_MODE_SOFT_AP) || (MICO_WLAN_CONFIG_MODE == CONFIG_MODE_EASYLINK_WITH_SOFTAP)
   else if(HTTPHeaderMatchURL( inHeader, kCONFIGURLWriteByUAP ) == kNoErr){
     if(inHeader->contentLength > 0){
       system_log( "Recv new configuration from uAP, apply and connect to AP" );
-      err = ConfigIncommingJsonMessageUAP( (uint8_t *)inHeader->extraDataPtr, inHeader->extraDataLen, inContext );
+      err = ConfigIncommingJsonMessageUAP( fd, (uint8_t *)inHeader->extraDataPtr, inHeader->extraDataLen, inContext );
       require_noerr( err, exit );
-
-      err =  CreateSimpleHTTPOKMessage( &httpResponse, &httpResponseLen );
-      require_noerr( err, exit );
-      require( httpResponse, exit );
-
-      err = SocketSend( fd, httpResponse, httpResponseLen );
-      require_noerr( err, exit );
-      mico_thread_sleep(1);
-
-      micoWlanSuspendSoftAP();
-      mico_thread_sleep(1);
-      mico_system_delegate_config_recv_ssid(inContext->flashContentInRam.micoSystemConfig.ssid, inContext->flashContentInRam.micoSystemConfig.user_key);
-      system_connect_wifi_normal( inContext );
     }
     goto exit;
   }
-#endif
   else if(HTTPHeaderMatchURL( inHeader, kCONFIGURLOTA ) == kNoErr && ota_partition->partition_owner != MICO_FLASH_NONE){
     if(inHeader->contentLength > 0){
       system_log("Receive OTA data!");
@@ -557,8 +543,6 @@ OSStatus _LocalConfigRespondInComingMessage(int fd, HTTPHeader_t* inHeader, syst
       inContext->flashContentInRam.bootTable.type = 'A';
       inContext->flashContentInRam.bootTable.upgrade_type = 'U';
       inContext->flashContentInRam.bootTable.crc = crc;
-      if( inContext->flashContentInRam.micoSystemConfig.configured != allConfigured )
-        inContext->flashContentInRam.micoSystemConfig.easyLinkByPass = EASYLINK_SOFT_AP_BYPASS;
       mico_system_context_update( &inContext->flashContentInRam );
       SocketClose( &fd );
       mico_system_power_perform( &inContext->flashContentInRam, eState_Software_Reset );

@@ -22,20 +22,23 @@
 #include "mico_rtos.h"
 #include "mico_wlan.h"
 
-#define CONFIG_MODE_EASYLINK                    (1)
-#define CONFIG_MODE_SOFT_AP                     (2)
-#define CONFIG_MODE_EASYLINK_WITH_SOFTAP        (3)
-#define CONFIG_MODE_WAC                         (4)
-#define CONFIG_MODE_USER                        (5)
-#define CONFIG_MODE_AWS                         (6)
-#define CONFIG_MODE_AIRKISS                     (7)
+/* Build-in wlan configuration functions */
+#define CONFIG_MODE_NONE                        (1)
+#define CONFIG_MODE_USER                        (2)
+#define CONFIG_MODE_WAC                         (3)
+#define CONFIG_MODE_EASYLINK                    (4)
+#define CONFIG_MODE_SOFTAP                      (5)
+#define CONFIG_MODE_EASYLINK_WITH_SOFTAP        (5)  //Legacy definition, not supported any more
+#define CONFIG_MODE_MONITOR                     (6)
+#define CONFIG_MODE_MONITOR_EASYLINK            (7)
+
+
 
 #ifndef MICO_PREBUILT_LIBS
 #include "mico_config.h"
 #endif
 
 #include "mico_board_conf.h"
-
 
 #ifdef __cplusplus
 extern "C" {
@@ -46,14 +49,14 @@ extern "C" {
 #endif
 
 #ifndef MiCO_SDK_VERSION_MINOR
-#define MiCO_SDK_VERSION_MINOR      (0)
+#define MiCO_SDK_VERSION_MINOR      (5)
 #endif
 
 #ifndef MiCO_SDK_VERSION_REVISION
-#define MiCO_SDK_VERSION_REVISION   (0)
+#define MiCO_SDK_VERSION_REVISION   (1)
 #endif
 
-#if MICO_WLAN_CONFIG_MODE != CONFIG_MODE_EASYLINK
+#if MICO_WLAN_CONFIG_MODE == CONFIG_MODE_WAC || MICO_WLAN_CONFIG_MODE == CONFIG_MODE_AWS
 #define EasyLink_Needs_Reboot
 #endif
 
@@ -93,11 +96,6 @@ enum  config_state_type_e{
   /*If MFG_MODE_AUTO is enabled and MICO settings are erased (maybe a fresh device just has 
     been programmed or MICO settings is damaged), module will enter MFG mode when powered on. */
   mfgConfigured,
-#ifdef EasyLink_Needs_Reboot
-  /*All settings are in default state and triggered by external, module will enter easylink
-    mode. Trigger source is selected by MICO_WLAN_CONFIG_MODE_TRIGGER */
-  unConfigured2
-#endif
 };
 typedef uint8_t config_state_type_t;
 

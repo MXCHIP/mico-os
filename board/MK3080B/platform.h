@@ -128,6 +128,13 @@ typedef enum
 typedef struct
 {
   mico_gpio_t pin;
+  unsigned char config; /* @ref mico_gpio_config_t */
+  unsigned char out; /* 0: low, 1: high */
+}mico_gpio_init_t;
+
+typedef struct
+{
+  mico_gpio_t pin;
 } mico_pwm_pinmap_t;
 
 typedef struct
@@ -176,6 +183,8 @@ typedef struct
 #define MICO_RF_LED     MICO_GPIO_NONE
 #define MICO_SYS_LED    MICO_GPIO_19
 #define EasyLink_BUTTON MICO_GPIO_23
+
+#define MICO_GPIO_NC    0xFF
 
 typedef struct {
 	int country_code;

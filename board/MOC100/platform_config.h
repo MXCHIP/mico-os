@@ -40,9 +40,9 @@
 *                    Constants
 ******************************************************/
 
-#define HARDWARE_REVISION   "3081"
-#define DEFAULT_NAME        "EMW3081 Module"
-#define MODEL               "EMW3081"
+#define HARDWARE_REVISION   "MK100_1"
+#define DEFAULT_NAME        "MiCOKit 100"
+#define MODEL               "MiCOKit-100"
 
 /* MICO RTOS tick rate in Hz */
 #define MICO_DEFAULT_TICK_RATE_HZ                   (1000) 

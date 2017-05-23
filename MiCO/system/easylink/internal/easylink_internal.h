@@ -16,23 +16,29 @@
  ******************************************************************************
  */
 
-#pragma once
+#ifndef __EASYLINK_INTERNAL_H
+#define __EASYLINK_INTERNAL_H
 
 #include "mico.h"
+#include "system_internal.h"
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-void airkiss_discovery_lib_version( uint8_t *major, uint8_t *minor, uint8_t *revision );
+OSStatus easylink_bonjour_start( WiFi_Interface interface, uint32_t easyLink_id, system_context_t * const inContext );
+OSStatus easylink_bonjour_update( WiFi_Interface interface, uint32_t easyLink_id, system_context_t * const inContext );
+void easylink_remove_bonjour( void );
 
-OSStatus airkiss_discovery_start( char *appid, char *deviceid );
 
-OSStatus airkiss_discovery_stop( void );
+OSStatus easylink_softap_start( system_context_t * const inContext );
+uint32_t easylink_softap_get_identifier( void );
 
 
 #ifdef __cplusplus
 } /*extern "C" */
 #endif
+
+#endif //__EASYLINK_INTERNAL_H
 
 

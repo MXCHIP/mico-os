@@ -84,9 +84,32 @@ const platform_gpio_t platform_gpio_pins[] =
   /* Common GPIOs for internal use */
   [MICO_SYS_LED   ] = {.pin = PA_1,}, //MICO_GPIO_14
   [MICO_RF_LED    ] = {.pin = PA_2,}, //MICO_GPIO_13
-  [BOOT_SEL       ] = {.pin = PA_5,}, //MICO_GPIO_10
-  [MFG_SEL        ] = {.pin = PA_4,}, //MICO_GPIO_11
+  [BOOT_SEL       ] = {.pin = PA_4,}, //MICO_GPIO_11
+  [MFG_SEL        ] = {.pin = PA_5,}, //MICO_GPIO_10
   [EasyLink_BUTTON] = {.pin = PA_0,}, //MICO_GPIO_15
+  
+  [MICO_GPIO_8    ] = {.pin = PA_6,},
+  [MICO_GPIO_9    ] = {.pin = PA_7,},
+  [MICO_GPIO_10   ] = {.pin = PA_5,},
+  [MICO_GPIO_11   ] = {.pin = PA_4,},
+  [MICO_GPIO_12   ] = {.pin = PA_3,},
+  [MICO_GPIO_13   ] = {.pin = PA_2,},
+  [MICO_GPIO_14   ] = {.pin = PA_1,},
+  [MICO_GPIO_15   ] = {.pin = PA_0,},
+  [MICO_GPIO_18   ] = {.pin = PB_2,},
+  [MICO_GPIO_19   ] = {.pin = PB_3,},
+  [MICO_GPIO_20   ] = {.pin = PB_4,},
+  [MICO_GPIO_21   ] = {.pin = PB_5,},
+  [MICO_GPIO_22   ] = {.pin = PD_4,},
+  [MICO_GPIO_23   ] = {.pin = PD_5,},
+  [MICO_GPIO_24   ] = {.pin = PD_6,},
+  [MICO_GPIO_25   ] = {.pin = PD_7,},
+  [MICO_GPIO_27   ] = {.pin = PD_8,},
+  [MICO_GPIO_28   ] = {.pin = PD_9,},
+  [MICO_GPIO_33   ] = {.pin = PD_0,},
+  [MICO_GPIO_34   ] = {.pin = PD_1,},
+  [MICO_GPIO_35   ] = {.pin = PD_2,},
+  [MICO_GPIO_36   ] = {.pin = PD_3,},
   
   /* GPIOs for external use */
 };
@@ -308,7 +331,7 @@ void init_platform( void )
 
   MicoGpioInitialize( (mico_gpio_t)MICO_SYS_LED, OUTPUT_PUSH_PULL );
   MicoGpioOutputLow( (mico_gpio_t)MICO_SYS_LED );
-  MicoGpioInitialize( (mico_gpio_t)MICO_RF_LED, OUTPUT_OPEN_DRAIN_NO_PULL );
+  MicoGpioInitialize( (mico_gpio_t)MICO_RF_LED, OUTPUT_PUSH_PULL );
   MicoGpioOutputHigh( (mico_gpio_t)MICO_RF_LED );
   
   MicoGpioInitialize((mico_gpio_t)BOOT_SEL, INPUT_PULL_UP);
@@ -399,15 +422,15 @@ exit:
 
 bool MicoShouldEnterMFGMode(void)
 {
-#if 0
+#if 1
   if(MicoGpioInputGet((mico_gpio_t)BOOT_SEL)==false && MicoGpioInputGet((mico_gpio_t)MFG_SEL)==false)
     return true;
   else {
-#ifndef BOOTLOADER 
-	if (mfg_test_for_app()) {
-		return true;
-	}
-#endif
+//#ifndef BOOTLOADER 
+//	if (mfg_test_for_app()) {
+//		return true;
+//	}
+//#endif
 
 	return false;
   }
@@ -418,7 +441,7 @@ bool MicoShouldEnterMFGMode(void)
 
 bool MicoShouldEnterBootloader(void)
 {
-#if 0
+#if 1
   if(MicoGpioInputGet((mico_gpio_t)BOOT_SEL)==false && MicoGpioInputGet((mico_gpio_t)MFG_SEL)==true)
     return true;
   else
@@ -430,7 +453,7 @@ bool MicoShouldEnterBootloader(void)
 
 bool MicoShouldEnterATEMode(void)
 {
-#if 0
+#if 1
   if(MicoGpioInputGet((mico_gpio_t)BOOT_SEL)==false && MicoGpioInputGet((mico_gpio_t)EasyLink_BUTTON)==false)
     return true;
   else
