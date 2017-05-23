@@ -52,8 +52,7 @@ GLOBAL_LDFLAGS := -L $(MICO_OS_PATH)/board/AZ$(MODULE)
 
 # Components
 $(NAME)_COMPONENTS := drivers/spi_flash \
-                      drivers/keypad/gpio_button \
-                      mico-az3166
+                      drivers/keypad/gpio_button
                      
 ###################################################################################################
 
