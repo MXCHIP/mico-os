@@ -14,7 +14,7 @@ LIST_SUB_DIRS_SCRIPT  := $(MAKEFILES_PATH)/scripts/list_sub_directories.py
 
 GLOBAL_INCLUDES := . \
                    .. \
-                   include \
+                   /include \
                    peripherals
 
 # Global flags
@@ -43,6 +43,7 @@ $(NAME)_SOURCES := mico_platform_common.c \
                    peripherals/platform_irq.c \
                    peripherals/platform_spi.c \
                    peripherals/platform_gpio.c \
+                   peripherals/platform_i2c.c \
                    peripherals/platform_uart.c \
                    peripherals/platform_watchdog.c \
                    peripherals/platform_mcu_powersave.c

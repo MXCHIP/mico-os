@@ -72,6 +72,7 @@ typedef enum
 
 #define SFLASH_DUMMY_BYTE ( 0xA5 )
 
+#define DUMMY_CLOCK_CYCLES_READ                 0
 #define DUMMY_CLOCK_CYCLES_READ_QUAD         0x06
 
 #define SFLASH_MANUFACTURER( id ) ( ( (id) & 0x00ff0000 ) >> 16 )

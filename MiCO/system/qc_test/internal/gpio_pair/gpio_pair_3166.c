@@ -18,7 +18,7 @@
 
 
 #include "qc_test_internal.h"
-#include "platform.h"
+#include "mico_board.h"
 
 const qc_test_gpio_pair_t qc_test_gpio_pairs[] =
 {
