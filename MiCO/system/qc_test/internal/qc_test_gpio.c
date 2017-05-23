@@ -64,7 +64,7 @@ EXIT:
     return err;
 }
 
-static OSStatus _gpio_test( const qc_test_gpio_pair_t* gpio_test_pair, int num )
+static OSStatus _gpio_test( qc_test_gpio_pair_t* gpio_test_pair, int num )
 {
     int i;
     OSStatus err = kNoErr;
