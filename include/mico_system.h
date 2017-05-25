@@ -36,6 +36,7 @@
 #include "system.h"
 #include "command_console/mico_cli.h"
 #include "json_c/json.h"
+#include "system_internal.h"
 
 #ifndef MICO_PREBUILT_LIBS
 #include "mico_config.h"
@@ -188,6 +189,12 @@ typedef enum{
   CONFIG_BY_USER,             /**< Wlan configured by user defined functions. */
 } mico_config_source_t;
 
+/**  @brief Wlan connect err flag */
+typedef enum{
+    EXIT_EASYLINK,          /** Default value,exit easylink*/
+    RESTART_EASYLINK,       /** Restart easylink after connection err*/
+} mico_connect_fail_config_t;
+
 /**
   * @brief  Initialize MiCO system functions according to mico_config.h
   * @param  in_context: The address of the core data.
@@ -243,13 +250,21 @@ void mico_system_delegate_config_recv_ssid ( char *ssid, char *key );
 OSStatus mico_system_delegate_config_recv_auth_data( char * userInfo );
 
 /**
+  * @brief  easylink timeout callback
+  * @note   This a delegate function, can be completed by developer.
+  * @param  context: system_context_t
+  * @retval 
+  */
+void mico_system_delegate_easylink_timeout( system_context_t *context );
+
+/**
   * @brief  Inform the application that Easylink configuration is success.
   *         (MiCO has connect to wlan with the ssid and key)
   * @note   This a delegate function, can be completed by developer.
-  * @param  source: The configuration mode used by EasyLink client
-  * @retval None
+  * @param  source: The configuration mode used by EasyLink client,result : result of connect
+  * @retval connect fail config
   */
-void mico_system_delegate_config_success( mico_config_source_t source );
+mico_connect_fail_config_t mico_system_delegate_config_result( mico_config_source_t source, uint8_t result  );
 
 /**
   * @brief  Start wlan configuration mode: Apple MFi WAC protocol
