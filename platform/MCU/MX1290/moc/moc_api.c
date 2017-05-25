@@ -205,7 +205,11 @@ OSStatus MicoUartFinalize( mico_uart_t uart )
 }
 OSStatus MicoUartSend( mico_uart_t uart, const void* data, uint32_t size )
 {
-	return lib_api_p->MicoUartSend(uart, data, size );
+	OSStatus err;
+	MicoMcuPowerSaveConfig(0);
+	err = lib_api_p->MicoUartSend(uart, data, size );
+	MicoMcuPowerSaveConfig(1);
+	return err;
 }
 OSStatus MicoUartRecv( mico_uart_t uart, void* data, uint32_t size, uint32_t timeout )
 {
@@ -676,7 +680,23 @@ OSStatus mico_wlan_send_mgnt(uint8_t *buffer, uint32_t length)
 
 void MicoMcuPowerSaveConfig(int enable)
 {
-	return lib_api_p->MicoMcuPowerSaveConfig(enable);
+	static int ps_cnt = 1;
+
+	if(enable == 0)
+	{
+		if(ps_cnt++ == 0)
+		{
+			lib_api_p->MicoMcuPowerSaveConfig(0);
+		}
+	}
+	else
+	{
+		if(--ps_cnt== 0)
+		{
+			lib_api_p->MicoMcuPowerSaveConfig(1);
+		}		
+	}
+
 }
 
 /**
