@@ -19,6 +19,7 @@
  */
 
 #include "mico_common.h"
+#include "mico_rtos.h"
 #include "platform_peripheral.h"
 
 /******************************************************
@@ -64,9 +65,8 @@ typedef volatile struct _noos_mutex_t
 /******************************************************
  *               Function Declarations
  ******************************************************/
-
+extern void mico_main(void);
 extern int __real_main(void);
-extern void mico_board_init(void);
 
 /******************************************************
  *               Variable Definitions
@@ -84,7 +84,7 @@ noos_mutex_t mutex_pool[MUTEX_POOL_NUM];
 #ifndef __MBED__
 int __wrap_main( void )
 {
-    mico_board_init( );
+    mico_main();
 
     __real_main( );
 

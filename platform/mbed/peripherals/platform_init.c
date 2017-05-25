@@ -82,7 +82,7 @@ mico_mutex_t        stdio_tx_mutex;
 *               Function Definitions
 ******************************************************/
 
-void mbed_main( void )
+void mico_main( void )
 {
     /* Initialise nanosecond clock counter */
     //platform_init_nanosecond_clock();
@@ -116,6 +116,12 @@ void mbed_main( void )
 
   platform_mcu_powersave_disable( );
 }
+
+void mbed_main( void )
+{
+    mico_main();
+}
+
 
 //OSStatus stdio_hardfault( char* data, uint32_t size )
 //{

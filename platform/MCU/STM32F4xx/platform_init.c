@@ -140,6 +140,24 @@ WEAK void init_memory( void )
   
 }
 
+void mico_main( void )
+{  
+#ifndef MICO_DISABLE_STDIO
+#ifndef NO_MICO_RTOS
+    mico_rtos_init_mutex( &stdio_tx_mutex );
+    mico_rtos_unlock_mutex( &stdio_tx_mutex );
+    mico_rtos_init_mutex( &stdio_rx_mutex );
+    mico_rtos_unlock_mutex( &stdio_rx_mutex );
+#endif
+
+    ring_buffer_init( (ring_buffer_t*) &stdio_rx_buffer, (uint8_t*) stdio_rx_data, STDIO_BUFFER_SIZE );
+    platform_uart_init( &platform_uart_drivers[MICO_STDIO_UART], &platform_uart_peripherals[MICO_STDIO_UART],
+                       &stdio_uart_config, (ring_buffer_t*) &stdio_rx_buffer );
+#endif
+
+    mico_board_init( );
+}
+
 void init_architecture( void )
 {
   uint8_t i;
@@ -165,18 +183,6 @@ void init_architecture( void )
 
   /* Initialise GPIO IRQ manager */
   platform_gpio_irq_manager_init();
-  
-#ifndef MICO_DISABLE_STDIO
-#ifndef NO_MICO_RTOS
-  mico_rtos_init_mutex( &stdio_tx_mutex );
-  mico_rtos_unlock_mutex ( &stdio_tx_mutex );
-  mico_rtos_init_mutex( &stdio_rx_mutex );
-  mico_rtos_unlock_mutex ( &stdio_rx_mutex );
-#endif
-
-  ring_buffer_init  ( (ring_buffer_t*)&stdio_rx_buffer, (uint8_t*)stdio_rx_data, STDIO_BUFFER_SIZE );
-  platform_uart_init( &platform_uart_drivers[MICO_STDIO_UART], &platform_uart_peripherals[MICO_STDIO_UART], &stdio_uart_config, (ring_buffer_t*)&stdio_rx_buffer );
-#endif
 
   /* Ensure 802.11 device is in reset. */
   host_platform_init( );

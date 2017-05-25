@@ -97,7 +97,7 @@ typedef struct
     event_handler_t function;
     void*           arg;
 } mico_event_message_t;
-
+void __libc_init_array(void);
 
 /******************************************************
  *               Function Declarations
@@ -105,7 +105,7 @@ typedef struct
 extern void mico_rtos_stack_overflow(char *taskname);
 extern bool MicoShouldEnterMFGMode(void);
 
-extern void mico_board_init(void);
+extern void mico_main(void);
 extern int __real_main(void);
 
 static void application_thread_main( void *arg );
@@ -168,7 +168,8 @@ int __wrap_main( void )
 static void application_thread_main( void *arg )
 {
     UNUSED_PARAMETER( arg );
-    mico_board_init( );
+    __libc_init_array();
+    mico_main();
     if ( MicoShouldEnterMFGMode( ) )
         mico_system_qc_test( );
     else

@@ -247,7 +247,9 @@ OSStatus update(void)
   update_log("Update success");
   
 exit:
-  if(err != kNoErr) update_log("Update exit with err = %d", err);
+  if(err != kNoErr) {
+      update_log("Update exit with err = %d", err);
+  }
   return err;
 }
 

@@ -8,9 +8,9 @@
  *
  */
 
-Reset_Handler = _start;
+Reset_Handler = _mico_start;
 
-ENTRY( _start );
+ENTRY( _mico_start );
 
 /* Include memory map */
 INCLUDE memory.ld
