@@ -31,15 +31,14 @@
  */
 
 #include "mico_platform.h"
-#include "platform.h"
-#include "platform_config.h"
+#include "mico_board.h"
+#include "mico_board_conf.h"
 #include "platform_peripheral.h"
-#include "platform_config.h"
 #include "platform_logging.h"
 #include "spi_flash_platform_interface.h"
 #include "wlan_platform_common.h"
 #include "CheckSumUtils.h"
-#include "keypad/gpio_button/button.h"
+#include "button.h"
 
 #ifdef USE_MiCOKit_STMEMS
 #include "MiCOKit_STmems/MiCOKit_STmems.h"
@@ -441,7 +440,7 @@ void platform_init_peripheral_irq_priorities( void )
   NVIC_SetPriority( EXTI15_10_IRQn   , 14 ); /* GPIO                */
 }
 
-void init_platform( void )
+void mico_board_init( void )
 {
   button_init_t init;
   
@@ -454,12 +453,12 @@ void init_platform( void )
   MicoGpioInitialize((mico_gpio_t)MFG_SEL, INPUT_PULL_UP);
   
   //Initialise EasyLink buttons
-  init.gpio = EasyLink_BUTTON;
-  init.pressed_func = PlatformEasyLinkButtonClickedCallback;
-  init.long_pressed_func = PlatformEasyLinkButtonLongPressedCallback;
-  init.long_pressed_timeout = 5000;
+  // init.gpio = EasyLink_BUTTON;
+  // init.pressed_func = PlatformEasyLinkButtonClickedCallback;
+  // init.long_pressed_func = PlatformEasyLinkButtonLongPressedCallback;
+  // init.long_pressed_timeout = 5000;
 
-  button_init( IOBUTTON_EASYLINK, init );
+  // button_init( IOBUTTON_EASYLINK, init );
 
 }
 

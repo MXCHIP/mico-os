@@ -18,7 +18,7 @@
 #include "mico.h"
 #include "misc.h"
 #include "string.h" /* For memcpy */
-#include "platform_config.h"
+#include "mico_board_conf.h"
 #include "platform_peripheral.h"
 #include "platform_logging.h"
 #include "wlan_platform_common.h"

@@ -158,14 +158,14 @@ static OSStatus i2c_transfer_message( platform_i2c_driver_t* driver, const platf
     int ret = -1;
     int stop = ( message->tx_buffer != NULL &&  message->rx_buffer != NULL) ? 0 : 1;
 
-    if ( message->tx_buffer != NULL ) {
+    if ( message->tx_buffer && message->tx_length ) {
         for( ; retries > 0; --retries ) {
             ret = i2c_write( &driver->i2c, (int)(config->address << 1), (char *) (message->tx_buffer), message->tx_length, stop );
             if( ret == message->tx_length ) break;
         }
     }
 
-    if ( message->rx_buffer != NULL ) {
+    if ( message->rx_buffer && message->rx_length ) {
         for( ; retries > 0; --retries ) {
             ret = i2c_read( &driver->i2c, (int)(config->address << 1), (char *) (message->rx_buffer), message->rx_length, 1 );
             if( ret == message->rx_length ) break;

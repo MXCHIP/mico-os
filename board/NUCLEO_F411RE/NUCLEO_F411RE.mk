@@ -51,11 +51,12 @@ GLOBAL_DEFINES += $$(if $$(NO_CRLF_STDIO_REPLACEMENT),,CRLF_STDIO_REPLACEMENT)
 GLOBAL_LDFLAGS += -L $(MICO_OS_PATH)/board/NUCLEO_F411RE
 
 # Components
-$(NAME)_COMPONENTS += drivers/spi_flash
-$(NAME)_COMPONENTS += drivers/MiCOKit_STmems
+$(NAME)_COMPONENTS += drivers/spi_flash \
+                      drivers/keypad/gpio_button
+#$(NAME)_COMPONENTS += drivers/MiCOKit_STmems
 
 # Source files
-$(NAME)_SOURCES := platform.c
+$(NAME)_SOURCES := mico_board.c
 
 SHARED_WIFI_SPI_BUS := YES
 
