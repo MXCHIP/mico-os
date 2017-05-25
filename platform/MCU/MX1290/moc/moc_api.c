@@ -535,11 +535,6 @@ lwip_ntohl(uint32_t n)
   return lwip_htonl(n);
 }
 
-char *sethostname( char *name )
-{
-	return lib_api_p->lwip_apis->sethostname(name);
-}
-
 OSStatus MicoPwmInitialize(mico_pwm_t pwm, uint32_t freequency, float duty_cycle)
 {
 	return lib_api_p->pwm_apis->pwm_init(pwm, freequency, duty_cycle);

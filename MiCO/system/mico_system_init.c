@@ -22,15 +22,6 @@
 
 #include "system_internal.h"
 
-#ifdef AIRKISS_DISCOVERY_ENABLE
-#include "easylink/airkiss_discovery.h"
-#endif
-
-#if MICO_WLAN_CONFIG_MODE == CONFIG_MODE_AWS
-#include "alink_aws.h"
-#endif
-
-
 extern system_context_t* sys_context;
 #ifndef  EasyLink_Needs_Reboot
 static mico_worker_thread_t wlan_autoconf_worker_thread;
@@ -60,6 +51,7 @@ static OSStatus system_config_mode_worker( void *arg )
     err = mico_easylink_usr( in_context, MICO_TRUE );
 #elif ( MICO_WLAN_CONFIG_MODE == CONFIG_MODE_WAC)
     err = mico_easylink_wac( in_context, MICO_TRUE );
+#elif ( MICO_WLAN_CONFIG_MODE == CONFIG_MODE_NONE)
 #else
     #error "Wi-Fi configuration mode is not defined"
 #endif
