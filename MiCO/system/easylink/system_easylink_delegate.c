@@ -98,6 +98,13 @@ WEAK mico_connect_fail_config_t mico_system_delegate_config_result( mico_config_
   }
 }
 
+WEAK void mico_system_delegate_config_success( mico_config_source_t source )
+{
+  //system_log( "Configed by %d", source );
+  UNUSED_PARAMETER(source);
+  return;
+}
+
 WEAK void mico_system_delegate_easylink_timeout( system_context_t *context )
 {
     /* so roll back to previous settings  (if it has) and connect */

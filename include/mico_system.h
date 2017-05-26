@@ -261,6 +261,15 @@ void mico_system_delegate_easylink_timeout( system_context_t *context );
   * @brief  Inform the application that Easylink configuration is success.
   *         (MiCO has connect to wlan with the ssid and key)
   * @note   This a delegate function, can be completed by developer.
+  * @param  source: The configuration mode used by EasyLink client
+  * @retval None
+  */
+void mico_system_delegate_config_success( mico_config_source_t source );
+
+/**
+  * @brief  Inform the application that Easylink configuration is success.
+  *         (MiCO has connect to wlan with the ssid and key)
+  * @note   This a delegate function, can be completed by developer.
   * @param  source: The configuration mode used by EasyLink client,result : result of connect
   * @retval connect fail config
   */
