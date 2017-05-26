@@ -30,15 +30,15 @@
  ******************************************************************************
  */
 
-#include "stdio.h"
-#include "string.h"
-
+#include "mico_platform.h"
 #include "platform.h"
+#include "platform_config.h"
 #include "platform_peripheral.h"
 #include "platform_config.h"
 #include "platform_logging.h"
 #include "spi_flash_platform_interface.h"
 #include "wlan_platform_common.h"
+#include "CheckSumUtils.h"
 #include "keypad/gpio_button/button.h"
 
 #ifdef USE_MiCOKit_EXT
