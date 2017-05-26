@@ -167,9 +167,9 @@ static void application_thread_main( mico_thread_arg_t arg )
 }
 
 #ifdef CONFIG_CPU_MX1290
-void init_debug_uart(void);
+#include "moc_api_sep.h"
+extern void init_debug_uart(void);
 #endif
-
 
 void moc_app_main( const mico_api_t *moc_kernel_apis )
 {
@@ -186,7 +186,7 @@ void moc_app_main( const mico_api_t *moc_kernel_apis )
 #endif
 
 #ifdef CONFIG_CPU_MX1290
-	lib_api_p = moc_adapter(moc_kernel_apis);
+	lib_api_p = moc_adapter((new_mico_api_t *)moc_kernel_apis);
 #else
 	lib_api_p = moc_kernel_apis;
 #endif

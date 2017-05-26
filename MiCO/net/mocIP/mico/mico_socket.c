@@ -251,3 +251,18 @@ int fcntl(int s, int cmd, ...)
     return lib_api_p->lwip_apis->lwip_fcntl(s, cmd, para);
 }
 
+char *sethostname( char *name )
+{
+	return lib_api_p->lwip_apis->sethostname(name);
+}
+
+char* get_dhcp_classid( void )
+{
+	return lib_api_p->lwip_apis->get_dhcp_classid();
+}
+
+char* set_dhcp_classid( char *classid )
+{
+	return lib_api_p->lwip_apis->set_dhcp_classid(classid);
+}
+

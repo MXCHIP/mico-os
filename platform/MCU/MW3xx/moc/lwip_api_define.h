@@ -44,7 +44,9 @@ typedef struct _lwip_api_ {
 	char * (*ipaddr_ntoa)(const ip_addr_t *addr);
 	uint32_t (*ipaddr_addr)(const char *cp);
     struct hostent * (*lwip_gethostbyname) (const char *name);
-        
+    char *(*sethostname)( char *name );
+	char* (*get_dhcp_classid)( void );
+	char* (*set_dhcp_classid)( char *classid );
 } lwip_api_t;
 
 #endif

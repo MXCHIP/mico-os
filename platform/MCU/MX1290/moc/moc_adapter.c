@@ -229,7 +229,7 @@ mico_api_t *moc_adapter(new_mico_api_t *new_mico_api)
   
   mico_api.pm_mcu_state = _kernel_api.ps_apis->pm_mcu_state;
   mico_api.pm_wakeup_source = _kernel_api.ps_apis->pm_wakeup_source;
-  mico_api.wifi_off_mcu_standby = _kernel_api.ps_apis->wifi_off_mcu_standby;
+  mico_api.wifi_off_mcu_standby = (void(*)(int))(_kernel_api.ps_apis->wifi_off_mcu_standby);
   mico_api.MicoMcuPowerSaveConfig = _kernel_api.ps_apis->MicoMcuPowerSaveConfig;
   mico_api.debug_putchar = _kernel_api.os_apis->debug_putchar;
   mico_api.MicoSystemReboot = _kernel_api.os_apis->MicoSystemReboot;
@@ -254,7 +254,7 @@ mico_api_t *moc_adapter(new_mico_api_t *new_mico_api)
   mico_api.wifi_bridge_mode_enable = NULL;
   mico_api.wifi_bridge_mode_disable = NULL;
   mico_api.send_easylink_minus = _kernel_api.wifi_apis->send_easylink_minus;
-  mico_api.ssl_socket = _kernel_api.ssl_crypto_apis->ssl_get_fd;
+  mico_api.ssl_socket = (int(*)(void*))(_kernel_api.ssl_crypto_apis->ssl_get_fd);
 
   mico_api.i2c_apis = _kernel_api.i2c_apis;
   mico_api.spi_apis = _kernel_api.spi_apis;
