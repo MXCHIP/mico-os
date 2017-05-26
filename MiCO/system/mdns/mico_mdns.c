@@ -713,7 +713,7 @@ void bonjour_send_record(int record_index)
     ttl = available_services[record_index].ttl;
     
     if(dns_create_message( &response, 512 )) {
-      dns_write_header(&response, 0x0, 0x8400, 0, available_service_count, 0 );          
+      dns_write_header(&response, 0x0, 0x8400, 0, 1, 0 );
       dns_write_record( &response, SERVICE_QUERY_NAME, RR_CLASS_IN, RR_TYPE_PTR, 1500, (uint8_t*) available_services[record_index].service_name );
       mdns_send_message(mDNS_fd, &response );
       dns_free_message( &response );
