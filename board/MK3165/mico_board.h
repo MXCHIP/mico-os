@@ -306,8 +306,8 @@ enum
 };
 
 #ifdef BOOTLOADER
-#define MICO_STDIO_UART       (MICO_UART_2)
-#define STDIO_UART_BAUDRATE (921600)
+#define MICO_STDIO_UART       (MICO_UART_1)
+#define STDIO_UART_BAUDRATE (115200)
 #else
 #define MICO_STDIO_UART       (MICO_UART_1)
 #define STDIO_UART_BAUDRATE (115200) 

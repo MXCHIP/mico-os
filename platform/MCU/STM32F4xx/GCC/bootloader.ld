@@ -17,22 +17,16 @@ INCLUDE memory.ld
 
 SECTIONS
 {
-    .ramcode_copy :
+
+    .vectors :
     {
-        KEEP(*(*.interrupt_vector_table_copy_ramcode))
-        KEEP(*(.copy_ramcode))
-        . = ALIGN(512);
+        link_interrupt_vectors_location = .;
+        KEEP(*(*.interrupt_vector_table))
+        KEEP(*(.stub_section))
     }>BL_FLASH  AT> BL_FLASH
 
     .text :
     {
-    	link_run_from_ram_code_flash_location = LOADADDR( .text );
-    	link_run_from_ram_code_ram_location = .;
-        link_interrupt_vectors_location = .;
-        KEEP(*(*.interrupt_vector_table))
-        KEEP(*(.stub_section))
-        
-        
         . = ALIGN(4);
 
         link_code_location = .;
@@ -59,9 +53,35 @@ SECTIONS
         *(.rodata*)
 
         KEEP(*(.eh_frame*))
-        
+    }>BL_FLASH  AT> BL_FLASH
+
+    /*
+     * The .ARM.exidx and .ARM.extab sections are used for C++ exception handling.
+     * It is located here for completeness. Bare-metal ARM projects
+     * typically cannot afford the overhead associated with C++
+     * exceptions handling.
+     */
+    .ARM.exidx :
+    {
+        __exidx_start = ALIGN(4);
+        *(.ARM.exidx* .gnu.linkonce.armexidx.*)
+        __exidx_end = .;
+    } > BL_FLASH  AT> BL_FLASH
+
+    .ARM.extab :
+    {
+        __extab_start = ALIGN(4);
+        *(.ARM.extab*)
+        __extab_end = .;
+    } > BL_FLASH  AT> BL_FLASH
+
+    .fast : /* This section contains code that is run from RAM after being loaded from flash - functions can be put in this section with the C attribute: __attribute__ ((section (".fast"))) */
+    {
+        link_run_from_ram_code_flash_location = LOADADDR( .fast ); /* This is the location in flash of the code */
+        link_run_from_ram_code_ram_location = .;
+        *(.fast .fast.* .text.fastcode)
         link_run_from_ram_code_ram_end = .;
-    }>SRAM  AT> BL_FLASH
+    }> SRAM AT> BL_FLASH
 
     .data : /* Contains the non-zero initialised global variables */
     {

@@ -99,8 +99,8 @@ AS      := "$(TOOLCHAIN_PATH)$(TOOLCHAIN_PREFIX)as$(EXECUTABLE_SUFFIX)"
 AR      := "$(TOOLCHAIN_PATH)$(TOOLCHAIN_PREFIX)ar$(EXECUTABLE_SUFFIX)"
 
 
-ADD_COMPILER_SPECIFIC_STANDARD_CFLAGS   = $(1) -std=gnu99                   -c -Wall -Wextra -Wno-sign-compare -Wno-unused-variable -Wno-unused-parameter -Wno-missing-field-initializers -fmessage-length=0 -fno-exceptions -fno-builtin -ffunction-sections -fdata-sections -funsigned-char -MMD -fno-delete-null-pointer-checks -fomit-frame-pointer -DTOOLCHAIN_GCC_ARM -DTOOLCHAIN_GCC
-ADD_COMPILER_SPECIFIC_STANDARD_CXXFLAGS = $(1) -std=gnu++98 -fno-rtti -Wvla -c -Wall -Wextra -Wno-sign-compare -Wno-unused-variable -Wno-unused-parameter -Wno-missing-field-initializers -fmessage-length=0 -fno-exceptions -fno-builtin -ffunction-sections -fdata-sections -funsigned-char -MMD -fno-delete-null-pointer-checks -fomit-frame-pointer -DTOOLCHAIN_GCC_ARM -DTOOLCHAIN_GCC
+ADD_COMPILER_SPECIFIC_STANDARD_CFLAGS   = $(1) -std=gnu99                   -c -Wall -Wextra -Wno-sign-compare -Wno-unused-variable -Wno-unused-parameter -Wno-missing-field-initializers -fmessage-length=0 -fno-exceptions -fno-builtin -ffunction-sections -fdata-sections -fno-common -funsigned-char -MMD -fno-delete-null-pointer-checks -fomit-frame-pointer -DTOOLCHAIN_GCC_ARM -DTOOLCHAIN_GCC
+ADD_COMPILER_SPECIFIC_STANDARD_CXXFLAGS = $(1) -std=gnu++98 -fno-rtti -Wvla -c -Wall -Wextra -Wno-sign-compare -Wno-unused-variable -Wno-unused-parameter -Wno-missing-field-initializers -fmessage-length=0 -fno-exceptions -fno-builtin -ffunction-sections -fdata-sections -fno-common -funsigned-char -MMD -fno-delete-null-pointer-checks -fomit-frame-pointer -DTOOLCHAIN_GCC_ARM -DTOOLCHAIN_GCC
 ADD_COMPILER_SPECIFIC_STANDARD_ADMFLAGS = $(1)
 COMPILER_SPECIFIC_OPTIMIZED_CFLAGS    := -Os
 COMPILER_SPECIFIC_UNOPTIMIZED_CFLAGS  := -O0

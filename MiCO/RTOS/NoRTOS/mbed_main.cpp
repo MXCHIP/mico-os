@@ -1,0 +1,81 @@
+/**
+ ******************************************************************************
+ * @file    rtos.c
+ * @author  William Xu
+ * @version V1.0.0
+ * @date    25-Aug-2016
+ * @brief   Definitions of the MiCO RTOS abstraction layer for the special case
+ *          of having no RTOS
+ ******************************************************************************
+ *
+ *  UNPUBLISHED PROPRIETARY SOURCE CODE
+ *  Copyright (c) 2016 MXCHIP Inc.
+ *
+ *  The contents of this file may not be disclosed to third parties, copied or
+ *  duplicated in any form, in whole or in part, without the prior written
+ *  permission of MXCHIP Corporation.
+ *
+ ******************************************************************************
+ */
+
+
+#include "mbed.h"
+#include "mico.h"
+
+/******************************************************
+ *                      Macros
+ ******************************************************/
+
+/******************************************************
+ *                    Constants
+ ******************************************************/
+
+/******************************************************
+ *                   Enumerations
+ ******************************************************/
+
+/******************************************************
+ *                 Type Definitions
+ ******************************************************/
+
+/******************************************************
+ *                    Structures
+ ******************************************************/
+
+
+/******************************************************
+ *               Function Declarations
+ ******************************************************/
+extern "C" void mico_main(void);
+extern "C" int __real_main(void);
+
+/******************************************************
+ *               Variable Definitions
+ ******************************************************/
+static volatile uint32_t no_os_tick = 0;
+
+/******************************************************
+ *               Function Definitions
+ ******************************************************/
+
+
+Ticker noos_tick_timer;
+
+void noos_tick_handler() {
+    no_os_tick ++;
+    //platform_watchdog_kick( );
+}
+
+extern "C" void mbed_main( void )
+{
+    noos_tick_timer.attach_us(&noos_tick_handler, 1000.0f);
+    mico_main();
+}
+
+mico_time_t mico_rtos_get_time(void)
+{
+    return no_os_tick;
+}
+
+
+

@@ -16,4 +16,9 @@ GLOBAL_INCLUDES := .
 $(NAME)_SOURCES := rtos.c
 
 
-
+ifneq ($(MBED_SUPPORT),)
+$(NAME)_SOURCES += mbed_main.cpp
+$(NAME)_LINK_FILES := mbed_main.o
+else
+$(NAME)_SOURCES += mico_main.c
+endif

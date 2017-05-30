@@ -16,10 +16,10 @@
  ******************************************************************************
  */
 
+#include "mico_rtos.h"
+
 #include "mico_board.h"
 #include "mico_board_conf.h"
-
-#include "mico_rtos.h"
 
 #include "platform_peripheral.h"
 #include "platform_logging.h"
@@ -78,14 +78,18 @@ mico_mutex_t        stdio_rx_mutex;
 mico_mutex_t        stdio_tx_mutex;
 #endif /* #ifndef MICO_DISABLE_STDIO */
 
+
 /******************************************************
 *               Function Definitions
 ******************************************************/
 
+/******************************************************
+*            NO-OS Functions
+******************************************************/
+
+
 void mico_main( void )
 {
-    /* Initialise nanosecond clock counter */
-    //platform_init_nanosecond_clock();
   
 #ifndef MICO_DISABLE_STDIO
 #ifndef NO_MICO_RTOS
@@ -117,11 +121,6 @@ void mico_main( void )
   platform_mcu_powersave_disable( );
 }
 
-void mbed_main( void )
-{
-    mico_main();
-}
-
 
 //OSStatus stdio_hardfault( char* data, uint32_t size )
 //{
@@ -138,24 +137,6 @@ void mbed_main( void )
 //
 
 
-/******************************************************
-*            NO-OS Functions
-******************************************************/
 
-
-#ifdef NO_MICO_RTOS
-static volatile uint32_t no_os_tick = 0;
-
-void SysTick_Handler(void)
-{
-  no_os_tick ++;
-  platform_watchdog_kick( );
-}
-
-uint32_t mico_get_time_no_os(void)
-{
-  return no_os_tick;
-}
-#endif
 
 

@@ -30,9 +30,10 @@
  */
 
 #include <stdio.h>
-#include "mico_common.h"                     /* global project definition file   */
 #include "mico.h"
 #include "mico_board_conf.h"
+
+#include "bootloader.h"
 
 #define CNTLQ      0x11
 #define CNTLS      0x13
@@ -40,11 +41,6 @@
 #define BACKSPACE  0x08
 #define CR         0x0D
 #define LF         0x0A
-
-static void uart_putchar( int c )
-{
-  MicoUartSend( MICO_STDIO_UART, &c, 1 );
-}
 
 /***************/
 /* Line Editor */
@@ -54,7 +50,7 @@ void getline (char *line, int n)  {
   char c;
 
   do  {
-    MicoUartRecv( MICO_STDIO_UART, &c, 1, MICO_NEVER_TIMEOUT );
+    uart_getchar(&c, MICO_NEVER_TIMEOUT );
     if (c == CR)  c = LF;     /* read character                 */
     if (c == BACKSPACE  ||  c == DEL)  {    /* process backspace              */
       if (cnt != 0)  {

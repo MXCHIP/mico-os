@@ -81,16 +81,6 @@ noos_mutex_t mutex_pool[MUTEX_POOL_NUM];
 /******************************************************
  *               Function Definitions
  ******************************************************/
-#ifndef __MBED__
-int __wrap_main( void )
-{
-    mico_main();
-
-    __real_main( );
-
-    return 0;
-}
-#endif
 
 OSStatus semaphore_pool_alloc( noos_semaphore_t **semaphore )
 {
@@ -256,14 +246,7 @@ OSStatus mico_rtos_deinit_mutex( mico_mutex_t* mutex )
     mutex_pool_free(&noos_mutex);
     *mutex = NULL;
 
-    return kNoErr;    
-}
-
-extern uint32_t mico_get_time_no_os(void);
-
-mico_time_t mico_rtos_get_time(void)
-{
-    return mico_get_time_no_os( );
+    return kNoErr;
 }
 
 /**

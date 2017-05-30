@@ -98,17 +98,10 @@ void _start_init( void )
         memcpy( &link_global_data_start, &link_global_data_initial_values, (size_t) link_global_data_size );
     }
 
-    /* BSS segment is for zero initialised elements, so memset it to zero */
-    //memset( &link_bss_location, 0, (size_t) link_bss_size );
-
 #if 0 /* was ifdef DEBUG */
     /* This is not a valid way to fill the stack, since it is currently in use - causes a problem in release with debug on - optimisation of active stack overwriting causes hardfault */
     memset( &link_stack_location, 0xA5, link_stack_size ); /* Fill stack with pattern to allow checking of stack usage */
 #endif /* if 0 */
-
-    /*
-     * Run global C++ constructors if any
-     */
 
     /* TODO: make this an unconditional goto?, so that return address stuff doesn't get put on the stack. (what happens if main returns in this case?) */
     init_architecture();

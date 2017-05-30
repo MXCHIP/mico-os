@@ -165,15 +165,15 @@ void SerialUpload(mico_flash_t flash, uint32_t flashdestination, char * fileName
 {
   uint8_t status = 0;
   uint8_t key;
-  
+
   printf("Select Receive File\n\r");
   MicoUartRecv( MICO_STDIO_UART, &key, 1, MICO_NEVER_TIMEOUT );
-  
+
   if (key == CRC16)
   {
     /* Transmit the flash image through ymodem protocol */
     status = Ymodem_Transmit(flash, flashdestination, (uint8_t *)fileName, maxRecvSize);
-    
+
     if (status != 0)
     {
       printf("\n\rError while Transmitting\n\r");
@@ -200,7 +200,7 @@ void Main_Menu(void)
   mico_logic_partition_t *partition;
   mico_flash_t flash_dev;
   OSStatus err = kNoErr;
-  
+
   while (1)  {                                    /* loop forever                */
     printf ("\n\rMXCHIP> ");
 #if defined __GNUC__

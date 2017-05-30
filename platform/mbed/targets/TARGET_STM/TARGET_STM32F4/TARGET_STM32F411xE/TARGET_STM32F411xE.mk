@@ -21,16 +21,14 @@ $(NAME)_ABS_SOURCES := $(SRC_DIR)/device/TOOLCHAIN_$(TOOLCHAIN_NAME_MBED)/startu
 GLOBAL_ABS_INCLUDES := $(SRC_DIR) \
                        $(SRC_DIR)/device
                    
-#DEFAULT_LINK_SCRIPT := TOOLCHAIN_$(TOOLCHAIN_NAME_MBED)/STM32F411XE$(LINK_SCRIPT_SUFFIX)
-
 
 ifeq ($(APP),bootloader)
 ####################################################################################
 # Building bootloader
 ####################################################################################
 
-DEFAULT_LINK_SCRIPT += TOOLCHAIN_$(TOOLCHAIN_NAME_MBED)/STM32F411XE_boot$(LINK_SCRIPT_SUFFIX)
-GLOBAL_INCLUDES     += 
+DEFAULT_LINK_SCRIPT += TOOLCHAIN_$(TOOLCHAIN_NAME_MBED)/STM32F411XE_BL_FLASH$(LINK_SCRIPT_SUFFIX)
+GLOBAL_DEFINES      += VECT_TAB_OFFSET=0x0
 
 else
 ifneq ($(filter spi_flash_write, $(APP)),)
@@ -38,10 +36,10 @@ ifneq ($(filter spi_flash_write, $(APP)),)
 # Building spi_flash_write
 ####################################################################################
 
-PRE_APP_BUILDS      += bootloader
-DEFAULT_LINK_SCRIPT += TOOLCHAIN_$(TOOLCHAIN_NAME_MBED)/STM32F411XE_app_ram$(LINK_SCRIPT_SUFFIX)
-GLOBAL_DEFINES      += __JTAG_FLASH_WRITER_DATA_BUFFER_SIZE__=16384
-GLOBAL_INCLUDES     += 
+DEFAULT_LINK_SCRIPT += TOOLCHAIN_$(TOOLCHAIN_NAME_MBED)/STM32F411XE_PROG$(LINK_SCRIPT_SUFFIX)
+GLOBAL_DEFINES      += __JTAG_FLASH_WRITER_DATA_BUFFER_SIZE__=16384 \
+                       VECT_TAB_SRAM \
+                       VECT_TAB_OFFSET=0x5000
 
 else
 ifeq ($(USES_BOOTLOADER),1)
@@ -50,8 +48,12 @@ ifeq ($(USES_BOOTLOADER),1)
 ####################################################################################
 
 PRE_APP_BUILDS      += bootloader
-DEFAULT_LINK_SCRIPT := TOOLCHAIN_$(TOOLCHAIN_NAME_MBED)/STM32F411XE_app_needs_boot$(LINK_SCRIPT_SUFFIX)
-GLOBAL_INCLUDES     += 
+DEFAULT_LINK_SCRIPT := TOOLCHAIN_$(TOOLCHAIN_NAME_MBED)/STM32F411XE_APP_FLASH$(LINK_SCRIPT_SUFFIX)
+ifneq ( $(VECT_TAB_OFFSET_APP),)
+GLOBAL_DEFINES      += VECT_TAB_OFFSET=$(VECT_TAB_OFFSET_APP)
+else
+GLOBAL_DEFINES      += VECT_TAB_OFFSET=0x8000
+endif
 
 else
 ####################################################################################
@@ -59,7 +61,8 @@ else
 ####################################################################################
 
 DEFAULT_LINK_SCRIPT := TOOLCHAIN_$(TOOLCHAIN_NAME_MBED)/STM32F411XE$(LINK_SCRIPT_SUFFIX)
-GLOBAL_INCLUDES     += 
+GLOBAL_DEFINES      += VECT_TAB_OFFSET=0x0
+
 
 endif # USES_BOOTLOADER = 1
 endif # APP=spi_flash_write

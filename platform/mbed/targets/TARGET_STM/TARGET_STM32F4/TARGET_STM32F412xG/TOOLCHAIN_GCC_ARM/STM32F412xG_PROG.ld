@@ -34,8 +34,18 @@ ENTRY(Reset_Handler)
 
 SECTIONS
 {
+    /* Data transfer area for serial flash writing app  - at start of memory */
+    .sflash_trnsf :
+    {
+        KEEP(*(*.data_config))
+        KEEP(*(*.data_transfer))
+    }>RAM_TRANS AT> RAM_TRANS
+    
+    
     .text :
     {
+    	/* Vect table should 512bytes align */
+        . = ALIGN(512);
         KEEP(*(.isr_vector))
         *(.text*)
         KEEP(*(.init))
@@ -58,18 +68,18 @@ SECTIONS
         *(.rodata*)
 
         KEEP(*(.eh_frame*))
-    } > FLASH
+    } > RAM_PROG
 
     .ARM.extab :
     {
         *(.ARM.extab* .gnu.linkonce.armextab.*)
-    } > FLASH
+    } > RAM_PROG
 
     __exidx_start = .;
     .ARM.exidx :
     {
         *(.ARM.exidx* .gnu.linkonce.armexidx.*)
-    } > FLASH
+    } > RAM_PROG
     __exidx_end = .;
 
     __etext = .;
@@ -109,7 +119,7 @@ SECTIONS
         __data_end__ = .;
         _edata = .;
 
-    } > RAM
+    } > RAM_PROG
 
     .bss :
     {
@@ -121,7 +131,7 @@ SECTIONS
         . = ALIGN(4);
         __bss_end__ = .;
         _ebss = .;
-    } > RAM
+    } > RAM_PROG
 
     .heap (COPY):
     {
@@ -129,7 +139,7 @@ SECTIONS
         end = __end__;
         *(.heap*)
         __HeapLimit = .;
-    } > RAM
+    } > RAM_PROG
 
     /* .stack_dummy section doesn't contains any symbols. It is only
      * used for linker to calculate size of stack sections, and assign
@@ -137,11 +147,11 @@ SECTIONS
     .stack_dummy (COPY):
     {
         *(.stack*)
-    } > RAM
+    } > RAM_PROG
 
     /* Set stack top to end of RAM, and stack limit move down by
      * size of stack_dummy section */
-    __StackTop = ORIGIN(RAM) + LENGTH(RAM);
+    __StackTop = ORIGIN(RAM_PROG) + LENGTH(RAM_PROG);
     _estack = __StackTop;
     __StackLimit = __StackTop - SIZEOF(.stack_dummy);
     PROVIDE(__stack = __StackTop);

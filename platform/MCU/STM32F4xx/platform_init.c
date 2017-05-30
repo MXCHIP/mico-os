@@ -155,6 +155,10 @@ void mico_main( void )
                        &stdio_uart_config, (ring_buffer_t*) &stdio_rx_buffer );
 #endif
 
+    /* Ensure 802.11 device is in reset. */
+    host_platform_init( );
+
+    /* Customized board configuration. */
     mico_board_init( );
 }
 
@@ -184,8 +188,6 @@ void init_architecture( void )
   /* Initialise GPIO IRQ manager */
   platform_gpio_irq_manager_init();
 
-  /* Ensure 802.11 device is in reset. */
-  host_platform_init( );
 
   /* Initialise nanosecond clock counter */
   platform_init_nanosecond_clock();
@@ -249,25 +251,4 @@ const char *mico_generate_cid( uint8_t* length )
 bool isWakeUpFlagPowerOn(void){
   return (RCC_GetFlagStatus(RCC_FLAG_SFTRST) == RESET) ? true : false;
 };
-
-/******************************************************
-*            NO-OS Functions
-******************************************************/
-
-
-#ifdef NO_MICO_RTOS
-static volatile uint32_t no_os_tick = 0;
-
-void SysTick_Handler(void)
-{
-  no_os_tick ++;
-  platform_watchdog_kick( );
-}
-
-uint32_t mico_get_time_no_os(void)
-{
-  return no_os_tick;
-}
-#endif
-
 

@@ -40,6 +40,8 @@ extern "C" {
   
 void bootloader_start_app( uint32_t app_addr );
 
+int uart_getchar(char *inbuf, uint32_t timeout );
+void uart_putchar( int c );
 
 #ifdef __cplusplus
 } /*extern "C" */

@@ -124,7 +124,7 @@ int main(void)
   mico_logic_partition_t *partition;
 
   mico_set_bootload_ver();
-  
+
   update();
 
   enable_protection();

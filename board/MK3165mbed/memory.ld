@@ -30,4 +30,8 @@ MEMORY
   /* MiCO application needs a bootloader */
   BL_FLASH  (rx)  : ORIGIN = 0x08000000, LENGTH = 32K
   APP_FLASH (rx)  : ORIGIN = 0x0800C000, LENGTH = 512K - 48k
+  /* Flash programmer ramcode, left 20k for data ransfer with JTAG, 
+   16K for data exchange, 3K for control data, 1K for mbed dynamic vector */
+  RAM_TRANS (rwx) : ORIGIN = 0x20000400, LENGTH = 20K - 1K
+  RAM_PROG  (rwx) : ORIGIN = 0x20005000, LENGTH = 128K - 20K
 }

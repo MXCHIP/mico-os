@@ -124,7 +124,9 @@ typedef struct
 /******************************************************
  *               Function Declarations
  ******************************************************/
+
 extern void mico_rtos_stack_overflow(char *taskname);
+extern void mico_main(void);
 
 /******************************************************
  *               Variables Definitions
@@ -143,6 +145,11 @@ static mico_thread_t* cur_thread;
 /******************************************************
  *               Function Definitions
  ******************************************************/
+
+void mbed_main( void )
+{
+    mico_main();
+}
 
 static int cmsis_status_to_mico_status(osStatus status)
 {

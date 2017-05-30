@@ -7,7 +7,7 @@
 #  permission of MXCHIP Corporation.
 #
 
-NAME = stm32f411xg
+NAME = stm32f412xg
 
 SRC_DIR := ../../../../mbed-os/targets/TARGET_STM/TARGET_STM32F4/TARGET_STM32F412xG
 
@@ -17,16 +17,14 @@ $(NAME)_SOURCES := cmsis_nvic.c \
                    
 GLOBAL_INCLUDES := $(SRC_DIR) $(SRC_DIR)/device
                    
-#DEFAULT_LINK_SCRIPT := TOOLCHAIN_$(TOOLCHAIN_NAME_MBED)/STM32F411XE$(LINK_SCRIPT_SUFFIX)
-
 
 ifeq ($(APP),bootloader)
 ####################################################################################
 # Building bootloader
 ####################################################################################
 
-DEFAULT_LINK_SCRIPT += TOOLCHAIN_$(TOOLCHAIN_NAME_MBED)/STM32F412xG_boot$(LINK_SCRIPT_SUFFIX)
-GLOBAL_INCLUDES     += 
+DEFAULT_LINK_SCRIPT += TOOLCHAIN_$(TOOLCHAIN_NAME_MBED)/STM32F412XG_BL_FLASH$(LINK_SCRIPT_SUFFIX)
+GLOBAL_DEFINES      += VECT_TAB_OFFSET=0x0
 
 else
 ifneq ($(filter spi_flash_write, $(APP)),)
@@ -34,10 +32,10 @@ ifneq ($(filter spi_flash_write, $(APP)),)
 # Building spi_flash_write
 ####################################################################################
 
-PRE_APP_BUILDS      += bootloader
-DEFAULT_LINK_SCRIPT += TOOLCHAIN_$(TOOLCHAIN_NAME_MBED)/STM32F412xG_app_ram$(LINK_SCRIPT_SUFFIX)
-GLOBAL_DEFINES      += __JTAG_FLASH_WRITER_DATA_BUFFER_SIZE__=16384
-GLOBAL_INCLUDES     += 
+DEFAULT_LINK_SCRIPT += TOOLCHAIN_$(TOOLCHAIN_NAME_MBED)/STM32F412XG_PROG$(LINK_SCRIPT_SUFFIX)
+GLOBAL_DEFINES      += __JTAG_FLASH_WRITER_DATA_BUFFER_SIZE__=16384 \
+                       VECT_TAB_SRAM \
+                       VECT_TAB_OFFSET=0x5000
 
 else
 ifeq ($(USES_BOOTLOADER),1)
@@ -46,19 +44,22 @@ ifeq ($(USES_BOOTLOADER),1)
 ####################################################################################
 
 PRE_APP_BUILDS      += bootloader
-DEFAULT_LINK_SCRIPT := TOOLCHAIN_$(TOOLCHAIN_NAME_MBED)/STM32F412xG_app_needs_boot$(LINK_SCRIPT_SUFFIX)
-GLOBAL_INCLUDES     += 
+DEFAULT_LINK_SCRIPT := TOOLCHAIN_$(TOOLCHAIN_NAME_MBED)/STM32F412XG_APP_FLASH$(LINK_SCRIPT_SUFFIX)
+ifneq ($(VECT_TAB_OFFSET_APP),)
+GLOBAL_DEFINES      += VECT_TAB_OFFSET=$(VECT_TAB_OFFSET_APP)
+else
+GLOBAL_DEFINES      += VECT_TAB_OFFSET=0x8000
+endif
 
 else
 ####################################################################################
 # Building a standalone application (standalone app without bootloader)
 ####################################################################################
 
-DEFAULT_LINK_SCRIPT := TOOLCHAIN_$(TOOLCHAIN_NAME_MBED)/STM32F412xG$(LINK_SCRIPT_SUFFIX)
-GLOBAL_INCLUDES     += 
+DEFAULT_LINK_SCRIPT := TOOLCHAIN_$(TOOLCHAIN_NAME_MBED)/STM32F412XG$(LINK_SCRIPT_SUFFIX)
+GLOBAL_DEFINES      += VECT_TAB_OFFSET=0x0
 
 endif # USES_BOOTLOADER = 1
 endif # APP=spi_flash_write
 endif # APP=bootloader
-
 

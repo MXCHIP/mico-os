@@ -15,7 +15,7 @@
 ###############################################################################
 
 # CHIP_RAM_START must be supplied by target specific TCL script
-set MemoryStart $CHIP_RAM_START
+set MemoryStart $CHIP_PROG_CODE_START
 
 ###############################################################################
 #

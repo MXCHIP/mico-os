@@ -78,5 +78,6 @@ $(NAME)_SOURCES += mbed/PeripheralPins.c \
 # Global includes
 GLOBAL_INCLUDES  += mbed
 
-
+# EMW3165 legacy configuration
+VECT_TAB_OFFSET_APP := 0xC000
 

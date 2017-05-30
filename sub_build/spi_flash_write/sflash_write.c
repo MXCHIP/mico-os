@@ -1,11 +1,11 @@
 #include <stdio.h>
 #include <string.h>
 #include "mico.h"
-#include "platform_config.h"
-#include "platform_init.h"
+#include "mico_board_conf.h"
+//#include "platform_init.h"
 #include "platform_peripheral.h"
-#include "platform_toolchain.h"
-#include "linker_symbols.h"
+//#include "platform_toolchain.h"
+//#include "linker_symbols.h"
 
 /*
  * Test mode defines
@@ -30,6 +30,8 @@
 #define flash_program_log(format, ...)
 #define DEBUG_PRINTF(x)
 #endif /* ifdef DEBUG_PRINT */
+
+#define ENTRY_ADDRESS (&Reset_Handler)
 
 /******************************************************
  *                    Constants
@@ -115,6 +117,7 @@ typedef struct
     unsigned long data_buffer_size;
 } data_config_area_t;
 
+
 /*
  * TCL script write_sflash.tcl must match this structure
  */
@@ -145,6 +148,9 @@ static void read_test_data2( void );
  ******************************************************/
 static uint8_t Rx_Buffer[SECTOR_SIZE + 10]; /* A temporary buffer used for reading data from the Serial flash when performing verification */
 
+extern void Reset_Handler(void);
+extern void* _estack;
+
 /******************************************************************************
  * This structure provides configuration parameters, and communication area
  * to the TCL OpenOCD script
@@ -158,7 +164,7 @@ const data_config_area_t data_config @ "data_config_section";
 const data_config_area_t data_config =
     {
         .entry_point = (void*) ENTRY_ADDRESS,
-        .stack_addr = &link_stack_end,
+        .stack_addr = &_estack,
         .data_buffer_size = __JTAG_FLASH_WRITER_DATA_BUFFER_SIZE__,
     };
 
@@ -240,7 +246,6 @@ int main( void )
         /*@-infloopsuncon@*/
 
         data_transfer.result = MFG_SPI_FLASH_RESULT_IN_PROGRESS;
-
         flash_program_log( "Received command: %s%s%s%s%s%s%s",
             ( data_transfer.command & MFG_SPI_FLASH_COMMAND_INITIAL_VERIFY )? "INITIAL_VERIFY " : "",
             ( data_transfer.command & MFG_SPI_FLASH_COMMAND_ERASE_CHIP )? "ERASE_CHIP " : "",

@@ -34,9 +34,13 @@ ENTRY(Reset_Handler)
 
 SECTIONS
 {
-    .text :
+	.vect :
     {
         KEEP(*(.isr_vector))
+    } > BL_FLASH
+    
+    .text :
+    {
         *(.text*)
         KEEP(*(.init))
         KEEP(*(.fini))
