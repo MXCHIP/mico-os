@@ -272,6 +272,9 @@ typedef struct
 {
     PinName        mbed_tx_pin;
     PinName        mbed_rx_pin;
+	PinName        mbed_rts_pin;
+	PinName        mbed_cts_pin;
+	int            index;
 } platform_uart_t;
 
 typedef struct
