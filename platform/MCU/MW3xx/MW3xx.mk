@@ -16,6 +16,9 @@ HOST_ARCH := Cortex-M4
 # Host MCU alias for OpenOCD
 HOST_OPENOCD := mw3xx
 
+ifeq ($(MODULE),3031B)
+HOST_ARCH := Cortex-M4F
+endif
 
 ifneq (,$(filter $(HOST_MCU_VARIANT), MW310))
 GLOBAL_DEFINES += MW310 CONFIG_VARIANT_MW310
@@ -120,8 +123,11 @@ ifneq ($(filter $(subst ., ,$(COMPONENTS)),mocOS),)
 ####################################################################################
 # Building standard moc application
 ####################################################################################
-
+ifeq ($(MODULE),3031B)
+DEFAULT_LINK_SCRIPT := $(TOOLCHAIN_NAME)/app_with_moc_b$(LINK_SCRIPT_SUFFIX)
+else
 DEFAULT_LINK_SCRIPT := $(TOOLCHAIN_NAME)/app_with_moc$(LINK_SCRIPT_SUFFIX)
+endif
 
 endif # APP=moc
 endif # APP=spi_flash_write
