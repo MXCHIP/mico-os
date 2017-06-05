@@ -270,6 +270,17 @@ typedef struct
 
 typedef struct
 {
+    PinName        mbed_pwm_pin;
+} platform_pwm_t;
+
+typedef struct
+{
+    pwmout_t       pwm_obj;
+    mico_mutex_t   pwm_mutex;
+} platform_pwm_driver_t;
+
+typedef struct
+{
     PinName        mbed_tx_pin;
     PinName        mbed_rx_pin;
 	PinName        mbed_rts_pin;

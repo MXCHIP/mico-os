@@ -92,7 +92,12 @@ platform_gpio_driver_t      platform_gpio_drivers[MICO_GPIO_MAX];
 platform_gpio_irq_driver_t  platform_gpio_irq_drivers[MICO_GPIO_MAX];
 
 
-// const platform_pwm_t *platform_pwm_peripherals = NULL;
+ const platform_pwm_t *platform_pwm_peripherals[] ={
+     [MICO_PWM_1] = {
+         .mbed_pwm_pin = MBED_GPIO_27,
+     }
+ };
+ platform_uart_driver_t platform_pwm_drivers[MICO_PWM_MAX];
 
 // const platform_adc_t platform_adc_peripherals[] =
 // {

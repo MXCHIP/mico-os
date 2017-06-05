@@ -315,27 +315,26 @@ void MicoSystemStandBy( uint32_t secondsToWakeup )
    //platform_mcu_enter_standby( secondsToWakeup );
 }
 
+ OSStatus MicoPwmInitialize(mico_pwm_t pwm, uint32_t frequency, float duty_cycle)
+ {
+   if ( pwm >= MICO_PWM_NONE )
+     return kUnsupportedErr;
+   return (OSStatus) platform_pwm_init( &platform_pwm_drivers[uart],&platform_pwm_peripherals[pwm], frequency, duty_cycle );
+ }
 
-// OSStatus MicoPwmInitialize(mico_pwm_t pwm, uint32_t frequency, float duty_cycle)
-// {
-//   if ( pwm >= MICO_PWM_NONE )
-//     return kUnsupportedErr;
-//   return (OSStatus) platform_pwm_init( &platform_pwm_peripherals[pwm], frequency, duty_cycle );
-// }
+ OSStatus MicoPwmStart( mico_pwm_t pwm )
+ {
+   if ( pwm >= MICO_PWM_NONE )
+     return kUnsupportedErr;
+   return (OSStatus) platform_pwm_start( &platform_pwm_drivers[pwm] );
+ }
 
-// OSStatus MicoPwmStart( mico_pwm_t pwm )
-// {
-//   if ( pwm >= MICO_PWM_NONE )
-//     return kUnsupportedErr;
-//   return (OSStatus) platform_pwm_start( &platform_pwm_peripherals[pwm] );
-// }
-
-// OSStatus MicoPwmStop( mico_pwm_t pwm )
-// {
-//   if ( pwm >= MICO_PWM_NONE )
-//     return kUnsupportedErr;
-//   return (OSStatus) platform_pwm_stop( &platform_pwm_peripherals[pwm] );
-// }
+ OSStatus MicoPwmStop( mico_pwm_t pwm )
+ {
+   if ( pwm >= MICO_PWM_NONE )
+     return kUnsupportedErr;
+   return (OSStatus) platform_pwm_stop( &platform_pwm_drivers[pwm] );
+ }
 
 // OSStatus MicoRtcGetTime(mico_rtc_time_t* time)
 // {
