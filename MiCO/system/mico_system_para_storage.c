@@ -194,9 +194,6 @@ OSStatus mico_system_context_restore( mico_Context_t * const inContext )
 
   para_log("Restore to default");
 
-  err = internal_update_config( sys_context );
-  require_noerr(err, exit);
-
 exit:
   return err;
 }
