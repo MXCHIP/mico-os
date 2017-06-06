@@ -150,7 +150,7 @@ OSStatus platform_uart_init( platform_uart_driver_t* driver, const platform_uart
 	serial_format((serial_t*)&driver->serial_obj, wordlen, parity, stopbit);
         /* NOTE: flow control must be inited at last. - by swyang */
         /*only UART1 support flow control*/
-	if(config->flow_control != FLOW_CONTROL_DISABLED &&  driver->serial_obj.uart!=UART_1 )
+	if(config->flow_control != FLOW_CONTROL_DISABLED &&  driver->serial_obj.serial.uart!=UART_1 )
 	{
 		err = kUnsupportedErr;
 		goto exit;
