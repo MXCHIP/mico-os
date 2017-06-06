@@ -15,9 +15,8 @@
  ******************************************************************************
  */
 
-#include "platform.h"
 #include "platform_peripheral.h"
-#include "debug.h"
+
 /******************************************************
 *                    Constants
 ******************************************************/
@@ -41,7 +40,7 @@
 /******************************************************
 *               Function Declarations
 ******************************************************/
-void platform_pwm_power( platform_pwm_driver_t *driver,int enable );
+OSStatus platform_pwm_power( platform_pwm_driver_t *driver,int enable );
 /******************************************************
 *               Function Definitions
 ******************************************************/
@@ -57,13 +56,13 @@ OSStatus platform_pwm_init( platform_pwm_driver_t *driver,const platform_pwm_t* 
 
   pwmout_init((pwmout_t *)&driver->pwm_obj,pwm->mbed_pwm_pin);
 
-  /********************set frequency*********************/
+  /********************Set Frequency*********************/
   if(frequency/1000000){
       pwmout_period_us((pwmout_t *)&driver->pwm_obj,frequency);
   }else if(frequency/1000){
       pwmout_period_ms((pwmout_t *)&driver->pwm_obj,frequency);
   }else {
-      pwmout_period_s((pwmout_t *)&driver->pwm_obj,frequency);
+      pwmout_period((pwmout_t *)&driver->pwm_obj,frequency);
   }
 
   pwmout_write((pwmout_t *)&driver->pwm_obj,adjusted_duty_cycle);
@@ -85,7 +84,7 @@ OSStatus platform_pwm_start( platform_pwm_driver_t* driver )
   require_action_quiet( driver != NULL, exit, err = kParamErr);
 
   /*******************Enable TIM clock*********************/
-  platform_pwm_power(driver,DISABLE);
+  platform_pwm_power(driver,ENABLE);
   
 exit:  
   platform_mcu_powersave_enable();
@@ -100,7 +99,7 @@ OSStatus platform_pwm_stop( platform_pwm_driver_t *driver )
 
   require_action_quiet( driver != NULL, exit, err = kParamErr);
   
-  /******************disable TIM clock********************/
+  /******************Disable TIM clock********************/
   platform_pwm_power(driver,DISABLE);
   
 exit:  
@@ -108,7 +107,7 @@ exit:
   return err;
 }
 
-void platform_pwm_power( platform_pwm_driver_t *driver,int enable )
+OSStatus platform_pwm_power( platform_pwm_driver_t *driver,int enable )
 {
      OSStatus err = kNoErr;
 
@@ -116,7 +115,7 @@ void platform_pwm_power( platform_pwm_driver_t *driver,int enable )
 
      require_action_quiet( driver != NULL, exit, err = kParamErr);
 
-     /******************disable TIM clock********************/
+     /******************Set TIM clock********************/
     #if defined(TIM1_BASE)
       if (driver->pwm_obj.pwm == PWM_1){
           if(enable==ENABLE)

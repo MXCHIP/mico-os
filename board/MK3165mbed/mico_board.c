@@ -113,15 +113,12 @@ const platform_uart_t platform_uart_peripherals[]={
         [MICO_UART_1] = {
             .mbed_tx_pin = MICO_GPIO_8,
             .mbed_rx_pin = MICO_GPIO_12,
-            .index       =  1,
-
         },
         [MICO_UART_2]={
             .mbed_tx_pin  = SERIAL_TX,
             .mbed_rx_pin  = SERIAL_RX,
             .mbed_rts_pin =  MBED_GPIO_27,
             .mbed_cts_pin =  MBED_GPIO_35 ,
-            .index        =  0,
         },
 };
 platform_uart_driver_t platform_uart_drivers[MICO_UART_MAX];

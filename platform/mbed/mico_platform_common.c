@@ -61,7 +61,8 @@ extern platform_gpio_irq_driver_t       platform_gpio_irq_drivers[];
 // extern const platform_adc_t             platform_adc_peripherals[];
 extern const platform_i2c_t             platform_i2c_peripherals[];
 extern platform_i2c_driver_t            platform_i2c_drivers[];
-// extern const platform_pwm_t             platform_pwm_peripherals[];
+extern const platform_pwm_t             platform_pwm_peripherals[];
+extern platform_pwm_driver_t            platform_pwm_drivers[];
 extern const platform_spi_t             platform_spi_peripherals[];
 extern platform_spi_driver_t            platform_spi_drivers[];
 extern const platform_uart_t            platform_uart_peripherals[];
@@ -319,14 +320,14 @@ void MicoSystemStandBy( uint32_t secondsToWakeup )
  {
    if ( pwm >= MICO_PWM_NONE )
      return kUnsupportedErr;
-   return (OSStatus) platform_pwm_init( &platform_pwm_drivers[uart],&platform_pwm_peripherals[pwm], frequency, duty_cycle );
+   return (OSStatus) platform_pwm_init( &platform_pwm_drivers[pwm],&platform_pwm_peripherals[pwm], frequency, duty_cycle );
  }
 
  OSStatus MicoPwmStart( mico_pwm_t pwm )
  {
    if ( pwm >= MICO_PWM_NONE )
      return kUnsupportedErr;
-   return (OSStatus) platform_pwm_start( &platform_pwm_drivers[pwm] );
+   return (OSStatus)platform_pwm_start( &platform_pwm_drivers[pwm] );
  }
 
  OSStatus MicoPwmStop( mico_pwm_t pwm )

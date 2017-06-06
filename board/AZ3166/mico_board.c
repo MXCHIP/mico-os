@@ -91,13 +91,18 @@ const platform_gpio_t platform_gpio_pins[] =
 platform_gpio_driver_t      platform_gpio_drivers[MICO_GPIO_MAX];
 platform_gpio_irq_driver_t  platform_gpio_irq_drivers[MICO_GPIO_MAX];
 
-
- const platform_pwm_t *platform_pwm_peripherals[] ={
+const platform_pwm_t platform_pwm_peripherals[] ={
      [MICO_PWM_1] = {
          .mbed_pwm_pin = MBED_GPIO_27,
-     }
+     },
+     [MICO_PWM_2] = {
+         .mbed_pwm_pin = MBED_GPIO_31,
+     },
+     [MICO_PWM_3] = {
+         .mbed_pwm_pin = MBED_GPIO_12,
+     },
  };
- platform_uart_driver_t platform_pwm_drivers[MICO_PWM_MAX];
+platform_pwm_driver_t platform_pwm_drivers[MICO_PWM_MAX];
 
 // const platform_adc_t platform_adc_peripherals[] =
 // {
@@ -111,7 +116,6 @@ const platform_i2c_t platform_i2c_peripherals[] = {
         .mbed_sda_pin = I2C_SDA,
     }
 };
-
 platform_i2c_driver_t platform_i2c_drivers[MICO_I2C_MAX];
 
 const platform_uart_t platform_uart_peripherals[] = {

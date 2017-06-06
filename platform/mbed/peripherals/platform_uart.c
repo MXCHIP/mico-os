@@ -72,7 +72,6 @@ OSStatus platform_uart_init( platform_uart_driver_t* driver, const platform_uart
   	driver->tx_size              = 0;
   	driver->last_transmit_result = kNoErr;
   	driver->last_receive_result  = kNoErr;
-  	//driver->serial_obj.serial.index = peripheral->index;
 
 #ifndef NO_MICO_RTOS
   	mico_rtos_init_semaphore( &driver->tx_complete, 1 );
@@ -151,8 +150,7 @@ OSStatus platform_uart_init( platform_uart_driver_t* driver, const platform_uart
 	serial_format((serial_t*)&driver->serial_obj, wordlen, parity, stopbit);
         /* NOTE: flow control must be inited at last. - by swyang */
         /*only UART1 support flow control*/
-
-	if(config->flow_control != FLOW_CONTROL_DISABLED &&  peripheral->index !=0 )
+	if(config->flow_control != FLOW_CONTROL_DISABLED &&  driver->serial_obj.uart!=UART_1 )
 	{
 		err = kUnsupportedErr;
 		goto exit;

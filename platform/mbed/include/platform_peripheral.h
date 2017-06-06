@@ -35,7 +35,7 @@
 #include "spi_api.h"
 
 #include "serial_api.h"
-
+#include "pwmout_api.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -276,7 +276,7 @@ typedef struct
 typedef struct
 {
     pwmout_t       pwm_obj;
-    mico_mutex_t   pwm_mutex;
+    //mico_mutex_t   pwm_mutex;
 } platform_pwm_driver_t;
 
 typedef struct
@@ -285,7 +285,6 @@ typedef struct
     PinName        mbed_rx_pin;
 	PinName        mbed_rts_pin;
 	PinName        mbed_cts_pin;
-	int            index;
 } platform_uart_t;
 
 typedef struct
@@ -878,7 +877,7 @@ OSStatus platform_i2c_transfer( platform_i2c_driver_t* driver, const platform_i2
 //  *
 //  * @return @ref OSStatus
 //  */
-// OSStatus platform_pwm_init( const platform_pwm_t* pwm, uint32_t frequency, float duty_cycle );
+OSStatus platform_pwm_init( platform_pwm_driver_t *driver,const platform_pwm_t* pwm, uint32_t frequency, float duty_cycle );
 
 
 // /**
@@ -888,7 +887,7 @@ OSStatus platform_i2c_transfer( platform_i2c_driver_t* driver, const platform_i2
 //  *
 //  * @return @ref OSStatus
 //  */
-// OSStatus platform_pwm_start( const platform_pwm_t* pwm );
+OSStatus platform_pwm_start( platform_pwm_driver_t* driver );
 
 
 // /**
@@ -898,7 +897,7 @@ OSStatus platform_i2c_transfer( platform_i2c_driver_t* driver, const platform_i2
 //  *
 //  * @return @ref OSStatus
 //  */
-// OSStatus platform_pwm_stop( const platform_pwm_t* pwm );
+OSStatus platform_pwm_stop( platform_pwm_driver_t* driver );
 
 
 // /**
