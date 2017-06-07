@@ -109,8 +109,18 @@ const platform_i2c_t platform_i2c_peripherals[] = {
 
 platform_i2c_driver_t platform_i2c_drivers[MICO_I2C_MAX];
 
-
-const platform_uart_t platform_uart_peripherals[MICO_UART_MAX];
+const platform_uart_t platform_uart_peripherals[]={
+        [MICO_UART_1] = {
+            .mbed_tx_pin = MICO_GPIO_8,
+            .mbed_rx_pin = MICO_GPIO_12,
+        },
+        [MICO_UART_2]={
+            .mbed_tx_pin  = SERIAL_TX,
+            .mbed_rx_pin  = SERIAL_RX,
+            .mbed_rts_pin =  MBED_GPIO_27,
+            .mbed_cts_pin =  MBED_GPIO_35 ,
+        },
+};
 platform_uart_driver_t platform_uart_drivers[MICO_UART_MAX];
 
 const platform_spi_t platform_spi_peripherals[] =
@@ -349,7 +359,7 @@ void platform_init_peripheral_irq_priorities( void )
 
 void mico_board_init( void )
 {
-    //button_init_t init;
+    button_init_t init;
 
     platform_init_peripheral_irq_priorities();
 
@@ -367,12 +377,12 @@ void mico_board_init( void )
     mico_gpio_init( (mico_gpio_t) MFG_SEL, INPUT_PULL_UP );
 
     //  Initialise EasyLink buttons
-//    init.gpio = EasyLink_BUTTON;
-//    init.pressed_func = PlatformEasyLinkButtonClickedCallback;
-//    init.long_pressed_func = PlatformEasyLinkButtonLongPressedCallback;
-//    init.long_pressed_timeout = 5000;
+    init.gpio = EasyLink_BUTTON;
+    init.pressed_func = PlatformEasyLinkButtonClickedCallback;
+    init.long_pressed_func = PlatformEasyLinkButtonLongPressedCallback;
+    init.long_pressed_timeout = 5000;
 
-    //button_init( IOBUTTON_EASYLINK, init );
+    button_init( IOBUTTON_EASYLINK, init );
 
 #ifdef USE_MiCOKit_EXT
     dc_motor_init( );

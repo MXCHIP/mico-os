@@ -61,7 +61,8 @@ extern platform_gpio_irq_driver_t       platform_gpio_irq_drivers[];
 // extern const platform_adc_t             platform_adc_peripherals[];
 extern const platform_i2c_t             platform_i2c_peripherals[];
 extern platform_i2c_driver_t            platform_i2c_drivers[];
-// extern const platform_pwm_t             platform_pwm_peripherals[];
+extern const platform_pwm_t             platform_pwm_peripherals[];
+extern platform_pwm_driver_t            platform_pwm_drivers[];
 extern const platform_spi_t             platform_spi_peripherals[];
 extern platform_spi_driver_t            platform_spi_drivers[];
 extern const platform_uart_t            platform_uart_peripherals[];
@@ -315,27 +316,26 @@ void MicoSystemStandBy( uint32_t secondsToWakeup )
    //platform_mcu_enter_standby( secondsToWakeup );
 }
 
+ OSStatus MicoPwmInitialize(mico_pwm_t pwm, uint32_t frequency, float duty_cycle)
+ {
+   if ( pwm >= MICO_PWM_NONE )
+     return kUnsupportedErr;
+   return (OSStatus) platform_pwm_init( &platform_pwm_drivers[pwm],&platform_pwm_peripherals[pwm], frequency, duty_cycle );
+ }
 
-// OSStatus MicoPwmInitialize(mico_pwm_t pwm, uint32_t frequency, float duty_cycle)
-// {
-//   if ( pwm >= MICO_PWM_NONE )
-//     return kUnsupportedErr;
-//   return (OSStatus) platform_pwm_init( &platform_pwm_peripherals[pwm], frequency, duty_cycle );
-// }
+ OSStatus MicoPwmStart( mico_pwm_t pwm )
+ {
+   if ( pwm >= MICO_PWM_NONE )
+     return kUnsupportedErr;
+   return (OSStatus)platform_pwm_start( &platform_pwm_drivers[pwm] );
+ }
 
-// OSStatus MicoPwmStart( mico_pwm_t pwm )
-// {
-//   if ( pwm >= MICO_PWM_NONE )
-//     return kUnsupportedErr;
-//   return (OSStatus) platform_pwm_start( &platform_pwm_peripherals[pwm] );
-// }
-
-// OSStatus MicoPwmStop( mico_pwm_t pwm )
-// {
-//   if ( pwm >= MICO_PWM_NONE )
-//     return kUnsupportedErr;
-//   return (OSStatus) platform_pwm_stop( &platform_pwm_peripherals[pwm] );
-// }
+ OSStatus MicoPwmStop( mico_pwm_t pwm )
+ {
+   if ( pwm >= MICO_PWM_NONE )
+     return kUnsupportedErr;
+   return (OSStatus) platform_pwm_stop( &platform_pwm_drivers[pwm] );
+ }
 
 // OSStatus MicoRtcGetTime(mico_rtc_time_t* time)
 // {

@@ -245,6 +245,9 @@ enum
 
 enum
 {
+    MICO_PWM_1,
+    MICO_PWM_2,
+    MICO_PWM_3,
     MICO_PWM_MAX, /* Denotes the total number of PWM port aliases. Not a valid PWM alias */
     MICO_PWM_NONE,
 };

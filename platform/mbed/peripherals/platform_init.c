@@ -61,6 +61,7 @@ extern OSStatus host_platform_init( void );
 extern platform_uart_t platform_uart_peripherals[];
 extern platform_uart_driver_t platform_uart_drivers[];
 
+
 #ifndef MICO_DISABLE_STDIO
 static const platform_uart_config_t stdio_uart_config =
 {

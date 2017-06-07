@@ -107,7 +107,10 @@ OSStatus platform_spi_init( platform_spi_driver_t* driver, const platform_spi_t*
     platform_irq_init( &driver->irq, driver, irq_handler_asynch );
 
     if ( config->mode & SPI_USE_DMA ){
-        err = mico_rtos_init_semaphore( &driver->transfer_complete, 0 );
+        if(driver->transfer_complete == NULL)
+        {
+            err = mico_rtos_init_semaphore( &driver->transfer_complete, 0 );
+        }
     }
 #endif
 
