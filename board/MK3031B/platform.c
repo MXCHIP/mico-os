@@ -148,15 +148,15 @@ const mico_logic_partition_t mico_partitions[] =
     .partition_owner           = MICO_FLASH_SPI,
     .partition_description     = part1_desc,
     .partition_start_addr      = 0x6000,
-    .partition_length          = 0xA9000,   //676k bytes
+    .partition_length          = 0xA9000 + 0xA9000,   //1352 bytes
     .partition_options         = PAR_OPT_READ_EN | PAR_OPT_WRITE_EN,
   },
   [phy_PARTITION_APPLICATION2] =
   {
-    .partition_owner           = MICO_FLASH_SPI,
+    .partition_owner           = MICO_FLASH_NONE,
     .partition_description     = part2_desc,
-    .partition_start_addr      = 0xAF000,
-    .partition_length          = 0xA9000,   //676k bytes
+    .partition_start_addr      = 0,
+    .partition_length          = 0,   //0 bytes
     .partition_options         = PAR_OPT_READ_EN | PAR_OPT_WRITE_EN,
   },
 
