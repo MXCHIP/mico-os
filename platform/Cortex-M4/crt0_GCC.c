@@ -72,6 +72,16 @@ __attribute__((section(".copy_ramcode"))) void _mico_start(void)
         "       bx    r0        \n\t");
 }
 
+void software_init_hook(void)
+{
+    /* Initialise clocks and memory. init_clocks() and init_memory() must NOT depend on globals as global data and bss sections aren't initialised yet */
+    init_clocks();
+    init_memory();
+
+    /* TODO: make this an unconditional goto?, so that return address stuff doesn't get put on the stack. (what happens if main returns in this case?) */
+    init_architecture();
+}
+
 void _start_init( void )
 {
     unsigned long ctor_num;
@@ -87,10 +97,6 @@ void _start_init( void )
     /* Enable CPU Cycle counting */
     DWT->CYCCNT = 0;
     DWT->CTRL |= DWT_CTRL_CYCCNTENA_Msk;
-	
-    /* Initialise clocks and memory. init_clocks() and init_memory() must NOT depend on globals as global data and bss sections aren't initialised yet */
-    init_clocks();
-    init_memory();
 
     /* Copy initial values for global variables into RAM  */
     if ( ( &link_global_data_start != &link_global_data_initial_values ) && ( link_global_data_size != 0 ) )
@@ -102,9 +108,6 @@ void _start_init( void )
     /* This is not a valid way to fill the stack, since it is currently in use - causes a problem in release with debug on - optimisation of active stack overwriting causes hardfault */
     memset( &link_stack_location, 0xA5, link_stack_size ); /* Fill stack with pattern to allow checking of stack usage */
 #endif /* if 0 */
-
-    /* TODO: make this an unconditional goto?, so that return address stuff doesn't get put on the stack. (what happens if main returns in this case?) */
-    init_architecture();
 
     _start( );
 
