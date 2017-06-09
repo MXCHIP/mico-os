@@ -112,7 +112,17 @@ const platform_gpio_t platform_gpio_pins[] =
   [MICO_GPIO_38]                      = { GPIOA,  4 },
 };
 
-const platform_pwm_t *platform_pwm_peripherals = NULL;
+const platform_pwm_t platform_pwm_peripherals[] =
+{
+    [MICO_PWM_1] =
+    {
+        .tim = TIM1,
+        .channel = 4,
+        .tim_peripheral_clock = RCC_APB2Periph_TIM1,
+        .gpio_af = GPIO_AF_TIM1,
+        .pin = &platform_gpio_pins[MICO_GPIO_35],
+    },
+};
 
 const platform_i2c_t platform_i2c_peripherals[] =
 {

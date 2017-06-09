@@ -79,7 +79,7 @@ OSStatus platform_pwm_init( const platform_pwm_t* pwm, uint32_t frequency, float
   }
     
   /* Set alternate function */
-  platform_gpio_set_alternate_function( pwm->pin->port, pwm->pin->pin_number, GPIO_OType_PP, GPIO_PuPd_UP, pwm->gpio_af );
+  platform_gpio_set_alternate_function( pwm->pin->port, pwm->pin->pin_number, GPIO_OType_PP, GPIO_PuPd_NOPULL, pwm->gpio_af );
   
   /* Time base configuration */
   tim_time_base_structure.TIM_Period            = (uint32_t) period;
@@ -95,7 +95,7 @@ OSStatus platform_pwm_init( const platform_pwm_t* pwm, uint32_t frequency, float
   tim_oc_init_structure.TIM_OutputNState = TIM_OutputNState_Enable;
   tim_oc_init_structure.TIM_Pulse        = (uint16_t) ( adjusted_duty_cycle * (float) period / 100.0f );
   tim_oc_init_structure.TIM_OCPolarity   = TIM_OCPolarity_High;
-  tim_oc_init_structure.TIM_OCNPolarity  = TIM_OCNPolarity_High;
+  tim_oc_init_structure.TIM_OCNPolarity  = TIM_OCNPolarity_Low;
   tim_oc_init_structure.TIM_OCIdleState  = TIM_OCIdleState_Reset;
   tim_oc_init_structure.TIM_OCNIdleState = TIM_OCIdleState_Set;
   
