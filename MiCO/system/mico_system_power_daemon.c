@@ -58,12 +58,19 @@ USED void PlatformEasyLinkButtonLongPressedCallback(void)
 {
   system_log_trace();
   mico_Context_t* context = NULL;
+  mico_logic_partition_t *partition = NULL;
   
   context = mico_system_context_get( );
   require( context, exit );
 
-  mico_system_context_restore( context );
+  partition = MicoFlashGetInfo( MICO_PARTITION_PARAMETER_1 );
+
+  MicoFlashErase( MICO_PARTITION_PARAMETER_1 ,0x0, partition->partition_length );
   
+  partition = MicoFlashGetInfo( MICO_PARTITION_PARAMETER_2 );
+
+  MicoFlashErase( MICO_PARTITION_PARAMETER_2 ,0x0, partition->partition_length );
+
   mico_system_power_perform( context, eState_Software_Reset );
 
 exit:
