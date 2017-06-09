@@ -109,17 +109,19 @@ const platform_i2c_t platform_i2c_peripherals[] = {
 
 platform_i2c_driver_t platform_i2c_drivers[MICO_I2C_MAX];
 
-const platform_uart_t platform_uart_peripherals[]={
-        [MICO_UART_1] = {
-            .mbed_tx_pin = MICO_GPIO_8,
-            .mbed_rx_pin = MICO_GPIO_12,
-        },
-        [MICO_UART_2]={
-            .mbed_tx_pin  = SERIAL_TX,
-            .mbed_rx_pin  = SERIAL_RX,
-            .mbed_rts_pin =  MBED_GPIO_27,
-            .mbed_cts_pin =  MBED_GPIO_35 ,
-        },
+const platform_uart_t platform_uart_peripherals[] = {
+    [MICO_UART_1] =
+    {
+        .mbed_tx_pin = STDIO_UART_TX,
+        .mbed_rx_pin = STDIO_UART_RX,
+    },
+    [MICO_UART_2] =
+    {
+        .mbed_tx_pin = MBED_GPIO_30,
+        .mbed_rx_pin = MBED_GPIO_29,
+        .mbed_rts_pin =  MBED_GPIO_27,
+        .mbed_cts_pin =  MBED_GPIO_35 ,
+    }
 };
 platform_uart_driver_t platform_uart_drivers[MICO_UART_MAX];
 
