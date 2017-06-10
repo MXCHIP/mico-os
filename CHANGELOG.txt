@@ -1,7 +1,7 @@
 =====================================================================
 MiCO SDK - CHANGELOG
 =====================================================================
-Changes for MiCO v3.5.2
+Changes for MiCO v3.5.3
 * Libraries, Protocols, Drivers
   * Syetem default settings does not be written into flash
 
