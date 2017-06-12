@@ -101,8 +101,8 @@ void mico_main( void )
 #endif
 
     ring_buffer_init( (ring_buffer_t*) &stdio_rx_buffer, (uint8_t*) stdio_rx_data, STDIO_BUFFER_SIZE );
-    //platform_uart_init( &platform_uart_drivers[MICO_STDIO_UART], &platform_uart_peripherals[MICO_STDIO_UART],
-    //                    &stdio_uart_config, (ring_buffer_t*) &stdio_rx_buffer );
+    platform_uart_init( &platform_uart_drivers[MICO_STDIO_UART], &platform_uart_peripherals[MICO_STDIO_UART],
+                       &stdio_uart_config, (ring_buffer_t*) &stdio_rx_buffer );
 #endif
 
     mico_board_init( );

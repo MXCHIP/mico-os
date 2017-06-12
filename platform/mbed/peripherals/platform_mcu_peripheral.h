@@ -18,7 +18,6 @@
 #define __PLATFORM_MCU_PERIPHERAL_H__
 
 
-#include "stm32f4xx.h"
 #include "mico_rtos.h"
 
 #ifdef __cplusplus
@@ -88,6 +87,7 @@ typedef void (*platform_peripheral_clock_function_t)(uint32_t clock, FunctionalS
 /******************************************************
  *                    Structures
  ******************************************************/
+#if defined(STM32F412Rx) || defined(STM32F412Vx) || defined(STM32F412Zx) || defined(STM32F469xx) || defined(STM32F479xx)
 typedef struct
 {
     DMA_TypeDef*        controller;
@@ -98,8 +98,6 @@ typedef struct
     uint32_t            error_flags;
 } platform_dma_config_t;
 
-
-#if defined(STM32F412Rx) || defined(STM32F412Vx) || defined(STM32F412Zx) || defined(STM32F469xx) || defined(STM32F479xx)
 typedef struct
 {
     platform_qspi_port_t* port;

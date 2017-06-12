@@ -247,15 +247,16 @@ $(eval $(call PROCESS_COMPATIBILITY_CHECK,))
 # Now we know the target architecture - include all toolchain makefiles and check one of them can handle the architecture
 CC :=
 
-ifneq ($(filter $(HOST_ARCH),Cortex-M3 Cortex-M4 Cortex-M4F Cortex-R4),)
+
+ifneq ($(filter $(HOST_ARCH),Cortex-M3 Cortex-M4 Cortex-M4F Cortex-R4 Cortex-M0 Cortex-M0plus),)
 
 include $(MAKEFILES_PATH)/micoder_toolchain_arm-none-eabi.mk
 
-else # ifneq ($(filter $(HOST_ARCH),Cortex-M3 Cortex-M4 Cortex-R4),)
+else # ifneq ($(filter $(HOST_ARCH),Cortex-M3 Cortex-M4 Cortex-R4 Cortex-M0 Cortex-M0plus)
 ifneq ($(filter $(HOST_ARCH),MIPS),)
 include $(MAKEFILES_PATH)/mico_toolchain_Win32_MIPS.mk
 endif # ifneq ($(filter $(HOST_ARCH),MIPS),)
-endif # ifneq ($(filter $(HOST_ARCH),Cortex-M3 Cortex-M4 Cortex-R4),)
+endif # ifneq ($(filter $(HOST_ARCH),Cortex-M3 Cortex-M4 Cortex-R4 Cortex-M0 Cortex-M0plus),)
 
 ifndef CC
 $(error No matching toolchain found for architecture $(HOST_ARCH))

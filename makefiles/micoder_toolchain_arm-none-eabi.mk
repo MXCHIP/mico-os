@@ -13,7 +13,9 @@ THUMB_GNU_ARCH_LIST := Cortex-M0 \
                        Cortex-M3 \
                        Cortex-M4 \
                        Cortex-M4F\
-                       Cortex-R3
+                       Cortex-R3 \
+                       Cortex-M0 \
+                       Cortex-M0plus
 
 
 ifneq ($(filter $(HOST_ARCH), $(THUMB_GNU_ARCH_LIST) $(ARM_GNU_ARCH_LIST)),)
@@ -176,6 +178,13 @@ CPU_CFLAGS   := -mthumb -mcpu=cortex-m0 -D__CORTEX_M0
 CPU_CXXFLAGS := -mthumb -mcpu=cortex-m0 -D__CORTEX_M0
 CPU_ASMFLAGS := -mcpu=cortex-m0 -mthumb
 CPU_LDFLAGS  := -mthumb -mcpu=cortex-m0 -Wl,-A,thumb
+endif
+
+ifeq ($(HOST_ARCH),Cortex-M0plus)
+CPU_CFLAGS   := -mthumb -mcpu=cortex-m0plus -D__CORTEX_M0PLUS
+CPU_CXXFLAGS := -mthumb -mcpu=cortex-m0plus -D__CORTEX_M0PLUS
+CPU_ASMFLAGS := -mcpu=cortex-m0plus -mthumb
+CPU_LDFLAGS  := -mthumb -mcpu=cortex-m0plus -Wl,-A,thumb
 endif
 
 ifeq ($(HOST_ARCH),Cortex-R4)

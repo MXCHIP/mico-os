@@ -244,8 +244,8 @@ OSStatus platform_uart_receive_bytes( platform_uart_driver_t* driver, uint8_t* d
 
 	  platform_mcu_powersave_disable();
 
-	  require_action_quiet( ( driver != NULL ) && ( data_in != NULL ) && ( expected_data_size != 0 ) && (driver->rx_buffer != NULL)
-	                       && (expected_data_size <= driver->rx_buffer->size - 1), exit, err = kParamErr);
+	//   require_action_quiet( ( driver != NULL ) && ( data_in != NULL ) && ( expected_data_size != 0 ) && (driver->rx_buffer != NULL)
+	//                        && (expected_data_size <= driver->rx_buffer->size - 1), exit, err = kParamErr);
 
 
 	  /* Check if ring buffer already contains the required amount of data. */
@@ -262,9 +262,9 @@ OSStatus platform_uart_receive_bytes( platform_uart_driver_t* driver, uint8_t* d
 	    }
 	#else
 	    driver->rx_complete = false;
-	    uint32_t delay_start = SYSTIMER_TickGet();
+	    uint32_t delay_start = mico_rtos_get_time();
 	    while(driver->rx_complete == false){
-	      if(SYSTIMER_TickGet() >= delay_start + timeout_ms && timeout_ms != MICO_NEVER_TIMEOUT){
+	      if(mico_rtos_get_time() >= delay_start + timeout_ms && timeout_ms != MICO_NEVER_TIMEOUT){
 	        driver->rx_size = 0;
 	        return kTimeoutErr;
 	      }

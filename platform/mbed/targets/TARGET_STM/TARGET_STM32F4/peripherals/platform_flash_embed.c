@@ -49,11 +49,6 @@
 /* Private function prototypes -----------------------------------------------*/
 static uint32_t _GetSector( uint32_t Address );
 
-#ifdef MCU_ENABLE_FLASH_PROTECT
-static uint32_t _GetWRPSector(uint32_t Address);
-static OSStatus internalFlashProtect(uint32_t StartAddress, uint32_t EndAddress, bool enable);
-#endif
-
 int iflash_init( void )
 {
     HAL_FLASH_Unlock( );
@@ -141,47 +136,6 @@ exit:
     return err;
 }
 
-
-#ifdef MCU_EBANLE_FLASH_PROTECT
-OSStatus internalFlashProtect(uint32_t StartAddress, uint32_t EndAddress, bool enable)
-{
-  OSStatus err = kNoErr;
-  uint16_t WRP = 0x0;
-  uint32_t StartSector, EndSector, i = 0;
-  bool needupdate = false;
-  
-  /* Get the sector where start the user flash area */
-  StartSector = _GetWRPSector(StartAddress);
-  EndSector = _GetWRPSector(EndAddress);
-  
-  for(i = StartSector; i <= EndSector; i=i<<1)
-  {
-    WRP = FLASH_OB_GetWRP();
-
-    if( ( enable == true && (WRP & i) == 0x0 ) ||
-        ( enable == false && (WRP & i) ) ) {
-      continue;
-    }
-    if( needupdate == false){
-      FLASH_OB_Unlock( );
-      needupdate = true;
-    }
-    if( enable == true )
-      FLASH_OB_WRPConfig( i, ENABLE );
-    else
-      FLASH_OB_WRPConfig( i, DISABLE );
-  }
-  
-  if( needupdate == true){
-    FLASH_OB_Launch( );
-    FLASH_OB_Lock( );
-  }
-
-  return err;
-}
-#endif
-
-
 /**
 * @brief  Gets the sector of a given address
 * @param  Address: Flash address
@@ -241,67 +195,3 @@ static uint32_t _GetSector(uint32_t Address)
   }
   return sector;
 }
-
-
-#ifdef MCU_EBANLE_FLASH_PROTECT
-/**
-* @brief  Gets the sector of a given address
-* @param  Address: Flash address
-* @retval The sector of a given address
-*/
-static uint32_t _GetWRPSector(uint32_t Address)
-{
-  uint32_t sector = 0;
-  
-  if((Address < ADDR_FLASH_SECTOR_1) && (Address >= ADDR_FLASH_SECTOR_0))
-  {
-    sector = OB_WRP_Sector_0;  
-  }
-  else if((Address < ADDR_FLASH_SECTOR_2) && (Address >= ADDR_FLASH_SECTOR_1))
-  {
-    sector = OB_WRP_Sector_1;  
-  }
-  else if((Address < ADDR_FLASH_SECTOR_3) && (Address >= ADDR_FLASH_SECTOR_2))
-  {
-    sector = OB_WRP_Sector_2;  
-  }
-  else if((Address < ADDR_FLASH_SECTOR_4) && (Address >= ADDR_FLASH_SECTOR_3))
-  {
-    sector = OB_WRP_Sector_3;  
-  }
-  else if((Address < ADDR_FLASH_SECTOR_5) && (Address >= ADDR_FLASH_SECTOR_4))
-  {
-    sector = OB_WRP_Sector_4;  
-  }
-  else if((Address < ADDR_FLASH_SECTOR_6) && (Address >= ADDR_FLASH_SECTOR_5))
-  {
-    sector = OB_WRP_Sector_5;  
-  }
-  else if((Address < ADDR_FLASH_SECTOR_7) && (Address >= ADDR_FLASH_SECTOR_6))
-  {
-    sector = OB_WRP_Sector_6;  
-  }
-  else if((Address < ADDR_FLASH_SECTOR_8) && (Address >= ADDR_FLASH_SECTOR_7))
-  {
-    sector = OB_WRP_Sector_7;  
-  }
-  else if((Address < ADDR_FLASH_SECTOR_9) && (Address >= ADDR_FLASH_SECTOR_8))
-  {
-    sector = OB_WRP_Sector_8;  
-  }
-  else if((Address < ADDR_FLASH_SECTOR_10) && (Address >= ADDR_FLASH_SECTOR_9))
-  {
-    sector = OB_WRP_Sector_9;  
-  }
-  else if((Address < ADDR_FLASH_SECTOR_11) && (Address >= ADDR_FLASH_SECTOR_10))
-  {
-    sector = OB_WRP_Sector_10;  
-  }
-  else/*(Address < FLASH_END_ADDR) && (Address >= ADDR_FLASH_SECTOR_11))*/
-  {
-    sector = OB_WRP_Sector_11;  
-  }
-  return sector;
-}
-#endif
-
