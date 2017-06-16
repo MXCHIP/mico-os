@@ -49,8 +49,8 @@ static void thread_wakeup(void *arg);
 static void RX_PIN_WAKEUP_handler(void *arg);
 #endif
 
-extern void platform_uart_irq( uint32_t id, SerialIrq event);
-extern OSStatus serial_send_stream(serial_t* serial_obj, char* data_out, uint32_t size);
+void platform_uart_irq( uint32_t id, SerialIrq event);
+OSStatus serial_send_stream(serial_t* serial_obj, char* data_out, uint32_t size);
 
 /******************************************************
 *               Function Definitions
@@ -72,15 +72,12 @@ OSStatus platform_uart_init( platform_uart_driver_t* driver, const platform_uart
   	driver->tx_size              = 0;
   	driver->last_transmit_result = kNoErr;
   	driver->last_receive_result  = kNoErr;
+  	driver->is_recv_over_flow    = false;
+  	driver->is_flow_control      = false;
 
-#ifndef NO_MICO_RTOS
   	mico_rtos_init_semaphore( &driver->tx_complete, 1 );
   	mico_rtos_init_semaphore( &driver->rx_complete, 1 );
   	mico_rtos_init_mutex( &driver->tx_mutex );
-#else
-  	driver->tx_complete = false;
-  	driver->rx_complete = false;
-#endif
 
   	serial_init(&(driver->serial_obj), peripheral->mbed_tx_pin, peripheral->mbed_rx_pin);
 
@@ -155,7 +152,10 @@ OSStatus platform_uart_init( platform_uart_driver_t* driver, const platform_uart
 		err = kUnsupportedErr;
 		goto exit;
 	}else{
-		serial_set_flow_control((serial_t*)&driver->serial_obj, flowcontrol, peripheral->mbed_rts_pin, peripheral->mbed_cts_pin);
+	    if(driver->serial_obj.serial.uart == UART_1){
+	         serial_set_flow_control((serial_t*)&driver->serial_obj, flowcontrol, peripheral->mbed_rts_pin, peripheral->mbed_cts_pin);
+	         driver->is_flow_control = true;
+	    }
 	}
 
 	if (optional_ring_buffer != NULL){
@@ -164,7 +164,7 @@ OSStatus platform_uart_init( platform_uart_driver_t* driver, const platform_uart
   		driver->rx_size   = 0;
   		//platform_uart_receive_bytes( uart, optional_rx_buffer->buffer, optional_rx_buffer->size, 0 );
 	}else{
-      	driver->rx_buffer = NULL;
+      	return kOptionErr;
 	}
 	serial_irq_handler((serial_t*)&driver->serial_obj, platform_uart_irq, (uint32_t)driver);
 	serial_irq_set((serial_t*)&driver->serial_obj, RxIrq, 1);
@@ -185,18 +185,16 @@ OSStatus platform_uart_deinit( platform_uart_driver_t* driver )
 
   	serial_free((serial_t*)&driver->serial_obj);
 
-#ifndef NO_MICO_RTOS
   	mico_rtos_deinit_semaphore( &driver->rx_complete );
   	mico_rtos_deinit_semaphore( &driver->tx_complete );
   	mico_rtos_deinit_mutex( &driver->tx_mutex );
-#else
-  	driver->rx_complete = false;
-  	driver->tx_complete = false;
-#endif
+
   	driver->rx_size              = 0;
   	driver->tx_size              = 0;
   	driver->last_transmit_result = kNoErr;
   	driver->last_receive_result  = kNoErr;
+  	driver->is_flow_control      = false;
+  	driver->is_recv_over_flow    = false;
 
 exit:
     	platform_mcu_powersave_enable();
@@ -218,12 +216,7 @@ OSStatus platform_uart_transmit_bytes( platform_uart_driver_t* driver, const uin
 		goto exit;
 	}
 	/* Wait for transmission complete */
-#ifndef NO_MICO_RTOS
-	  	mico_rtos_get_semaphore( &driver->tx_complete, MICO_NEVER_TIMEOUT );
-#else
-	  	while( driver->tx_complete == false );
-	  	driver->tx_complete = false;
-#endif
+	mico_rtos_get_semaphore( &driver->tx_complete, MICO_NEVER_TIMEOUT );
 
   	driver->tx_size = 0;
   	err = driver->last_transmit_result;
@@ -236,67 +229,62 @@ exit:
 
 OSStatus platform_uart_receive_bytes( platform_uart_driver_t* driver, uint8_t* data_in, uint32_t expected_data_size, uint32_t timeout_ms )
 {
-	  OSStatus err = kNoErr;
-	  /* Check if UART FIFO already contains data. - by swyang*/
-	  uint8_t rxData;
-	  // Grab data from the buffer
-	  uint32_t read_size = 0;
+    OSStatus err = kNoErr;
+    //platform_mcu_powersave_disable();
 
-	  platform_mcu_powersave_disable();
+    require_action_quiet( ( driver != NULL ) && ( data_in != NULL ) && ( expected_data_size != 0 ), exit, err = kParamErr);
 
-	//   require_action_quiet( ( driver != NULL ) && ( data_in != NULL ) && ( expected_data_size != 0 ) && (driver->rx_buffer != NULL)
-	//                        && (expected_data_size <= driver->rx_buffer->size - 1), exit, err = kParamErr);
+    mico_rtos_get_semaphore( &driver->rx_complete, 0 );
 
+/* Check if ring buffer already contains the required amount of data. */
+    if( ( driver->is_flow_control == true  ) &&  ( driver->is_recv_over_flow == true ) )
+     {
+         driver->is_recv_over_flow = false;
+         serial_irq_set((serial_t*)&driver->serial_obj, RxIrq, 1);
+     }
 
-	  /* Check if ring buffer already contains the required amount of data. */
-	  if ( expected_data_size > ring_buffer_used_space( driver->rx_buffer ) )
-	  {
-	    /* Set rx_size and wait in rx_complete semaphore until data reaches rx_size or timeout occurs */
-	    driver->rx_size = expected_data_size;
+   while ( expected_data_size != 0 )
+   {
+     uint32_t transfer_size = MIN( driver->rx_buffer->size / 2, expected_data_size );
 
-	#ifndef NO_MICO_RTOS
-	    if ( mico_rtos_get_semaphore( &driver->rx_complete, timeout_ms) != kNoErr )
-	    {
-	      driver->rx_size = 0;
-	      return kTimeoutErr;
-	    }
-	#else
-	    driver->rx_complete = false;
-	    uint32_t delay_start = mico_rtos_get_time();
-	    while(driver->rx_complete == false){
-	      if(mico_rtos_get_time() >= delay_start + timeout_ms && timeout_ms != MICO_NEVER_TIMEOUT){
-	        driver->rx_size = 0;
-	        return kTimeoutErr;
-	      }
-	    }
-	#endif
-	    /* Reset rx_size to prevent semaphore being set while nothing waits for the data */
-	    driver->rx_size = 0;
-	  }
+       /* Set rx_size and wait in rx_complete semaphore until data reaches rx_size or timeout occurs */
+       driver->last_receive_result = kNoErr;
+       driver->rx_size             = transfer_size;
 
-	  /* Re-Enable UART RX interrupt if ring buffer is full before. - by swyang */
-	  if(ring_buffer_used_space( driver->rx_buffer ) == driver->rx_buffer->size - 1)
-	  {
-	    ring_buffer_read(driver->rx_buffer, data_in, expected_data_size, &read_size);
-	  	while(serial_readable(&driver->serial_obj))
-	    {
-	      if(ring_buffer_free_space(driver->rx_buffer) < 1)
-	      {
-	        break;
-	      }
-	      rxData = serial_getc((serial_t*)&driver->serial_obj);
-	      ring_buffer_write( driver->rx_buffer, &rxData,1 );
-	    }
-		if(ring_buffer_free_space(driver->rx_buffer) > 0) {
-	    	serial_irq_set((serial_t*)&driver->serial_obj, RxIrq, 1);
-		}
-	  } else {
-	    ring_buffer_read(driver->rx_buffer, data_in, expected_data_size, &read_size);
-	  }
+     /* Check if ring buffer already contains the required amount of data. */
+     if ( transfer_size > ring_buffer_used_space( driver->rx_buffer ) )
+     {
+       err = mico_rtos_get_semaphore( &driver->rx_complete, timeout_ms );
 
-	exit:
-	  platform_mcu_powersave_enable();
-	  return err;
+       /* Reset rx_size to prevent semaphore being set while nothing waits for the data */
+       driver->rx_size = 0;
+
+       if( err != kNoErr )
+         goto exit;
+     }else {
+       driver->rx_size = 0;
+     }
+     err = driver->last_receive_result;
+     expected_data_size -= transfer_size;
+
+     // Grab data from the buffer
+     do
+     {
+       uint8_t* available_data;
+       uint32_t bytes_available;
+
+       ring_buffer_get_data( driver->rx_buffer, &available_data, &bytes_available );
+       bytes_available = MIN( bytes_available, transfer_size );
+       memcpy( data_in, available_data, bytes_available );
+       transfer_size -= bytes_available;
+       data_in = ( (uint8_t*) data_in + bytes_available );
+       ring_buffer_consume( driver->rx_buffer, bytes_available );
+     } while ( transfer_size != 0 );
+   }
+
+ exit:
+   platform_mcu_powersave_enable();
+   return err;
 }
 
 uint32_t platform_uart_get_length_in_buffer( platform_uart_driver_t* driver )
@@ -394,35 +382,29 @@ void RX_PIN_WAKEUP_handler(void *arg)
 
 void platform_uart_irq( uint32_t id, SerialIrq event)
 {
-  	uint8_t rxData;
+  	uint8_t recv_byte;
 	platform_uart_driver_t* driver = (platform_uart_driver_t*)id;
 
 	if(event == RxIrq){
-                if(ring_buffer_free_space(driver->rx_buffer) >= 1){
-                        rxData = serial_getc((serial_t*)&driver->serial_obj);
-                        ring_buffer_write( driver->rx_buffer, &rxData,1 );
-                }else{
-                  /* Disable UART RX interrupt if ring buffer is full. - by swyang */
+        if ( ring_buffer_is_full( driver->rx_buffer ) == 0 )
+        {
+             recv_byte = serial_getc((serial_t*)&driver->serial_obj);
+             ring_buffer_write( driver->rx_buffer, &recv_byte, 1 );
+             if ( ( driver->rx_size > 0 ) && ( ring_buffer_used_space( driver->rx_buffer ) >= driver->rx_size ) )
+             {
+                  mico_rtos_set_semaphore( &driver->rx_complete );
+                  driver->rx_size = 0;
+             }
+         } else{
+             if( driver->is_flow_control == true ){
                   serial_irq_set((serial_t*)&driver->serial_obj, RxIrq, 0);
-                }
-
-    		// Notify thread if sufficient data are available
-    		if ( ( driver->rx_size > 0 ) &&
-        		( ring_buffer_used_space( driver->rx_buffer ) >= driver->rx_size ) )
-    		{
-  #ifndef NO_MICO_RTOS
-      			mico_rtos_set_semaphore( &driver->rx_complete );
-  #else
-      			driver->rx_complete = true;
-  #endif
-      			driver->rx_size = 0;
-    		}
+                  driver->is_recv_over_flow = true;
+             }else{
+                 serial_getc((serial_t*)&driver->serial_obj);
+             }
+         }
 	}else if ((event == TxIrq)) {
-#ifndef NO_MICO_RTOS
 		mico_rtos_set_semaphore( &driver->tx_complete );
-#else
-		driver->tx_complete = true;
-#endif
 	}
 }
 

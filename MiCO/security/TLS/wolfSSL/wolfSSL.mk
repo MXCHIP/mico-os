@@ -12,12 +12,12 @@ NAME := Lib_wolfSSL
 
 GLOBAL_INCLUDES += .
 
-# ifneq ($(wildcard $(CURDIR)Lib_wolfSSL.$(HOST_ARCH).$(TOOLCHAIN_NAME).release.a),)
-# $(NAME)_PREBUILT_LIBRARY := Lib_wolfSSL.$(HOST_ARCH).$(TOOLCHAIN_NAME).release.a
-# else
-# # Build from source
-# include $(CURDIR)wolfSSL_src.mk
-# endif
+ ifneq ($(wildcard $(CURDIR)Lib_wolfSSL.$(HOST_ARCH).$(TOOLCHAIN_NAME).release.a),)
+ $(NAME)_PREBUILT_LIBRARY := Lib_wolfSSL.$(HOST_ARCH).$(TOOLCHAIN_NAME).release.a
+ else
+ # Build from source
+ include $(CURDIR)wolfSSL_src.mk
+ endif
 
 
 
