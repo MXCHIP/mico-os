@@ -236,7 +236,7 @@ OSStatus platform_uart_receive_bytes( platform_uart_driver_t* driver, uint8_t* d
 
     mico_rtos_get_semaphore( &driver->rx_complete, 0 );
 
-/* Check if ring buffer already contains the required amount of data. */
+    /* Check if ring buffer already contains the required amount of data. */
     if( ( driver->is_flow_control == true  ) &&  ( driver->is_recv_over_flow == true ) )
      {
          driver->is_recv_over_flow = false;
@@ -267,7 +267,7 @@ OSStatus platform_uart_receive_bytes( platform_uart_driver_t* driver, uint8_t* d
      err = driver->last_receive_result;
      expected_data_size -= transfer_size;
 
-     // Grab data from the buffer
+     /* Grab data from the buffer */
      do
      {
        uint8_t* available_data;
