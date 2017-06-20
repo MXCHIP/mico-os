@@ -58,8 +58,7 @@ static volatile uint32_t no_os_tick = 0;
  *               Function Definitions
  ******************************************************/
 
-
-Ticker noos_tick_timer;
+Timer noos_timer;
 
 void noos_tick_handler() {
     no_os_tick ++;
@@ -68,13 +67,13 @@ void noos_tick_handler() {
 
 extern "C" void mbed_main( void )
 {
-    noos_tick_timer.attach_us(&noos_tick_handler, 1000.0f);
+    noos_timer.start();
     mico_main();
 }
 
 mico_time_t mico_rtos_get_time(void)
 {
-    return no_os_tick;
+    return noos_timer.read_ms();
 }
 
 
