@@ -26,9 +26,9 @@
  *                      Macros
  ******************************************************/
 
-#define DISABLE_INTERRUPTS() do { __asm("CPSID i"); } while (0)
+#define DISABLE_INTERRUPTS() //do { __asm("CPSID i"); } while (0)
 
-#define ENABLE_INTERRUPTS() do { __asm("CPSIE i"); } while (0)
+#define ENABLE_INTERRUPTS() //do { __asm("CPSIE i"); } while (0)
 
 /******************************************************
  *                    Constants

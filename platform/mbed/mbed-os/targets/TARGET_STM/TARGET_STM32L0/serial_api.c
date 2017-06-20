@@ -279,14 +279,13 @@ static void uart_irq(int id)
                 __HAL_UART_CLEAR_FLAG(huart, UART_CLEAR_TCF);
             }
         }
-        else if (__HAL_UART_GET_FLAG(huart, UART_FLAG_RXNE) != RESET) {
+        if (__HAL_UART_GET_FLAG(huart, UART_FLAG_RXNE) != RESET) {
             if (__HAL_UART_GET_IT_SOURCE(huart, UART_IT_RXNE) != RESET) {
                 irq_handler(serial_irq_ids[id], RxIrq);
                 volatile uint32_t tmpval = huart->Instance->RDR; // Clear RXNE flag
             }
         }
-        else if (__HAL_UART_GET_FLAG(huart, UART_FLAG_ORE) != RESET) {
-              __HAL_UART_CLEAR_FLAG(huart, UART_CLEAR_OREF);
+        if (__HAL_UART_GET_FLAG(huart, UART_FLAG_ORE) != RESET) {
             if (__HAL_UART_GET_IT_SOURCE(huart, UART_IT_ORE) != RESET) {
                 __HAL_UART_CLEAR_FLAG(huart, UART_CLEAR_OREF);
             }
