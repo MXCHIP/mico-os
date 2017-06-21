@@ -16,7 +16,7 @@ HOST_ARCH := Cortex-M0plus
 HOST_OPENOCD := stm32l0
 
 #Add MiCO extended device drivers
-$(NAME)_SOURCES := peripherals/platform_flash_embed.c \
+$(NAME)_SOURCES := peripherals/platform_flash_mbed.c \
                    peripherals/platform_flash.c \
                    peripherals/platform_ota.c
 
