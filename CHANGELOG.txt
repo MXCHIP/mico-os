@@ -1,6 +1,63 @@
 =====================================================================
 MiCO SDK - CHANGELOG
 =====================================================================
+Changes for MiCO v3.5.3
+* Libraries, Protocols, Drivers
+  * Syetem default settings does not be written into flash
+
+Changes for MiCO v3.5.2
+* Libraries, Protocols, Drivers
+  * Remove USE_MiCOKit_EXT from board.h, should be defined in application
+  * DHCP: Add support DHCP option 60, vendor class id
+  * BTE: Fix pin code, build by MiCO Cube
+  * MDNS: Fix package format error
+  * EasyLink: 
+    * Redesigned for monitor mode extension
+    * Remove EasyLink with softap mode
+    * Start or close without reboot
+    * Move airkiss, aws configuration out from MiCO
+  
+* Platforms
+  * Support NUCLEO_F412ZG board support
+  * EMW3031B: Support hardware float unit, add flash and ram size
+  * EMW3081: Add uart send mutex
+  * EMW3031: Kernel updated for read authorization code correctly
+  * EMW316x, EMW3239: Add uart flow control function
+  * EMW3080B/C: Initialize GPIO and check interface version in bootloader, check CRC in QC
+  * EMW3080B/C: Fix connection error using BSSID, Add lowpower mode with wifi connection
+  * EMW3080B/C: Fix station mode cannot stop when password is wrong
+  * EMW3080B/C: Fix unexpected enter bootload mode when uart RX is not pull up
+  * MOC100: Add GPIO definition
+  * EMW1088: Support receive wifi management frame
+
+Changes for MiCO v3.5.1
+* Platforms
+  * EMW3031, EMW5031: Support FM25Q16A spi flash, update boot2.bin for bootloader error
+  * EMW316x, EMW3239: Generate all.bin file for interal flash
+  * EMW3166: Fix application partition size error
+  * EMW3081: Fix Station mode close bug, fix TCP server listen error
+  * EMW3080B: Add SYS led, Fix flash may be unexpected protected bug, 
+  * MOC100: Add this new module
+
+Changes for MiCO v3.5.0
+* Applications and demos
+  * Moved to a different project https://code.aliyun.com/mico/mico-demos.git 
+  
+* Libraries, Protocols, Drivers
+  * Add wlan monitor mode apis
+  * Alink libraries moved another project
+  * Developers can create their customized board components under program's root
+
+* Toolchain
+  * Support MiCO Cube workflow scripts
+
+* Platforms
+  * QC test string format fixed "MAC:"
+  * EMW3080B/C: Fix serial bug in ATE firmware and kernel, airkiss optimized
+  * MOC100: Add this new module
+  * EMW3165: Move bootloader output to MICO_UART_2
+  * EMW3165: Move app uart, cli uart and stdio uart to MICO_UART_2, bootloader uart baurdrate 921600
+
 Changes for MiCO v3.2.3
 * Platforms
   * EMW3080B/C: Remove kernel debug info 
