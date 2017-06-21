@@ -21,7 +21,7 @@
 #  IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 ############################################################################### 
 
-NAME := Board_EML3077
+NAME := Board_EML3047
 
 WLAN_CHIP            	:= NONE
 WLAN_CHIP_REVISION   	:= NONE
