@@ -299,6 +299,8 @@ typedef struct
     volatile OSStatus          last_receive_result;
     volatile OSStatus          last_transmit_result;
     volatile bool              initialized;
+    uint8_t                    is_recv_over_flow;
+    uint8_t                    is_flow_control;
 } platform_uart_driver_t;
 
 
