@@ -44,6 +44,11 @@ void init_debug_uart(void)
 	MicoUartInitialize(STDIO_UART, &stdio_uart_config,
                         (ring_buffer_t*) &stdio_rx_buffer );
 }
+#else
+void init_debug_uart(void)
+{
+    return;
+}
 #endif
 
 mico_api_t *moc_adapter(new_mico_api_t *new_mico_api)
