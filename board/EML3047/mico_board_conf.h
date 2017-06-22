@@ -35,7 +35,7 @@ extern "C"
 #define DEFAULT_NAME        "EML3047"
 #define MODEL               "EML3047"
 
-#define MICO_ENABLE_SECONDARY_APPLICATION
+// #define MICO_ENABLE_SECONDARY_APPLICATION
 
 /* MICO RTOS tick rate in Hz */
 // #define MICO_DEFAULT_TICK_RATE_HZ                   (1000) 

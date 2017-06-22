@@ -209,38 +209,62 @@ platform_flash_driver_t platform_flash_drivers[MICO_FLASH_MAX];
 /* Logic partition on flash devices */
 const platform_logic_partition_t mico_partitions[] =
     {
-            [phy_PARTITION_APPLICATION1] =
-                {
-                    .partition_owner = MICO_FLASH_EMBEDDED,
-                    .partition_description = "Application1",
-                    .partition_start_addr = 0x08000000,
-                    .partition_length = 0x10000, //64k bytes
-                    .partition_options = PAR_OPT_READ_EN | PAR_OPT_WRITE_DIS,
-                },
-            [phy_PARTITION_APPLICATION2] =
-                {
-                    .partition_owner = MICO_FLASH_EMBEDDED,
-                    .partition_description = "Application2",
-                    .partition_start_addr = 0x08010000,
-                    .partition_length = 0x10000, //64k bytes
-                    .partition_options = PAR_OPT_READ_EN | PAR_OPT_WRITE_EN,
-                },
-        // [MICO_PARTITION_PARAMETER_1] =
-        // {
-        //     .partition_owner = MICO_FLASH_EMBEDDED,
-        //     .partition_description = "PARAMETER1",
-        //     .partition_start_addr = 0x08008000,
-        //     .partition_length = 0x1000, // 4k bytes
-        //     .partition_options = PAR_OPT_READ_EN | PAR_OPT_WRITE_EN,
-        // },
-        // [MICO_PARTITION_PARAMETER_2] =
-        // {
-        //     .partition_owner = MICO_FLASH_EMBEDDED,
-        //     .partition_description = "PARAMETER2",
-        //     .partition_start_addr = 0x08009000,
-        //     .partition_length = 0x1000, //4k bytes
-        //     .partition_options = PAR_OPT_READ_EN | PAR_OPT_WRITE_EN,
-        // },
+    [MICO_PARTITION_BOOTLOADER] =
+    {
+        .partition_owner = MICO_FLASH_EMBEDDED,
+        .partition_description = "Bootloader",
+        .partition_start_addr = 0x08000000,
+        .partition_length = 0xC000,    //32k bytesC
+        .partition_options = PAR_OPT_READ_EN | PAR_OPT_WRITE_DIS,
+    },
+    [MICO_PARTITION_APPLICATION] =
+    {
+        .partition_owner = MICO_FLASH_EMBEDDED,
+        .partition_description = "Application",
+        .partition_start_addr = 0x08007000,
+        .partition_length = 0x10000,   //64k bytes
+        .partition_options = PAR_OPT_READ_EN | PAR_OPT_WRITE_DIS,
+    },
+    [MICO_PARTITION_ATE] =
+    {
+        .partition_owner = MICO_FLASH_NONE,
+        .partition_description = "ATEFirmware",
+        .partition_start_addr = 0x080A0000,
+        .partition_length = 0x60000, //384k bytes
+        .partition_options = PAR_OPT_READ_EN | PAR_OPT_WRITE_DIS,
+    },
+    [MICO_PARTITION_PARAMETER_1] =
+    {
+        .partition_owner = MICO_FLASH_NONE,
+        .partition_description = "PARAMETER1",
+        .partition_start_addr = 0x0,
+        .partition_length = 0x1000, // 4k bytes
+        .partition_options = PAR_OPT_READ_EN | PAR_OPT_WRITE_EN,
+    },
+    [MICO_PARTITION_PARAMETER_2] =
+    {
+        .partition_owner = MICO_FLASH_NONE,
+        .partition_description = "PARAMETER2",
+        .partition_start_addr = 0x1000,
+        .partition_length = 0x1000, //4k bytes
+        .partition_options = PAR_OPT_READ_EN | PAR_OPT_WRITE_EN,
+    },
+    [MICO_PARTITION_RF_FIRMWARE] =
+    {
+        .partition_owner = MICO_FLASH_NONE,
+        .partition_description = "RF Firmware",
+        .partition_start_addr = 0x2000,
+        .partition_length = 0x6E000,  //440k bytes
+        .partition_options = PAR_OPT_READ_EN | PAR_OPT_WRITE_DIS,
+    },
+    [MICO_PARTITION_OTA_TEMP] =
+    {
+        .partition_owner = MICO_FLASH_NONE,
+        .partition_description = "OTA Storage",
+        .partition_start_addr = 0x70000,
+        .partition_length = 0x98000, //608k bytes
+        .partition_options = PAR_OPT_READ_EN | PAR_OPT_WRITE_EN,
+    }
 };
 
 // #if defined ( USE_MICO_SPI_FLASH )
@@ -420,45 +444,44 @@ bool MicoShouldEnterMFGMode(void)
 
 bool MicoShouldEnterBootloader(void)
 {
-    return true;
     if (mico_gpio_input_get(BOOT_SEL) == false && mico_gpio_input_get(MFG_SEL) == true)
         return true;
     else
         return false;
 }
 
-extern int get_passive_firmware(void);
-mico_logic_partition_t *paltform_flash_get_info(int inPartition)
-{
-    mico_logic_partition_t *logic_partition;
-    int tmp;
+// extern int get_passive_firmware(void);
+// mico_logic_partition_t *paltform_flash_get_info(int inPartition)
+// {
+//     mico_logic_partition_t *logic_partition;
+//     int tmp;
 
-    // platform_flash_init( &platform_flash_peripherals[MICO_FLASH_SPI] );
+//     // platform_flash_init( &platform_flash_peripherals[MICO_FLASH_SPI] );
 
-    switch (inPartition)
-    {
-    case MICO_PARTITION_APPLICATION:
-        tmp = get_passive_firmware();
-        if (tmp == 2)
-            logic_partition = (mico_logic_partition_t *)&mico_partitions[phy_PARTITION_APPLICATION1];
-        else if (tmp == 1)
-            logic_partition = (mico_logic_partition_t *)&mico_partitions[phy_PARTITION_APPLICATION2];
-        else
-            logic_partition = (mico_logic_partition_t *)&mico_partitions[phy_PARTITION_NONE];
-        break;
-    case MICO_PARTITION_OTA_TEMP: /* OTA always write the passive firmware */
-        tmp = get_passive_firmware();
-        if (tmp == 2)
-            logic_partition = (mico_logic_partition_t *)&mico_partitions[phy_PARTITION_APPLICATION2];
-        else if (tmp == 1)
-            logic_partition = (mico_logic_partition_t *)&mico_partitions[phy_PARTITION_APPLICATION1];
-        else
-            logic_partition = (mico_logic_partition_t *)&mico_partitions[phy_PARTITION_NONE];
-        break;
-    default:
-        logic_partition = (mico_logic_partition_t *)&mico_partitions[phy_PARTITION_NONE];
-        break;
-    }
+//     switch (inPartition)
+//     {
+//     case MICO_PARTITION_APPLICATION:
+//         tmp = get_passive_firmware();
+//         if (tmp == 2)
+//             logic_partition = (mico_logic_partition_t *)&mico_partitions[phy_PARTITION_APPLICATION1];
+//         else if (tmp == 1)
+//             logic_partition = (mico_logic_partition_t *)&mico_partitions[phy_PARTITION_APPLICATION2];
+//         else
+//             logic_partition = (mico_logic_partition_t *)&mico_partitions[phy_PARTITION_NONE];
+//         break;
+//     case MICO_PARTITION_OTA_TEMP: /* OTA always write the passive firmware */
+//         tmp = get_passive_firmware();
+//         if (tmp == 2)
+//             logic_partition = (mico_logic_partition_t *)&mico_partitions[phy_PARTITION_APPLICATION2];
+//         else if (tmp == 1)
+//             logic_partition = (mico_logic_partition_t *)&mico_partitions[phy_PARTITION_APPLICATION1];
+//         else
+//             logic_partition = (mico_logic_partition_t *)&mico_partitions[phy_PARTITION_NONE];
+//         break;
+//     default:
+//         logic_partition = (mico_logic_partition_t *)&mico_partitions[phy_PARTITION_NONE];
+//         break;
+//     }
 
-    return logic_partition;
-}
+//     return logic_partition;
+// }
