@@ -21,30 +21,42 @@
 #  IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 ############################################################################### 
 
-EXTRA_POST_BUILD_TARGETS += gen_standard_images
+NAME := Board_MK5080
 
-#bootloader
-BOOT_BIN_FILE    := $(BOOTLOADER_OUTFILE_BIN)
-BOOT_OFFSET      := 0x0
+WLAN_CHIP            	:= NONE
+WLAN_CHIP_REVISION   	:= NONE
+WLAN_CHIP_FAMILY     	:= NONE
+WLAN_CHIP_FIRMWARE_VER  := NONE
 
-#application 
-APP_BIN_FILE :=$(BIN_OUTPUT_FILE)
-APP_OFFSET:= 0xC000
+NO_WIFI_FIRMWARE := YES        
 
-#ate firmware
-ATE_BIN_FILE := $(MICO_OS_PATH)/resources/ate_firmware/3165/ate.bin
-ATE_OFFSET:= 0x80000
+MODULE              	:= 5080
+HOST_MCU_FAMILY      	:= MX1290
+HOST_MCU_VARIANT     	:= MX1290
+HOST_MCU_PART_NUMBER 	:= 
 
-#wifi firmware
+BUS := MK3080
 
-# Required to build Full binary file
-GEN_COMMON_BIN_OUTPUT_FILE_SCRIPT:= $(SCRIPTS_PATH)/gen_common_bin_output_file.py
+# Extra build target in mico_standard_targets.mk, include bootloader, and copy output file to eclipse debug file (copy_output_for_eclipse)
+EXTRA_TARGET_MAKEFILES +=  $(MAKEFILES_PATH)/mico_moc_targets.mk
 
-MOC_ALL_BIN_OUTPUT_FILE :=$(LINK_OUTPUT_FILE:$(LINK_OUTPUT_SUFFIX)=.all$(BIN_OUTPUT_SUFFIX))
+# Global includes
+GLOBAL_INCLUDES  := .
 
-gen_standard_images: build_done
-	$(QUIET)$(ECHO) Generate Standard Flash Images: $(MOC_ALL_BIN_OUTPUT_FILE)
-	$(QUIET)$(RM) $(MOC_ALL_BIN_OUTPUT_FILE)
-	$(PYTHON) $(GEN_COMMON_BIN_OUTPUT_FILE_SCRIPT) -o $(MOC_ALL_BIN_OUTPUT_FILE) -f $(BOOT_OFFSET) $(BOOT_BIN_FILE)              
-	$(PYTHON) $(GEN_COMMON_BIN_OUTPUT_FILE_SCRIPT) -o $(MOC_ALL_BIN_OUTPUT_FILE) -f $(APP_OFFSET)  $(APP_BIN_FILE)
-	$(PYTHON) $(GEN_COMMON_BIN_OUTPUT_FILE_SCRIPT) -o $(MOC_ALL_BIN_OUTPUT_FILE) -f $(ATE_OFFSET)  $(ATE_BIN_FILE)
+# Global defines
+GLOBAL_DEFINES += $$(if $$(NO_CRLF_STDIO_REPLACEMENT),,CRLF_STDIO_REPLACEMENT)
+GLOBAL_LDFLAGS += -L $(MICO_OS_PATH)/board/MK$(MODULE)
+
+# Components
+$(NAME)_COMPONENTS += drivers/MiCOKit_EXT2
+
+# Source files
+$(NAME)_SOURCES := platform.c
+
+# MOC configuration
+VALID_OSNS_COMBOS   := mocOS@mocIP
+VALID_TLS           := mocSSL
+MOC_APP_OFFSET      := 0x64000
+
+
+
