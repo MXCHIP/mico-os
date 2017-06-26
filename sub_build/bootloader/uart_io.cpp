@@ -37,60 +37,25 @@
 #include "mico.h"
 #include "bootloader.h"
 
-#ifdef __MBED__
-#include "mbed.h"
-#endif
 
 
 /* Private typedef -----------------------------------------------------------*/
 /* Private define ------------------------------------------------------------*/
 /* Private macro -------------------------------------------------------------*/
 /* Private variables ---------------------------------------------------------*/
-extern const platform_uart_t            platform_uart_peripherals[];
-
-#ifdef __MBED__
-RawSerial boot_serial(platform_uart_peripherals[MICO_STDIO_UART].mbed_tx_pin,
-                     platform_uart_peripherals[MICO_STDIO_UART].mbed_rx_pin,
-                     STDIO_UART_BAUDRATE);
-#endif
-
 /* Private function prototypes -----------------------------------------------*/
 /* Private functions ---------------------------------------------------------*/
 
 
 void uart_putchar( int c )
 {
-#ifdef __MBED__
-    boot_serial.putc(c);
-#else
     MicoUartSend( MICO_STDIO_UART, &c, 1 );
-#endif
 }
 
 int uart_getchar(char *inbuf, uint32_t timeout )
 {
-#ifdef __MBED__
-    uint32_t start_time, cur_time;
-    start_time = mico_rtos_get_time();
-
-    while(1)
-    {
-        cur_time = mico_rtos_get_time( );
-        if ( timeout != MICO_NEVER_TIMEOUT && (cur_time - start_time) > timeout )
-            return kTimeoutErr;
-
-        if( boot_serial.readable() ){
-            *inbuf = boot_serial.getc();
-            return kNoErr;
-        }
-        else{
-            mico_rtos_delay_milliseconds(5);
-        }
-    }
-#else
     if (MicoUartRecv( MICO_STDIO_UART, inbuf, 1, timeout )!=kNoErr)
       return -1;
     else
       return 0;
-#endif
 }
