@@ -61,7 +61,8 @@ static volatile uint32_t no_os_tick = 0;
 Timer noos_timer;
 
 void noos_tick_handler() {
-    platform_watchdog_kick( );
+    no_os_tick ++;
+    //platform_watchdog_kick( );
 }
 
 extern "C" void mbed_main( void )
