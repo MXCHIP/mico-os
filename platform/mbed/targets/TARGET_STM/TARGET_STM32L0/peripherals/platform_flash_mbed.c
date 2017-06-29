@@ -117,8 +117,8 @@ OSStatus iflash_write(volatile uint32_t* FlashAddress, uint32_t* Data ,uint32_t 
         /* Increment FLASH destination address */
         *FlashAddress += 4;
     }
-        HAL_FLASH_Unlock();
-        HAL_FLASH_Program( FLASH_TYPEPROGRAM_WORD, *FlashAddress, (uint32_t *) Data + i * 4 );
+        //HAL_FLASH_Unlock();
+        //HAL_FLASH_Program( FLASH_TYPEPROGRAM_WORD, *FlashAddress, (uint32_t *) Data + i * 4 );
         // HAL_FLASH_Lock();
         // require_action( hal_status == HAL_OK, exit, err = kWriteErr );
 

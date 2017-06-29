@@ -177,7 +177,7 @@ platform_uart_driver_t platform_uart_drivers[MICO_UART_MAX];
 
 /* Flash memory devices */
 const platform_flash_t platform_flash_peripherals[] =
-    {
+{
             [MICO_FLASH_EMBEDDED] =
                 {
                     .flash_type = FLASH_TYPE_EMBEDDED,
@@ -192,36 +192,36 @@ const platform_flash_t platform_flash_peripherals[] =
         //    },
 };
 
-typedef enum {
-    phy_PARTITION_BOOTLOADER,
-    phy_PARTITION_APPLICATION1,
-    phy_PARTITION_APPLICATION2,
-    phy_PARTITION_ATE,
-    phy_PARTITION_RF_FIRMWARE1,
-    phy_PARTITION_PARAMETER_1,
-    phy_PARTITION_PARAMETER_2,
-    phy_PARTITION_USER,
-    phy_PARTITION_NONE,
-} phy_partition_t;
+// typedef enum {
+//     phy_PARTITION_BOOTLOADER,
+//     phy_PARTITION_APPLICATION1,
+//     phy_PARTITION_APPLICATION2,
+//     phy_PARTITION_ATE,
+//     phy_PARTITION_RF_FIRMWARE1,
+//     phy_PARTITION_PARAMETER_1,
+//     phy_PARTITION_PARAMETER_2,
+//     phy_PARTITION_USER,
+//     phy_PARTITION_NONE,
+// } phy_partition_t;
 
 platform_flash_driver_t platform_flash_drivers[MICO_FLASH_MAX];
 
 /* Logic partition on flash devices */
 const platform_logic_partition_t mico_partitions[] =
-    {
+{
     [MICO_PARTITION_BOOTLOADER] =
     {
         .partition_owner = MICO_FLASH_EMBEDDED,
         .partition_description = "Bootloader",
         .partition_start_addr = 0x08000000,
-        .partition_length = 0xC000,    //32k bytesC
+        .partition_length = 0x8000,    //32k bytesC
         .partition_options = PAR_OPT_READ_EN | PAR_OPT_WRITE_DIS,
     },
     [MICO_PARTITION_APPLICATION] =
     {
         .partition_owner = MICO_FLASH_EMBEDDED,
         .partition_description = "Application",
-        .partition_start_addr = 0x08007000,
+        .partition_start_addr = 0x08008000,
         .partition_length = 0x10000,   //64k bytes
         .partition_options = PAR_OPT_READ_EN | PAR_OPT_WRITE_DIS,
     },
@@ -237,8 +237,8 @@ const platform_logic_partition_t mico_partitions[] =
     {
         .partition_owner = MICO_FLASH_NONE,
         .partition_description = "PARAMETER1",
-        .partition_start_addr = 0x0,
-        .partition_length = 0x1000, // 4k bytes
+        .partition_start_addr = 0x08014280,
+        .partition_length = 0x10000, // 64k bytes
         .partition_options = PAR_OPT_READ_EN | PAR_OPT_WRITE_EN,
     },
     [MICO_PARTITION_PARAMETER_2] =
@@ -436,18 +436,18 @@ void MicoRfLed(bool onoff)
 
 bool MicoShouldEnterMFGMode(void)
 {
-    if (mico_gpio_input_get(BOOT_SEL) == false && mico_gpio_input_get(MFG_SEL) == false)
-        return true;
-    else
+    // if (mico_gpio_input_get(BOOT_SEL) == false && mico_gpio_input_get(MFG_SEL) == false)
+    //     return true;
+    // else
         return false;
 }
 
 bool MicoShouldEnterBootloader(void)
 {
-    if (mico_gpio_input_get(BOOT_SEL) == false && mico_gpio_input_get(MFG_SEL) == true)
-        return true;
-    else
-        return false;
+    // if (mico_gpio_input_get(BOOT_SEL) == false && mico_gpio_input_get(MFG_SEL) == true)
+    //     return true;
+    // else
+         return false;
 }
 
 // extern int get_passive_firmware(void);

@@ -53,6 +53,13 @@ extern "C"
 //#define MICO_DISABLE_MCU_POWERSAVE
 
 /************************************************************************
+ * Enable press space go to boot */
+#define MICO_ENABLE_STDIO_TO_BOOT
+
+/***********************************************************************
+ * Enable press space go to MFG */
+#define MICO_ENABLE_STDIO_TO_MFG                                                                                                                            
+/************************************************************************
  * Uncomment to enable MCU real time clock */
 // #define MICO_ENABLE_MCU_RTC
 
