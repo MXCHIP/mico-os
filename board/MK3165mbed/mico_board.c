@@ -100,8 +100,10 @@ platform_gpio_irq_driver_t  platform_gpio_irq_drivers[MICO_GPIO_MAX];
 //   [MICO_ADC_2] = { ADC1, ADC_Channel_5, RCC_APB2Periph_ADC1, 1, (platform_gpio_t*)&platform_gpio_pins[MICO_GPIO_34] },
 // };
 
-const platform_i2c_t platform_i2c_peripherals[] = {
-    [MICO_I2C_1] = {
+const platform_i2c_t platform_i2c_peripherals[] =
+{
+    [MICO_I2C_1] =
+    {
         .mbed_scl_pin = I2C_SCL,
         .mbed_sda_pin = I2C_SDA,
     }
@@ -109,7 +111,8 @@ const platform_i2c_t platform_i2c_peripherals[] = {
 
 platform_i2c_driver_t platform_i2c_drivers[MICO_I2C_MAX];
 
-const platform_uart_t platform_uart_peripherals[] = {
+const platform_uart_t platform_uart_peripherals[] =
+{
     [MICO_UART_1] =
     {
         .mbed_tx_pin = STDIO_UART_TX,
