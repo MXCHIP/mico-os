@@ -49,6 +49,9 @@ OSStatus platform_flash_init( const platform_flash_t *peripheral )
   if( peripheral->flash_type == FLASH_TYPE_EMBEDDED ){
     err = iflash_init();
     require_noerr(err, exit);
+  }else if(peripheral->flash_type == EEPROM_TYPE_EMBEDDED){
+    err = ieeprom_init();
+    require_noerr(err, exit);
   }
 #if defined USE_MICO_SPI_FLASH
   else if( peripheral->flash_type == FLASH_TYPE_SPI ){
@@ -81,6 +84,9 @@ OSStatus platform_flash_erase( const platform_flash_t *peripheral, uint32_t star
 
   if( peripheral->flash_type == FLASH_TYPE_EMBEDDED ){
     err = iflash_erase( start_address, end_address );
+    require_noerr(err, exit);
+  }else if( peripheral->flash_type == EEPROM_TYPE_EMBEDDED ){
+    err = ieeprom_erase( start_address, end_address );
     require_noerr(err, exit);
   }
 #ifdef USE_MICO_SPI_FLASH
@@ -115,7 +121,10 @@ OSStatus platform_flash_write( const platform_flash_t *peripheral, volatile uint
     
   if( peripheral->flash_type == FLASH_TYPE_EMBEDDED ){
     err = iflash_write( start_address, (uint32_t *)data, length);
-    // require_noerr(err, exit);
+    require_noerr(err, exit);
+  }else if( peripheral->flash_type == EEPROM_TYPE_EMBEDDED ){
+    err = ieeprom_write( start_address, (uint32_t *)data, length);
+    require_noerr(err, exit);
   }
 #ifdef USE_MICO_SPI_FLASH
   else if( peripheral->flash_type == FLASH_TYPE_SPI ){
@@ -150,6 +159,9 @@ OSStatus platform_flash_read( const platform_flash_t *peripheral, volatile uint3
                && (*start_address + length) <= ( peripheral->flash_start_addr + peripheral->flash_length), exit, err = kParamErr);
 
   if( peripheral->flash_type == FLASH_TYPE_EMBEDDED ){
+    memcpy(data, (void *)(*start_address), length);
+    *start_address += length;
+  }else if( peripheral->flash_type == EEPROM_TYPE_EMBEDDED ){
     memcpy(data, (void *)(*start_address), length);
     *start_address += length;
   }

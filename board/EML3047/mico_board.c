@@ -140,12 +140,12 @@ const platform_flash_t platform_flash_peripherals[] =
             .flash_start_addr = 0x08000000,
             .flash_length = 0x20000, //128k
         },
-        //    [MICO_FLASH_QSPI] =
-        //    {
-        //      .flash_type                   = FLASH_TYPE_QSPI,
-        //      .flash_start_addr             = 0x000000,
-        //      .flash_length                 = 0x200000,
-        //    },
+        [MICO_EEPROM_EMBEDDED] =
+        {
+            .flash_type = EEPROM_TYPE_EMBEDDED,
+            .flash_start_addr = 0x08080000,
+            .flash_length = 0x1800, //6k
+        }
 };
 
 platform_flash_driver_t platform_flash_drivers[MICO_FLASH_MAX];
@@ -207,6 +207,14 @@ const platform_logic_partition_t mico_partitions[] =
         .partition_description = "OTA Storage",
         .partition_start_addr = 0x70000,
         .partition_length = 0x98000, //608k bytes
+        .partition_options = PAR_OPT_READ_EN | PAR_OPT_WRITE_EN,
+    },
+    [MICO_PARTITION_EEPROM] =
+    {
+        .partition_owner = MICO_EEPROM_EMBEDDED,
+        .partition_description = "EEPROM Storage",
+        .partition_start_addr = 0x08080000,
+        .partition_length = 0x1800, //6k bytes
         .partition_options = PAR_OPT_READ_EN | PAR_OPT_WRITE_EN,
     }
 };
