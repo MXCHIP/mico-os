@@ -21,7 +21,6 @@ $(NAME)_SOURCES := peripherals/platform_flash_mbed.c  \
                    peripherals/platform_flash.c       \
                    peripherals/platform_ota.c
                    
-
 # ifndef NO_WIFI
 # $(NAME)_SOURCES += wlan_bus_driver/wlan_bus_$(BUS).c \
 #                    wlan_bus_driver/wlan_platform.c
