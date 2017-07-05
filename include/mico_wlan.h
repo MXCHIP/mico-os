@@ -226,6 +226,25 @@ typedef struct _network_InitTypeDef_st
                                      time unit is millisecond. */
 } network_InitTypeDef_st; 
 
+typedef struct _network_Enterprise_st 
+{ 
+  char wifi_ssid[32];           /**< SSID of the wlan needs to be connected.*/
+
+  char identity[32];
+  unsigned char *ca_cert;
+  unsigned int ca_cert_size;
+  unsigned char *client_cert;
+  unsigned int client_cert_size;
+  unsigned char *client_key;
+  unsigned int client_key_size;
+  
+  char local_ip_addr[16];       /**< Static IP configuration, Local IP address. */
+  char net_mask[16];            /**< Static IP configuration, Netmask. */
+  char gateway_ip_addr[16];     /**< Static IP configuration, Router IP address. */
+  char dnsServer_ip_addr[16];   /**< Static IP configuration, DNS server IP address. */
+  char dhcpMode;                /**< DHCP mode, @ref DHCP_Disable, @ref DHCP_Client and @ref DHCP_Server. */
+} network_Enterprise_st; 
+
 /** 
  *  @brief  Advanced precise wlan parameters, used in @ref network_InitTypeDef_adv_st.  
  */
