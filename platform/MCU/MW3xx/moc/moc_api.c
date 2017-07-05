@@ -16,6 +16,12 @@ OSStatus StartAdvNetwork(network_InitTypeDef_adv_st* inNetworkInitParaAdv)
 {
 	return lib_api_p->micoWlanStartAdv(inNetworkInitParaAdv);
 }
+
+OSStatus micoWlanStartEnt(network_Enterprise_st* inNetworkInitPara)
+{
+	return lib_api_p->micoWlanStartEnt(inNetworkInitPara);
+}
+
 OSStatus getNetPara(IPStatusTypedef *outNetpara, WiFi_Interface inInterface)
 {
 	return lib_api_p->micoWlanGetIPStatus(outNetpara, inInterface);
