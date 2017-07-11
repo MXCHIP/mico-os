@@ -196,8 +196,6 @@ enum
 // #define MICO_I2C_CP         (MICO_I2C_NONE)
 // #endif //USE_MiCOKit_EXT
 
-#define EML3047
-
 #define MICO_I2C_CP         (MICO_I2C_NONE)
 
 void mico_board_init(void);

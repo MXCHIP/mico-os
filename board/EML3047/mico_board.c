@@ -108,13 +108,6 @@ const platform_uart_t platform_uart_peripherals[] =
         {
             .mbed_tx_pin = STDIO_UART_TX,
             .mbed_rx_pin = STDIO_UART_RX,
-        },
-        [MICO_UART_2] =
-        {
-            .mbed_tx_pin  = MICO_GPIO_30,
-            .mbed_rx_pin  = MICO_GPIO_29,
-            .mbed_rts_pin = MICO_GPIO_27,
-            .mbed_cts_pin = MICO_GPIO_19,
         }
 };
 platform_uart_driver_t platform_uart_drivers[MICO_UART_MAX];
