@@ -108,6 +108,10 @@
 #define configIDLE_SHOULD_YIELD		1
 #define configUSE_CO_ROUTINES 		0
 #define configMAX_CO_ROUTINE_PRIORITIES ( 2 )
+#define configUSE_TICKLESS_IDLE       (1)
+
+extern void rtos_suppress_and_sleep( unsigned long sleep_ms );
+#define portSUPPRESS_TICKS_AND_SLEEP( xExpectedIdleTime )    rtos_suppress_and_sleep( xExpectedIdleTime )
 
 /* Hooks */
 #define configUSE_IDLE_HOOK			0
