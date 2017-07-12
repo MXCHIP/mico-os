@@ -78,6 +78,4 @@ $(NAME)_SOURCES += mbed/PeripheralPins.c \
 # Global includes
 GLOBAL_INCLUDES  += mbed
 
-VECT_TAB_OFFSET_APP := 0xC000
-
 
