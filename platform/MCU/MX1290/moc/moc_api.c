@@ -379,6 +379,11 @@ char *mico_get_bootloader_ver(void)
 	return "bootloader";
 }
 
+void MicoWakeupSource( uint8_t wakeup_source )
+{
+  lib_api_p->pm_wakeup_source(wakeup_source);
+}
+
 void MicoSystemStandBy( uint32_t secondsToWakeup )
 {
   lib_api_p->wifi_off_mcu_standby(secondsToWakeup);

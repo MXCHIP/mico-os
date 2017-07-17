@@ -846,6 +846,19 @@ void vApplicationMallocFailedHook( void )
 }
 
 
+#if FreeRTOS_VERSION_MAJOR > 7
+void rtos_suppress_and_sleep( unsigned long sleep_ms )
+{
+    TickType_t missed_ticks = 0;
+    extern uint32_t platform_power_down_hook( unsigned long sleep_ms );
+
+    missed_ticks = platform_power_down_hook( sleep_ms );
+
+    vTaskStepTick( missed_ticks );
+}
+
+#endif
+
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 

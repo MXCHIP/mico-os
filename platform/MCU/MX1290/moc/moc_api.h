@@ -9,6 +9,13 @@
 typedef void (*ssl_Logging_cb)( const int logLevel,
                                 const char * const logMessage );
 
+#ifndef BIT
+#define BIT(__n)       (1<<(__n))
+#endif
+
+#define DSLEEP_WAKEUP_BY_TIMER		BIT(0)
+#define DSLEEP_WAKEUP_BY_GPIO		BIT(2)    // GPIO Port(PA_18, PA_5, PA_22, PA_23)
+
 typedef enum
 {
     /** US FCC */
@@ -375,7 +382,7 @@ typedef struct mico_api_struct
 
     /* Power management*/
     int (*pm_mcu_state)( power_state_t state, uint32_t time_dur );
-    int (*pm_wakeup_source)( );
+    int (*pm_wakeup_source)( uint8_t wake_source );
     void (*wifi_off_mcu_standby)( int seconds );
     void (*MicoMcuPowerSaveConfig)( int enable );
 

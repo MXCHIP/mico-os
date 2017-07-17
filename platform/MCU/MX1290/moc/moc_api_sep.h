@@ -214,7 +214,7 @@ typedef struct {
 typedef struct {
 	/* Power management*/
 	int (*pm_mcu_state)(power_state_t state, uint32_t time_dur);
-	int (*pm_wakeup_source)();
+	int (*pm_wakeup_source)(uint8_t wake_source);
 	void (*wifi_off_mcu_standby)(uint32_t seconds);
 	void (*MicoMcuPowerSaveConfig)( int enable );
 } power_save_api_t;
