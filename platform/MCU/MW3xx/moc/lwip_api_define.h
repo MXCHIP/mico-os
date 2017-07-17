@@ -3,11 +3,15 @@
 
 #include "stdint.h"
 #include "mico_socket.h"
+#include "mico_config.h"
 
 typedef struct ip_addr {
-  uint32_t addr;
+   uint32_t addr;
 } ip_addr_t;
 
+typedef struct ip6_addr {
+    uint32_t addr[4];
+}ip6_addr_t;
 
 
 typedef struct _lwip_api_ {
@@ -47,6 +51,11 @@ typedef struct _lwip_api_ {
     char *(*sethostname)( char *name );
 	char* (*get_dhcp_classid)( void );
 	char* (*set_dhcp_classid)( char *classid );
+
+	/* For inet_ntop and inet_pton */
+    const char * (*inet_ntop) (int af, const void *cp, char *buf, socklen_t len);
+    int (*inet_pton) (int af, const char *cp, void *buf);
+
 } lwip_api_t;
 
 #endif

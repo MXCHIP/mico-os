@@ -54,6 +54,9 @@
 extern int mico_debug_enabled;
 extern const mico_api_t *lib_api_p;
 
+struct in_addr in_addr_any = {INADDR_ANY};
+struct in6_addr in6_addr_any = IN6ADDR_ANY_INIT;
+
 /******************************************************
  *               Function Definitions
  ******************************************************/
@@ -264,5 +267,15 @@ char* get_dhcp_classid( void )
 char* set_dhcp_classid( char *classid )
 {
 	return lib_api_p->lwip_apis->set_dhcp_classid(classid);
+}
+
+const char * inet_ntop (int af, const void *cp, char *buf, socklen_t len)
+{
+    return lib_api_p->lwip_apis->inet_ntop(af, cp, buf, len);
+}
+
+int inet_pton (int af, const char *cp, void *buf)
+{
+    return lib_api_p->lwip_apis->inet_pton (af, cp, buf);
 }
 

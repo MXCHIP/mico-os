@@ -32,6 +32,8 @@
 
 #pragma once
 
+#include "mico_opt.h"
+
 #include "common.h"
 #include "system.h"
 #include "command_console/mico_cli.h"

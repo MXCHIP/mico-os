@@ -110,35 +110,38 @@
     #define debug_print_assert(A,B,C,D,E,F)
 #endif // DEBUG
 
-// ==== PLATFORM TIMEING FUNCTIONS ====
-#ifdef TIME_PLATFORM
-    #define function_timer_log(M, N, ...) fprintf(stderr, "[FUNCTION TIMER: " N "()] " M "\n", ##__VA_ARGS__)
 
-    #define TIMEPLATFORM( FUNC, FUNC_NAME )                                             \
-                do                                                                      \
-                {                                                                       \
-                    struct timespec startTime;                                          \
-                    clock_gettime(CLOCK_MONOTONIC, &startTime);                         \
-                    { FUNC; }                                                           \
-                    struct timespec endTime;                                            \
-                    clock_gettime(CLOCK_MONOTONIC, &endTime);                           \
-                    struct timespec timeDiff = TimeDifference( startTime, endTime );    \
-                    function_timer_log("%lld us",                                    \
-                                        FUNC_NAME,                                   \
-                                        ElapsedTimeInMicroseconds( timeDiff ));      \
-                }                                                                       \
-                while( 1==0 )
+/** Debug level: ALL messages*/
+#define MICO_DEBUG_LEVEL_ALL     0x00
+/** Debug level: Warnings. bad checksums, dropped packets, ... */
+#define MICO_DEBUG_LEVEL_WARNING 0x01
+/** Debug level: Serious. memory allocation failures, ... */
+#define MICO_DEBUG_LEVEL_SERIOUS 0x02
+/** Debug level: Severe */
+#define MICO_DEBUG_LEVEL_SEVERE  0x03
+
+#define MICO_DEBUG_MASK_LEVEL    0x03
+/* compatibility define only */
+#define MICO_DEBUG_LEVEL_OFF     MICO_DEBUG_LEVEL_ALL
+
+/** flag for LWIP_DEBUGF to enable that debug message */
+#define MICO_DEBUG_ON            0x80U
+/** flag for LWIP_DEBUGF to disable that debug message */
+#define MICO_DEBUG_OFF           0x00U
+
+#ifdef DEBUG
+#define MICO_LOG(D, T, M, ...) do { \
+                                   if ( ((D) & MICO_DEBUG_ON) && \
+                                        ((D) & MICO_DEBUG_TYPES_ON) && \
+                                        ((int16_t)((D) & MICO_DEBUG_MASK_LEVEL) >= MICO_DEBUG_MIN_LEVEL)) { \
+                                        custom_log(T, M, ##__VA_ARGS__); \
+                                   } \
+                               } while(0)
+#define MICO_LOG_TRACE(T) custom_log_trace(T)
 #else
-    #define function_timer_log(M, N, ...)
-
-    #define TIMEPLATFORM( FUNC, FUNC_NAME )                                             \
-                do                                                                      \
-                {                                                                       \
-                    { FUNC; }                                                           \
-                }                                                                       \
-                while( 1==0 )
+#define MICO_LOG(D, T, M, ...)
+#define MICO_LOG_TRACE(T)
 #endif
-
 
 // ==== BRANCH PREDICTION & EXPRESSION EVALUATION ====
 #if( !defined( unlikely ) )
