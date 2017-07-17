@@ -223,7 +223,7 @@ typedef enum
 typedef enum
 {
     FLASH_TYPE_EMBEDDED,
-    EEPROM_TYPE_EMBEDDED,
+    FLASH_TYPE_EEPROM,
     FLASH_TYPE_SPI,
     FLASH_TYPE_QSPI,
 } platform_flash_type_t;

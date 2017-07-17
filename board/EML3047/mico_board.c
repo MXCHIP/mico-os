@@ -135,7 +135,7 @@ const platform_flash_t platform_flash_peripherals[] =
         },
         [MICO_EEPROM_EMBEDDED] =
         {
-            .flash_type = EEPROM_TYPE_EMBEDDED,
+            .flash_type = FLASH_TYPE_EEPROM,
             .flash_start_addr = 0x08080000,
             .flash_length = 0x1800, //6k
         }
