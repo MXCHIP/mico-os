@@ -35,7 +35,7 @@ extern "C"
 #define DEFAULT_NAME        "EML3047"
 #define MODEL               "EML3047"
 
-#define MICO_ENABLE_SECONDARY_APPLICATION
+// #define MICO_ENABLE_SECONDARY_APPLICATION
 
 /* MICO RTOS tick rate in Hz */
 // #define MICO_DEFAULT_TICK_RATE_HZ                   (1000) 
@@ -51,6 +51,14 @@ extern "C"
 /************************************************************************
  * Uncomment to disable MCU powersave API functions */
 //#define MICO_DISABLE_MCU_POWERSAVE
+
+/************************************************************************
+ * Enable press space go to boot */
+#define MICO_ENABLE_STDIO_TO_BOOT
+
+/***********************************************************************
+ * Enable press '#' go to MFG */
+#define MICO_ENABLE_STDIO_TO_MFG
 
 /************************************************************************
  * Uncomment to enable MCU real time clock */

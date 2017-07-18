@@ -125,7 +125,7 @@ int main(void)
 
   mico_set_bootload_ver();
 
-  update();
+ // update();
 
   enable_protection();
 

@@ -38,6 +38,11 @@ int iflash_erase( uint32_t device_start_addr, uint32_t device_end_addr );
 int iflash_write( volatile uint32_t* device_address, uint32_t* data_addr, uint32_t size );
 int iflash_read( unsigned long device_address, void* const data_addr, uint32_t size );
 
+int ieeprom_init( void );
+int ieeprom_erase( uint32_t device_start_addr, uint32_t device_end_addr );
+int ieeprom_write( volatile uint32_t* device_address, uint32_t* data_addr, uint32_t size );
+int ieeprom_read( unsigned long device_address, void* const data_addr, uint32_t size );
+
 #ifdef MCU_ENABLE_FLASH_PROTECT
 int iflash_protect(uint32_t StartAddress, uint32_t EndAddress, bool enable);
 #endif

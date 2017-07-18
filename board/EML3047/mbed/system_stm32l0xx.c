@@ -115,7 +115,7 @@
 /*!< Uncomment the following line if you need to relocate your vector Table in
      Internal SRAM. */
 /* #define VECT_TAB_SRAM */
-// #define VECT_TAB_OFFSET  0x00U /*!< Vector Table base offset field. 
+// #define VECT_TAB_OFFSET  0x00U /*!< Vector Table base offset field.
 //                                    This value must be a multiple of 0x100. */
 /******************************************************************************/
 /**
@@ -127,7 +127,7 @@
   */
 
 /* Select the clock sources (other than HSI) to start with (0=OFF, 1=ON) */
-#define USE_PLL_HSE_EXTC (1) /* Use external clock */
+#define USE_PLL_HSE_EXTC (0) /* Use external clock */
 #define USE_PLL_HSE_XTAL (1) /* Use external xtal */
 
 /**

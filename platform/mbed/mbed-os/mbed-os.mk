@@ -76,7 +76,7 @@ GLOBAL_DEFINES  := MBED_CONF_PLATFORM_STDIO_BAUD_RATE=115200 \
                    
 #                  MBED_CONF_PLATFORM_STDIO_CONVERT_NEWLINES \#
 
-GLOBAL_INCLUDES += . cmsis drivers hal platform
+GLOBAL_INCLUDES += . cmsis drivers hal platform 
 
 GLOBAL_DEFINES += $(foreach dev, $(MBED_DEVICES), DEVICE_$(dev)) \
                   __MBED__=1 \
