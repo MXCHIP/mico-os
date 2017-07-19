@@ -77,6 +77,14 @@ typedef struct
     uint8_t      bits;
 } mico_spi_device_t;
 
+typedef struct
+{
+    mico_iis_t   port;
+    uint32_t     bits;
+    uint8_t      master_enable;// 1=master mode; 0=slave mode
+    uint8_t      clk_freq;
+} mico_iis_device_t;
+
 typedef platform_spi_message_segment_t mico_spi_message_segment_t;
 
 /******************************************************

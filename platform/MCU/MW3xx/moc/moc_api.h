@@ -176,6 +176,13 @@ typedef struct
     OSStatus (*spi_finalize)( const mico_spi_device_t* spi );
 } spi_api_t;
 
+typedef struct {
+    OSStatus (*iis_init)( const mico_iis_device_t* spi );
+    OSStatus (*iis_finalize)( const mico_iis_device_t* spi );
+    OSStatus (*iis_write)( const mico_iis_device_t* spi, uint8_t *p_buf, uint32_t size );
+    OSStatus (*iis_read)( const mico_iis_device_t* spi, uint8_t *p_buf, uint32_t size );
+}iis_api_t;
+
 /* API type define */
 typedef struct mico_api_struct
 {
@@ -441,6 +448,8 @@ typedef struct mico_api_struct
 	void* (*ssl_connect_sni)(int fd, int calen, char*ca, char *sni_servername, int *errno);
 
 	OSStatus (*micoWlanStartEnt)(network_Enterprise_st* inNetworkInitPara);
+
+    iis_api_t *iis_apis;
 } mico_api_t;
 
 typedef struct user_api_struct
