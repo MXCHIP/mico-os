@@ -223,6 +223,7 @@ typedef enum
 typedef enum
 {
     FLASH_TYPE_EMBEDDED,
+    FLASH_TYPE_EEPROM,
     FLASH_TYPE_SPI,
     FLASH_TYPE_QSPI,
 } platform_flash_type_t;
@@ -299,6 +300,8 @@ typedef struct
     volatile OSStatus          last_receive_result;
     volatile OSStatus          last_transmit_result;
     volatile bool              initialized;
+    uint8_t                    is_recv_over_flow;
+    uint8_t                    is_flow_control;
 } platform_uart_driver_t;
 
 

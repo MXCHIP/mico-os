@@ -28,33 +28,27 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *******************************************************************************
  */ 
-#include "cmsis_nvic.h"
 
-#define NVIC_TARGET_VECTOR_ADDRESS   (0x20000000)  // Vectors positioned at start of RAM
+#ifndef MBED_CMSIS_NVIC_H
+#define MBED_CMSIS_NVIC_H
 
-#ifdef VECT_TAB_SRAM
-#define NVIC_ORIGIN_VECTOR_ADDRESS (0x20000000 | VECT_TAB_OFFSET)  // Initial vector position in flash
-#else
-#define NVIC_ORIGIN_VECTOR_ADDRESS (0x08000000 | VECT_TAB_OFFSET)  // Initial vector position in flash
+// CORE: 16 vectors = 64 bytes from 0x00 to 0x3F
+// MCU Peripherals: 32 vectors = 128 bytes from 0x40 to 0xBF
+// Total: 48 vectors = 192 bytes (0xC0) to be reserved in RAM
+#define NVIC_NUM_VECTORS      48
+#define NVIC_USER_IRQ_OFFSET  16
+
+#include "cmsis.h"
+
+#ifdef __cplusplus
+extern "C" {
 #endif
 
-void NVIC_SetVector(IRQn_Type IRQn, uint32_t vector) {
-    uint32_t *vectors = (uint32_t *)SCB->VTOR;
-    uint32_t i;
+void NVIC_SetVector(IRQn_Type IRQn, uint32_t vector);
+uint32_t NVIC_GetVector(IRQn_Type IRQn);
 
-    // Copy and switch to dynamic vectors if the first time called
-    if (SCB->VTOR == NVIC_ORIGIN_VECTOR_ADDRESS) {
-        uint32_t *old_vectors = vectors;
-        vectors = (uint32_t*)NVIC_TARGET_VECTOR_ADDRESS;
-        for (i=0; i<NVIC_NUM_VECTORS; i++) {
-            vectors[i] = old_vectors[i];
-        }
-        SCB->VTOR = (uint32_t)NVIC_TARGET_VECTOR_ADDRESS;
-    }
-    vectors[IRQn + NVIC_USER_IRQ_OFFSET] = vector;
+#ifdef __cplusplus
 }
+#endif
 
-uint32_t NVIC_GetVector(IRQn_Type IRQn) {
-    uint32_t *vectors = (uint32_t*)SCB->VTOR;
-    return vectors[IRQn + NVIC_USER_IRQ_OFFSET];
-}
+#endif

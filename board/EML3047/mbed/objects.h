@@ -60,16 +60,6 @@ struct analogin_s {
     uint32_t channel;
 };
 
-struct dac_s {
-    DACName dac;
-    PinName pin;
-    uint32_t channel;
-};
-
-struct trng_s {
-    RNG_HandleTypeDef handle;
-};
-
 #include "common_objects.h"
 
 #ifdef __cplusplus

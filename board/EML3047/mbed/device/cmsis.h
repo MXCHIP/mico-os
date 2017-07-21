@@ -1,6 +1,7 @@
 /* mbed Microcontroller Library
+ * A generic CMSIS include header
  *******************************************************************************
- * Copyright (c) 2015, STMicroelectronics
+ * Copyright (c) 2014, STMicroelectronics
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,53 +28,11 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *******************************************************************************
  */
-#ifndef MBED_OBJECTS_H
-#define MBED_OBJECTS_H
 
-#include "cmsis.h"
-#include "PortNames.h"
-#include "PeripheralNames.h"
-#include "PinNames.h"
+#ifndef MBED_CMSIS_H
+#define MBED_CMSIS_H
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
-struct gpio_irq_s {
-    IRQn_Type irq_n;
-    uint32_t irq_index;
-    uint32_t event;
-    PinName pin;
-};
-
-struct port_s {
-    PortName port;
-    uint32_t mask;
-    PinDirection direction;
-    __IO uint32_t *reg_in;
-    __IO uint32_t *reg_out;
-};
-
-struct analogin_s {
-    ADCName adc;
-    PinName pin;
-    uint32_t channel;
-};
-
-struct dac_s {
-    DACName dac;
-    PinName pin;
-    uint32_t channel;
-};
-
-struct trng_s {
-    RNG_HandleTypeDef handle;
-};
-
-#include "common_objects.h"
-
-#ifdef __cplusplus
-}
-#endif
+#include "stm32l0xx.h"
+#include "cmsis_nvic.h"
 
 #endif

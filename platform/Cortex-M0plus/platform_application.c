@@ -42,18 +42,13 @@ void mico_start_application(uintptr_t address)
 
 static void powerdown_nvic()
 {
-    // int isr_count;
-    // int i;
-    // int j;
+    int i;
 
-    // isr_count = (SCnSCB->ICTR & SCnSCB_ICTR_INTLINESNUM_Msk) >> SCnSCB_ICTR_INTLINESNUM_Pos;
-    // for (i = 0; i < isr_count; i++) {
-    //     NVIC->ICER[i] = 0xFFFFFFFF;
-    //     NVIC->ICPR[i] = 0xFFFFFFFF;
-    //     for (j = 0; j < 8; j++) {
-    //         NVIC->IP[i * 8 + j] = 0x00000000;
-    //     }
-    // }
+    NVIC->ICER[0] = 0xFFFFFFFF;
+    NVIC->ICPR[0] = 0xFFFFFFFF;
+    for ( i = 0; i < 8; i++ ) {
+        NVIC->IP[i] = 0x00000000;
+    }
 }
 
 static void powerdown_scb(uint32_t vtor)

@@ -58,75 +58,107 @@ OSStatus iflash_erase( uint32_t StartAddress, uint32_t EndAddress )
 
   HAL_FLASH_Unlock();
   HAL_FLASHEx_Erase(&pEraseInit, &sector_err);
+  HAL_FLASH_Lock();
   return err;
-//   HAL_FLASH_Lock();
-//   require_action( HAL_OK == hal_status, exit, err =  kWriteErr);
+
 }
 
 /*stm32l0xx do not support byte program*/
-// OSStatus iflash_write_byte( volatile uint32_t* FlashAddress, uint8_t* Data, uint32_t DataLength )
-// {
-//     uint32_t i = 0, dataInRam;
-//     OSStatus err = kNoErr;
-//     HAL_StatusTypeDef hal_status;
 
-//     for ( i = 0; (i < DataLength) && (*FlashAddress <= (FLASH_END_ADDRESS )); i++ ) {
-//         dataInRam = *(uint8_t*) (Data + i);
-//         HAL_FLASH_Unlock();
-//         hal_status = HAL_FLASH_Program( FLASH_TYPEPROGRAM_BYTE, *FlashAddress, dataInRam );
-//         HAL_FLASH_Lock();
-//         require_action( hal_status == HAL_OK, exit, err = kWriteErr );
-//         /* Readout and check */
-//         require_action( *(uint8_t* )*FlashAddress == dataInRam, exit, err = kChecksumErr );
-//         *FlashAddress += 1;
-//     }
-
-// exit:
-//     return err;
-// }
-
-
-OSStatus iflash_write(volatile uint32_t* FlashAddress, uint32_t* Data ,uint32_t DataLength)
+static OSStatus iflash_write_word(volatile uint32_t* FlashAddress, uint32_t* Data ,uint32_t DataLength)
 {
     OSStatus err = kNoErr;
     uint32_t i = 0;
-    uint32_t dataInRam;
-    uint8_t startNumber;
-    uint32_t DataLength32 = DataLength;
+    HAL_StatusTypeDef hal_status;
 
-    /*First bytes that are not 32bit align*/
-    if ( *FlashAddress % 4 ) {
-        // startNumber = 4 - (*FlashAddress) % 4;
-        // err = iflash_write_byte( FlashAddress, (uint8_t *) Data, startNumber );
-        // require_noerr( err, exit );
-        // DataLength32 = DataLength - startNumber;
-        // Data = (uint32_t *) ((uint32_t) Data + startNumber);
-    }
+    uint32_t DataLength32 = DataLength;
 
     /*Program flash by words*/
     for ( i = 0; (i < DataLength32 / 4) && (*FlashAddress <= (FLASH_END_ADDRESS - 3)); i++ ) {
         /* Device voltage range supposed to be [2.7V to 3.6V], the operation will
          be done by word */
-        dataInRam = *(Data + i);
-        HAL_FLASH_Unlock();
-        HAL_FLASH_Program( FLASH_TYPEPROGRAM_WORD, *FlashAddress, dataInRam );
-        // HAL_FLASH_Lock();
-        // require_action( hal_status == HAL_OK, exit, err = kWriteErr );
-        /* Readout and check */
-        require_action( *(uint32_t* )*FlashAddress == dataInRam, exit, err = kChecksumErr );
-        /* Increment FLASH destination address */
+        hal_status = HAL_FLASH_Program( FLASH_TYPEPROGRAM_WORD, *FlashAddress, *(Data + i) );
+        require_action( hal_status == HAL_OK, exit, err = kWriteErr );
         *FlashAddress += 4;
     }
-        HAL_FLASH_Unlock();
-        HAL_FLASH_Program( FLASH_TYPEPROGRAM_WORD, *FlashAddress, (uint32_t *) Data + i * 4 );
-        // HAL_FLASH_Lock();
-        // require_action( hal_status == HAL_OK, exit, err = kWriteErr );
-
-    // /*Last bytes that cannot be write by a 32 bit word*/
-    // err = iflash_write_byte( FlashAddress, (uint8_t *) Data + i * 4, DataLength32 - i * 4 );
-    // require_noerr( err, exit );
 
 exit:
+    return err;
+}
+
+OSStatus iflash_write(volatile uint32_t* FlashAddress, uint32_t* Data ,uint32_t DataLength)
+{
+    OSStatus err = kNoErr;
+    uint32_t i = 0;
+    uint32_t temp_data;
+    uint8_t last_words_len, last_bytes_len;
+    uint8_t existed_bytes_len, existed_words_len;
+    uint32_t temp_data_len = DataLength;
+    uint32_t start_addr = *FlashAddress;
+    uint32_t actual_start_addr = start_addr & 0xFFFFFFFC;
+
+    HAL_FLASH_Unlock();
+
+    /*First bytes that are not word align*/
+    existed_bytes_len = start_addr & 0x3;
+    if ( existed_bytes_len ) {
+        temp_data = * ((uint32_t *)actual_start_addr);
+        memcpy( (uint8_t *)(&temp_data) + existed_bytes_len , (uint8_t *)Data, 4 - existed_bytes_len );
+
+        err = iflash_write_word(&actual_start_addr, &temp_data, 4);
+        require_noerr( err, exit );
+
+        Data = (uint32_t *)((uint32_t)Data + 4 - existed_bytes_len);
+        temp_data_len -= (4 - existed_bytes_len);
+        start_addr = actual_start_addr;
+    }
+
+    /*First bytes that are not 16 words align*/
+    existed_words_len = start_addr & 0x3F;
+    if ( existed_words_len ) {
+        err = iflash_write_word( &start_addr, Data, 64 - existed_words_len );
+        require_noerr( err, exit );
+
+        Data = (uint32_t *)((uint32_t)Data + 64 - existed_words_len);
+        temp_data_len -= (64 - existed_words_len);
+    }
+
+    /*Program flash by half page*/
+    for ( i = 0; (i < temp_data_len / 64) && (actual_start_addr <= (FLASH_END_ADDRESS - 63)); i++ ) {
+
+        err = HAL_FLASHEx_HalfPageProgram(start_addr, Data + i*16);
+        require_noerr( err, exit );
+        start_addr += 64;
+    }
+    Data = (uint32_t *)((uint32_t)Data + i * 64);
+    temp_data_len -= i * 64;
+
+    /* Program last words not in a half page */
+    last_words_len =  temp_data_len&0xFFFFFFFC;
+    if (last_words_len) {
+        err = iflash_write_word( &start_addr, Data, last_words_len );
+        require_noerr( err, exit );
+
+        Data = (uint32_t *)((uint32_t)Data + last_words_len);
+        temp_data_len -= last_words_len;
+    }
+
+    /* Program last uncompleted word */
+    last_bytes_len =  temp_data_len;
+    if (last_bytes_len) {
+        temp_data = * ((uint32_t *)actual_start_addr);
+        memcpy( (uint8_t *)(&temp_data) , (uint8_t *)Data, last_bytes_len );
+
+        err = iflash_write_word( &start_addr, &temp_data, 4 );
+        require_noerr( err, exit );
+
+        Data = (uint32_t *)((uint32_t)Data + last_bytes_len);
+        temp_data_len -= last_bytes_len;
+    }
+
+exit:
+    *FlashAddress = start_addr;
+    HAL_FLASH_Lock();
     return err;
 }
 

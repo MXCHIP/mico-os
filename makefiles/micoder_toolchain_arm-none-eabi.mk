@@ -14,7 +14,6 @@ THUMB_GNU_ARCH_LIST := Cortex-M0 \
                        Cortex-M4 \
                        Cortex-M4F\
                        Cortex-R3 \
-                       Cortex-M0 \
                        Cortex-M0plus
 
 

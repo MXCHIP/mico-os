@@ -21,7 +21,7 @@
 #  IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 ############################################################################### 
 
-NAME := Board_EML3077
+NAME := Board_EML3047
 
 WLAN_CHIP            	:= NONE
 WLAN_CHIP_REVISION   	:= NONE
@@ -35,20 +35,23 @@ HOST_MCU_FAMILY      	:= STM32L071KB
 HOST_MCU_VARIANT     	:= STM32L071KB
 HOST_MCU_PART_NUMBER 	:= 
 
-# ifndef NO_WIFI_FIRMWARE
-# WIFI_FIRMWARE := $(MICO_OS_PATH)/resources/wifi_firmware/$(WLAN_CHIP)/$(WLAN_CHIP)$(WLAN_CHIP_REVISION)$(WLAN_CHIP_BIN_TYPE)-$(WLAN_CHIP_FIRMWARE_VER).bin
-# endif
+
 BUS := EML3047
 
 # # Extra build target in mico_standard_targets.mk, include bootloader, and copy output file to eclipse debug file (copy_output_for_eclipse)
-EXTRA_TARGET_MAKEFILES +=  $(MAKEFILES_PATH)/mico_standard_targets_for_stm32l0xx.mk
+EXTRA_TARGET_MAKEFILES +=  mico-os/board/EML3047/mico_standard_targets_for_stm32l0xx.mk
+
+#EXTRA_TARGET_MAKEFILES +=  $(MAKEFILES_PATH)/mico_standard_targets.mk
+
 
 # Global includes
 GLOBAL_INCLUDES  := .
 
 # Source files
 $(NAME)_SOURCES := mico_board.c
+
 # Global defines
+GLOBAL_DEFINES += STM32L071xx
 
 GLOBAL_LDFLAGS := -L $(MICO_OS_PATH)/board/EML3047
 
@@ -56,12 +59,12 @@ GLOBAL_LDFLAGS := -L $(MICO_OS_PATH)/board/EML3047
 $(NAME)_COMPONENTS := drivers/spi_flash \
                       drivers/keypad/gpio_button
                      
-###################################################################################################
+################################# mbed sources ############################################################
 
 # Add mbed support, add mbed target definitions here
 MBED_SUPPORT 	        := 1
-MBED_DEVICES            := ANALOGIN ANALOGOUT I2C I2CSLAVE I2C_ASYNCH INTERRUPTIN LOWPOWERTIMER PORTIN PORTINOUT PORTOUT PWMOUT RTC SERIAL SERIAL_FC SERIAL_ASYNCH SLEEP SPI SPISLAVE SPI_ASYNCH STDIO_MESSAGES TRNG
-MBED_TARGETS            := STM STM32L0 STM32L071KB
+MBED_DEVICES            := ANALOGIN I2C I2CSLAVE I2C_ASYNCH INTERRUPTIN LOWPOWERTIMER PORTIN PORTINOUT PORTOUT PWMOUT RTC SERIAL SERIAL_FC SERIAL_ASYNCH SLEEP SPI SPISLAVE SPI_ASYNCH STDIO_MESSAGES
+MBED_TARGETS            := STM STM32L0
 
 GLOBAL_DEFINES          += INITIAL_SP=(0x20005000UL)
 GLOBAL_DEFINES          += OS_TASKCNT=14
@@ -73,11 +76,50 @@ GLOBAL_DEFINES += TRANSACTION_QUEUE_SIZE_SPI=2 USB_STM_HAL USBHOST_OTHER MXCHIP_
 
 # Source files
 $(NAME)_SOURCES += mbed/PeripheralPins.c \
-                   mbed/system_stm32l0xx.c
+                   mbed/device/system_stm32l0xx.c \
+                   mbed/device/cmsis_nvic.c \
+                   mbed/device/TOOLCHAIN_GCC_ARM/startup_stm32l071xx.S
+                   
                    
 # Global includes
-GLOBAL_INCLUDES  += mbed
+GLOBAL_INCLUDES  += mbed mbed/device
 
-VECT_TAB_OFFSET_APP := 0xC000
+
+################################# LINK_SCRIPT ############################################################
+
+ifeq ($(APP),bootloader)
+####################################################################################
+# Building bootloader
+####################################################################################
+
+DEFAULT_LINK_SCRIPT += mbed/device/TOOLCHAIN_$(TOOLCHAIN_NAME_MBED)/STM32L071xB_BL_FLASH$(LINK_SCRIPT_SUFFIX)
+GLOBAL_DEFINES      += VECT_TAB_OFFSET=0x0
+
+else
+ifneq ($(filter spi_flash_write, $(APP)),)
+####################################################################################
+# Building spi_flash_write
+####################################################################################
+
+DEFAULT_LINK_SCRIPT += mbed/device/TOOLCHAIN_$(TOOLCHAIN_NAME_MBED)/STM32L071xB_PROG$(LINK_SCRIPT_SUFFIX)
+GLOBAL_DEFINES      += __JTAG_FLASH_WRITER_DATA_BUFFER_SIZE__=320 \
+                       VECT_TAB_SRAM \
+                       VECT_TAB_OFFSET=0x5000
+
+else
+####################################################################################
+# Building standard application to run with bootloader
+####################################################################################
+
+PRE_APP_BUILDS      += bootloader
+DEFAULT_LINK_SCRIPT := mbed/device/TOOLCHAIN_$(TOOLCHAIN_NAME_MBED)/STM32L071xB_APP_FLASH$(LINK_SCRIPT_SUFFIX)
+ifneq ($(VECT_TAB_OFFSET_APP),)
+GLOBAL_DEFINES      += VECT_TAB_OFFSET=$(VECT_TAB_OFFSET_APP)
+else
+GLOBAL_DEFINES      += VECT_TAB_OFFSET=0x8000
+endif
+
+endif # APP=spi_flash_write
+endif # APP=bootloader
 
 

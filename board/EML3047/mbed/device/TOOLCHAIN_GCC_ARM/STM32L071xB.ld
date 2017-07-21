@@ -1,13 +1,15 @@
 /* Linker script to configure memory regions. */
-
-/* Include memory map */
-INCLUDE memory.ld
+MEMORY
+{
+  FLASH (rx) : ORIGIN = 0x08000000, LENGTH = 192k
+  RAM (rwx) : ORIGIN = 0x200000C0, LENGTH = 20K - 0xC0
+}
 
 /* Linker script to place sections and symbol values. Should be used together
  * with other linker script that defines memory regions FLASH and RAM.
  * It references following symbols, which must be defined in code:
  *   Reset_Handler : Entry of reset handler
- * 
+ *
  * It defines following symbols, which code can use without definition:
  *   __exidx_start
  *   __exidx_end
@@ -58,18 +60,18 @@ SECTIONS
         *(.rodata*)
 
         KEEP(*(.eh_frame*))
-    } > APP_FLASH
+    } > FLASH
 
-    .ARM.extab :
+    .ARM.extab : 
     {
         *(.ARM.extab* .gnu.linkonce.armextab.*)
-    } > APP_FLASH
+    } > FLASH
 
     __exidx_start = .;
     .ARM.exidx :
     {
         *(.ARM.exidx* .gnu.linkonce.armexidx.*)
-    } > APP_FLASH
+    } > FLASH
     __exidx_end = .;
 
     __etext = .;
@@ -81,6 +83,7 @@ SECTIONS
         _sdata = .;
         *(vtable)
         *(.data*)
+        *(.RamFunc*)
 
         . = ALIGN(4);
         /* preinit data */

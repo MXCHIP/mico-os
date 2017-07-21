@@ -34,9 +34,13 @@ ENTRY(Reset_Handler)
 
 SECTIONS
 {
-    .text :
+	.vect :
     {
         KEEP(*(.isr_vector))
+    } > BL_FLASH
+    
+    .text :
+    {
         *(.text*)
         KEEP(*(.init))
         KEEP(*(.fini))
@@ -58,18 +62,18 @@ SECTIONS
         *(.rodata*)
 
         KEEP(*(.eh_frame*))
-    } > APP_FLASH
+    } > BL_FLASH
 
     .ARM.extab :
     {
         *(.ARM.extab* .gnu.linkonce.armextab.*)
-    } > APP_FLASH
+    } > BL_FLASH
 
     __exidx_start = .;
     .ARM.exidx :
     {
         *(.ARM.exidx* .gnu.linkonce.armexidx.*)
-    } > APP_FLASH
+    } > BL_FLASH
     __exidx_end = .;
 
     __etext = .;
@@ -81,6 +85,7 @@ SECTIONS
         _sdata = .;
         *(vtable)
         *(.data*)
+        *(.RamFunc*)
 
         . = ALIGN(4);
         /* preinit data */

@@ -133,7 +133,7 @@ int main(void)
   if (stdio_break_in() == 1)
     goto BOOT;
 #endif
-  
+
   if( MicoShouldEnterBootloader() == false )
     bootloader_start_app( (MicoFlashGetInfo(MICO_PARTITION_APPLICATION))->partition_start_addr );
   else if( MicoShouldEnterMFGMode() == true )
@@ -151,7 +151,7 @@ BOOT:
   
   printf ( menu, MODEL, Bootloader_REVISION, HARDWARE_REVISION );
 
-  while(1){                             
+  while(1){
     Main_Menu ();
   }
 }

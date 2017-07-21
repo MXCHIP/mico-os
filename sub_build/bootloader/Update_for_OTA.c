@@ -50,7 +50,12 @@ typedef int Log_Status;
 
 static uint8_t data[SizePerRW];
 static uint8_t newData[SizePerRW];
+
+#ifdef PARAMETER_PARTITION_SIZE
+uint8_t paraSaveInRam[PARAMETER_PARTITION_SIZE];
+#else
 uint8_t paraSaveInRam[16*1024];
+#endif
 
 #define update_log(M, ...) custom_log("UPDATE", M, ##__VA_ARGS__)
 #define update_log_trace() custom_log_trace("UPDATE")
