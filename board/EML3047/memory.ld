@@ -29,8 +29,8 @@ MEMORY
   RAM       (rwx) : ORIGIN = 0x200000C0, LENGTH = 20K - 0xC0
   APP_FLASH (rx)  : ORIGIN = 0x08008000, LENGTH = 96K
   BL_FLASH (rx)   : ORIGIN = 0x08000000, LENGTH = 32K
-  /* Flash programmer ramcode, left 4k for data ransfer with JTAG, 
-   2K for data exchange, 1K for control data, 1K for mbed dynamic vector */
-  RAM_TRANS (rwx) : ORIGIN = 0x20000400, LENGTH = 4K - 1K
-  RAM_PROG  (rwx) : ORIGIN = 0x20001000, LENGTH = 256K - 4K
+  /* Flash programmer ramcode, left 10K for data ransfer and control data with JTAG, 
+   192 for mbed dynamic vector */
+  RAM_TRANS (rwx) : ORIGIN = 0x200000C0, LENGTH = 10K - 0xC0
+  RAM_PROG  (rwx) : ORIGIN = 0x20002800, LENGTH = 20K - 10K
 }

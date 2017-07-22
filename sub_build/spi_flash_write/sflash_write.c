@@ -52,7 +52,9 @@
 #define MFG_SPI_FLASH_COMMAND_WRITE_DONE                (0x00000100)
 
 #define WRITE_CHUNK_SIZE        (8*1024)  /* Writing in chunks is only needed to prevent reset by watchdog */
+#ifndef SECTOR_SIZE
 #define SECTOR_SIZE             (4096)
+#endif
 
 int partition_remapping[] =
 {

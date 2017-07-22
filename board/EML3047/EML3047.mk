@@ -39,9 +39,9 @@ HOST_MCU_PART_NUMBER 	:=
 BUS := EML3047
 
 # # Extra build target in mico_standard_targets.mk, include bootloader, and copy output file to eclipse debug file (copy_output_for_eclipse)
-EXTRA_TARGET_MAKEFILES +=  mico-os/board/EML3047/mico_standard_targets_for_stm32l0xx.mk
+#EXTRA_TARGET_MAKEFILES +=  mico-os/board/EML3047/mico_standard_targets_for_stm32l0xx.mk
 
-#EXTRA_TARGET_MAKEFILES +=  $(MAKEFILES_PATH)/mico_standard_targets.mk
+EXTRA_TARGET_MAKEFILES +=  $(MAKEFILES_PATH)/mico_standard_targets.mk
 
 
 # Global includes
@@ -77,8 +77,7 @@ GLOBAL_DEFINES += TRANSACTION_QUEUE_SIZE_SPI=2 USB_STM_HAL USBHOST_OTHER MXCHIP_
 # Source files
 $(NAME)_SOURCES += mbed/PeripheralPins.c \
                    mbed/device/system_stm32l0xx.c \
-                   mbed/device/cmsis_nvic.c \
-                   mbed/device/TOOLCHAIN_GCC_ARM/startup_stm32l071xx.S
+                   mbed/device/cmsis_nvic.c
                    
                    
 # Global includes
@@ -95,6 +94,8 @@ ifeq ($(APP),bootloader)
 DEFAULT_LINK_SCRIPT += mbed/device/TOOLCHAIN_$(TOOLCHAIN_NAME_MBED)/STM32L071xB_BL_FLASH$(LINK_SCRIPT_SUFFIX)
 GLOBAL_DEFINES      += VECT_TAB_OFFSET=0x0
 
+$(NAME)_SOURCES += mbed/device/TOOLCHAIN_GCC_ARM/startup_stm32l071xx.S
+
 else
 ifneq ($(filter spi_flash_write, $(APP)),)
 ####################################################################################
@@ -102,9 +103,13 @@ ifneq ($(filter spi_flash_write, $(APP)),)
 ####################################################################################
 
 DEFAULT_LINK_SCRIPT += mbed/device/TOOLCHAIN_$(TOOLCHAIN_NAME_MBED)/STM32L071xB_PROG$(LINK_SCRIPT_SUFFIX)
-GLOBAL_DEFINES      += __JTAG_FLASH_WRITER_DATA_BUFFER_SIZE__=320 \
+GLOBAL_DEFINES      += __JTAG_FLASH_WRITER_DATA_BUFFER_SIZE__=9920 \
+                       SECTOR_SIZE=1024
+                       MICO_DISABLE_STDIO \
                        VECT_TAB_SRAM \
-                       VECT_TAB_OFFSET=0x5000
+                       VECT_TAB_OFFSET=0x2800
+                       
+$(NAME)_SOURCES += mbed/device/TOOLCHAIN_GCC_ARM/startup_stm32l071xx_flash_prog.S
 
 else
 ####################################################################################
@@ -118,6 +123,9 @@ GLOBAL_DEFINES      += VECT_TAB_OFFSET=$(VECT_TAB_OFFSET_APP)
 else
 GLOBAL_DEFINES      += VECT_TAB_OFFSET=0x8000
 endif
+
+$(NAME)_SOURCES += mbed/device/TOOLCHAIN_GCC_ARM/startup_stm32l071xx.S
+
 
 endif # APP=spi_flash_write
 endif # APP=bootloader

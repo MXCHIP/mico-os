@@ -273,9 +273,8 @@ bool MicoShouldEnterMFGMode(void)
 
 bool MicoShouldEnterBootloader(void)
 {
-    while(1);
-//    if (mico_gpio_input_get(BOOT_SEL) == false && mico_gpio_input_get(MFG_SEL) == true)
+    if (mico_gpio_input_get(BOOT_SEL) == false && mico_gpio_input_get(MFG_SEL) == true)
         return true;
-//    else
-//        return false;
+    else
+        return false;
 }
