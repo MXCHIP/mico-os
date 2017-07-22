@@ -13,7 +13,7 @@ ifndef USES_BOOTLOADER
 USES_BOOTLOADER :=1
 endif
 
-ifneq ($(RTOS),NoRTOS)
+ifndef NO_MICO_SYSTEM
 $(NAME)_COMPONENTS += MiCO/core \
                       MiCO/system \
                       MiCO/security   

@@ -69,7 +69,7 @@ extern "C"
 
 /************************************************************************
  * Restore default and start easylink after press down EasyLink button for 3 seconds. */
-// #define MCU_CLOCK_HZ            (32000000)
+#define MCU_CLOCK_HZ            (32000000)
 
 /************************************************************************
  * How many bits are used in NVIC priority configuration */

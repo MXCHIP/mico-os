@@ -28,15 +28,12 @@ WLAN_CHIP_REVISION   	:= NONE
 WLAN_CHIP_FAMILY     	:= NONE
 WLAN_CHIP_FIRMWARE_VER  := NONE
 
-NO_WIFI_FIRMWARE := YES        
-
 MODULE              	:= EML3047
-HOST_MCU_FAMILY      	:= STM32L071KB
-HOST_MCU_VARIANT     	:= STM32L071KB
-HOST_MCU_PART_NUMBER 	:= 
-
 
 BUS := EML3047
+
+NO_WIFI_FIRMWARE        := YES     
+NO_MICO_SYSTEM          := YES   
 
 # # Extra build target in mico_standard_targets.mk, include bootloader, and copy output file to eclipse debug file (copy_output_for_eclipse)
 #EXTRA_TARGET_MAKEFILES +=  mico-os/board/EML3047/mico_standard_targets_for_stm32l0xx.mk
@@ -125,6 +122,7 @@ GLOBAL_DEFINES      += VECT_TAB_OFFSET=0x8000
 endif
 
 $(NAME)_SOURCES += mbed/device/TOOLCHAIN_GCC_ARM/startup_stm32l071xx.S
+GLOBAL_LDFLAGS += $$(CLIB_LDFLAGS_NANO)
 
 
 endif # APP=spi_flash_write
