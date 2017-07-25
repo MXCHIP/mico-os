@@ -770,4 +770,23 @@ int send_easylink_minus(uint32_t ip, char *ssid, char *key)
 	return lib_api_p->send_easylink_minus(ip, ssid, key);
 }
 
+OSStatus MicoIISInitialize( const mico_iis_device_t* spi )
+{
+  	return lib_api_p->iis_apis->iis_init(spi);
+}
+
+OSStatus MicoIISFinalize( const mico_iis_device_t* spi )
+{
+    return lib_api_p->iis_apis->iis_finalize(spi);
+}
+
+OSStatus MicoIISWrite( const mico_iis_device_t* spi, uint8_t *p_buf, uint32_t size )
+{
+	return lib_api_p->iis_apis->iis_write(spi, p_buf, size);
+}
+
+OSStatus MicoIISRead( const mico_iis_device_t* spi, uint8_t *p_buf, uint32_t size )
+{
+	return lib_api_p->iis_apis->iis_read(spi, p_buf, size);
+}
 
