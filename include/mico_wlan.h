@@ -32,13 +32,14 @@
 #ifndef __MICOWLAN_H__
 #define __MICOWLAN_H__
 
+#include "mico_opt.h"
+
 #include "common.h"
+#include "mico_socket.h"
 
 #ifdef __cplusplus
 extern "C" {
 #endif
-
-
   
 #define micoWlanStart             StartNetwork
 #define micoWlanStartAdv          StartAdvNetwork
@@ -136,6 +137,25 @@ extern "C" {
 #define kWlanDisabled                         -43   /**< Disabled in this build */
 #define kWlanErrLast                          -44
 
+/* IPv6 address states. */
+#define IP6_ADDR_INVALID      0x00
+#define IP6_ADDR_TENTATIVE    0x08
+#define IP6_ADDR_TENTATIVE_1  0x09 /* 1 probe sent */
+#define IP6_ADDR_TENTATIVE_2  0x0a /* 2 probes sent */
+#define IP6_ADDR_TENTATIVE_3  0x0b /* 3 probes sent */
+#define IP6_ADDR_TENTATIVE_4  0x0c /* 4 probes sent */
+#define IP6_ADDR_TENTATIVE_5  0x0d /* 5 probes sent */
+#define IP6_ADDR_TENTATIVE_6  0x0e /* 6 probes sent */
+#define IP6_ADDR_TENTATIVE_7  0x0f /* 7 probes sent */
+#define IP6_ADDR_VALID        0x10
+#define IP6_ADDR_PREFERRED    0x30
+#define IP6_ADDR_DEPRECATED   0x50
+
+#define IP6_ADDR_IS_INVALID(addr_state) (addr_state == IP6_ADDR_INVALID)
+#define IP6_ADDR_IS_TENTATIVE(addr_state) (addr_state & IP6_ADDR_TENTATIVE)
+#define IP6_ADDR_IS_VALID(addr_state) (addr_state & IP6_ADDR_VALID) /* Include valid, preferred, and deprecated. */
+#define IP6_ADDR_IS_PREFERRED(addr_state) (addr_state == IP6_ADDR_PREFERRED)
+#define IP6_ADDR_IS_DEPRECATED(addr_state) (addr_state == IP6_ADDR_DEPRECATED)
 
 #define DHCP_Disable  (0)   /**< Disable DHCP service. */
 #define DHCP_Client   (1)   /**< Enable DHCP client which get IP address from DHCP server automatically,  
@@ -172,15 +192,27 @@ typedef uint8_t wlan_sec_type_t;
  *  @brief  wlan local IP information structure definition.  
  */ 
 typedef struct {
-  uint8_t dhcp;       /**< DHCP mode: @ref DHCP_Disable, @ref DHCP_Client, @ref DHCP_Server.*/
-  char    ip[16];     /**< Local IP address on the target wlan interface: @ref wlanInterfaceTypedef.*/
-  char    gate[16];   /**< Router IP address on the target wlan interface: @ref wlanInterfaceTypedef.*/
-  char    mask[16];   /**< Netmask on the target wlan interface: @ref wlanInterfaceTypedef.*/
-  char    dns[16];    /**< DNS server IP address.*/
-  char    mac[16];    /**< MAC address, example: "C89346112233".*/
-  char    broadcastip[16];
+  uint8_t dhcp;                    /**< DHCP mode: @ref DHCP_Disable, @ref DHCP_Client, @ref DHCP_Server.*/
+  char    ip[INET_ADDRSTRLEN];     /**< Local IP address on the target wlan interface: @ref wlanInterfaceTypedef.*/
+  char    gate[INET_ADDRSTRLEN];   /**< Router IP address on the target wlan interface: @ref wlanInterfaceTypedef.*/
+  char    mask[INET_ADDRSTRLEN];   /**< Netmask on the target wlan interface: @ref wlanInterfaceTypedef.*/
+  char    dns[INET_ADDRSTRLEN];    /**< DNS server IP address.*/
+  char    mac[INET_ADDRSTRLEN];    /**< MAC address, example: "C89346112233".*/
+  char    broadcastip[INET_ADDRSTRLEN];
 } IPStatusTypedef;
- 
+
+/**
+ *  @brief  wlan local IPv6 information structure definition.
+ */
+typedef struct ipv6_addr {
+    /** The system's IPv6 address in network order. */
+    struct in6_addr address;
+     /** The address type: linklocal, site-local or global. */
+    uint8_t addr_type;
+    /** The state of IPv6 address (Tentative, Preferred, etc). */
+    uint8_t addr_state;
+} ipv6_addr_t;
+
 /** 
  *  @brief  Scan result using advanced scan.  
  */  
@@ -383,6 +415,18 @@ OSStatus micoWlanStartAdv(network_InitTypeDef_adv_st* inNetworkInitParaAdv);
  *  @return   kGeneralErr   : if an error occurred
  */
 OSStatus micoWlanGetIPStatus(IPStatusTypedef *outNetpara, WiFi_Interface inInterface);
+
+/** @brief  Read current IPv6 status on a network interface.
+ *
+ *  @param  outNetpara: Point to the buffer to store the IPv6 address.
+ *  @param  inInterface: Specifies wlan interface.
+ *             @arg Soft_AP: The soft AP that established by micoWlanStart()
+ *             @arg Station: The interface that connected to an access point
+ *
+ *  @return   kNoErr        : on success.
+ *  @return   kGeneralErr   : if an error occurred
+ */
+OSStatus micoWlanGetIP6Status(ipv6_addr_t ipv6_addr[], uint8_t ipv6_addr_num, WiFi_Interface inInterface);
 
 /** @brief  Read current wireless link status on station interface.
  * 

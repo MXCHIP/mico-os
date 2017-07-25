@@ -46,6 +46,7 @@
 #define __MICO_H_
 
 /* MiCO SDK APIs */
+#include "mico_opt.h"
 #include "debug.h"
 #include "common.h"
 #include "mico_rtos.h"

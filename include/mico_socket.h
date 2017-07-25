@@ -31,6 +31,8 @@
 #ifndef __MICOSOCKET_H__
 #define __MICOSOCKET_H__
 
+#include "mico_opt.h"
+
 #if defined __GNUC__
 #include <sys/time.h>
 #include <sys/select.h>
@@ -53,21 +55,43 @@ extern "C" {
   * @{
   */
 
-/** For compatibility with BSD code */
+#define INADDR_NONE         ((uint32_t)0xffffffffUL)     /**< 255.255.255.255 */
+#define INADDR_LOOPBACK     ((uint32_t)0x7f000001UL)     /**< 127.0.0.1 */
+#define INADDR_ANY          ((uint32_t)0x00000000UL)     /**< 0.0.0.0 */
+#define INADDR_BROADCAST    ((uint32_t)0xffffffffUL)     /**< 255.255.255.255 */
+
+/** This macro can be used to initialize a variable of type struct in6_addr
+    to the IPv6 wildcard address. */
+#define IN6ADDR_ANY_INIT {{{0,0,0,0}}}
+
+#define IS_IPV4_MAPPED_IPV6(psockaddr_in6) (((psockaddr_in6)->sin6_addr.un.u32_addr[0] == 0) && \
+                                            ((psockaddr_in6)->sin6_addr.un.u32_addr[1] == 0) && \
+                                            ((psockaddr_in6)->sin6_addr.un.u32_addr[2] == htonl(0x0000FFFFUL)))
+
+#define UNMAP_IPV4_MAPPED_IPV6(psockaddr_in4, psockaddr_in6) \
+  (psockaddr_in4)->sin_addr.s_addr = (psockaddr_in6)->sin6_addr.un.u32_addr[3]; \
+  (psockaddr_in4)->sin_family = AF_INET; \
+  (psockaddr_in4)->sin_len = sizeof(struct sockaddr_in); \
+
 struct in_addr {
     uint32_t s_addr;
 };
 
-/** 255.255.255.255 */
-#define INADDR_NONE         ((uint32_t)0xffffffffUL)
-/** 127.0.0.1 */
-#define INADDR_LOOPBACK     ((uint32_t)0x7f000001UL)
-/** 0.0.0.0 */
-#define INADDR_ANY          ((uint32_t)0x00000000UL)
-/** 255.255.255.255 */
-#define INADDR_BROADCAST    ((uint32_t)0xffffffffUL)
+struct in6_addr {
+  union {
+      uint32_t u32_addr[4];
+      uint8_t  u8_addr[16];
+  } un;
+#define s6_addr  un.u8_addr
+};
 
 /* members are in network byte order */
+struct sockaddr {
+    uint8_t sa_len;
+    uint8_t sa_family;
+    uint8_t sa_data[14];
+};
+
 struct sockaddr_in {
     uint8_t sin_len;
     uint8_t sin_family;
@@ -76,11 +100,25 @@ struct sockaddr_in {
     char sin_zero[8];
 };
 
-struct sockaddr {
-    uint8_t sa_len;
-    uint8_t sa_family;
-    uint8_t sa_data[14];
+struct sockaddr_in6 {
+  uint8_t         sin6_len;      /* length of this structure    */
+  uint8_t         sin6_family;   /* AF_INET6                    */
+  uint16_t        sin6_port;     /* Transport layer port #      */
+  uint32_t        sin6_flowinfo; /* IPv6 flow information       */
+  struct in6_addr sin6_addr;     /* IPv6 address                */
+  uint32_t        sin6_scope_id; /* Set of interfaces for scope */
 };
+
+struct sockaddr_storage {
+    uint8_t     s2_len;
+    uint8_t     ss_family;
+    char        s2_data1[2];
+    uint32_t    s2_data2[3];
+    uint32_t    s2_data3[3];
+};
+
+extern struct in_addr in_addr_any;
+extern struct in6_addr in6_addr_any;
 
 #ifndef socklen_t
 #  define socklen_t uint32_t
@@ -118,12 +156,18 @@ struct addrinfo {
 
 #define AF_UNSPEC       0
 #define AF_INET         2
-#define PF_INET         AF_INET
+#define AF_INET6        10
+
 #define PF_UNSPEC       AF_UNSPEC
+#define PF_INET         AF_INET
+#define PF_INET6        AF_INET6
 
 #define IPPROTO_IP      0
+#define IPPROTO_ICMP    1
 #define IPPROTO_TCP     6
 #define IPPROTO_UDP     17
+#define IPPROTO_IPV6    41
+#define IPPROTO_ICMPV6  58
 #define IPPROTO_UDPLITE 136
 
 #define F_GETFL 3
@@ -136,6 +180,15 @@ struct addrinfo {
  */
 #define IP_TOS             1
 #define IP_TTL             2
+
+
+#ifndef INET_ADDRSTRLEN
+#define INET_ADDRSTRLEN     16
+#endif
+
+#ifndef INET6_ADDRSTRLEN
+#define INET6_ADDRSTRLEN    46
+#endif
 
 typedef struct ip_mreq {
     struct in_addr imr_multiaddr; /* IP multicast address of group */
@@ -191,6 +244,24 @@ typedef enum {
     IP_MULTICAST_IF         = 0x0006,
     IP_MULTICAST_LOOP       = 0x0007
 } IP_OPT_VAL;
+
+/**
+  * @brief  IPv6 option types, level: IPPROTO_IPV6
+  */
+#define IPV6_UNICAST_HOPS   4  /* int; IP6 hops */
+#define IPV6_MULTICAST_IF   9  /* __uint8_t; set/get IP6 multicast i/f  */
+#define IPV6_MULTICAST_HOPS 10 /* __uint8_t; set/get IP6 multicast hops */
+#define IPV6_MULTICAST_LOOP 11 /* __uint8_t; set/get IP6 mcast loopback */
+#define IPV6_JOIN_GROUP     12 /* ip6_mreq; join a group membership */
+#define IPV6_LEAVE_GROUP    13 /* ip6_mreq; leave a group membership */
+
+/*
+ * Argument structure for IPV6_JOIN_GROUP and IPV6_LEAVE_GROUP.
+ */
+struct ipv6_mreq {
+    struct in6_addr ipv6mr_multiaddr;
+    unsigned int    ipv6mr_interface;
+};
 
 /**
   * @brief  TCP option types, level: IPPROTO_TCP
@@ -593,7 +664,6 @@ int fcntl(int filedes, int command, ...);
   */
 uint32_t inet_addr (const char *name);
 
-
 /**
   * @brief      Converts the Internet host address in, given in network byte 
   *             order, to a string in IPv4 dotted-decimal notation. 
@@ -604,9 +674,7 @@ uint32_t inet_addr (const char *name);
   * @param      x: the Internet host address in.
   * @retval     Returns the same value as param s.
   */
-extern char *inet_ntoa (struct in_addr addr);
-
-
+char *inet_ntoa (struct in_addr addr);
 
 /** @brief      Get the IP address from a host name. 
   * 
@@ -614,7 +682,7 @@ extern char *inet_ntoa (struct in_addr addr);
   *             not return a buffer that contain the result, but write the result
   *             to a buffer provided by application. Also this function simplify
   *             the return value compared to the standard BSD version. 
-  *             This functon runs under block mode.
+  *             This function runs under block mode.
   *
   * @param      name: This parameter is either a hostname, or an IPv4 address in
   *             standard dot notation.
@@ -625,11 +693,69 @@ extern char *inet_ntoa (struct in_addr addr);
   * @retval     kNoerr or kGeneralErr
   */
 struct hostent* gethostbyname(const char *name);
-int getaddrinfo(const char *nodename,
-       const char *servname,
-       const struct addrinfo *hints,
-       struct addrinfo **res);
+
+/**
+ * @brief      converts an address *src from network format (usually a struct
+ *             in_addr or some other binary form, in network byte order) to
+ *             presentation format (suitable for external display purposes).
+ *
+ * @param      af:   AF_INET or AF_INET6
+ * @param      src:  network address
+ * @param      dst:  buffer holds the result
+ * @param      size: size of the buffer, INET_ADDRSTRLEN and INET6_ADDRSTRLEN
+ *                   define the maximum size required to convert an address of
+ *                   the respective type.
+ * @retval     NULL if a system error occurs, or returns a pointer to the
+ *             destination string
+ */
+
+const char * inet_ntop(int af, const void * restrict src, char * restrict dst, socklen_t size);
+
+/**
+ * @brief      converts a presentation format address (that is, printable form
+ *             as held in a character string) to network format (usually a struct
+ *             in_addr or some other internal binary representation, in network byte order).
+ *
+ * @param      af:   AF_INET or AF_INET6
+ * @param      src:  point to the presentation format address
+ * @param      dst:  buffer holds the result
+ * @retval     1 if the address was valid for the specified address family, or
+ *             0 if the address was not parseable in the specified address family, or
+ *             -1 if some system error occurred
+ */
+int inet_pton(int af, const char * restrict src, void * restrict dst);
+
+/**
+ * Translates the name of a service location (for example, a host name) and/or
+ * a service name and returns a set of socket addresses and associated
+ * information to be used in creating a socket with which to address the
+ * specified service.
+ * Memory for the result is allocated internally and must be freed by calling
+ * freeaddrinfo()!
+ *
+ * Due to a limitation in dns_gethostbyname, only the first address of a
+ * host is returned.
+ * Also, service names are not supported (only port numbers)!
+ *
+ * @param nodename descriptive name or address string of the host
+ *                 (may be NULL -> local address)
+ * @param servname port number as string of NULL
+ * @param hints structure containing input values that set socktype and protocol
+ * @param res pointer to a pointer where to store the result (set to NULL on failure)
+ * @return 0 on success, non-zero on failure
+ */
+int getaddrinfo(const char *nodename, const char *servname, const struct addrinfo *hints, struct addrinfo **res);
+
+/**
+ * Frees one or more addrinfo structures returned by getaddrinfo(), along with
+ * any additional storage associated with those structures. If the ai_next field
+ * of the structure is not null, the entire list of structures is freed.
+ *
+ * @param ai struct addrinfo to free
+ */
 void freeaddrinfo(struct addrinfo *ai);
+
+
 int getpeername (int s, struct sockaddr *name, socklen_t *namelen);
 int getsockname (int s, struct sockaddr *name, socklen_t *namelen);
 

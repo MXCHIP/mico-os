@@ -35,8 +35,9 @@
 #ifndef __MICOPLATFORM_H__
 #define __MICOPLATFORM_H__
 
-#include "common.h"
+#include "mico_opt.h"
 
+#include "common.h"
 #include "platform.h" /* This file is unique for each platform */
 #include "platform_peripheral.h"
 

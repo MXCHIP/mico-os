@@ -64,6 +64,7 @@ typedef enum
     RR_TYPE_MINFO  = 14,
     RR_TYPE_MX     = 15,
     RR_TYPE_TXT    = 16,
+    RR_TYPE_AAAA   = 28,
     RR_TYPE_SRV    = 33,    // SRV - Service Location Record
     RR_QTYPE_AXFR  = 252,
     RR_QTYPE_MAILB = 253,

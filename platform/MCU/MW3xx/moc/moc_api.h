@@ -303,6 +303,9 @@ typedef struct mico_api_struct
     OSStatus (*micoWlanStart)( network_InitTypeDef_st* inNetworkInitPara );
     OSStatus (*micoWlanStartAdv)( network_InitTypeDef_adv_st* inNetworkInitParaAdv );
     OSStatus (*micoWlanGetIPStatus)( IPStatusTypedef *outNetpara, WiFi_Interface inInterface );
+#ifdef MOCIP_CONFIG_IPV6
+    OSStatus (*micoWlanGetIP6Status)(ipv6_addr_t ipv6_addr[], uint8_t ipv6_addr_num, WiFi_Interface inInterface);
+#endif
     OSStatus (*micoWlanGetLinkStatus)( LinkStatusTypeDef *outStatus );
     OSStatus (*micoWlanStartScan)( void );
     OSStatus (*micoWlanStartScanAdv)( void );

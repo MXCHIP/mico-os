@@ -16,11 +16,29 @@
  */
 
 #include "mico_mdns.h"
+#include "mico_wlan.h"
 #include "StringUtils.h"
 #include "SocketUtils.h"
 
-/** "224.0.0.251" */
-#define INADDR_MULTICAST_MDNS  ((uint32_t)0xE00000FBUL)
+/* Debug functions */
+#define mdns_utils_log(M, ...)  MICO_LOG(MICO_MDNS_DEBUG, "MDNS", M, ##__VA_ARGS__)
+#define mdns_utils_log_trace()  MICO_LOG_TRACE("MDNS")
+//#define MDNS_PRINT_SOURCE_ADDR
+
+/* IPv4 group for multicast DNS queries: 224.0.0.251 */
+#define INADDR_MULTICAST_MDNS  {htonl(0xE00000FBUL)}
+
+/* IPv4 also send mdns by BROADCAST */
+#define INADDR_BROADCAST_MDNS  {htonl(0xFFFFFFFFUL)}
+
+/* IPv6 group for multicast DNS queries: FF02::FB */
+#define INADDR6_MULTICAST_MDNS  {{{htonl(0xFF020000), htonl(0), htonl(0), htonl(0xFB) }}}
+
+#define SERVICE_QUERY_NAME             "_services._dns-sd._udp.local."
+
+struct sockaddr_in dns_mquery_v4group = { sizeof(struct sockaddr_in), AF_INET, htons(5353), INADDR_MULTICAST_MDNS};
+struct sockaddr_in dns_mquery_v4broadcast = { sizeof(struct sockaddr_in), AF_INET, htons(5353), INADDR_BROADCAST_MDNS};
+struct sockaddr_in6 dns_mquery_v6group = { sizeof(struct sockaddr_in6), AF_INET6, htons(5353), 0, INADDR6_MULTICAST_MDNS, 0};
 
 static int mDNS_fd = -1;
 static bool bonjour_instance = false;
@@ -45,18 +63,7 @@ typedef struct
 #define Problem_Detected_Offset            0
 #define Not_Configured_Offset              1
 
-
-#define SERVICE_QUERY_NAME             "_services._dns-sd._udp.local."
-
-//#define mdns_utils_log(M, ...) custom_log("mDNS Utils", M, ##__VA_ARGS__)
-//#define mdns_utils_log_trace() custom_log_trace("mDNS Utils")
-
-#define mdns_utils_log(M, ...)
-#define mdns_utils_log_trace()
-
-
 static dns_sd_service_record_t   available_services[ MAX_RECORD_COUNT ];
-static uint8_t	available_service_count = MAX_RECORD_COUNT;
 
 static int dns_get_next_question( dns_message_iterator_t* iter, dns_question_t* q, dns_name_t* name );
 static int dns_compare_name_to_string( dns_name_t* name, const char* string );
@@ -82,15 +89,50 @@ static int update_state_fd = 0;
 static mico_thread_t mfi_bonjour_thread_handler;
 static void _bonjour_thread(uint32_t arg);
 
+
+static uint32_t dns_write_record_A( dns_message_iterator_t* iter, dns_sd_service_record_t *service, uint16_t record_class )
+{
+    uint32_t ipv4_addr;
+    IPStatusTypedef para;
+    uint32_t ttl = ( service->state == RECORD_NORMAL || service->state == RECORD_UPDATE )? service->ttl:0;
+
+    micoWlanGetIPStatus(&para, service->interface);
+    ipv4_addr = inet_addr(para.ip);
+
+    if( ipv4_addr == 0 || ipv4_addr == 0xFFFFFFFF) return 0;
+
+    dns_write_record( iter, service->hostname, record_class, RR_TYPE_A, ttl, (uint8_t*)&ipv4_addr);
+    return 1;
+}
+
+#if MICO_CONFIG_IPV6
+static uint32_t dns_write_record_AAAA( dns_message_iterator_t* iter, dns_sd_service_record_t *service, uint16_t record_class )
+{
+    ipv6_addr_t ipv6_addrs[MICO_IPV6_NUM_ADDRESSES];
+    uint32_t record_written = 0;
+    uint32_t ttl = ( service->state == RECORD_NORMAL || service->state == RECORD_UPDATE )? service->ttl:0;
+
+    memset(ipv6_addrs, 0x0, MICO_IPV6_NUM_ADDRESSES*sizeof(ipv6_addr_t));
+    micoWlanGetIP6Status(ipv6_addrs, MICO_IPV6_NUM_ADDRESSES, service->interface);
+
+    for( int i = 0; i < MICO_IPV6_NUM_ADDRESSES && IP6_ADDR_IS_VALID(ipv6_addrs[i].addr_state); i++ ) {
+        dns_write_record( iter, service->hostname, record_class, RR_TYPE_AAAA, ttl, ipv6_addrs[i].address.s6_addr);
+        record_written ++;
+    }
+
+    return record_written;
+}
+#endif
+
 void process_dns_questions(int fd, dns_message_iterator_t* iter )
 {
   dns_name_t name;
   dns_question_t question;
   dns_message_iterator_t response;
-  IPStatusTypedef para;
   int a = 0;
   int question_processed;
-  uint32_t myip;
+  uint32_t addr_written = 0;
+  uint32_t service_count = 0;
   
   memset( &response, 0, sizeof(dns_message_iterator_t) );
   
@@ -108,11 +150,16 @@ void process_dns_questions(int fd, dns_message_iterator_t* iter )
         if ( dns_compare_name_to_string( &name, SERVICE_QUERY_NAME ) ){
           int b = 0;
           if(dns_create_message( &response, 512 )) {
-            dns_write_header(&response, iter->header->id, 0x8400, 0, available_service_count, 0 );          
-            for ( b = 0; b < available_service_count; ++b ){
-              dns_write_record( &response, SERVICE_QUERY_NAME, RR_CLASS_IN, RR_TYPE_PTR, 1500, (uint8_t*) available_services[b].service_name );
+            for ( b = 0, service_count = 0; b < MAX_RECORD_COUNT; ++b ){
+                if( available_services[b].state == RECORD_NORMAL || available_services[b].state == RECORD_UPDATE ) {
+                    service_count++;
+                    dns_write_record( &response, SERVICE_QUERY_NAME, RR_CLASS_IN, RR_TYPE_PTR, 1500, (uint8_t*) available_services[b].service_name );
+                }
             }
-            mdns_send_message(fd, &response );
+            if( service_count ) {
+                dns_write_header(&response, iter->header->id, 0x8400, 0, service_count, 0 );
+                mdns_send_message(fd, &response );
+            }
             dns_free_message( &response );
             question_processed = 1;
           }
@@ -120,26 +167,31 @@ void process_dns_questions(int fd, dns_message_iterator_t* iter )
         // else check if its one of our records
         else {
           int b = 0;
-          for ( b = 0; b < available_service_count; ++b ){
+          for ( b = 0; b < MAX_RECORD_COUNT; ++b ){
             //printf("UDP multicast test: Recv a SERVICE Detail request: %s.\r\n", name);
             if ( dns_compare_name_to_string( &name, available_services[b].service_name )){
               
               if( available_services[b].state != RECORD_NORMAL )
                 continue;
-
-              micoWlanGetIPStatus(&para, available_services[b].interface);
-              myip = inet_addr(para.ip);
-              if( myip == 0 || myip == 0xFFFFFFFF) continue;
               
               // Send the PTR, TXT, SRV and A records
               if(dns_create_message( &response, 512 )){
-                dns_write_header( &response, iter->header->id, 0x8400, 0, 4, 0 );
+
                 //dns_write_record( &response, MFi_SERVICE_QUERY_NAME, RR_CLASS_IN, RR_TYPE_PTR, 1500, (u8*) available_services[b].service_name );
                 dns_write_record( &response, available_services[b].service_name, RR_CLASS_IN, RR_TYPE_PTR, available_services[b].ttl, (uint8_t*) available_services[b].instance_name );
                 dns_write_record( &response, available_services[b].instance_name, RR_CACHE_FLUSH|RR_CLASS_IN, RR_TYPE_TXT, available_services[b].ttl, (uint8_t*) available_services[b].txt_att );
                 dns_write_record( &response, available_services[b].instance_name, RR_CACHE_FLUSH|RR_CLASS_IN, RR_TYPE_SRV, available_services[b].ttl, (uint8_t*) &available_services[b]);
-                dns_write_record( &response, available_services[b].hostname, RR_CACHE_FLUSH|RR_CLASS_IN, RR_TYPE_A, available_services[b].ttl, (uint8_t*) &myip);
-                mdns_send_message(fd, &response );
+
+                addr_written = dns_write_record_A( &response, &available_services[b], RR_CACHE_FLUSH|RR_CLASS_IN );
+#if MICO_CONFIG_IPV6
+                addr_written += dns_write_record_AAAA( &response, &available_services[b], RR_CACHE_FLUSH|RR_CLASS_IN );
+#endif
+
+                if( addr_written ) {
+                    dns_write_header( &response, iter->header->id, 0x8400, 0, 3+addr_written, 0 );
+                    mdns_send_message(fd, &response );
+                }
+
                 dns_free_message( &response );
                 question_processed = 1;
               }
@@ -159,9 +211,8 @@ static void mdns_process_query(int fd, dns_name_t* name,
                                dns_question_t* question, dns_message_iterator_t* source )
 {
   dns_message_iterator_t response;
-  IPStatusTypedef para;
-  uint32_t myip;
   int b = 0;
+  uint32_t addr_written = 0;
   
   memset( &response, 0, sizeof(dns_message_iterator_t) );
   
@@ -169,22 +220,37 @@ static void mdns_process_query(int fd, dns_name_t* name,
   {
   case RR_QTYPE_ANY:
   case RR_TYPE_A:
-    for ( b = 0; b < available_service_count; ++b ){
+    for ( b = 0; b < MAX_RECORD_COUNT; ++b ){
       if ( dns_compare_name_to_string( name, available_services[b].hostname ) ){				
 
-        micoWlanGetIPStatus(&para, available_services[b].interface);
-        myip = inet_addr(para.ip);
-        if( myip == 0 || myip == 0xFFFFFFFF) continue;
-
         if(dns_create_message( &response, 256 )){
-          dns_write_header( &response, source->header->id, 0x8400, 0, 1, 0 );
-          dns_write_record( &response, available_services[b].hostname, RR_CLASS_IN | RR_CACHE_FLUSH, RR_TYPE_A, available_services[b].ttl, (uint8_t *)&myip);
-          mdns_send_message(fd, &response );
+          addr_written = dns_write_record_A( &response, &available_services[b], RR_CACHE_FLUSH|RR_CLASS_IN );
+          if( addr_written ) {
+              dns_write_header( &response, source->header->id, 0x8400, 0, addr_written, 0 );
+              mdns_send_message(fd, &response );
+          }
           dns_free_message( &response );
           return;
         }
       }
-    }    
+    }
+#if MICO_CONFIG_IPV6
+  case RR_TYPE_AAAA:
+      for ( b = 0; b < MAX_RECORD_COUNT; ++b ){
+        if ( dns_compare_name_to_string( name, available_services[b].hostname ) ){
+
+          if(dns_create_message( &response, 256 )){
+            addr_written = dns_write_record_AAAA( &response, &available_services[b], RR_CACHE_FLUSH|RR_CLASS_IN );
+            if( addr_written ) {
+                dns_write_header( &response, source->header->id, 0x8400, 0, addr_written, 0 );
+                mdns_send_message(fd, &response );
+            }
+            dns_free_message( &response );
+            return;
+          }
+        }
+      }
+#endif
   default:
    break;;
   }
@@ -346,7 +412,11 @@ static void dns_write_record( dns_message_iterator_t* iter, const char* name, ui
   case RR_TYPE_A:
     dns_write_bytes( iter, rdata, 4 );
     break;
-    
+#if MICO_CONFIG_IPV6
+  case RR_TYPE_AAAA:
+    dns_write_bytes( iter, rdata, 16 );
+    break;
+#endif
   case RR_TYPE_PTR:
   case RR_TYPE_TXT:
     dns_write_name( iter, (const char*) rdata );
@@ -373,17 +443,12 @@ static void dns_write_record( dns_message_iterator_t* iter, const char* name, ui
 
 static void mdns_send_message(int fd, dns_message_iterator_t* message )
 {
-  struct sockaddr_in addr;
-
 //  printf("enter send message\r\n");
-  addr.sin_family = AF_INET;
-  addr.sin_addr.s_addr = htonl(INADDR_MULTICAST_MDNS);
-  addr.sin_port = htons(5353);
-  sendto(fd, message->header, message->iter - (uint8_t*)message->header, 0, (struct sockaddr *)&addr, sizeof(addr));
-  addr.sin_family = AF_INET;
-  addr.sin_addr.s_addr = htonl(INADDR_BROADCAST);
-  addr.sin_port = htons(INADDR_BROADCAST);
-  sendto(fd, message->header, message->iter - (uint8_t*)message->header, 0, (struct sockaddr *)&addr, sizeof(addr));
+  sendto(fd, message->header, message->iter - (uint8_t*)message->header, 0, (struct sockaddr *)&dns_mquery_v4group, sizeof(dns_mquery_v4group));
+  sendto(fd, message->header, message->iter - (uint8_t*)message->header, 0, (struct sockaddr *)&dns_mquery_v4broadcast, sizeof(dns_mquery_v4broadcast));
+#if MICO_CONFIG_IPV6
+  sendto(fd, message->header, message->iter - (uint8_t*)message->header, 0, (struct sockaddr *)&dns_mquery_v6group, sizeof(dns_mquery_v6group));
+#endif
 }
 
 static void dns_write_uint16( dns_message_iterator_t* iter, uint16_t data )
@@ -463,7 +528,7 @@ static int find_record_by_service ( char *service_name, WiFi_Interface interface
   int i;
   uint32_t insert_index = 0xFF;
 
-  for ( i = 0; i < available_service_count; i++ ){
+  for ( i = 0; i < MAX_RECORD_COUNT; i++ ){
     if( is_service_match ( &available_services[i], service_name, interface ) ){
       insert_index = i;
       break;
@@ -477,7 +542,7 @@ static int find_empty_record ( void )
   int i;
   uint32_t insert_index = 0xFF;
 
-  for ( i = 0; i < available_service_count; i++ ){
+  for ( i = 0; i < MAX_RECORD_COUNT; i++ ){
     if( available_services[i].state == RECORD_REMOVED ){
       insert_index = i;
       break;
@@ -495,7 +560,7 @@ void _bonjour_send_anounce_thread(uint32_t arg)
 
   while(1){
     insert_index = 0xFF;
-    for ( int i = 0; i < available_service_count; i++ ){
+    for ( int i = 0; i < MAX_RECORD_COUNT; i++ ){
       if( available_services[i].state != RECORD_REMOVED && available_services[i].count_down != 0 ){
         insert_index = i;
         break;
@@ -553,7 +618,7 @@ OSStatus mdns_add_record( mdns_init_t init, WiFi_Interface interface, uint32_t t
   if( insert_index == 0xFF)
     insert_index = find_empty_record ( );
 
-  require_action( insert_index < available_service_count, exit, err = kNoResourcesErr);
+  require_action( insert_index < MAX_RECORD_COUNT, exit, err = kNoResourcesErr);
   
   mico_rtos_lock_mutex( &bonjour_mutex );
 
@@ -621,7 +686,7 @@ void mdns_suspend_record( char *service_name, WiFi_Interface interface, bool wil
 
   mico_rtos_lock_mutex( &bonjour_mutex );
 
-  for ( i = 0; i < available_service_count; i++ ){
+  for ( i = 0; i < MAX_RECORD_COUNT; i++ ){
     if( is_service_match ( &available_services[i], service_name, interface ) == false) 
       continue;
     
@@ -657,7 +722,7 @@ void mdns_resume_record( char *service_name, WiFi_Interface interface )
 
   mico_rtos_lock_mutex( &bonjour_mutex );
 
-  for ( i = 0; i < available_service_count && is_service_match( &available_services[i], service_name, interface ); i++ ){
+  for ( i = 0; i < MAX_RECORD_COUNT && is_service_match( &available_services[i], service_name, interface ); i++ ){
     available_services[i].state = RECORD_UPDATE;
     available_services[i].count_down = 5; 
     insert_index = i;
@@ -704,9 +769,8 @@ void mdns_handler(int fd, uint8_t* pkt, int pkt_len)
 void bonjour_send_record(int record_index)
 {
   dns_message_iterator_t response;
-  uint32_t myip;
-  IPStatusTypedef para;
   int ttl  = 0;
+  uint32_t addr_written = 0;
 
   /* Send service and a ttl > 0 for a working record*/
   if( available_services[record_index].state == RECORD_NORMAL || available_services[record_index].state == RECORD_UPDATE ){
@@ -719,20 +783,24 @@ void bonjour_send_record(int record_index)
       dns_free_message( &response );
     }
   }
-  micoWlanGetIPStatus(&para, available_services[record_index].interface);
-  myip = inet_addr(para.ip);
-  if( myip == 0 || myip == 0xFFFFFFFF) return;
-
 
   if(dns_create_message( &response, 512 )){
     mdns_utils_log( "TTL = %d",  ttl);
-    micoWlanGetIPStatus(&para, available_services[record_index].interface);
-    dns_write_header( &response, 0x0, 0x8400, 0, 4, 0 );
+
     dns_write_record( &response, available_services[record_index].service_name, RR_CLASS_IN, RR_TYPE_PTR, ttl, (uint8_t*) available_services[record_index].instance_name );
     dns_write_record( &response, available_services[record_index].instance_name, RR_CACHE_FLUSH|RR_CLASS_IN, RR_TYPE_TXT, ttl, (uint8_t*) available_services[record_index].txt_att );
     dns_write_record( &response, available_services[record_index].instance_name, RR_CACHE_FLUSH|RR_CLASS_IN, RR_TYPE_SRV, ttl, (uint8_t*) &available_services[record_index]);
-    dns_write_record( &response, available_services[record_index].hostname, RR_CACHE_FLUSH|RR_CLASS_IN, RR_TYPE_A, ttl, (uint8_t*) &myip);
-    mdns_send_message(mDNS_fd, &response );
+
+    addr_written = dns_write_record_A( &response, &available_services[record_index], RR_CACHE_FLUSH|RR_CLASS_IN );
+#if MICO_CONFIG_IPV6
+    addr_written += dns_write_record_AAAA( &response, &available_services[record_index], RR_CACHE_FLUSH|RR_CLASS_IN );
+#endif
+
+    if( addr_written ) {
+        dns_write_header( &response, 0x0, 0x8400, 0, 3+addr_written, 0 );
+        mdns_send_message(mDNS_fd, &response );
+    }
+
     dns_free_message( &response );
   }
 }
@@ -771,8 +839,14 @@ uint8_t *buf = NULL;
 static OSStatus start_bonjour_service(void)
 {
   OSStatus err = kNoErr;
-  struct sockaddr_in addr;
   ip_mreq mreq_opt;
+
+#if MICO_CONFIG_IPV6
+  struct sockaddr_in6 addr6;
+  struct ipv6_mreq mreqv6_opt;
+#else
+  struct sockaddr_in addr;
+#endif
 
   if(bonjour_mutex == NULL)
     mico_rtos_init_mutex( &bonjour_mutex );
@@ -785,20 +859,36 @@ static OSStatus start_bonjour_service(void)
   memset( available_services, 0x0, sizeof( available_services ) );
 
   buf = malloc(1500);
-  require_action(buf, exit, err =kNoMemoryErr);
-  
+  require_action(buf, exit, err = kNoMemoryErr);
+
+#if MICO_CONFIG_IPV6
+  mDNS_fd = socket(AF_INET6, SOCK_DGRAM, IPPROTO_UDP);
+#else
   mDNS_fd = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
+#endif
   require_action(IsValidSocket( mDNS_fd ), exit, err = kNoResourcesErr );
-  
-  mreq_opt.imr_multiaddr.s_addr = htonl(INADDR_MULTICAST_MDNS);
-  mreq_opt.imr_interface.s_addr = htonl(INADDR_ANY);
+
+  mreq_opt.imr_multiaddr = dns_mquery_v4group.sin_addr;
+  mreq_opt.imr_interface = in_addr_any;
   setsockopt(mDNS_fd, IPPROTO_IP, IP_ADD_MEMBERSHIP, &mreq_opt, sizeof(ip_mreq));
-  
+
+#if MICO_CONFIG_IPV6
+  mreqv6_opt.ipv6mr_interface = Station;
+  memcpy(&mreqv6_opt.ipv6mr_multiaddr, &dns_mquery_v6group.sin6_addr, sizeof(struct in6_addr));
+  setsockopt(mDNS_fd, IPPROTO_IPV6, IPV6_JOIN_GROUP, &mreqv6_opt, sizeof(mreqv6_opt));
+
+  addr6.sin6_family = AF_INET6;
+  addr6.sin6_port = htons(5353);
+  addr6.sin6_addr = in6_addr_any;
+  err = bind(mDNS_fd, (struct sockaddr *)&addr6, sizeof(addr6));
+  require_noerr(err, exit);
+#else
   addr.sin_family = AF_INET;
   addr.sin_port = htons(5353);
-  addr.sin_addr.s_addr = INADDR_ANY;
+  addr.sin_addr = in_addr_any;
   err = bind(mDNS_fd, (struct sockaddr *)&addr, sizeof(addr));
   require_noerr(err, exit);
+#endif
 
   err = mico_system_notify_register( mico_notify_WIFI_STATUS_CHANGED, (void *)BonjourNotify_WifiStatusHandler, NULL );
   require_noerr( err, exit );
@@ -819,9 +909,8 @@ void _bonjour_thread(uint32_t arg)
   int i, con = -1;
   struct timeval t;
   fd_set readfds;
-  struct sockaddr_in addr;
+  struct sockaddr_storage addr;
   socklen_t addrLen;
-  //OSStatus err = kNoErr;
   UNUSED_PARAMETER( arg );
 
   t.tv_sec = 1;
@@ -838,7 +927,7 @@ void _bonjour_thread(uint32_t arg)
       mdns_utils_log( "sem recved" );
       mico_rtos_get_semaphore( &update_state_sem, 0 );
       mico_rtos_lock_mutex( &bonjour_mutex );
-      for ( i = 0; i < available_service_count; i++ ){
+      for ( i = 0; i < MAX_RECORD_COUNT; i++ ){
         switch ( available_services[i].state ){
           case RECORD_REMOVE: 
             mdns_utils_log( "Remove record %d", i );
@@ -874,16 +963,40 @@ void _bonjour_thread(uint32_t arg)
     /*Read data from udp and send data back */ 
     if (FD_ISSET(mDNS_fd, &readfds)) {
       con = recvfrom(mDNS_fd, buf, 1500, 0, (struct sockaddr *)&addr, &addrLen);
+
+#ifdef MDNS_PRINT_SOURCE_ADDR
+      struct sockaddr_in *sockaddr_v4 = (struct sockaddr_in *)&addr;
+      struct sockaddr_in6 *sockaddr_v6 = (struct sockaddr_in6 *)&addr;
+      char ipstr[INET6_ADDRSTRLEN];
+
+      if ( addr.ss_family == AF_INET6 ) {
+          if( IS_IPV4_MAPPED_IPV6(sockaddr_v6) ) {
+              UNMAP_IPV4_MAPPED_IPV6(sockaddr_v4, sockaddr_v6)
+              inet_ntop(AF_INET, &sockaddr_v4->sin_addr.s_addr, ipstr, INET_ADDRSTRLEN);
+              mdns_utils_log("Recv from %s, port %d", ipstr, ntohs(sockaddr_v4->sin_port));
+              continue;
+          }
+          else {
+              inet_ntop(AF_INET6, sockaddr_v6->sin6_addr.s6_addr, ipstr, INET6_ADDRSTRLEN);
+              mdns_utils_log("Recv from %s, port %d", ipstr, ntohs(sockaddr_v6->sin6_port));
+          }
+      }
+      else if ( addr.ss_family == AF_INET ) {
+          inet_ntop(AF_INET, &sockaddr_v4->sin_addr.s_addr, ipstr, INET_ADDRSTRLEN);
+          mdns_utils_log("Recv from %s, port %d", ipstr, ntohs(sockaddr_v4->sin_port));
+          continue;
+      }
+      else {
+          mdns_utils_log("Server not available");
+          continue;
+      }
+#endif
+
       mico_rtos_lock_mutex( &bonjour_mutex );
       mdns_handler(mDNS_fd, (uint8_t *)buf, con);
       mico_rtos_unlock_mutex( &bonjour_mutex );
     }
   }
-  
-  //mdns_utils_log("Exit: mDNS thread exit with err = %d", err);
-  //SocketClose( &mDNS_fd );
-  //if(buf) free(buf);
-  //mico_rtos_delete_thread(NULL);
 }
 
 

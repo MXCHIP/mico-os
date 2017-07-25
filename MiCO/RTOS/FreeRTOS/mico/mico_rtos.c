@@ -834,10 +834,7 @@ void vApplicationStackOverflowHook( xTaskHandle *pxTask, signed portCHAR *pcTask
     UNUSED_PARAMETER( pcTaskName ); /* unused parameter in release build */
     /*@+noeffect@*/
 
-    //WPRINT_RTOS_DEBUG(("Stack Overflow Detected in task %s\r\n",pcTaskName));
-//#ifdef MICO
     mico_rtos_stack_overflow((char*)pcTaskName);
-//#endif
 }
 
 void vApplicationMallocFailedHook( void )

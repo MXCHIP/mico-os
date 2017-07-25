@@ -26,6 +26,14 @@ OSStatus getNetPara(IPStatusTypedef *outNetpara, WiFi_Interface inInterface)
 {
 	return lib_api_p->micoWlanGetIPStatus(outNetpara, inInterface);
 }
+OSStatus micoWlanGetIP6Status(ipv6_addr_t ipv6_addr[], uint8_t ipv6_addr_num, WiFi_Interface inInterface)
+{
+#ifdef MOCIP_CONFIG_IPV6
+    return lib_api_p->micoWlanGetIP6Status(ipv6_addr, ipv6_addr_num, inInterface);
+#else
+    return kUnsupportedErr;
+#endif
+}
 OSStatus CheckNetLink(LinkStatusTypeDef *outStatus)
 {
 	return lib_api_p->micoWlanGetLinkStatus(outStatus);

@@ -32,6 +32,7 @@
 #ifndef __MICORTOS_H__
 #define __MICORTOS_H__
 
+#include "mico_opt.h"
 #include "common.h"
 
 
