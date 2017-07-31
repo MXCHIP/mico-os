@@ -35,6 +35,7 @@ extern "C"
 typedef enum
 {
 	MX_UART_1,
+    MX_UART_2,
 	MX_UART_MAX, /* Denotes the total number of UART port aliases. Not a valid UART alias */
 	MX_UART_NONE,
 } mx_uart_t;

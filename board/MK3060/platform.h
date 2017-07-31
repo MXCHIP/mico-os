@@ -119,6 +119,7 @@ typedef enum
 typedef enum
 {
 	MICO_UART_1,
+    MICO_UART_2,
     MICO_UART_MAX, /* Denotes the total number of UART port aliases. Not a valid UART alias */
     MICO_UART_NONE,
 } mico_uart_t;
@@ -145,8 +146,8 @@ typedef enum
 #define STDIO_UART_BAUDRATE (921600) 
 #endif
 
-#define UART_FOR_APP     (MICO_UART_1)
-#define MFG_TEST         (MICO_UART_1)
+#define UART_FOR_APP     (MICO_UART_2)
+#define MFG_TEST         (MICO_UART_2)
 #define CLI_UART         (MICO_UART_1)
 
 /* Components connected to external I/Os*/

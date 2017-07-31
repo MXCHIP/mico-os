@@ -111,6 +111,7 @@ platform_i2c_driver_t platform_i2c_drivers[MICO_I2C_MAX];
 const platform_uart_t platform_uart_peripherals[] = 
 {
 	[MICO_UART_1] = {MX_UART_1}, 
+    [MICO_UART_2] = {MX_UART_2}, 
 };
 
 platform_uart_driver_t platform_uart_drivers[MICO_UART_MAX];
