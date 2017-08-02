@@ -62,7 +62,11 @@ $(NAME)_COMPONENTS += MCU/MOC108/peripherals
 endif
 
 ifneq ($(wildcard $(CURDIR)MX108.$(HOST_ARCH).$(TOOLCHAIN_NAME).release.a),)
+ifeq ($(CONFIG_IPV6),1)
+$(NAME)_PREBUILT_LIBRARY += MX108.$(HOST_ARCH).$(TOOLCHAIN_NAME)-IPv6.release.a
+else
 $(NAME)_PREBUILT_LIBRARY += MX108.$(HOST_ARCH).$(TOOLCHAIN_NAME).release.a
+endif
 else
 # Build from source
 $(NAME)_COMPONENTS += MCU/MOC108/MX108
