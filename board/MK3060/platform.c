@@ -165,15 +165,15 @@ const mico_logic_partition_t mico_partitions[] =
         .partition_owner           = MICO_FLASH_EMBEDDED,
         .partition_description     = "OTA Storage",
         .partition_start_addr      = 0x108000,
-        .partition_length          = 0xF6000, //984k bytes
+        .partition_length          = 0xF5000, //980k bytes
         .partition_options         = PAR_OPT_READ_EN | PAR_OPT_WRITE_EN,
     },
     [MICO_PARTITION_USER] =
     {
         .partition_owner            = MICO_FLASH_EMBEDDED,
         .partition_description      = "USER",
-        .partition_start_addr       = 0x1FE000,
-        .partition_length           = 0x2000, //8k bytes
+        .partition_start_addr       = 0x1FD000,
+        .partition_length           = 0x3000, //12k bytes
         .partition_options          = PAR_OPT_READ_EN | PAR_OPT_WRITE_EN,
     },
     [MICO_PARTITION_SYSTEM_DATA] = 
