@@ -68,9 +68,6 @@ static void easylink_wifi_status_cb( WiFiEvent event, system_context_t * const i
     switch ( event )
     {
         case NOTIFY_STATION_UP:
-            /* Connected to AP, means that the wlan configuration is right, update configuration in flash and update
-             bongjour txt record with new "easylink_id" */
-            easylink_bonjour_update( Station, easylink_id, inContext );
             inContext->flashContentInRam.micoSystemConfig.configured = allConfigured;
             mico_system_context_update( &inContext->flashContentInRam ); //Update Flash content
             mico_rtos_set_semaphore( &easylink_connect_sem ); //Notify Easylink thread
@@ -211,6 +208,11 @@ static void monitor_cb( uint8_t * frame, int len )
     mico_easylink_monitor_delegate_package_recved( frame, len );
 }
 
+static void easylink_remove_bonjour_from_sta(void)
+{
+    easylink_remove_bonjour(INTERFACE_STA);
+}
+
 static void easylink_monitor_thread( uint32_t arg )
 {
     OSStatus err = kNoErr;
@@ -281,8 +283,7 @@ restart:
         if ( err != kNoErr )
         {
             connect_fail_config = mico_system_delegate_config_result( source, MICO_FALSE );
-            if ( RESTART_EASYLINK == connect_fail_config )
-                 {
+            if ( RESTART_EASYLINK == connect_fail_config ) {
                 system_log("Re-start easylink combo mode");
                 micoWlanSuspend( );
                 goto restart;
@@ -296,6 +297,11 @@ restart:
         {
             mico_system_delegate_config_result( source, MICO_TRUE );
             mico_easylink_monitor_delegate_connect_success( source );
+
+            /* Start bonjour service for new device discovery */
+            err = easylink_bonjour_start( Station, easylink_id, context );
+            require_noerr( err, exit );
+            SetTimer( 60 * 1000, easylink_remove_bonjour_from_sta );
         }
     }
     else /* EasyLink failed */
@@ -352,7 +358,7 @@ OSStatus mico_easylink_monitor_with_easylink( mico_Context_t * const in_context,
 
     require_action( in_context, exit, err = kNotPreparedErr );
 
-    easylink_remove_bonjour( );
+    easylink_remove_bonjour( INTERFACE_STA );
 
     /* easylink thread existed? stop! */
     if ( easylink_monitor_thread_handler ) {

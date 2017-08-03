@@ -194,6 +194,11 @@ OSStatus mico_rtos_create_thread( mico_thread_t* thread, uint8_t priority, const
   */
 OSStatus mico_rtos_delete_thread( mico_thread_t* thread );
 
+/** @brief   Current thread is forced yield
+  * @return  None
+  */
+void mico_rtos_thread_yield(void);
+
 /** @brief   Creates a worker thread
  *
  * Creates a worker thread

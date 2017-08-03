@@ -1,0 +1,45 @@
+menu "MDNS"
+
+config MDNS_MAX_SERVICE_ANNOUNCE
+       int  "Maximum number of mDNS service instances that can be announced"
+       default 3
+       help
+       This is the maximum number of mDNS service instances that the mDNS
+       responder can announce.
+config MDNS_QUERY
+       bool "mDNS Full-Fledged Query(monitoring) APIs"
+       def_bool n
+       help
+       This option enables the support for querying mDNS-SD
+       services. Enabling this option adds an overhead of about
+       16KB. This includes support for caching two mDNS-SD service
+       entries.
+config DNSSD_QUERY
+       bool "DNSSD Query(monitoring) APIs"
+       depends on MDNS_QUERY
+       def_bool n
+       help
+       This option enables the support to query for and monitor instances of a
+       service published by unicast DNS server.
+config MDNS_SERVICE_CACHE_SIZE
+       int  "Maximum number of service instances that can be monitored"
+       default 2
+       depends on MDNS_QUERY
+       help
+       This is the maximum number of service instances that the system can
+       monitor.
+config MDNS_MAX_SERVICE_MONITORS
+       int  "Maximum number of service types that can be monitored"
+       default 1
+       depends on MDNS_QUERY
+       help
+       This is the maximum number of service types that the system can monitor.
+config XMDNS
+       bool "Extended mDNS"
+       def_bool n
+       help
+       This option enables the support for extended mDNS. Note that enabling
+       ex-mDNS would render querier and responder unresponsive to ".local"
+       domain.
+
+endmenu

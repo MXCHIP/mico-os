@@ -21,6 +21,7 @@
 #include "common.h"
 #include "mico.h"
 
+
 typedef struct _Notify_list{
   void  *function;
   void  *arg;
@@ -45,6 +46,8 @@ typedef void (*mico_notify_SYS_WILL_POWER_OFF_function)           ( void * inCon
 typedef void (*mico_notify_WIFI_CONNECT_FAILED_function)          ( OSStatus err, void * inContext );
 typedef void (*mico_notify_WIFI_FATAL_ERROR_function)             ( void * inContext );
 typedef void (*mico_notify_STACK_OVERFLOW_ERROR_function)         ( char *taskname, void * const inContext );
+
+netif_status_t netif_status[INTERFACE_MAX] = {INTERFACE_STATUS_DOWN, INTERFACE_STATUS_DOWN, INTERFACE_STATUS_DOWN};
 
 /* User defined notifications */
 
@@ -76,6 +79,24 @@ void ApListAdvCallback(ScanResult_adv *pApAdvList)
 
 void WifiStatusHandler(WiFiEvent status)
 {
+    switch ( status )
+    {
+        case NOTIFY_STATION_UP:
+            netif_status[INTERFACE_STA] = INTERFACE_STATUS_UP;
+            break;
+        case NOTIFY_STATION_DOWN:
+            netif_status[INTERFACE_STA] = INTERFACE_STATUS_DOWN;
+            break;
+        case NOTIFY_AP_UP:
+            netif_status[INTERFACE_UAP] = INTERFACE_STATUS_UP;
+            break;
+        case NOTIFY_AP_DOWN:
+            netif_status[INTERFACE_UAP] = INTERFACE_STATUS_DOWN;
+            break;
+        default:
+            break;
+    }
+
   _Notify_list_t *temp =  Notify_list[mico_notify_WIFI_STATUS_CHANGED];
   if(temp == NULL)
     return;

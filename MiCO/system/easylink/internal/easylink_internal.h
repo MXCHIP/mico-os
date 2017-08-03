@@ -28,7 +28,7 @@ extern "C" {
 
 OSStatus easylink_bonjour_start( WiFi_Interface interface, uint32_t easyLink_id, system_context_t * const inContext );
 OSStatus easylink_bonjour_update( WiFi_Interface interface, uint32_t easyLink_id, system_context_t * const inContext );
-void easylink_remove_bonjour( void );
+void easylink_remove_bonjour( WiFi_Interface interface );
 
 
 OSStatus easylink_softap_start( system_context_t * const inContext );

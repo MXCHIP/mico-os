@@ -28,22 +28,24 @@ $(NAME)_SOURCES += easylink/system_easylink_delegate.c \
                    easylink/system_easylink_wac.c \
                    easylink/system_easylink.c \
                    easylink/system_easylink_usr.c \
-                   easylink/system_easylink_softap.c \
                    easylink/system_easylink_monitor.c \
-                   easylink/internal/easylink_bonjour.c
+                   easylink/internal/easylink_bonjour.c \
+                   easylink/system_easylink_softap.c
+                   
                    
 $(NAME)_INCLUDES += easylink/internal
 
 
-$(NAME)_SOURCES += mdns/mico_mdns.c \
-                   mdns/system_discovery.c
+$(NAME)_SOURCES += mdns/system_discovery.c
                                
 $(NAME)_SOURCES += tftp_ota/tftp_ota.c \
                    tftp_ota/tftpc.c
                    
 $(NAME)_LINK_FILES := mico_system_power_daemon.o
 
-$(NAME)_COMPONENTS := system/qc_test system/easylink/MFi_WAC
+$(NAME)_COMPONENTS := protocols/mdns \
+                      system/qc_test \
+                      system/easylink/MFi_WAC
 
 
 

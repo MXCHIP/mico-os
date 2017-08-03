@@ -276,6 +276,13 @@ typedef enum {
     TCP_KEEPCNT             = 0x0005,     /**< set pcb->keep_cnt - Use number of probes sent for get/setsockopt */
 } TCP_OPT_VAL;
 
+/* Flags we can use with send and recv. */
+#define MSG_PEEK       0x01    /* Peeks at an incoming message */
+#define MSG_WAITALL    0x02    /* Unimplemented: Requests that the function block until the full amount of data requested can be returned */
+#define MSG_OOB        0x04    /* Unimplemented: Requests out-of-band data. The significance and semantics of out-of-band data are protocol-specific */
+#define MSG_DONTWAIT   0x08    /* Nonblocking i/o for this operation only */
+#define MSG_MORE       0x10    /* Sender will send more */
+
 
 #if !defined(FIONREAD) || !defined(FIONBIO)
 #define IOCPARM_MASK    0x7fU           /* parameters must be < 128 bytes */

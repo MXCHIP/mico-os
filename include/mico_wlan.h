@@ -167,10 +167,31 @@ extern "C" {
  */ 
 typedef enum { 
   Soft_AP,  /**< Act as an access point, and other station can connect, 4 stations Max*/
-  Station   /**< Act as a station which can connect to an access point*/
+  Station,   /**< Act as a station which can connect to an access point*/
+  INTERFACE_UAP = Soft_AP,
+  INTERFACE_STA = Station,
+  INTERFACE_ETH,
+  INTERFACE_MAX,
+  INTERFACE_NONE = 0xFF,
 } wlanInterfaceTypedef; 
 
 typedef uint8_t wlan_if_t;
+typedef uint8_t netif_t;
+
+/**
+ *  @brief  network interface status.
+ */
+enum {
+  INTERFACE_STATUS_UP,
+  INTERFACE_STATUS_DOWN,
+};
+
+typedef uint8_t wlan_if_status_t;
+typedef uint8_t netif_status_t;
+
+#define IS_INTERFACE_UP(netif)   ((netif_status[netif] == INTERFACE_STATUS_UP)? 1:0)
+#define IS_INTERFACE_DOWN(netif)   ((netif_status[netif] == INTERFACE_STATUS_DOWN)? 1:0)
+
 
 /** 
  *  @brief  Wi-Fi security type enumeration definition.
@@ -357,6 +378,8 @@ typedef struct _wifi_mgmt_frame_tx
 } wifi_mgmt_frame_tx;
 #pragma pack()
 
+extern netif_status_t netif_status[INTERFACE_MAX];
+
 /** @defgroup MICO_WLAN_GROUP_1 MiCO Basic Wlan Functions
   * @brief Provide Basic APIs for MiCO wlan functions
   * @{
@@ -414,7 +437,7 @@ OSStatus micoWlanStartAdv(network_InitTypeDef_adv_st* inNetworkInitParaAdv);
  *  @return   kNoErr        : on success.
  *  @return   kGeneralErr   : if an error occurred
  */
-OSStatus micoWlanGetIPStatus(IPStatusTypedef *outNetpara, WiFi_Interface inInterface);
+OSStatus micoWlanGetIPStatus(IPStatusTypedef *outNetpara, netif_t netif);
 
 /** @brief  Read current IPv6 status on a network interface.
  *
@@ -426,7 +449,7 @@ OSStatus micoWlanGetIPStatus(IPStatusTypedef *outNetpara, WiFi_Interface inInter
  *  @return   kNoErr        : on success.
  *  @return   kGeneralErr   : if an error occurred
  */
-OSStatus micoWlanGetIP6Status(ipv6_addr_t ipv6_addr[], uint8_t ipv6_addr_num, WiFi_Interface inInterface);
+OSStatus micoWlanGetIP6Status(ipv6_addr_t ipv6_addr[], uint8_t ipv6_addr_num, netif_t netif);
 
 /** @brief  Read current wireless link status on station interface.
  * 

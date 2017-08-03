@@ -47,8 +47,9 @@
 #endif
 
 #endif
-#include <wmtypes.h>
 #include <stdio.h>
+#include "mico.h"
+#include "mdns_opt.h"
 #ifdef CONFIG_IPV6
 #include <lwip/ip6_addr.h>
 #endif /* CONFIG_IPV6 */
@@ -121,7 +122,7 @@ void mdns_thread_yield(void *t);
  * The mdns daemon will write log messages depending on its build-time
  * log-level.  See mdns.h for details.
  */
-#define mdns_log(...) wmlog("mdns", __VA_ARGS__);
+//#define mdns_log(...) wmlog("mdns", __VA_ARGS__);
 
 /*
  * mdns_time_ms: get current time in milliseconds
@@ -200,13 +201,17 @@ int mdns6_socket_mcast(ip6_addr_t mdns_ipv6_addr, uint16_t port);
  * desired, the MSG_DONTWAIT flag will be passed.  This may be sufficient to
  * ensure non-blocking behavior.
  */
-int mdns_socket_loopback(uint16_t port, int listen);
+//int mdns_socket_loopback(uint16_t port, int listen);
+int mdns_socket_loopback(uint8_t id, mico_queue_t **queue);
 
 /* mdns_socket_close: close a socket
  *
  * s: non-negative control socket returned from either mdns_socket_mcast or
  * mdns_socket_loopback.
  */
-int mdns_socket_close(int s);
+int mdns_socket_close(int *s);
+
+int mico_mdns_start(const char *domain, char *hostname);
+int mico_mdns_stop(void);
 
 #endif /* __MDNS_PORT_H__ */

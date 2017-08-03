@@ -42,9 +42,9 @@ extern "C"
 #define NORETURN         __attribute__((noreturn))
 #endif
 
-#ifndef ALIGNED
-#define ALIGNED(size)    __attribute__((aligned(size)))
-#endif
+//#ifndef ALIGNED
+//#define ALIGNED(size)    __attribute__((aligned(size)))
+//#endif
 
 #ifndef SECTION
 #define SECTION(name)    __attribute__((section(name)))
@@ -57,6 +57,63 @@ extern "C"
 #ifndef ALWAYS_INLINE
 #define ALWAYS_INLINE    __attribute__((always_inline))
 #endif
+
+#ifndef MICO_PACKED
+#define MICO_PACKED(struct) struct __attribute__((packed))
+#endif
+
+#ifndef MICO_ALIGN
+#define MICO_ALIGN(size) __attribute__((aligned(size)))
+#endif
+
+#ifndef MICO_UNUSED
+#define MICO_UNUSED      __attribute__((__unused__))
+#endif
+
+#ifndef MICO_WEAK
+#define MICO_WEAK        __attribute__((weak))
+#endif
+
+#ifndef MICO_FORCEINLINE
+#define MICO_FORCEINLINE static inline __attribute__((always_inline))
+#endif
+
+#ifndef MICO_NORETURN
+#define MICO_NORETURN   __attribute__((noreturn))
+#endif
+
+#ifndef MICO_UNREACHABLE
+#define MICO_UNREACHABLE __builtin_unreachable()
+#endif
+
+#ifndef MICO_CALLER_ADDR
+#define MICO_CALLER_ADDR() __builtin_extract_return_addr(__builtin_return_address(0))
+#endif
+
+#ifndef MICO_DEPRECATED
+#define MICO_DEPRECATED(M) __attribute__((deprecated(M)))
+#endif
+
+#define MICO_DEPRECATED_SINCE(D, M) MICO_DEPRECATED(M " [since " D "]")
+
+#ifndef MICO_SECTION
+#define MICO_SECTION(name) __attribute__ ((section (name)))
+#endif
+
+
+// Backwards compatibility
+#ifndef WEAK
+#define WEAK MICO_WEAK
+#endif
+
+#ifndef PACKED
+#define PACKED MICO_PACKED()
+#endif
+
+#ifndef EXTERN
+#define EXTERN extern
+#endif
+
 
 /******************************************************
  *                    Constants

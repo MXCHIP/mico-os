@@ -52,7 +52,7 @@ static void easylink_wifi_status_cb( WiFiEvent event, system_context_t * const i
             break;
         case NOTIFY_AP_DOWN:
             /* Remove bonjour service under soft ap interface */
-            mdns_suspend_record( "_easylink_config._tcp.local.", Soft_AP, true );
+            easylink_remove_bonjour( INTERFACE_UAP );
             break;
         default:
             break;
@@ -135,6 +135,11 @@ exit:
     return err;
 }
 
+static void easylink_remove_bonjour_from_uap(void)
+{
+    easylink_remove_bonjour(INTERFACE_UAP);
+}
+
 void easylink_softap_thread( uint32_t inContext )
 {
     system_log_trace();
@@ -213,7 +218,7 @@ restart:
         /* Start bonjour service for new device discovery */
         err = easylink_bonjour_start( Station, easylinkIndentifier, context );
         require_noerr( err, exit );
-        SetTimer( 60 * 1000, easylink_remove_bonjour );
+        SetTimer( 60 * 1000, easylink_remove_bonjour_from_uap );
 
         goto exit;
     }
@@ -261,7 +266,7 @@ OSStatus mico_easylink_softap( mico_Context_t * const in_context, mico_bool_t en
 
     require_action( in_context, exit, err = kNotPreparedErr );
 
-    easylink_remove_bonjour( );
+    easylink_remove_bonjour( INTERFACE_UAP );
 
     /* easylink soft thread existed? stop! */
     if ( easylink_softap_thread_handler ) {

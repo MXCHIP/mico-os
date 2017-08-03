@@ -188,8 +188,7 @@
 #define MDNS_H
 
 #include <mdns_port.h>
-#include <wmerrno.h>
-#include <wm_net.h>
+#include "mico.h"
 /* mdns control socket ports
  *
  * mdns uses two control sockets to communicate between the mdns threads and
@@ -197,13 +196,13 @@
  * interface.  Developers who wish to specify certain ports for this control
  * socket can do so by changing MDNS_CTRL_RESPONDER and MDNS_CTRL_QUERIER.
  */
-#ifndef MDNS_CTRL_RESPONDER
-#define MDNS_CTRL_RESPONDER 12345
-#endif
+//#ifndef MDNS_CTRL_RESPONDER
+#define MDNS_CTRL_RESPONDER 0
+//#endif
 
-#ifndef MDNS_CTRL_QUERIER
+//#ifndef MDNS_CTRL_QUERIER
 #define MDNS_CTRL_QUERIER  (MDNS_CTRL_RESPONDER + 1)
-#endif
+//#endif
 
 /** Maximum length of labels
  *
@@ -225,6 +224,13 @@
  * These key/value pairs must not exceed this length.
  */
 #define MDNS_MAX_KEYVAL_LEN	255	/* defined by the standard : 255*/
+
+/** mDNS Interface State
+ */
+enum iface_mc_group_state {
+    JOIN = 0,
+    LEAVE,
+};
 
 /** mDNS Interface State
  * mDNS interface state can be changed by using mdns_iface_state_change()
@@ -253,39 +259,25 @@ enum iface_state {
 };
 
 /** MDNS Error Codes */
-enum wm_mdns_errno {
-	WM_E_MDNS_ERRNO_START = MOD_ERROR_START(MOD_MDNS),
-	/** invalid argument*/
-	WM_E_MDNS_INVAL,
-	/** bad service descriptor*/
-	WM_E_MDNS_BADSRC,
-	/** not enough room for everything*/
-	WM_E_MDNS_TOOBIG,
-	/** unimplemented feature*/
-	WM_E_MDNS_NOIMPL,
-	/** insufficient memory*/
-	WM_E_MDNS_NOMEM,
-	/** requested resource is in use*/
-	WM_E_MDNS_INUSE,
-	/** requested resource is in use*/
-	WM_E_MDNS_NORESP,
-	/** failed to create socket for mdns*/
-	WM_E_MDNS_FSOC,
-	/** failed to reuse multicast socket*/
-	WM_E_MDNS_FREUSE,
-	/** failed to bind mdns socket to device*/
-	WM_E_MDNS_FBINDTODEVICE,
-	/** failed to bind mdns socket*/
-	WM_E_MDNS_FBIND,
-	/** failed to join multicast socket*/
-	WM_E_MDNS_FMCAST_JOIN,
-	/** failed to set multicast socket*/
-	WM_E_MDNS_FMCAST_SET,
-	/** failed to create query socket*/
-	WM_E_MDNS_FQUERY_SOC,
-	/** failed to create mdns thread*/
-	WM_E_MDNS_FQUERY_THREAD,
-};
+#define ERR_MDNS_BASE              -36650   /** Starting error code for all mdns errors. */
+#define	ERR_MDNS_INVAL             -36651   /** invalid argument */
+#define ERR_MDNS_BADSRC            -36652   /** bad service descriptor */
+#define ERR_MDNS_TOOBIG            -36653  /** not enough room for everything */
+#define ERR_MDNS_NOIMPL            -36654  /** unimplemented feature */
+#define ERR_MDNS_NOMEM             -36655  /** insufficient memory */
+#define ERR_MDNS_INUSE             -36656  /** requested resource is in use */
+#define ERR_MDNS_NORESP            -36657  /** requested resource is in use */
+#define ERR_MDNS_FSOC              -36658  /** failed to create socket for mdns */
+#define ERR_MDNS_FREUSE            -36659  /** failed to reuse multicast socket */
+#define ERR_MDNS_FBINDTODEVICE     -36660  /** failed to bind mdns socket to device */
+#define ERR_MDNS_FBIND             -36661  /** failed to bind mdns socket */
+#define ERR_MDNS_FMCAST_JOIN       -36662  /** failed to join multicast socket */
+#define ERR_MDNS_FMCAST_SET        -36663  /** failed to set multicast socket */
+#define ERR_MDNS_FQUERY_SOC        -36664  /** failed to create query socket */
+#define ERR_MDNS_FQUERY_THREAD     -36665  /** failed to create mdns thread */
+#define ERR_MDNS_END               -36670  /** Last generic error code (inclusive) */
+
+
 /** service descriptor
  *
  * Central to mdns is the notion of a service.  Hosts advertise service types
@@ -592,7 +584,7 @@ typedef int (* mdns_query_cb)(void *data, const struct mdns_service *s,
  * Note: multiple calls to mdns_query_service_start are allowed.  This enables
  * the caller to query for more than just one service type.
  */
-int mdns_query_monitor(char *fqst, mdns_query_cb cb, void *data, void *iface);
+int mdns_query_monitor(char *fqst, mdns_query_cb cb, void *data, netif_t iface);
 
 /** mdns_query_unmonitor
  *
@@ -658,7 +650,7 @@ void mdns_query_unmonitor(char *fqst);
  * \return -WM_E_MDNS_FBIND: failed to bind control socket
  *
  */
-int mdns_announce_service(struct mdns_service *service, void *iface);
+int mdns_announce_service(struct mdns_service *service, netif_t iface);
 
 /** mdns_deannounce_service
  *
@@ -690,7 +682,7 @@ int mdns_announce_service(struct mdns_service *service, void *iface);
  * \return -WM_E_MDNS_FBIND: failed to bind control socket
  *
  */
-int mdns_deannounce_service(struct mdns_service *service, void *iface);
+int mdns_deannounce_service(struct mdns_service *service, netif_t iface);
 
 /* mdns_announce_service_arr
  *
@@ -734,7 +726,7 @@ int mdns_deannounce_service(struct mdns_service *service, void *iface);
  * \ref MAX_MDNS_LST
  *
  */
-int mdns_announce_service_arr(struct mdns_service *services[], void *iface);
+int mdns_announce_service_arr(struct mdns_service *services[], netif_t iface);
 
 /* mdns_deannounce_service_arr
  *
@@ -763,7 +755,7 @@ int mdns_announce_service_arr(struct mdns_service *services[], void *iface);
  * \return -WM_E_MDNS_FBIND: failed to bind control socket
  *
  */
-int mdns_deannounce_service_arr(struct mdns_service *services[], void *iface);
+int mdns_deannounce_service_arr(struct mdns_service *services[], netif_t iface);
 
 /* mdns_deannounce_service_all
  *
@@ -778,7 +770,7 @@ int mdns_deannounce_service_arr(struct mdns_service *services[], void *iface);
  * de-announced. Interface handle can be obtained from net_get_sta_handle or
  * net_get_uap_handle function calls.
  */
-int mdns_deannounce_service_all(void *iface);
+int mdns_deannounce_service_all(netif_t iface);
 
 /** mdns_iface_state_change
  *
@@ -822,7 +814,9 @@ int mdns_deannounce_service_all(void *iface);
  * \return -WM_E_MDNS_FBIND: failed to bind control socket
  *
  */
-int mdns_iface_state_change(void  *iface, enum iface_state state);
+int mdns_iface_state_change(netif_t iface, enum iface_state state);
+
+int mdns_iface_group_state_change(netif_t iface, enum iface_mc_group_state state);
 
 void mdns_set_hostname(char *hostname);
 int mdns_stat();
@@ -894,7 +888,7 @@ void txt_to_c_ncpy_tests(void);
  * to save the footprint DNS and mDNS queriers are merged together.
  */
 int dnssd_query_monitor(char *fqst, mdns_query_cb cb,
-			struct in_addr dns_addr, void *data, void *iface);
+			struct in_addr dns_addr, void *data, net_if_t iface);
 
 /** dnssd_query_unmonitor
  *

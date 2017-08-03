@@ -36,6 +36,11 @@
 #undef inet_ntoa
 #endif
 
+struct in_addr in_addr_any = {INADDR_ANY};
+#if MICO_CONFIG_IPV6
+struct in6_addr in6_addr_any = IN6ADDR_ANY_INIT;
+#endif
+
 /******************************************************
  *                    Constants
  ******************************************************/
@@ -242,9 +247,6 @@ int getsockname (int s, struct sockaddr *name, socklen_t *namelen)
 {
 	return lwip_getsockname (s, name, namelen);
 }
-
-
-
 
 uint32_t inet_addr (const char *name)
 {

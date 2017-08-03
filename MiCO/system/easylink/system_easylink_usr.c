@@ -106,7 +106,7 @@ OSStatus mico_easylink_usr( mico_Context_t * const in_context, mico_bool_t enabl
 
     require_action( in_context, exit, err = kNotPreparedErr );
 
-    easylink_remove_bonjour( );
+    easylink_remove_bonjour( INTERFACE_STA );
 
     /* easylink thread existed? stop! */
     if ( easylink_usr_thread_handler ) {

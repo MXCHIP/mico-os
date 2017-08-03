@@ -133,6 +133,7 @@ typedef uint64_t  mico_utc_time_ms_t; /**< UTC Time in milliseconds   */
 typedef int         OSStatus;
 
 #define kNoErr                      0       //! No error occurred.
+#define MICO_SUCCESS                0       //! No error occurred.
 #define kGeneralErr                -1       //! General error.
 #define kInProgressErr              1       //! Operation in progress.
 

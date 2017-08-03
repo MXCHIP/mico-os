@@ -60,6 +60,11 @@
                                       mico_rtos_lock_mutex( &stdio_tx_mutex );\
                                       printf("[%ld][%s: %s:%4d] " M "\r\n", mico_rtos_get_time(), N, SHORT_FILE, __LINE__, ##__VA_ARGS__);\
                                       mico_rtos_unlock_mutex( &stdio_tx_mutex );}while(0==1)
+
+    #define custom_print(M, ...) do {if (mico_debug_enabled==0)break;\
+                                  mico_rtos_lock_mutex( &stdio_tx_mutex );\
+                                  printf( M, ##__VA_ARGS__);\
+                                  mico_rtos_unlock_mutex( &stdio_tx_mutex );}while(0==1)
                     
     #ifndef MICO_ASSERT_INFO_DISABLE
         #define debug_print_assert(A,B,C,D,E,F) do {if (mico_debug_enabled==0)break;\
@@ -80,6 +85,7 @@
     #endif // TRACE  
 #else // NO_MICO_RTOS  
     #define custom_log(N, M, ...) do {printf("[%s: %s:%4d] " M "\r\n",  N, SHORT_FILE, __LINE__, ##__VA_ARGS__);}while(0==1)
+    #define custom_print(M, ...) do {printf( M, ##__VA_ARGS__);}while(0==1)
 
 
     #ifndef MICO_ASSERT_INFO_DISABLE                                       
@@ -96,7 +102,7 @@
 #endif                                         
 #else
     #define custom_log(N, M, ...)
-
+    #define custom_print(M, ...)
     #define custom_log_trace(N)
 
     #define debug_print_assert(A,B,C,D,E,F)                                           
@@ -104,7 +110,7 @@
 #else // DEBUG = 0
     // IF !DEBUG, make the logs NO-OP
     #define custom_log(N, M, ...)
-
+    #define custom_print(M, ...)
     #define custom_log_trace(N)
 
     #define debug_print_assert(A,B,C,D,E,F)
@@ -135,6 +141,13 @@
                                         ((D) & MICO_DEBUG_TYPES_ON) && \
                                         ((int16_t)((D) & MICO_DEBUG_MASK_LEVEL) >= MICO_DEBUG_MIN_LEVEL)) { \
                                         custom_log(T, M, ##__VA_ARGS__); \
+                                   } \
+                               } while(0)
+#define MICO_PRINT(D, M, ...) do { \
+                                   if ( ((D) & MICO_DEBUG_ON) && \
+                                        ((D) & MICO_DEBUG_TYPES_ON) && \
+                                        ((int16_t)((D) & MICO_DEBUG_MASK_LEVEL) >= MICO_DEBUG_MIN_LEVEL)) { \
+                                        custom_print(M, ##__VA_ARGS__); \
                                    } \
                                } while(0)
 #define MICO_LOG_TRACE(T) custom_log_trace(T)

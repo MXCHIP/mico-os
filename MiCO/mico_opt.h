@@ -64,10 +64,6 @@ extern "C" {
 #define MICO_DEBUG_TYPES_ON               MICO_DEBUG_ON
 #endif
 
-#if !defined MICO_MDNS_DEBUG
-#define MICO_MDNS_DEBUG                   MICO_DEBUG_OFF
-#endif
-
 
 /* For legacy definition */
 #ifndef MICO_WLAN_CONFIG_MODE

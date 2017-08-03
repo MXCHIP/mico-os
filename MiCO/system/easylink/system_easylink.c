@@ -59,9 +59,6 @@ static void easylink_wifi_status_cb( WiFiEvent event, system_context_t * const i
     switch ( event )
     {
         case NOTIFY_STATION_UP:
-            /* Connected to AP, means that the wlan configuration is right, update configuration in flash and update
-             bongjour txt record with new "easylinkIndentifier" */
-            easylink_bonjour_update( Station, easylinkIndentifier, inContext );
             inContext->flashContentInRam.micoSystemConfig.configured = allConfigured;
             mico_system_context_update( &inContext->flashContentInRam ); //Update Flash content
             mico_rtos_set_semaphore( &easylink_connect_sem ); //Notify Easylink thread
@@ -177,6 +174,11 @@ static void easylink_extra_data_cb( int datalen, char* data, system_context_t * 
     return;
 }
 
+static void easylink_remove_bonjour_from_sta(void)
+{
+    easylink_remove_bonjour(INTERFACE_STA);
+}
+
 static void easylink_thread( uint32_t arg )
 {
     OSStatus err = kNoErr;
@@ -236,7 +238,7 @@ restart:
         /* Start bonjour service for new device discovery */
         err = easylink_bonjour_start( Station, easylinkIndentifier, context );
         require_noerr( err, exit );
-        SetTimer( 60 * 1000, easylink_remove_bonjour );
+        SetTimer( 60 * 1000, easylink_remove_bonjour_from_sta );
 
         goto exit;
     }
@@ -276,7 +278,7 @@ OSStatus mico_easylink( mico_Context_t * const in_context, mico_bool_t enable )
 
     require_action( in_context, exit, err = kNotPreparedErr );
 
-    easylink_remove_bonjour( );
+    easylink_remove_bonjour( INTERFACE_STA );
 
     /* easylink thread existed? stop! */
     if ( easylink_thread_handler ) {
