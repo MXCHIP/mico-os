@@ -74,21 +74,19 @@ extern WEAK void PlatformEasyLinkButtonLongPressedCallback(void);
 
 const platform_gpio_t platform_gpio_pins[] =
 {
-    [MICO_GPIO_1] = 30,
-    [MICO_GPIO_2] = 29,
-    [MICO_GPIO_3] = 17,
-    [MICO_GPIO_4] = 16,
-    [MICO_GPIO_5] = 14,
-    [MICO_GPIO_6] = 15,
-    [MICO_GPIO_7] = 0,
-    [MICO_GPIO_8] = 1,
-    [MICO_GPIO_11] = 20,
-    [MICO_GPIO_12] = 4,
-    [MICO_GPIO_17] = 23,
-    [MICO_GPIO_18] = 22,
-    [MICO_GPIO_19] = 11,
-    [MICO_GPIO_20] = 10,
-    [MICO_GPIO_21] = 21,
+    [MICO_GPIO_4] =   4,
+    [MICO_GPIO_5] =  22,
+    [MICO_GPIO_6] =  23,
+    [MICO_GPIO_7] =  20,
+    [MICO_GPIO_8] =  21,
+    [MICO_GPIO_9] =   0,
+    [MICO_GPIO_10] =  1,
+    [MICO_GPIO_12] = 15,
+    [MICO_GPIO_13] = 17,
+    [MICO_GPIO_14] = 16,
+    [MICO_GPIO_15] = 14,
+    [MICO_GPIO_20] = 30,
+    [MICO_GPIO_23] = 29,
 };
 
 const platform_pwm_t platform_pwm_peripherals[] = {};
@@ -97,13 +95,8 @@ const platform_i2c_t platform_i2c_peripherals[] =
 {
     [MICO_I2C_1] =
     {
-        .pin_scl = &platform_gpio_pins[MICO_GPIO_7],
-        .pin_sda = &platform_gpio_pins[MICO_GPIO_8],
-    },
-    [MICO_I2C_2] =
-    {
-        .pin_scl = &platform_gpio_pins[MICO_GPIO_11],
-        .pin_sda = &platform_gpio_pins[MICO_GPIO_21],
+        .pin_scl = &platform_gpio_pins[MICO_GPIO_NONE],
+        .pin_sda = &platform_gpio_pins[MICO_GPIO_NONE],
     },
 };
 platform_i2c_driver_t platform_i2c_drivers[MICO_I2C_MAX];

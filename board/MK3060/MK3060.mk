@@ -44,6 +44,7 @@ GLOBAL_INCLUDES  := .
 
 # Components
 $(NAME)_COMPONENTS += drivers/spi_flash
+$(NAME)_COMPONENTS += drivers/MiCOKit_EXT
 
 # Source files
 $(NAME)_SOURCES := platform.c
