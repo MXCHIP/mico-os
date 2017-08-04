@@ -266,7 +266,8 @@ mico_api_t *moc_adapter(new_mico_api_t *new_mico_api)
   mico_api.pwm_apis = _kernel_api.pwm_apis;
   mico_api.wdg_apis = _kernel_api.wdg_apis;
   mico_api.adc_apis = _kernel_api.adc_apis;
-  
+  mico_api.gtimer_apis = _kernel_api.gtimer_apis;
+
   return &mico_api;
 }
 
