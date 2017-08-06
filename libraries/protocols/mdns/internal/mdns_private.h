@@ -233,9 +233,7 @@ void debug_print_name(struct mdns_message *m, uint8_t *name);
 #define LOG(...) do {} while (0)
 #endif
 
-#if MICO_CONFIG_IPV6
-#define CONFIG_IPV6
-#endif
+
 
 /* helpers for accessing elements.  value arguments are in host byte order */
 #define get_uint16_t(p) ((*(uint8_t *)(p) << 8) | *((uint8_t *)(p) + 1))
@@ -353,12 +351,7 @@ int query_halt(void);
  * mDNS multicast address, otherwise unicast reply would be sent on to_addr.
  */
 int mdns_join_multicast_group(netif_t iface);
-int mdns_send_msg(struct mdns_message *m, int sock, int sock6,
-		unsigned short port, netif_t out_interface, in_addr_t to_addr);
-#ifdef CONFIG_IPV6
-int mdns6_send_msg(struct mdns_message *m, int sock, unsigned short port,
-		void *out_interface);
-#endif	/*	CONFIG_IPV6	*/
+int mdns_send_msg(struct mdns_message *m, int sock, unsigned short port, netif_t out_interface, in_addr_t to_addr);
 int mdns_send_ctrl_msg(int msg, uint16_t port);
 int mdns_send_ctrl_iface_msg(int msg[], uint16_t port, int size);
 int mdns_add_srv_ptr_txt(struct mdns_message *m, struct mdns_service *s,

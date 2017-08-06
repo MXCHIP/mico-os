@@ -10,8 +10,6 @@
 #include "mdns_private.h"
 
 
-mdns_responder_stats mr_stats;
-
 /* parse a resource record from the current pointer and put it in the resource
  * structure r.  Return 0 for success, -1 for failure.
  */
@@ -122,6 +120,7 @@ int mdns_parse_message(struct mdns_message *m, int mlen)
 	m->num_questions = ntohs(m->header->qdcount);
 	m->num_answers = ntohs(m->header->ancount);
 	m->num_authorities = ntohs(m->header->nscount);
+	m->num_additionals = ntohs(m->header->arcount);
 	m->header->flags.num = ntohs(m->header->flags.num);
 
 	if (m->header->flags.fields.opcode != DNS_OPCODE_QUERY) {
@@ -192,8 +191,19 @@ int mdns_parse_message(struct mdns_message *m, int mlen)
 		}
 	}
 
-	if (ntohs(m->header->arcount) != 0)
-		LOG("Warning: Ignroing additional RRs\r\n");
+	/* Put additional records to normal records array */
+    if (m->num_additionals > (MDNS_MAX_ANSWERS - m->num_answers)) {
+        LOG("Warning: Only parsing first %d num_additional answers of %d\r\n",
+            MDNS_MAX_ANSWERS - m->num_answers, m->num_additionals);
+        m->num_additionals = MDNS_MAX_ANSWERS - m->num_answers;
+    }
+    for (i = m->num_answers; i < (m->num_additionals + m->num_answers); i++) {
+        len = parse_resource(m, &m->answers[i]);
+        if (len == -1) {
+            DBG("Failed to parse answer %d\r\n", i);
+            return -1;
+        }
+    }
 
 	return 0;
 }
@@ -508,94 +518,7 @@ int mdns_set_txt_rec(struct mdns_service *s, char *keyvals, char separator)
 		return ERR_MDNS_INVAL;
 }
 
-int mdns_send_msg(struct mdns_message *m, int sock, int sock6,
-		unsigned short port, netif_t out_interface, in_addr_t to_addr)
-{
-	struct sockaddr_in to;
-#ifdef CONFIG_IPV6
-	struct sockaddr_in6 to6;
-#endif
-	int size, len;
-	uint32_t ip;
-	IPStatusTypedef interface_ip_status;
 
-	if( sock == -1 ) return 0;
-#ifdef CONFIG_IPV6
-	if( sock6 == -1 ) return 0;
-#endif
-
-	/* get message length */
-	size = (unsigned int)m->cur - (unsigned int)m->header;
-
-	to.sin_family = AF_INET;
-	to.sin_port = port;
-	if (!to_addr)
-#ifdef CONFIG_XMDNS
-		to.sin_addr.s_addr = inet_addr("239.255.255.251");
-#else
-		to.sin_addr.s_addr = inet_addr("224.0.0.251");
-#endif
-	else
-		to.sin_addr.s_addr = to_addr;
-
-#ifdef CONFIG_IPV6
-	to6.sin6_family = AF_INET6;
-	to6.sin6_port = port;
-#ifdef CONFIG_XMDNS
-	ip6addr_aton("FF05::FB", (ip6_addr_t *)&to6.sin6_addr.s6_addr);
-#else
-	ip6addr_aton("FF02::FB", (ip6_addr_t *)&to6.sin6_addr.s6_addr);
-#endif
-#endif
-
-
-	micoWlanGetIPStatus(&interface_ip_status, out_interface);
-    ip = inet_addr(interface_ip_status.ip);
-	//net_get_if_ip_addr(&ip, out_interface);
-
-	/* If IP address is not set, then either interface is not up
-	 * or interface didn't got the IP from DHCP. In both case Packet
-	 * shouldn't be transmitted
-	*/
-	if (!ip) {
-		LOG("Interface is not up\n\r");
-		return kGeneralErr;
-	}
-
-	if (setsockopt(sock, IPPROTO_IP, IP_MULTICAST_IF,
-		       (char *)&ip, sizeof(ip)) == -1) {
-		mdns_socket_close(&sock);
-		return kGeneralErr;
-	}
-
-	len = sendto(sock, (char *)m->header, size, 0, (struct sockaddr *)&to,
-		     sizeof(struct sockaddr_in));
-
-	if (len < size) {
-		mr_stats.tx_ipv4_err++;
-		LOG("error: failed to send IPv4 message\r\n");
-		return kGeneralErr;
-	}
-	mr_stats.total_tx++;
-	DBG("sent %u-byte message\r\n", size);
-
-#ifdef CONFIG_IPV6
-	if (sock6 != -1 && out_interface == net_get_sta_handle()) {
-		len = sendto(sock6, (char *)m->header, size, 0,
-				(struct sockaddr *)&to6,
-				sizeof(struct sockaddr_in6));
-
-		if (len < size) {
-			mr_stats.tx_ipv6_err++;
-			LOG("error: failed to send IPv6 message\r\n");
-			return 0;
-		}
-
-		DBG("sent %u-byte message\r\n", size);
-	}
-#endif
-	return MICO_SUCCESS;
-}
 #ifdef CONFIG_DNSSD_QUERY
 int dns_send_msg(struct mdns_message *m, int sock, unsigned short port,
 		 void *out_interface, struct in_addr out_addr)

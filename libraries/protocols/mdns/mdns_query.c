@@ -8,9 +8,6 @@
 #include <mdns_port.h>
 
 #include "mico.h"
-#ifdef CONFIG_IPV6
-#include <lwip/mld6.h>
-#endif	/*	CONFIG_IPV6	*/
 
 #include "mdns_opt.h"
 #include "mdns_private.h"
@@ -44,14 +41,8 @@
 static void *query_thread;
 static int ctrl_sock;
 static int query_enabled;
-static int mc_sock;
-#ifdef CONFIG_IPV6
-static int mc6_sock;
-#else /* !CONFIG_IPV6 */
-/* This will make sure that if CONFIG_IPV6 is not enabled,
- * mdns_send_msg won't send IPv6 packets. */
-static int mc6_sock = -1;
-#endif /* CONFIG_IPV6 */
+static int mc_sock = -1;
+
 #ifdef CONFIG_DNSSD_QUERY
 static int uc_sock;
 #endif
@@ -434,8 +425,8 @@ static void reset_service_instance(struct service_instance *sinst)
 	 * current message, we'll update it.  Otherwise, we'll be all set up for
 	 * an immediate refresh attempt.
 	 */
-	sinst->srv_ttl0 = 1000;
-	sinst->srv_ttl = 1000;
+	sinst->srv_ttl0 = 10000;
+	sinst->srv_ttl = 10000;
 	sinst->next_refresh = 0;
 	sinst->ttl_percent = 20;
 }
@@ -919,7 +910,7 @@ static void get_rev_ipv6(void *src, void *dst)
  */
 static void set_ip(struct arec *arec, struct mdns_resource *a)
 {
-	uint32_t ipaddr = get_uint32_t(a->rdata);
+	uint32_t ipaddr = *(uint32_t *)(a->rdata);
 	struct service_instance *sinst, *sinst_tmp;
 
 	if (arec->ipaddr == ipaddr)
@@ -1370,7 +1361,7 @@ static int update_service_cache(struct mdns_message *m, uint32_t elapsed)
 				    (m->data, a->name, NULL,
 				     sinst->arec->fqdn) != 0 || a->ttl == 0)
 					continue;
-				sinst->service.ipaddr = get_uint32_t(a->rdata);
+				sinst->service.ipaddr = *(uint32_t *)(a->rdata);
 				break;
 			}
 		}
@@ -1650,7 +1641,7 @@ extern bool dns_socket_used;
 static void do_querier(void)
 {
 	int max_sock;
-	struct sockaddr_in from;
+	struct sockaddr_storage from;
 	int active_fds;
 	fd_set fds;
 	int ret = 0, i, in_sock = -1;
@@ -1676,12 +1667,7 @@ static void do_querier(void)
 #endif
 
 		FD_SET(mc_sock, &fds);
-#ifdef CONFIG_IPV6
-		FD_SET(mc6_sock, &fds);
-		max_sock = ctrl_sock > mc6_sock ? ctrl_sock : mc6_sock;
-#else
 		max_sock = ctrl_sock > mc_sock ? ctrl_sock : mc_sock;
-#endif /* CONFIG_IPV6 */
 
 #ifdef CONFIG_DNSSD_QUERY
 		if (dns_socket_used)
@@ -1740,14 +1726,13 @@ static void do_querier(void)
 			if (ret == -1)
 				//LOG("error: failed to send control status: %d\r\n", net_get_sock_error(ctrl_sock));
 			    LOG("error: failed to send control status\r\n");
+#else
+			UNUSED_VARIABLE(status);
 #endif
 		}
 
 
 		if (FD_ISSET(mc_sock, &fds)
-#ifdef CONFIG_IPV6
-	 || (FD_ISSET(mc6_sock, &fds))
-#endif
 #ifdef CONFIG_DNSSD_QUERY
 		/*
 		 * We don't add uc_sock if we are not monitoring dnssd service.
@@ -1758,15 +1743,10 @@ static void do_querier(void)
 #endif
 		) {
 			DBG("querier got message\r\n");
-			in_size = sizeof(struct sockaddr_in);
+			in_size = sizeof(struct sockaddr_storage);
 			if (FD_ISSET(mc_sock, &fds)) {
 				in_sock = mc_sock;
 			}
-#ifdef CONFIG_IPV6
-			else if (FD_ISSET(mc6_sock, &fds)) {
-				in_sock = mc6_sock;
-			}
-#endif
 #ifdef CONFIG_DNSSD_QUERY
 			else if (dns_socket_used &&
 				   FD_ISSET(uc_sock, &fds)) {
@@ -1799,9 +1779,8 @@ static void do_querier(void)
 			for (i = 0; i < MDNS_MAX_SERVICE_CONFIG; i++)
 				if (config_g[i].iface_idx != INTERFACE_NONE) {
 					DBG("Sending on multicast port\n\r");
-					mdns_send_msg(&tx_msg, mc_sock,
-						      mc6_sock, htons(5353),
-					      config_g[i].iface_idx, 0);
+					mdns_send_msg(&tx_msg, mc_sock, htons(5353),
+					              config_g[i].iface_idx, 0);
 				}
 		}
 #ifdef CONFIG_DNSSD_QUERY
@@ -1862,9 +1841,6 @@ int query_launch()
 	}
 
 	/* Initially, all service monitors are on the free list */
-#ifdef CONFIG_IPV6
-	ip6_addr_t mdns_ipv6_addr;
-#endif	/*	CONFIG_IPV6	*/
 	SLIST_INIT(&smons_active);
 	SLIST_INIT(&smons_free);
 
@@ -1902,36 +1878,13 @@ int query_launch()
 		LOG("Failed to create query control socket: %d\r\n", ctrl_sock);
 		return ctrl_sock;
 	}
-#ifdef CONFIG_XMDNS
-	mc_sock = mdns_socket_mcast(inet_addr("239.255.255.251"), htons(5353));
-#else
-	mc_sock = mdns_socket_mcast(inet_addr("224.0.0.251"), htons(5353));
-#endif
+
+	mc_sock = mdns_socket_mcast();
 
 	if (mc_sock < 0) {
 		LOG("error: unable to open multicast socket in querier\r\n");
 		return mc_sock;
 	}
-
-#ifdef CONFIG_IPV6
-	int ret;
-#ifdef CONFIG_XMDNS
-	ip6addr_aton("FF05::FB", &mdns_ipv6_addr);
-#else
-	ip6addr_aton("FF02::FB", &mdns_ipv6_addr);
-#endif /*	CONFIG_XMDNS	*/
-
-	mc6_sock = mdns6_socket_mcast(mdns_ipv6_addr, htons(5353));
-	if (mc6_sock < 0) {
-		LOG("error: unable to open multicast socket in responder\r\n");
-		return mc6_sock;
-	}
-	ret = mld6_joingroup(IP6_ADDR_ANY, &mdns_ipv6_addr);
-	if (ret < 0) {
-		LOG("error: unable to join IPv6 mDNS multicast group\r\n");
-		return ret;
-	}
-#endif	/*	CONFIG_IPV6	*/
 
 	query_thread = mdns_thread_create(do_querier, MDNS_THREAD_QUERIER);
 	if (query_thread == NULL)
@@ -1990,9 +1943,6 @@ int query_halt(void)
 	ret = dns_socket_close(&uc_sock);
 #endif
 	ret = mdns_socket_close(&mc_sock);
-#ifdef CONFIG_IPV6
-	ret = mdns_socket_close(&mc6_sock);
-#endif
 
 	return ret;
 }

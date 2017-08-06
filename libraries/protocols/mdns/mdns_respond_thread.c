@@ -52,9 +52,6 @@
 #include <mdns.h>
 #include <mdns_port.h>
 #include <errno.h>
-#ifdef CONFIG_IPV6
-#include <lwip/mld6.h>
-#endif	/*	CONFIG_IPV6	*/
 
 #include "mdns_private.h"
 /* Time interval (in msecs) between consecutive probes.
@@ -83,7 +80,6 @@ int num_config_g;
 /* global mdns state */
 static void *responder_thread;
 static int mc_sock = -1;
-static int mc6_sock = -1;
 
 #ifdef CONFIG_BONJ_CONFORMANCE
 /* Variable to check if response is unicast or not */
@@ -143,6 +139,9 @@ enum type_indicies {
 	SRV_INDEX,
 	MAX_INDEX,
 };
+
+extern struct sockaddr_in mdns_mquery_v4group;
+extern struct sockaddr_in6 mdns_mquery_v6group;
 
 /* Function finds all the authority records in the message m that have
  * specified name. Authorities are stored in a sorted manner in order of
@@ -555,15 +554,6 @@ static uint32_t get_interface_ip(int config_idx)
 	return ip;
 }
 
-#ifdef CONFIG_IPV6
-/* Get list of preferred IPv6 addresses of interface from its interface index */
-static int get_interface_ipv6(struct wlan_ip_config *ipv6_addr, int config_idx)
-{
-	return net_get_if_ipv6_pref_addr(ipv6_addr,
-			config_g[config_idx].iface_handle);
-}
-#endif	/*	CONFIG_IPV6	*/
-
 /* Function creates the inaddrarpa domain name DNS string for ipaddr.
  * Output buffer must be at least MDNS_INADDRARPA_LEN and
  * ipaddr must be in host order.
@@ -592,37 +582,41 @@ static void ipaddr_to_inaddrarpa(uint32_t ipaddr, uint8_t *out)
 #ifdef CONFIG_IPV6
 int mdns_add_aaaa_authority(struct mdns_message *m, int config_idx)
 {
-	int ret, num_addr, i;
-	struct wlan_ip_config ip;
-	num_addr = get_interface_ipv6(&ip, config_idx);
+	int ret, i;
+	ipv6_addr_t ipv6_addrs[MICO_IPV6_NUM_ADDRESSES];
+	micoWlanGetIP6Status(ipv6_addrs, MICO_IPV6_NUM_ADDRESSES, config_g[config_idx].iface_idx);
 
-	for (i = 0; i < num_addr; i++) {
-		ret = mdns_add_authority(m, fqdn, T_AAAA, C_IN, 255);
-		if (ret)
-			return ret;
-		ret = mdns_add_aaaa(m, ip.ipv6[i].address);
-		if (ret)
-			return ret;
+	for (i = 0; i < MICO_IPV6_NUM_ADDRESSES; i++) {
+	    if( IP6_ADDR_IS_VALID(ipv6_addrs[i].addr_state) ) {
+	        ret = mdns_add_authority(m, fqdn, T_AAAA, C_IN, 255);
+	        if (ret)
+	            return ret;
+	        ret = mdns_add_aaaa(m, &ipv6_addrs[i].address);
+	        if (ret)
+	            return ret;
+	    }
 	}
-	return WM_SUCCESS;
+	return kNoErr;
 
 }
 
 int mdns_add_aaaa_answer(struct mdns_message *m, int config_idx, uint32_t ttl)
 {
-	int ret, num_addr, i;
-	struct wlan_ip_config ip;
-	num_addr = get_interface_ipv6(&ip, config_idx);
+	int ret, i;
+	ipv6_addr_t ipv6_addrs[MICO_IPV6_NUM_ADDRESSES];
+    micoWlanGetIP6Status(ipv6_addrs, MICO_IPV6_NUM_ADDRESSES, config_g[config_idx].iface_idx);
 
-	for (i = 0; i < num_addr; i++) {
-		ret = mdns_add_answer(m, fqdn, T_AAAA, C_FLUSH, ttl);
-		if (ret)
-			return ret;
-		ret = mdns_add_aaaa(m, ip.ipv6[i].address);
-		if (ret)
-			return ret;
-	}
-	return WM_SUCCESS;
+    for (i = 0; i < MICO_IPV6_NUM_ADDRESSES; i++) {
+        if( IP6_ADDR_IS_VALID(ipv6_addrs[i].addr_state) ) {
+            ret = mdns_add_answer(m, fqdn, T_AAAA, C_FLUSH, ttl);
+            if (ret)
+                return ret;
+            ret = mdns_add_aaaa(m, &ipv6_addrs[i].address);
+            if (ret)
+                return ret;
+        }
+    }
+	return kNoErr;
 
 }
 #endif	/*	CONFIG_IPV6	*/
@@ -672,18 +666,25 @@ static int prepare_announcement(struct mdns_message *m, uint32_t ttl,
 	mdns_response_init(m);
 	my_ipaddr = get_interface_ip(config_idx);
 	ipaddr_to_inaddrarpa(ntohl(my_ipaddr), in_addr_arpa);
-	if (mdns_add_answer(m, fqdn, T_A, C_FLUSH, ttl) != 0 ||
-	    mdns_add_uint32_t(m, htonl(my_ipaddr)) != 0 ||
-#ifdef CONFIG_IPV6
-		mdns_add_aaaa_answer(m, config_idx, ttl) != 0 ||
-#endif	/*	CONFIG_IPV6	*/
-	    mdns_add_answer(m, in_addr_arpa, T_PTR, C_IN, ttl) != 0 ||
-	    mdns_add_name(m, fqdn) != 0 ||
-	    responder_add_all_services(m, MDNS_SECTION_ANSWERS, ttl, config_idx,
-		    services) != 0) {
-		/* This is highly unlikely */
-		return -1;
+	if ( my_ipaddr != 0 ) {
+	    if ( mdns_add_answer(m, fqdn, T_A, C_FLUSH, ttl) != 0 ||
+	         mdns_add_uint32_t(m, htonl(my_ipaddr)) != 0 ||
+	         mdns_add_answer(m, in_addr_arpa, T_PTR, C_IN, ttl) != 0 ||
+	         mdns_add_name(m, fqdn) != 0 ) {
+	        return -1;
+	    }
 	}
+
+#ifdef CONFIG_IPV6
+    if (  mdns_add_aaaa_answer(m, config_idx, ttl) != 0 ) {
+        return -1;
+    }
+#endif  /*  CONFIG_IPV6 */
+
+    if ( responder_add_all_services(m, MDNS_SECTION_ANSWERS, ttl, config_idx, services) != 0) {
+        return -1;
+    }
+
 	return 0;
 }
 
@@ -759,9 +760,7 @@ static int send_close_probe(int config_idx, struct mdns_service *services[])
 		return -1;
 
 	mr_stats.tx_bye++;
-	return mdns_send_msg(&tx_msg, mc_sock, mc6_sock, htons(5353),
-			config_g[config_idx].iface_idx, 0);
-
+	return mdns_send_msg(&tx_msg, mc_sock, htons(5353), config_g[config_idx].iface_idx, 0);
 }
 
 int mdns_iface_group_state_change(netif_t iface, enum iface_mc_group_state state)
@@ -909,6 +908,9 @@ static int mdns_add_a_response(struct mdns_message *tx, int config_idx)
 		return RS_NO_SEND;
 
 	uint32_t my_ipaddr = get_interface_ip(config_idx);
+
+	if( my_ipaddr == 0 )
+	    return RS_NO_SEND;
 
 	if (mdns_add_answer(tx, fqdn, T_A, c_flush, 255) != 0 ||
 			mdns_add_uint32_t(tx, htonl(my_ipaddr)) != 0)
@@ -1793,12 +1795,13 @@ static int fix_response_conflicts(struct mdns_message *m,
 static int send_init_probes(int idx, int *state, int *event,
 		     struct timeval *probe_wait_time,
 		     struct mdns_service *services[]);
-static int responder_state_machine(struct sockaddr_in from, int *state,
+static int responder_state_machine(struct sockaddr_storage from, int *state,
 				   int *event, int config_idx,
 				   struct timeval *probe_wait_time)
 {
 	int ret;
 	int rand_time = 0;
+	struct sockaddr_in *from_v4 = (struct sockaddr_in *)&from;
 
 #ifdef CONFIG_BONJ_CONFORMANCE
 	/* As per specification in RFC 6762, section 6.7 - Legacy Unicast
@@ -1861,8 +1864,7 @@ static int responder_state_machine(struct sockaddr_in from, int *state,
 							from.sin_addr.s_addr);
 				} else {
 #endif /* CONFIG_BONJ_CONFORMANCE */
-					mdns_send_msg(&tx_msg, mc_sock,
-						mc6_sock, from.sin_port,
+					mdns_send_msg(&tx_msg, mc_sock, from_v4->sin_port,
 						config_g[config_idx].
 						iface_idx, 0);
 #ifdef CONFIG_BONJ_CONFORMANCE
@@ -1885,9 +1887,9 @@ static int responder_state_machine(struct sockaddr_in from, int *state,
 					from.sin_addr.s_addr);
 		} else {
 #endif /* CONFIG_BONJ_CONFORMANCE */
-			mdns_send_msg(&tx_msg, mc_sock, mc6_sock,
-				from.sin_port, config_g[config_idx].
-				iface_idx, 0);
+			mdns_send_msg(&tx_msg, mc_sock,
+			              from_v4->sin_port, config_g[config_idx].
+			              iface_idx, 0);
 #ifdef CONFIG_BONJ_CONFORMANCE
 		}
 #endif /* CONFIG_BONJ_CONFORMANCE */
@@ -1926,8 +1928,7 @@ static int responder_state_machine(struct sockaddr_in from, int *state,
 				} else {
 #endif /* CONFIG_BONJ_CONFORMANCE */
 					mdns_send_msg(&tx_msg, mc_sock,
-						mc6_sock, from.sin_port,
-						config_g[config_idx].
+						from_v4->sin_port, config_g[config_idx].
 						iface_idx, 0);
 #ifdef CONFIG_BONJ_CONFORMANCE
 				}
@@ -1975,9 +1976,10 @@ static int process_probe_resp(struct mdns_message *tx, struct mdns_message *rx,
 
 int probe_state_machine(int idx, int *state, int *event,
 		     struct timeval *probe_wait_time,
-		     struct mdns_service *services[], struct sockaddr_in from)
+		     struct mdns_service *services[], struct sockaddr_storage from)
 {
 	int ret;
+	struct sockaddr_in *from_v4 = (struct sockaddr_in *)&from;
 	switch (state[idx]) {
 	case INIT:
 		if (event[idx] == EVENT_TIMEOUT) {
@@ -1989,7 +1991,7 @@ int probe_state_machine(int idx, int *state, int *event,
 			prepare_probe(&tx_msg, idx, services);
 			mr_stats.tx_probes++;
 			mr_stats.tx_probes_curr++;
-			mdns_send_msg(&tx_msg, mc_sock, mc6_sock, htons(5353),
+			mdns_send_msg(&tx_msg, mc_sock, htons(5353),
 				config_g[idx]. iface_idx, 0);
 			SET_TIMEOUT(&probe_wait_time[idx],
 				MDNS_INTER_PROBE_INTERVAL);
@@ -2005,13 +2007,12 @@ int probe_state_machine(int idx, int *state, int *event,
 			prepare_probe(&tx_msg, idx, services);
 			mr_stats.tx_probes++;
 			mr_stats.tx_probes_curr++;
-			mdns_send_msg(&tx_msg, mc_sock,	mc6_sock, htons(5353),
+			mdns_send_msg(&tx_msg, mc_sock,	htons(5353),
 				config_g[idx].iface_idx, 0);
 			SET_TIMEOUT(&probe_wait_time[idx],
 				MDNS_INTER_PROBE_INTERVAL);
 			state[idx] = state[idx] + 1;
-		} else if (event[idx] == EVENT_RX &&
-			   from.sin_addr.s_addr != get_interface_ip(idx)) {
+		} else if (event[idx] == EVENT_RX && from_v4->sin_addr.s_addr != get_interface_ip(idx)) {
 			mr_stats.probe_rx_events_curr++;
 			state[idx] =
 				process_probe_resp(&tx_msg, &rx_msg, state[idx],
@@ -2032,18 +2033,13 @@ int probe_state_machine(int idx, int *state, int *event,
 			SET_TIMEOUT(&probe_wait_time[idx], 0);
 			state[idx] = READY_TO_RESPOND;
 
-			mdns_send_msg(&tx_msg, mc_sock, mc6_sock, htons(5353),
-				config_g[idx].iface_idx, 0);
+			mdns_send_msg(&tx_msg, mc_sock, htons(5353), config_g[idx].iface_idx, 0);
 			mico_rtos_delay_milliseconds(1000);
-			mdns_send_msg(&tx_msg, mc_sock, mc6_sock, htons(5353),
-				config_g[idx].iface_idx, 0);
+			mdns_send_msg(&tx_msg, mc_sock, htons(5353), config_g[idx].iface_idx, 0);
 
-		} else if (event[idx] == EVENT_RX &&
-			   from.sin_addr.s_addr != get_interface_ip(idx)) {
+		} else if (event[idx] == EVENT_RX && from_v4->sin_addr.s_addr != get_interface_ip(idx)) {
 			mr_stats.probe_rx_events_curr++;
-			state[idx] =
-				process_probe_resp(&tx_msg, &rx_msg, state[idx],
-				&probe_wait_time[idx], idx);
+			state[idx] = process_probe_resp(&tx_msg, &rx_msg, state[idx], &probe_wait_time[idx], idx);
 		}
 		break;
 	}
@@ -2058,12 +2054,15 @@ int probe_state_machine(int idx, int *state, int *event,
  */
 int process_inter_probe_rx(int sock, int *state, int *event,
 	     struct timeval *probe_wait_time, struct mdns_service *services[],
-	     struct sockaddr_in from)
+	     struct sockaddr_storage from)
 {
 	int len, config_idx, ret;
-	socklen_t in_size = sizeof(struct sockaddr_in);
+	socklen_t in_size = sizeof(struct sockaddr_storage);
+	struct sockaddr_in *from_v4 = (struct sockaddr_in *)&from;
+#ifdef CONFIG_IPV6
+	struct sockaddr_in6 *from_v6 = (struct sockaddr_in6 *)&from;
+#endif
 
-	in_size = sizeof(struct sockaddr_in);
 	len = recvfrom(sock, (char *)rx_msg.data, sizeof(rx_msg.data),
 		MSG_DONTWAIT, (struct sockaddr *)&from, &in_size);
 	if (len < 0) {
@@ -2071,12 +2070,16 @@ int process_inter_probe_rx(int sock, int *state, int *event,
 		return kGeneralErr;
 	}
 
-	if (sock == mc_sock) {
-		config_idx = get_config_idx_from_ip(from.sin_addr.s_addr);
-	} else if (sock == mc6_sock) {
-		config_idx = get_config_idx_from_iface(INTERFACE_STA);
-	} else
-		return kGeneralErr;
+#ifdef CONFIG_IPV6
+	if (IS_IPV4_MAPPED_IPV6(from_v6)) {
+	    UNMAP_IPV4_MAPPED_IPV6(from_v4, from_v6);
+	    config_idx = get_config_idx_from_ip(from_v4->sin_addr.s_addr);
+	} else {
+	    config_idx = get_config_idx_from_iface(INTERFACE_STA);
+	}
+#else
+	config_idx = get_config_idx_from_ip(from_v4->sin_addr.s_addr);
+#endif
 
 	mr_stats.total_rx++;
 
@@ -2135,7 +2138,7 @@ static int send_init_probes(int idx, int *state, int *event,
 	struct timeval *timeout;
 	bool is_timeout[MDNS_MAX_SERVICE_CONFIG];
 	fd_set fds;
-	struct sockaddr_in from;
+	struct sockaddr_storage from;
 
 	mico_rtos_lock_mutex(&mdns_mutex);
 	/* Per RFC 6762 Section 8.1, wait for random ammount of time
@@ -2147,9 +2150,7 @@ static int send_init_probes(int idx, int *state, int *event,
 	while (state[idx] != READY_TO_RESPOND) {
 		FD_ZERO(&fds);
 		FD_SET(mc_sock, &fds);
-#ifdef CONFIG_IPV6
-		FD_SET(mc6_sock, &fds);
-#endif	/*	CONFIG_IPV6	*/
+
 		min_idx = get_min_timeout(probe_wait_time,
 				MDNS_MAX_SERVICE_CONFIG);
 		if (get_msec_time(probe_wait_time[min_idx]) != 0)
@@ -2161,12 +2162,9 @@ static int send_init_probes(int idx, int *state, int *event,
 			is_timeout[i] = false;
 
 		start_wait = mdns_time_ms();
-#ifdef CONFIG_IPV6
-		active_fds = select(mc6_sock + 1, &fds, NULL, NULL,
-				timeout);
-#else
+
 		active_fds = select(mc_sock + 1, &fds, NULL, NULL, timeout);
-#endif	/*	CONFIG_IPV6	*/
+
 		stop_wait = mdns_time_ms();
 		if (active_fds < 0)
 			LOG("error: select() failed: %d", active_fds);
@@ -2203,12 +2201,6 @@ static int send_init_probes(int idx, int *state, int *event,
 				probe_wait_time, services, from);
 		}
 
-#ifdef CONFIG_IPV6
-		if (FD_ISSET(mc6_sock, &fds)) {
-			process_inter_probe_rx(mc6_sock, state, event,
-				probe_wait_time, services, from);
-		}
-#endif	/*	CONFIG_IPV6	*/
 	}
 	mico_rtos_unlock_mutex(&mdns_mutex);
 	interface_state[idx] = RUNNING;
@@ -2229,8 +2221,7 @@ static inline void mdns_ctrl_halt()
 				return;
 			}
 			mr_stats.tx_bye++;
-			mdns_send_msg(&tx_msg, mc_sock, mc6_sock, htons(5353),
-					config_g[i].iface_idx, 0);
+			mdns_send_msg(&tx_msg, mc_sock, htons(5353), config_g[i].iface_idx, 0);
 		}
 		interface_state[i] = STOPPED;
 	}
@@ -2246,39 +2237,58 @@ static inline void mdns_ctrl_iface_join_group(netif_t iface)
     if( mc_sock == -1 ) return;
 
     /* join multicast group */
-#ifdef CONFIG_XMDNS
-    mc.imr_multiaddr.s_addr = inet_addr("239.255.255.251");
-#else
-    mc.imr_multiaddr.s_addr = inet_addr("224.0.0.251");
-#endif
-    mc.imr_interface.s_addr = htonl(INADDR_ANY);
+    mc.imr_multiaddr = mdns_mquery_v4group.sin_addr;
+    mc.imr_interface = in_addr_any;
     if (setsockopt(mc_sock, IPPROTO_IP, IP_ADD_MEMBERSHIP, &mc, sizeof(mc)) < 0) {
         LOG("error: failed to join multicast group");
-    }
+    };
 
     /* set other IP-level options */
-    if (setsockopt(mc_sock, IPPROTO_IP, IP_MULTICAST_TTL, (char *)&ttl,
-               sizeof(ttl)) < 0) {
+    if (setsockopt(mc_sock, IPPROTO_IP, IP_MULTICAST_TTL, (char *)&ttl, sizeof(ttl)) < 0) {
         LOG("error: failed to set multicast TTL");
     }
+
+#ifdef CONFIG_IPV6
+    struct ipv6_mreq mc6;
+
+    /* join IPv6 mld group */
+    mc6.ipv6mr_interface = INTERFACE_STA;
+    memcpy(&mc6.ipv6mr_multiaddr, &mdns_mquery_v6group.sin6_addr, sizeof(struct in6_addr));
+    if (setsockopt(mc_sock, IPPROTO_IPV6, IPV6_JOIN_GROUP, &mc6, sizeof(mc6)) < 0) {
+        LOG("error: failed to join IPv6 mld group");
+    };
+#endif
 }
 
 static inline void mdns_ctrl_iface_leave_group(netif_t iface)
 {
     struct ip_mreq mc;
+    unsigned char ttl = 255;
 
     if( mc_sock == -1 ) return;
 
-    /* leave multicast group */
-#ifdef CONFIG_XMDNS
-    mc.imr_multiaddr.s_addr = inet_addr("239.255.255.251");
-#else
-    mc.imr_multiaddr.s_addr = inet_addr("224.0.0.251");
-#endif
-    mc.imr_interface.s_addr = htonl(INADDR_ANY);
+    /* join multicast group */
+    mc.imr_multiaddr = mdns_mquery_v4group.sin_addr;
+    mc.imr_interface = in_addr_any;
     if (setsockopt(mc_sock, IPPROTO_IP, IP_DROP_MEMBERSHIP, &mc, sizeof(mc)) < 0) {
-        LOG("error: failed to leave multicast group");
+        LOG("error: failed to join multicast group");
+    };
+
+    /* set other IP-level options */
+    if (setsockopt(mc_sock, IPPROTO_IP, IP_MULTICAST_TTL, (char *)&ttl, sizeof(ttl)) < 0) {
+        LOG("error: failed to set multicast TTL");
     }
+
+#ifdef CONFIG_IPV6
+    struct ipv6_mreq mc6;
+
+    /* join IPv6 mld group */
+    mc6.ipv6mr_interface = INTERFACE_STA;
+    memcpy(&mc6.ipv6mr_multiaddr, &mdns_mquery_v6group.sin6_addr, sizeof(struct in6_addr));
+    if (setsockopt(mc_sock, IPPROTO_IPV6, IPV6_LEAVE_GROUP, &mc6, sizeof(mc6)) < 0) {
+        LOG("error: failed to join IPv6 mld group");
+    };
+#endif
 }
 
 static inline void mdns_ctrl_iface_up(netif_t iface, int *state, int *event,
@@ -2329,8 +2339,7 @@ static inline void mdns_ctrl_reannounce(netif_t iface, int *state)
 	/* Send atleast two announcements, 1 seconds apart */
 	for (i = 0; i < 2; i++) {
 		mr_stats.tx_reannounce++;
-		mdns_send_msg(&tx_msg, mc_sock, mc6_sock, htons(5353),
-				config_g[config_idx].iface_idx, 0);
+		mdns_send_msg(&tx_msg, mc_sock, htons(5353), config_g[config_idx].iface_idx, 0);
 		if (i < 1)
 			mico_rtos_delay_milliseconds(1000);
 	}
@@ -2431,7 +2440,11 @@ static void do_responder(void)
 	int max_sock;
 	mdns_ctrl_data msg;
 	int ret;
-	struct sockaddr_in from;
+	struct sockaddr_storage from;
+	struct sockaddr_in *from_v4 = (struct sockaddr_in *)&from;
+#ifdef CONFIG_IPV6
+	struct sockaddr_in6 *from_v6 = (struct sockaddr_in6 *)&from;
+#endif
 	int active_fds;
 	fd_set fds;
 	int len = 0, i, config_idx = 0, min_idx;
@@ -2455,15 +2468,10 @@ static void do_responder(void)
 
 		FD_ZERO(&fds);
 		FD_SET(mc_sock, &fds);
-#ifdef CONFIG_IPV6
-		FD_SET(mc6_sock, &fds);
-#endif	/*	CONFIG_IPV6	*/
 		FD_SET(ctrl_sock, &fds);
-#ifdef CONFIG_IPV6
-		max_sock = ctrl_sock > mc6_sock ? ctrl_sock : mc6_sock;
-#else
+
 		max_sock = ctrl_sock > mc_sock ? ctrl_sock : mc_sock;
-#endif	/*	CONFIG_IPV6	*/
+
 		min_idx = get_min_timeout(probe_wait_time,
 					  MDNS_MAX_SERVICE_CONFIG);
 		if (get_msec_time(probe_wait_time[min_idx]) != 0)
@@ -2540,57 +2548,37 @@ static void do_responder(void)
 			}
 		}
 
+		if (FD_ISSET(mc_sock, &fds)) {
+		    in_size = sizeof(struct sockaddr_in);
+		    len = recvfrom(mc_sock, (char *)rx_msg.data, sizeof(rx_msg.data), MSG_DONTWAIT,
+		                   (struct sockaddr *)&from, &in_size);
+				if (len < 0) {
+					LOG("responder failed to recv packet");
+					continue;
+				}
 #ifdef CONFIG_IPV6
-		if (FD_ISSET(mc_sock, &fds) || FD_ISSET(mc6_sock, &fds)) {
-#endif	/*	CONFIG_IPV6	*/
+			    if (IS_IPV4_MAPPED_IPV6(from_v6)) {
+			        UNMAP_IPV4_MAPPED_IPV6(from_v4, from_v6);
+			        config_idx = get_config_idx_from_ip(from_v4->sin_addr.s_addr);
+			    } else {
+			        config_idx = get_config_idx_from_iface(INTERFACE_STA);
+			    }
+#else
+				config_idx = get_config_idx_from_ip( from_v4->sin_addr.s_addr);
+#endif
 
-			if (FD_ISSET(mc_sock, &fds)) {
-				in_size = sizeof(struct sockaddr_in);
-				len =
-					recvfrom(mc_sock, (char *)rx_msg.data,
-					sizeof(rx_msg.data), MSG_DONTWAIT,
-					(struct sockaddr *)&from, &in_size);
-				if (len < 0) {
-					LOG("responder failed to" \
-						" recv packet");
-					continue;
-				}
-				config_idx =
-					get_config_idx_from_ip(
-							from.sin_addr.s_addr);
-#ifdef CONFIG_IPV6
-			}
-			if (FD_ISSET(mc6_sock, &fds)) {
-				in_size = sizeof(struct sockaddr_in);
-				len =
-					recvfrom(mc6_sock, (char *)rx_msg.data,
-					sizeof(rx_msg.data), MSG_DONTWAIT,
-					(struct sockaddr *)&from, &in_size);
-				if (len < 0) {
-					LOG("responder failed to" \
-						" recv packet");
-					continue;
-				}
-				/* IPv6 supported in station mode, hence it is
-				 * safe to take station interface handle here.*/
-				void *iface = net_get_sta_handle();
-				config_idx = get_config_idx_from_iface(iface);
-			}
-#endif	/*	CONFIG_IPV6	*/
 			mr_stats.total_rx++;
 			ret = mdns_parse_message(&rx_msg, len);
 			if (ret != 0) {
 				mr_stats.rx_errors++;
 				continue;
 			}
-			update_others_timeout(config_idx, probe_wait_time,
-					start_wait, stop_wait);
+			update_others_timeout(config_idx, probe_wait_time, start_wait, stop_wait);
 			if (interface_state[config_idx] != RUNNING)
 				continue;
 			event[config_idx] = EVENT_RX;
 		} else {
-			update_others_timeout(min_idx, probe_wait_time,
-					start_wait, stop_wait);
+			update_others_timeout(min_idx, probe_wait_time, start_wait, stop_wait);
 			if (interface_state[config_idx] != RUNNING)
 				continue;
 			else {
@@ -2615,10 +2603,10 @@ static void do_responder(void)
 int responder_launch(const char *domain, char *hostname)
 {
 	int i;
-#ifdef CONFIG_IPV6
-	int ret;
-	ip6_addr_t mdns_ipv6_addr;
-#endif	/*	CONFIG_IPV6	*/
+//#ifdef CONFIG_IPV6
+//	int ret;
+//	ip6_addr_t mdns_ipv6_addr;
+//#endif	/*	CONFIG_IPV6	*/
 
 	/* Assign buffers to rx and tx messages */
 	rx_msg.questions = rx_questions;
@@ -2648,16 +2636,14 @@ int responder_launch(const char *domain, char *hostname)
 	num_config_g = 0;
 	/* number of mdns config opt will be used in do responder thread */
 	reset_fqdn();
-#ifdef CONFIG_XMDNS
-	mc_sock = mdns_socket_mcast(inet_addr("239.255.255.251"), htons(5353));
-#else
-	mc_sock = mdns_socket_mcast(inet_addr("224.0.0.251"), htons(5353));
-#endif
+	mc_sock = mdns_socket_mcast();
+
 	if (mc_sock < 0) {
 		LOG("error: unable to open multicast socket in responder");
 		return mc_sock;
 	}
 
+#if 0
 #ifdef CONFIG_IPV6
 #ifdef CONFIG_XMDNS
 	ip6addr_aton("FF05::FB", &mdns_ipv6_addr);
@@ -2676,7 +2662,7 @@ int responder_launch(const char *domain, char *hostname)
 		return ret;
 	}
 #endif	/*	CONFIG_IPV6	*/
-
+#endif
 	/* create both ends of the control socket */
 	ctrl_sock = mdns_socket_loopback(MDNS_CTRL_RESPONDER, NULL);
 
@@ -2744,9 +2730,6 @@ int responder_halt(void)
 	}
 	ret = mdns_socket_close(&ctrl_sock);
 	ret = mdns_socket_close(&mc_sock);
-#ifdef CONFIG_IPV6
-	ret = mdns_socket_close(&mc6_sock);
-#endif	/*	CONFIG_IPV6	*/
 
 	return ret;
 }

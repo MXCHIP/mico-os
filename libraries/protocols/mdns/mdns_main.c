@@ -16,6 +16,26 @@ mico_thread_t mdns_responder_thread;
 
 static bool is_responder_started, is_querier_started;
 
+mdns_responder_stats mr_stats;
+
+#ifdef CONFIG_XMDNS
+/* IPv4 group for multicast DNS queries: 239.255.255.251 */
+#define INADDR_MULTICAST_MDNS  {htonl(0xEFFFFFFBUL)}
+
+/* IPv6 group for multicast DNS queries: FF0::FB */
+#define INADDR6_MULTICAST_MDNS  {{{htonl(0xFF050000), htonl(0), htonl(0), htonl(0xFB) }}}
+
+#else
+/* IPv4 group for multicast DNS queries: 224.0.0.251 */
+#define INADDR_MULTICAST_MDNS  {htonl(0xE00000FBUL)}
+
+/* IPv6 group for multicast DNS queries: FF02::FB */
+#define INADDR6_MULTICAST_MDNS  {{{htonl(0xFF020000), htonl(0), htonl(0), htonl(0xFB) }}}
+#endif
+
+struct sockaddr_in mdns_mquery_v4group = { sizeof(struct sockaddr_in), AF_INET, htons(5353), INADDR_MULTICAST_MDNS};
+struct sockaddr_in6 mdns_mquery_v6group = { sizeof(struct sockaddr_in6), AF_INET6, htons(5353), 0, INADDR6_MULTICAST_MDNS, 0};
+
 
 void *mdns_thread_create(mdns_thread_entry entry, int id)
 {
@@ -136,47 +156,63 @@ void mdns_stop(void)
 }
 
 
-int mdns_socket_mcast(uint32_t mcast_addr, uint16_t port)
+int mdns_socket_mcast(void)
 {
 	int sock;
 	int yes = 1;
 	unsigned char ttl = 255;
-	//uint8_t mcast_mac[6];
+
+#if MICO_CONFIG_IPV6
+	struct sockaddr_in6 in_addr6;
+	struct ipv6_mreq mc6;
+#else
 	struct sockaddr_in in_addr;
-	struct ip_mreq mc;
-	memset(&in_addr, 0, sizeof(in_addr));
-	in_addr.sin_family = AF_INET;
-	in_addr.sin_port = port;
-	in_addr.sin_addr.s_addr = htonl(INADDR_ANY);
-	//wifi_get_ipv4_multicast_mac(ntohl(mcast_addr), mcast_mac);
-	//wifi_add_mcast_filter(mcast_mac);
-	sock = socket(AF_INET, SOCK_DGRAM, 0);
-	if (sock < 0) {
-		LOG("error: could not open multicast socket\n");
-		return ERR_MDNS_FSOC;
-	}
-#ifdef SO_REUSEPORT
-	if (setsockopt(sock, SOL_SOCKET, SO_REUSEPORT, (char *)&yes,
-		       sizeof(yes)) < 0) {
-		LOG("error: failed to set SO_REUSEPORT option\n");
-		close(sock);
-		return ERR_MDNS_FREUSE;
-	}
 #endif
-	if (setsockopt(sock, SOL_SOCKET, SO_REUSEADDR, (char *)&yes, sizeof(yes)) < 0) {
+
+	struct ip_mreq mc;
+
+#if MICO_CONFIG_IPV6
+	sock = socket(AF_INET6, SOCK_DGRAM, 0);
+#else
+	sock = socket(AF_INET, SOCK_DGRAM, 0);
+#endif
+
+    if (sock < 0) {
+        LOG("error: could not open multicast socket\n");
+        return ERR_MDNS_FSOC;
+    }
+
+    if (setsockopt(sock, SOL_SOCKET, SO_REUSEADDR, (char *)&yes, sizeof(yes)) < 0) {
         LOG("error: failed to set SO_REUSEADDR option\n");
         close(sock);
         return ERR_MDNS_FREUSE;
-	}
+    }
 
-	if (bind(sock, (struct sockaddr *)&in_addr, sizeof(in_addr))) {
-		close(sock);
-		return ERR_MDNS_FBIND;
-	}
+#if MICO_CONFIG_IPV6
+    mc6.ipv6mr_interface = INTERFACE_STA;
+    memcpy(&mc6.ipv6mr_multiaddr, &mdns_mquery_v6group.sin6_addr, sizeof(struct in6_addr));
+    setsockopt(sock, IPPROTO_IPV6, IPV6_JOIN_GROUP, &mc6, sizeof(mc6));
+
+    in_addr6.sin6_family = AF_INET6;
+    in_addr6.sin6_port = htons(5353);
+    in_addr6.sin6_addr = in6_addr_any;
+    if (bind(sock, (struct sockaddr *)&in_addr6, sizeof(in_addr6))) {
+        close(sock);
+        return ERR_MDNS_FBIND;
+    }
+#else
+    in_addr.sin_family = AF_INET;
+    in_addr.sin_port = htons(5353);
+    in_addr.sin_addr = in_addr_any;
+    if (bind(sock, (struct sockaddr *)&in_addr, sizeof(in_addr))) {
+        close(sock);
+        return ERR_MDNS_FBIND;
+    }
+#endif
 
     /* join multicast group */
-	mc.imr_multiaddr.s_addr = mcast_addr;
-	mc.imr_interface.s_addr = htonl(INADDR_ANY);
+	mc.imr_multiaddr = mdns_mquery_v4group.sin_addr;
+	mc.imr_interface = in_addr_any;
 	setsockopt(sock, IPPROTO_IP, IP_ADD_MEMBERSHIP, &mc, sizeof(mc));
 
 	/* set other IP-level options */
@@ -184,60 +220,6 @@ int mdns_socket_mcast(uint32_t mcast_addr, uint16_t port)
 
 	return sock;
 }
-
-#ifdef CONFIG_IPV6
-int mdns6_socket_mcast(ip6_addr_t mdns_ipv6_addr, uint16_t port)
-{
-	int sock;
-	int yes = 1;
-	uint8_t mcast_mac[MLAN_MAC_ADDR_LENGTH];
-	struct sockaddr_in6 in_addr;
-	struct ip_mreq mc;
-	uint32_t mcast_addr = mdns_ipv6_addr.addr[3];
-
-	memset(&in_addr, 0, sizeof(in_addr));
-	in_addr.sin6_family = AF_INET6;
-	in_addr.sin6_port = port;
-	memcpy(in_addr.sin6_addr.s6_addr, IP6_ADDR_ANY,
-		sizeof(struct in6_addr));
-	wifi_get_ipv6_multicast_mac(ntohl(mcast_addr), mcast_mac);
-	wifi_add_mcast_filter(mcast_mac);
-
-	sock = socket(AF_INET6, SOCK_DGRAM, 0);
-	if (sock < 0) {
-		LOG("error: could not open multicast socket\n");
-		return -WM_E_MDNS_FSOC;
-	}
-#ifdef SO_REUSEPORT
-	if (setsockopt(sock, SOL_SOCKET, SO_REUSEPORT, (char *)&yes,
-		       sizeof(yes)) < 0) {
-		LOG("error: failed to set SO_REUSEPORT option\n");
-		close(sock);
-		return -WM_E_MDNS_FREUSE;
-	}
-#endif
-
-	if (bind(sock, (struct sockaddr *)&in_addr, sizeof(in_addr))) {
-		close(sock);
-		return -WM_E_MDNS_FBIND;
-	}
-	/* join multicast group */
-	mc.imr_multiaddr.s_addr = mcast_addr;
-	mc.imr_interface.s_addr = htonl(INADDR_ANY);
-	if (setsockopt(sock, IPPROTO_IPV6, IPV6_V6ONLY, (char *)&mc,
-		       sizeof(mc)) < 0) {
-		LOG("error: failed to join multicast group");
-		close(sock);
-		return -WM_E_MDNS_FMCAST_JOIN;
-	}
-
-	if (net_set_mcast_interface() < 0) {
-		LOG("Setting mcast interface failed: %d",
-		net_get_sock_error(sock));
-	}
-	return sock;
-}
-#endif /* CONFIG_IPV6 */
 
 #ifdef CONFIG_DNSSD_QUERY
 bool dns_socket_used;
@@ -286,6 +268,92 @@ int dns_socket_close(int s)
 }
 #endif
 
+int mdns_send_msg(struct mdns_message *m, int sock,
+        unsigned short port, netif_t out_interface, in_addr_t to_addr)
+{
+    struct sockaddr_in to;
+
+    int size, len;
+    uint32_t ip;
+    IPStatusTypedef interface_ip_status;
+
+    if( sock == -1 ) return 0;
+
+    /* get message length */
+    size = (unsigned int)m->cur - (unsigned int)m->header;
+
+    micoWlanGetIPStatus(&interface_ip_status, out_interface);
+    ip = inet_addr(interface_ip_status.ip);
+
+#ifdef CONFIG_IPV6
+    int i, ipv6_valid;
+    ipv6_addr_t ipv6_addrs[MICO_IPV6_NUM_ADDRESSES];
+
+    for ( i = 0; i < MICO_IPV6_NUM_ADDRESSES; i++ ) {
+        ipv6_addrs[i].addr_state = IP6_ADDR_INVALID;
+    }
+
+    micoWlanGetIP6Status(ipv6_addrs, MICO_IPV6_NUM_ADDRESSES, out_interface);
+
+    for ( i = 0, ipv6_valid = 0; i < MICO_IPV6_NUM_ADDRESSES && IP6_ADDR_IS_VALID(ipv6_addrs[i].addr_state); i++ ) {
+        ipv6_valid++;
+    }
+#endif
+
+    /* If IP address is not set, then either interface is not up
+     * or interface didn't got the IP from DHCP. In both case Packet
+     * shouldn't be transmitted
+    */
+    if (!ip
+#ifdef CONFIG_IPV6
+        && !ipv6_valid
+#endif
+        ) {
+        LOG("Interface is not up\n\r");
+        return kGeneralErr;
+    }
+
+    if ( ip ) {
+        if ( setsockopt(sock, IPPROTO_IP, IP_MULTICAST_IF, (char *) &ip, sizeof(ip)) == -1 ) {
+            mdns_socket_close(&sock);
+            return kGeneralErr;
+        }
+
+        if (to_addr) {
+            to.sin_family = AF_INET;
+            to.sin_port = port;
+            to.sin_addr.s_addr = to_addr;
+            len = sendto(sock, (char *)m->header, size, 0, (struct sockaddr *)&to, sizeof(struct sockaddr_in));
+        } else {
+            len = sendto(sock, (char *)m->header, size, 0, (struct sockaddr *)&mdns_mquery_v4group, sizeof(mdns_mquery_v4group));
+        }
+
+        if ( len < size ) {
+            mr_stats.tx_ipv4_err++;
+            LOG("error: failed to send IPv4 message\r\n");
+            return kGeneralErr;
+        }
+        mr_stats.total_tx++;
+        DBG("IPV4 sent %u-byte message\r\n", size);
+    }
+
+
+#ifdef CONFIG_IPV6
+    if ( ipv6_valid ) {
+        sendto(sock, (char *)m->header, size, 0, (struct sockaddr *)&mdns_mquery_v6group, sizeof(mdns_mquery_v6group));
+
+        if (len < size) {
+            mr_stats.tx_ipv6_err++;
+            LOG("error: failed to send IPv6 message\r\n");
+            return 0;
+        }
+
+        DBG("IPV6 sent %u-byte message\r\n", size);
+    }
+#endif
+    return MICO_SUCCESS;
+}
+
 mico_queue_t mdns_ctrl_responder_queue[2] = {NULL, NULL};
 int mdns_ctrl_socks[2] = {-1, -1};
 
@@ -311,32 +379,6 @@ int mdns_socket_loopback(uint8_t id, mico_queue_t **queue)
     }
 
     return mdns_ctrl_socks[id];
-
-//	int s, one = 1, addr_len, ret;
-//	struct sockaddr_in addr;
-//
-//	s = socket(PF_INET, SOCK_DGRAM, 0);
-//	if (s < 0) {
-//		LOG("error: Failed to create loopback socket.");
-//		return ERR_MDNS_FSOC;
-//	}
-//
-//	if (listen) {
-//		/* bind loopback socket */
-//		memset((char *)&addr, 0, sizeof(addr));
-//		addr.sin_family = PF_INET;
-//		addr.sin_port = port;
-//		addr.sin_addr.s_addr = inet_addr("127.0.0.1");
-//		addr_len = sizeof(struct sockaddr_in);
-//		setsockopt(s, SOL_SOCKET, SO_REUSEADDR, (char *)&one,
-//			   sizeof(one));
-//		ret = bind(s, (struct sockaddr *)&addr, addr_len);
-//		if (ret < 0) {
-//			LOG("Failed to bind control socket");
-//			return ERR_MDNS_FBIND;
-//		}
-//	}
-//	return s;
 }
 
 

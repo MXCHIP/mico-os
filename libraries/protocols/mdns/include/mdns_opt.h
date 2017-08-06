@@ -42,10 +42,12 @@ extern "C" {
 #endif
 
 #if !defined CONFIG_MDNS_SERVICE_CACHE_SIZE
-#define CONFIG_MDNS_SERVICE_CACHE_SIZE         2
+#define CONFIG_MDNS_SERVICE_CACHE_SIZE         5
 #endif
 
-
+#if MICO_CONFIG_IPV6
+#define CONFIG_IPV6
+#endif
 
 #ifdef __cplusplus
 } /*extern "C" */

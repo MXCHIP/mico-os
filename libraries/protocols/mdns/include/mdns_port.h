@@ -50,9 +50,6 @@
 #include <stdio.h>
 #include "mico.h"
 #include "mdns_opt.h"
-#ifdef CONFIG_IPV6
-#include <lwip/ip6_addr.h>
-#endif /* CONFIG_IPV6 */
 
 /* For little endian systems */
 #ifndef MDNS_ENDIAN_LITTLE
@@ -168,16 +165,7 @@ int mdns_rand_range(int n);
  * Note: when recvfrom is called on this socket, the MSG_DONTWAIT flag will be
  * passed.  This may be sufficient to ensure non-blocking behavior.
  */
-int mdns_socket_mcast(uint32_t mcast_addr, uint16_t port);
-
-#ifdef CONFIG_IPV6
-/* mdns6_socket_mcast: create IPv6 mDNS socket
- *
- * This function must create a non-blocking socket bound to the specified
- * IPv6 multicast address and port on the interface on which mdns is running.
- */
-int mdns6_socket_mcast(ip6_addr_t mdns_ipv6_addr, uint16_t port);
-#endif /* CONFIG_IPV6 */
+int mdns_socket_mcast(void);
 
 /* mdns_socket_loopback: create a loopback datagram (e.g., UDP) socket
  *

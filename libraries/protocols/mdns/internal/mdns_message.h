@@ -7,6 +7,7 @@
 #define MDNS_MESSAGE_H
 
 #include "mico.h"
+#include "mdns_opt.h"
 #include "mdns_port.h"
 #include "queue.h"
 
@@ -15,7 +16,7 @@
 #define MDNS_MAX_QUESTIONS		48
 #define MDNS_MAX_ANSWERS		32
 #define MDNS_MAX_AUTHORITIES	32
-#define MDNS_INADDRARPA_LEN	30 /* like .45.1.168.192.in-addr.arpa */
+#define MDNS_INADDRARPA_LEN	    30 /* like .45.1.168.192.in-addr.arpa */
 #ifdef CONFIG_IPV6
 #define MDNS_AAAA_RR_LEN       16
 #endif	/*	CONFIG_IPV6	*/
@@ -144,6 +145,7 @@ struct mdns_message {
 	uint16_t num_answers;
 	struct mdns_resource *authorities;
 	uint16_t num_authorities;
+	uint16_t num_additionals;
 #ifdef MDNS_QUERY_API
 	struct rr_list as, srvs, txts, ptrs;
 #ifdef CONFIG_IPV6
