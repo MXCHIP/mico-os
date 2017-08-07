@@ -63,6 +63,7 @@ endif
 
 ifneq ($(wildcard $(CURDIR)MX108.$(HOST_ARCH).$(TOOLCHAIN_NAME).release.a),)
 ifeq ($(CONFIG_IPV6),1)
+GLOBAL_CFLAGS += -DCONFIG_IPV6
 $(NAME)_PREBUILT_LIBRARY += MX108-IPV6.$(HOST_ARCH).$(TOOLCHAIN_NAME).release.a
 else
 $(NAME)_PREBUILT_LIBRARY += MX108.$(HOST_ARCH).$(TOOLCHAIN_NAME).release.a
@@ -79,7 +80,6 @@ $(NAME)_SOURCES := platform_stub.c \
                    ../mico_platform_common.c \
                    platform_init.c
                    
-$(NAME)_LINK_FILES := platform_stub.o
 
 # Extra build target in mico_standard_targets.mk, include bootloader, and copy output file to eclipse debug file (copy_output_for_eclipse)
 EXTRA_TARGET_MAKEFILES +=  ./mico-os/platform/MCU/MOC108/moc108_standard_targets.mk
