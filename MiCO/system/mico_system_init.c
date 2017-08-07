@@ -98,8 +98,9 @@ OSStatus mico_system_init( mico_Context_t* in_context )
 
 #ifdef MICO_WLAN_CONNECTION_ENABLE
 #ifndef  EasyLink_Needs_Reboot
-  /* Create a worker thread for user handling wlan auto-conf event  */
-  err = mico_rtos_create_worker_thread( &wlan_autoconf_worker_thread, MICO_APPLICATION_PRIORITY, 0x300, 1 );
+  /* Create a worker thread for user handling wlan auto-conf event, this worker thread only has
+     one event on queue, avoid some unwanted operation */
+  err = mico_rtos_create_worker_thread( &wlan_autoconf_worker_thread, MICO_APPLICATION_PRIORITY, 0x500, 1 );
   require_noerr_string( err, exit, "ERROR: Unable to start the autoconf worker thread." );
 #endif
 
