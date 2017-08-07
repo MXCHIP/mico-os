@@ -83,6 +83,7 @@ $(NAME)_SOURCES := platform_stub.c \
 
 # Extra build target in mico_standard_targets.mk, include bootloader, and copy output file to eclipse debug file (copy_output_for_eclipse)
 EXTRA_TARGET_MAKEFILES +=  ./mico-os/platform/MCU/MOC108/moc108_standard_targets.mk
+EXTRA_TARGET_MAKEFILES +=  ./mico-os/platform/MCU/MOC108/gen_crc_bin.mk
 
 ifeq ($(APP),bootloader)
 ####################################################################################
