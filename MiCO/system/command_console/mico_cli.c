@@ -16,7 +16,7 @@
 #include "tftp_ota/tftp.h"
 
 
-#ifdef MICO_CLI_ENABLE
+#if MICO_CLI_ENABLE
 //int cli_printf(const char *msg, ...);
 //int cli_putstr(const char *msg);
 //int cli_getchar(char *inbuf);

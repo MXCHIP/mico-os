@@ -42,7 +42,6 @@ extern "C" {
   * Enabling this option adds an overhead of about 16KB. This includes 
   * support for caching two mDNS-SD service entries.
   */
-#define CONFIG_MDNS_QUERY 1
 #if !defined CONFIG_MDNS_QUERY
 #define CONFIG_MDNS_QUERY                      0
 #endif

@@ -250,7 +250,7 @@ exit:
 
     mico_system_notify_remove( mico_notify_WIFI_STATUS_CHANGED, (void *) easylink_wifi_status_cb );
 
-#ifndef MICO_CONFIG_SERVER_ENABLE
+#if MICO_CONFIG_SERVER_ENABLE
     config_server_stop( );
 #endif 
 

@@ -75,7 +75,7 @@ static void _bonjour_generate_txt_record( char *txt_record, uint16_t txt_record_
     else
     {
         snprintf( txt_record, txt_record_len, "%swlan unconfigured=F.", txt_record );
-#ifdef MICO_CONFIG_SERVER_ENABLE
+#if MICO_CONFIG_SERVER_ENABLE
         snprintf(txt_record, txt_record_len, "%sFTC=T.", txt_record);
 #else
         snprintf( txt_record, txt_record_len, "%sFTC=F.", txt_record );

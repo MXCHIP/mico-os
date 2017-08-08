@@ -81,13 +81,13 @@ OSStatus mico_system_init( mico_Context_t* in_context )
   err = system_notification_init( sys_context );
   require_noerr( err, exit ); 
 
-#ifdef MICO_SYSTEM_MONITOR_ENABLE
+#if MICO_SYSTEM_MONITOR_ENABLE
   /* MiCO system monitor */
   err = mico_system_monitor_daemen_start( );
   require_noerr( err, exit ); 
 #endif
 
-#ifdef MICO_CLI_ENABLE
+#if MICO_CLI_ENABLE
   /* MiCO command line interface */
   cli_init();
 #endif
@@ -96,7 +96,7 @@ OSStatus mico_system_init( mico_Context_t* in_context )
   err = system_network_daemen_start( sys_context );
   require_noerr( err, exit ); 
 
-#ifdef MICO_WLAN_CONNECTION_ENABLE
+#if MICO_WLAN_CONNECTION_ENABLE
 #ifndef  EasyLink_Needs_Reboot
   /* Create a worker thread for user handling wlan auto-conf event  */
   err = mico_rtos_create_worker_thread( &wlan_autoconf_worker_thread, MICO_APPLICATION_PRIORITY, 0x300, 1 );
@@ -130,12 +130,12 @@ OSStatus mico_system_init( mico_Context_t* in_context )
 #endif
   
   /* System discovery */
-#ifdef MICO_SYSTEM_DISCOVERY_ENABLE
+#if MICO_SYSTEM_DISCOVERY_ENABLE
   system_discovery_init( sys_context );
 #endif
 
   /*Local configuration server*/
-#ifdef MICO_CONFIG_SERVER_ENABLE
+#if MICO_CONFIG_SERVER_ENABLE
   config_server_start( );
 #endif
   
