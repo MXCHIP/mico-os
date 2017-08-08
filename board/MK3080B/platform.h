@@ -107,6 +107,7 @@ typedef enum
     MICO_GTIMER_2,
     MICO_GTIMER_3,
     MICO_GTIMER_4,
+    MICO_GTIMER_5,
     MICO_GTIMER_MAX, /* Denotes the total number of GTIMER port aliases. Not a valid GTIMER alias */
     MICO_GTIMER_NONE,
 } mico_gtimer_t;
