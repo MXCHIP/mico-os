@@ -190,6 +190,10 @@ extern "C" {
 #define MICO_CONFIG_SERVER_PORT                 8000
 #endif
 
+#if !defined MICO_CONFIG_SERVER_REPORT_SYSTEM_DATA
+#define MICO_CONFIG_SERVER_REPORT_SYSTEM_DATA   MICO_CONFIG_SERVER_ENABLE
+#endif
+
 #ifdef __cplusplus
 } /*extern "C" */
 #endif

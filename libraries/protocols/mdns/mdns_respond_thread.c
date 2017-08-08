@@ -2043,6 +2043,12 @@ int probe_state_machine(int idx, int *state, int *event,
 			state[idx] = READY_TO_RESPOND;
 
 			mdns_send_msg(&tx_msg, mc_sock, htons(5353), config_g[idx].iface_idx, 0);
+			mico_rtos_delay_milliseconds(100);
+			mdns_send_msg(&tx_msg, mc_sock, htons(5353), config_g[idx].iface_idx, 0);
+			mico_rtos_delay_milliseconds(200);
+			mdns_send_msg(&tx_msg, mc_sock, htons(5353), config_g[idx].iface_idx, 0);
+			mico_rtos_delay_milliseconds(500);
+			mdns_send_msg(&tx_msg, mc_sock, htons(5353), config_g[idx].iface_idx, 0);
 			mico_rtos_delay_milliseconds(1000);
 			mdns_send_msg(&tx_msg, mc_sock, htons(5353), config_g[idx].iface_idx, 0);
 

@@ -363,6 +363,8 @@ OSStatus _LocalConfigRespondInComingMessage(int fd, HTTPHeader_t* inHeader, syst
   configContext_t *http_context = (configContext_t *)inHeader->userContext;
   mico_logic_partition_t* ota_partition = MicoFlashGetInfo( MICO_PARTITION_OTA_TEMP );
   char name[50];
+  IPStatusTypedef ip;
+  micoWlanGetIPStatus(&ip, INTERFACE_STA);
 
   json_object *sectors, *sector = NULL;
 
@@ -389,7 +391,7 @@ OSStatus _LocalConfigRespondInComingMessage(int fd, HTTPHeader_t* inHeader, syst
     json_object_object_add(report, "FW", json_object_new_string(FIRMWARE_REVISION));
     json_object_object_add(report, "RF", json_object_new_string(inContext->micoStatus.rf_version));
 
-#ifdef MICO_CONFIG_SERVER_REPORT_SYSTEM_DATA
+#if MICO_CONFIG_SERVER_REPORT_SYSTEM_DATA
     /*Sector 1*/
     sector = json_object_new_array();
     require( sector, exit );
@@ -397,37 +399,37 @@ OSStatus _LocalConfigRespondInComingMessage(int fd, HTTPHeader_t* inHeader, syst
     require_noerr(err, exit);
 
       /*name cell*/
-      err = config_server_create_string_cell(sector, "Device Name",    inContext->flashContentInRam.micoSystemConfig.name,               "RW", NULL);
+      err = config_server_create_string_cell(sector, "Device Name",   inContext->flashContentInRam.micoSystemConfig.name,               "RW", NULL);
       require_noerr(err, exit);
 
       //RF power save switcher cell
-      err = config_server_create_bool_cell(sector, "RF power save",  inContext->flashContentInRam.micoSystemConfig.rfPowerSaveEnable,  "RW");
+      err = config_server_create_bool_cell(sector, "RF power save",   inContext->flashContentInRam.micoSystemConfig.rfPowerSaveEnable,  "RW");
       require_noerr(err, exit);
 
       //MCU power save switcher cell
-      err = config_server_create_bool_cell(sector, "MCU power save", inContext->flashContentInRam.micoSystemConfig.mcuPowerSaveEnable, "RW");
+      err = config_server_create_bool_cell(sector, "MCU power save",  inContext->flashContentInRam.micoSystemConfig.mcuPowerSaveEnable, "RW");
       require_noerr(err, exit);
 
       /*SSID cell*/
-      err = config_server_create_string_cell(sector, "Wi-Fi",        inContext->flashContentInRam.micoSystemConfig.ssid,     "RW", NULL);
+      err = config_server_create_string_cell(sector, "Wi-Fi",         inContext->flashContentInRam.micoSystemConfig.ssid,     "RW", NULL);
       require_noerr(err, exit);
       /*PASSWORD cell*/
-      err = config_server_create_string_cell(sector, "Password",     inContext->flashContentInRam.micoSystemConfig.user_key, "RW", NULL);
+      err = config_server_create_string_cell(sector, "Password",      inContext->flashContentInRam.micoSystemConfig.user_key, "RW", NULL);
       require_noerr(err, exit);
       /*DHCP cell*/
-      err = config_server_create_bool_cell(sector, "DHCP",        inContext->flashContentInRam.micoSystemConfig.dhcpEnable,   "RW");
+      err = config_server_create_bool_cell(sector, "DHCP",            inContext->flashContentInRam.micoSystemConfig.dhcpEnable,   "RW");
       require_noerr(err, exit);
       /*Local cell*/
-      err = config_server_create_string_cell(sector, "IP address",  inContext->micoStatus.localIp,   "RW", NULL);
+      err = config_server_create_string_cell(sector, "IP address",  ip.ip,   "RW", NULL);
       require_noerr(err, exit);
       /*Netmask cell*/
-      err = config_server_create_string_cell(sector, "Net Mask",    inContext->micoStatus.netMask,   "RW", NULL);
+      err = config_server_create_string_cell(sector, "Net Mask",    ip.mask,   "RW", NULL);
       require_noerr(err, exit);
       /*Gateway cell*/
-      err = config_server_create_string_cell(sector, "Gateway",     inContext->micoStatus.gateWay,   "RW", NULL);
+      err = config_server_create_string_cell(sector, "Gateway",     ip.gate,   "RW", NULL);
       require_noerr(err, exit);
       /*DNS server cell*/
-      err = config_server_create_string_cell(sector, "DNS Server",  inContext->micoStatus.dnsServer, "RW", NULL);
+      err = config_server_create_string_cell(sector, "DNS Server",  ip.dns, "RW", NULL);
       require_noerr(err, exit);
 #endif
       
