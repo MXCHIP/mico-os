@@ -1,16 +1,26 @@
-/*
- *  Copyright (C) 2015, Marvell International Ltd.
- *  All Rights Reserved.
+/**
+ ******************************************************************************
+ * @file    mdns_private.h
+ * @author  William Xu
+ * @version V1.0.0
+ * @date    3-August-2017
+ * @brief   Declare mdns internal functions and type defines
+ ******************************************************************************
+ *
+ *  UNPUBLISHED PROPRIETARY SOURCE CODE
+ *  Copyright (c) 2017 MXCHIP Inc.
+ *
+ *  The contents of this file may not be disclosed to third parties, copied or
+ *  duplicated in any form, in whole or in part, without the prior written
+ *  permission of MXCHIP Corporation.
+ ******************************************************************************
  */
 
 #ifndef __MDNS_PRIVATE_H__
 #define __MDNS_PRIVATE_H__
 
-#include <mdns.h>
-
-#include "mico.h"
+#include "mdns.h"
 #include "mdns_message.h"
-#include "mdns_opt.h"
 
 enum mdns_status_t {
 	INIT,
@@ -84,7 +94,7 @@ typedef struct mdns_ctrl_sock_data {
 	void *service;
 } mdns_ctrl_data;
 
-#if MDNS_QUERY_API
+#ifdef MDNS_QUERY_API
 enum sinst_state {
     SINST_STATE_INIT = 0,
     SINST_STATE_CLEAN,
@@ -217,15 +227,15 @@ struct mdns_service_config {
  * in answer section of incoming query */
 #define RS_ANS_NOT_FOUND	0x08
 
-#if MDNS_DEBUG
+#if CONFIG_MDNS_DEBUG
 extern char *statenames[];
 extern char *eventnames[];
 
 /* logging helpers */
 void debug_print_message(struct mdns_message *m);
 void debug_print_name(struct mdns_message *m, uint8_t *name);
-#define LOG(M, ...) MICO_LOG(MDNS_DEBUG, "MDNS LOG", M, ##__VA_ARGS__)
-#define DBG(M, ...) MICO_PRINT(MDNS_DEBUG, M, ##__VA_ARGS__)
+#define LOG(M, ...) MICO_LOG(CONFIG_MDNS_DEBUG, "MDNS LOG", M, ##__VA_ARGS__)
+#define DBG(M, ...) MICO_PRINT(CONFIG_MDNS_DEBUG, M, ##__VA_ARGS__)
 #else
 #define debug_print_message(m) do {} while (0)
 #define debug_print_name(m, n) do {} while (0)
@@ -345,15 +355,24 @@ int query_halt(void);
 		(t)->tv_usec = ((ms)%1000) * 1000;				\
 	} while (0)
 
+/* mDNS Interface multicast group State */
+enum iface_mc_group_state {
+    JOIN = 0,
+    LEAVE,
+};
+
+
+/* mdns_iface_group_state_change: Join or leave multicast group for a net interface */
+int mdns_iface_group_state_change(netif_t iface, enum iface_mc_group_state state);
+
 /* sock6 should be passed as -1, when message is required to be sent only
  * on IPv4 address.
  * to_addr should be passed as 0, when message is required to be sent on
  * mDNS multicast address, otherwise unicast reply would be sent on to_addr.
  */
-int mdns_join_multicast_group(netif_t iface);
 int mdns_send_msg(struct mdns_message *m, int sock, unsigned short port, netif_t out_interface, in_addr_t to_addr);
-int mdns_send_ctrl_msg(int msg, uint16_t port);
-int mdns_send_ctrl_iface_msg(int msg[], uint16_t port, int size);
+int mdns_send_ctrl_msg_uint32(uint16_t port, int msg);
+int mdns_send_ctrl_msg(uint16_t port, void *msg);
 int mdns_add_srv_ptr_txt(struct mdns_message *m, struct mdns_service *s,
 			 uint8_t *fqdn, int section, uint32_t ttl);
 int mdns_add_srv(struct mdns_message *m, uint16_t priority,
@@ -378,7 +397,7 @@ int mdns_add_name_lo(struct mdns_message *m, uint8_t *label, uint16_t offset);
 int mdns_query_init(struct mdns_message *m);
 int mdns_parse_message(struct mdns_message *m, int mlen);
 int mdns_response_init(struct mdns_message *m);
-#ifdef CONFIG_DNSSD_QUERY
+#if CONFIG_DNSSD_QUERY
 int dns_send_msg(struct mdns_message *m, int sock, unsigned short port,
 		 void *out_interface, struct in_addr out_addr);
 int dns_socket_close(int s);

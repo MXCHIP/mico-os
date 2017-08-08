@@ -1,208 +1,26 @@
-/*! \file mdns.h
- * \brief The mDNS/DNS-SD Responder-Querier
+/**
+ ******************************************************************************
+ * @file    mdns.h
+ * @author  William Xu
+ * @version V1.0.0
+ * @date    3-August-2017
+ * @brief   mdns daemon APIs
+ ******************************************************************************
  *
- * mDNS (Multicast DNS) and DNS-SD (DNS based Service Discovery) together
- * enable Service Discovery in Zero configuration networks by using the
- * standard DNS protocol packets but with minor changes.
+ *  UNPUBLISHED PROPRIETARY SOURCE CODE
+ *  Copyright (c) 2017 MXCHIP Inc.
  *
- *  \section  mdns_usage Example Usage:
- *
- *  \subsection responder Working with mDNS Responder (Announcing the service)
- *
- *  The following code announces the service named
- *  wm_demo._smartenergy._tcp.local
- *  with the given TXT records' key-value pairs.
- *
- * \code
- * #include <mdns.h>
- * #include <wm_net.h>
- *
- * struct mdns_service myservice;
- * char service_name[]="wm_demo";
- * char serv_type[]="smartenergy";
- * char keyvals[]="txtvers=2|path=/wm_demo|description=Wireless" \
- *				"Microcontroller|Product=WM1";
- * char domain[]="local";
- * char dname[]="myhost";
- * int wm_mdns_start()
- * {
- *        int ret = 0;
- *        void *handle;
- *        memset(&myservice,0,sizeof(myservice));
- *        myservice.proto = MDNS_PROTO_TCP;
- *        myservice.servname = service_name;
- *        myservice.servtype = serv_type;
- *        myservice.keyvals = keyvals;
- *        myservice.port = 8888;
- *        myservice.domain = domain;
- *        handle = net_get_sta_handle();
- *        mdns_start(domain, dname);
- *        mdns_set_txt_rec(&myservice, keyvals, '|');
- *        ret = mdns_announce_service(&myservice, handle);
- *        return ret;
- * }
- *
- * int wm_mdns_stop()
- * {
- *        mdns_stop();
- *        return 0;
- * }
- * \endcode
- *
- * In order to announce a set of services at once, use
- * mdns_announce_service_arr().
- *
- * <h2>Service Discovery with Linux</h2>
- *
- * The services published in the way described above can be discovered from a
- * Linux machine connected in the same network using avahi-tools.
- * For example, if all service instances belonging to a particular type of
- * service in the network need to be discovered.
- *
- * Following command looks for service instances of the type "_smartenergy._tcp"
- * in the network. The second line shows the output for the command, which
- * discovered the service instance published with the given service type.
- * \code
- * avahi-browse _smartenergy._tcp
- * + wlan0 IPv4 wm_demo                               _smartenergy._tcp    local
- * \endcode
- *
- *  \subsection querier Working with mDNS Querier (Querying the service)
- *
- *  The following code monitors for the service of type
- *  "_smartenergy._tcp.local."
- *  Any state change to the monitored service is reported through a callback 
- *  function wm_demo_mdns_query_cb.
- *
- * \code
- * #include <mdns.h>
- * #include <wm_net.h>
- *
- * char fqst[]="_smartenergy._tcp.local";
- *
- * static int wm_demo_mdns_query_cb(void *data, const struct mdns_service *s,
- *				int status)
- * {
- *        wmprintf("Got callback for %s\r\n", s->servname);
- *
- *        if (status == MDNS_DISCOVERED)
- *        	wmprintf("DISCOVERED:\r\n");
- *        else if (status == MDNS_CACHE_FULL)
- *              wmprintf("NOT_CACHED:\r\n");
- *        else if (status == MDNS_DISAPPEARED)
- *             	wmprintf("DISAPPEARED:\r\n");
- *        else if (status == MDNS_UPDATED)
- *             	wmprintf("UPDATED:\r\n");
- *        else {
- *              wmprintf("Warning: unknown status %d\r\n", status);
- *              return WM_SUCCESS;
- *        }
- *        wmprintf("%s._%s._%s.%s.\r\n",s->servname, s->servtype,
- *		s->proto == MDNS_PROTO_UDP ? "udp" : "tcp",
- *		s->domain);
- *        wmprintf("at %d.%d.%d.%d:%d\r\n",
- *		(s->ipaddr >> 24) & 0xff, (s->ipaddr >> 16) & 0xff,
- *		(s->ipaddr >> 8) & 0xff, s->ipaddr & 0xff,
- *		htons(s->port));
- *        wmprintf("TXT : %s\r\n", s->keyvals ? s->keyvals : "no key vals");
- *
- *        return WM_SUCCESS;
- * }
- *
- * int wm_mdns_start()
- * {
- *	void *iface = net_get_sta_handle();
- *	mdns_start(NULL, NULL);
- *	mdns_query_monitor(fqst, wm_demo_mdns_query_cb, NULL, iface);
- * }
- *
- * int wm_mdns_stop()
- * {
- *        mdns_stop();
- *        return 0;
- * }
- * \endcode
- *
- *  \subsubsection mdns_subtype_support  mDNS subtype base querier support
- *
- * WMSDK mDNS querier also supports subtype base discovery. To browse for
- * a subtype base query, "fqst" should be in following format:
- * \<subtype_name\>._sub._\<user_protocol\>._\<tcp or udp\>.\<domain\>
- *
- * In order to search for "_marvell" subtype based services chanage value of
- * fqst in the querier code above to "_marvell._sub._http._tcp.local";
- *
- * <h2>Publishing Service using Linux</h2>
- *
- * Following command publishes service using avahi publish, which could be
- * queried using above code snippet.
- *
- * avahi-publish -s "MarvellService"  _smartenergy._tcp 80
- *
- * Following command publishes "subtype" based service using avahi publish,
- * which could be queried by making changes in querier code snippet as described
- * in \ref mdns_subtype_support section.
- *
- * avahi-publish -s --domain="local" --subtype="_marvell._sub._http._tcp"
- *                                            "MarvellService" "_http._tcp" 80
- *
- * \subsection build_options Build Options
- * A number of build options are available in order to optimize footprint,
- * specify the target system, etc. These are conventionally provided as config
- * options as opposed to being defined directly in a header file. They
- * include:
- *
- * <b>CONFIG_MDNS_QUERY</b>: Developers who require the ability to query for
- * services as opposed to just responding to such queries should define
- * MDNS_QUERY. This enables the mdns_query_* functions described below.  These
- * functions will return -WM_E_MDNS_NOIMPL if the mdns library was built without
- * MDNS_QUERY defined. By default this option is disabled.
- *
- * <b>CONFIG_MDNS_CHECK_ARGS</b>: Define this option to enable various error
- * checking on the input. Developers may wish to enable this during development
- * to ensure that various inputs such as host names are legal.  Then, if the
- * inputs are not going to change, this option can be turned off to save code
- * space. By default this option is disabled.
- *
- * <b>CONFIG_XMDNS</b>: Define this option to select Extended-mDNS operations.
- * Extended mDNS extends specification of mDNS to site-local scope in order to
- * support multi-hop LANs that forward multicast packets but do not provide
- * a unicast DNS service. Note that selecting Extended-mDNS requires top-level
- * domain name ".site", instead of mDNS' ".local" domain name. Both domains
- * are functionally disjoint, both from a name space and address space
- * perspective. Application could register to only one domain name i.e enabling
- * ex-mDNS would mean .local will not work for querier as well as responder.
- *
- * CONFIG_MDNS_DEBUG: Define this option to include debugging and logging.
- * By default this option is disabled.
- *
-*/
-
-
-/*
- *  Copyright 2008-2015, Marvell International Ltd.
- *  All Rights Reserved.
+ *  The contents of this file may not be disclosed to third parties, copied or
+ *  duplicated in any form, in whole or in part, without the prior written
+ *  permission of MXCHIP Corporation.
+ ******************************************************************************
  */
 
 #ifndef MDNS_H
 #define MDNS_H
 
-#include <mdns_port.h>
 #include "mico.h"
-/* mdns control socket ports
- *
- * mdns uses two control sockets to communicate between the mdns threads and
- * any API calls.  This control socket is actually a UDP socket on the loopback
- * interface.  Developers who wish to specify certain ports for this control
- * socket can do so by changing MDNS_CTRL_RESPONDER and MDNS_CTRL_QUERIER.
- */
-//#ifndef MDNS_CTRL_RESPONDER
-#define MDNS_CTRL_RESPONDER 0
-//#endif
-
-//#ifndef MDNS_CTRL_QUERIER
-#define MDNS_CTRL_QUERIER  (MDNS_CTRL_RESPONDER + 1)
-//#endif
+#include "mdns_opt.h"
 
 /** Maximum length of labels
  *
@@ -225,12 +43,36 @@
  */
 #define MDNS_MAX_KEYVAL_LEN	255	/* defined by the standard : 255*/
 
-/** mDNS Interface State
- */
-enum iface_mc_group_state {
-    JOIN = 0,
-    LEAVE,
-};
+/** protocol values for the proto member of the mdns_service descriptor */
+/** TCP Protocol */
+#define MDNS_PROTO_TCP 0
+/** UDP Protocol */
+#define MDNS_PROTO_UDP 1
+
+/** Maximum no. of services allowed to be announced on a single interface. */
+#define MAX_MDNS_LST 5
+
+/* Total number of interface config supported by mdns */
+#define MDNS_MAX_SERVICE_CONFIG 2
+
+/** MDNS Error Codes */
+#define ERR_MDNS_BASE              -36650   /** Starting error code for all mdns errors. */
+#define	ERR_MDNS_INVAL             -36651   /** invalid argument */
+#define ERR_MDNS_BADSRC            -36652   /** bad service descriptor */
+#define ERR_MDNS_TOOBIG            -36653  /** not enough room for everything */
+#define ERR_MDNS_NOIMPL            -36654  /** unimplemented feature */
+#define ERR_MDNS_NOMEM             -36655  /** insufficient memory */
+#define ERR_MDNS_INUSE             -36656  /** requested resource is in use */
+#define ERR_MDNS_NORESP            -36657  /** requested resource is in use */
+#define ERR_MDNS_FSOC              -36658  /** failed to create socket for mdns */
+#define ERR_MDNS_FREUSE            -36659  /** failed to reuse multicast socket */
+#define ERR_MDNS_FBINDTODEVICE     -36660  /** failed to bind mdns socket to device */
+#define ERR_MDNS_FBIND             -36661  /** failed to bind mdns socket */
+#define ERR_MDNS_FMCAST_JOIN       -36662  /** failed to join multicast socket */
+#define ERR_MDNS_FMCAST_SET        -36663  /** failed to set multicast socket */
+#define ERR_MDNS_FQUERY_SOC        -36664  /** failed to create query socket */
+#define ERR_MDNS_FQUERY_THREAD     -36665  /** failed to create mdns thread */
+#define ERR_MDNS_END               -36670  /** Last generic error code (inclusive) */
 
 /** mDNS Interface State
  * mDNS interface state can be changed by using mdns_iface_state_change()
@@ -257,26 +99,6 @@ enum iface_state {
 	 */
 	REANNOUNCE
 };
-
-/** MDNS Error Codes */
-#define ERR_MDNS_BASE              -36650   /** Starting error code for all mdns errors. */
-#define	ERR_MDNS_INVAL             -36651   /** invalid argument */
-#define ERR_MDNS_BADSRC            -36652   /** bad service descriptor */
-#define ERR_MDNS_TOOBIG            -36653  /** not enough room for everything */
-#define ERR_MDNS_NOIMPL            -36654  /** unimplemented feature */
-#define ERR_MDNS_NOMEM             -36655  /** insufficient memory */
-#define ERR_MDNS_INUSE             -36656  /** requested resource is in use */
-#define ERR_MDNS_NORESP            -36657  /** requested resource is in use */
-#define ERR_MDNS_FSOC              -36658  /** failed to create socket for mdns */
-#define ERR_MDNS_FREUSE            -36659  /** failed to reuse multicast socket */
-#define ERR_MDNS_FBINDTODEVICE     -36660  /** failed to bind mdns socket to device */
-#define ERR_MDNS_FBIND             -36661  /** failed to bind mdns socket */
-#define ERR_MDNS_FMCAST_JOIN       -36662  /** failed to join multicast socket */
-#define ERR_MDNS_FMCAST_SET        -36663  /** failed to set multicast socket */
-#define ERR_MDNS_FQUERY_SOC        -36664  /** failed to create query socket */
-#define ERR_MDNS_FQUERY_THREAD     -36665  /** failed to create mdns thread */
-#define ERR_MDNS_END               -36670  /** Last generic error code (inclusive) */
-
 
 /** service descriptor
  *
@@ -315,8 +137,10 @@ enum iface_state {
  * proto: Either MDNS_PROTO_TCP or MDNS_PROTO_UDP depending on what protocol
  * clients should use to connect to the service servtype.
  *
- * keyvals: NULL-terminated string of colon-separated key=value pairs.  These
- * are the key/value pairs for the TXT record associated with a service type.
+ * keyvals: NULL-terminated string of colon-separated key=value pairs.
+ * Note: they can only be created by mdns_set_txt_rec() when initializing a service.
+ *
+ * keyvals are the key/value pairs for the TXT record associated with a service type.
  * For example, the servtype "http" defines the TXT keys "u", "p", and "path"
  * for the username, password, and path to a document.  If you supplied all of
  * these, the keyvals string would be:
@@ -354,9 +178,8 @@ struct mdns_service
 	char *keyvals;
 	/** IP Address of device */
 	uint32_t ipaddr;
-#ifdef CONFIG_IPV6
+	/** IPv6 Address of device */
 	uint32_t ip6addr[4];
-#endif /* CONFIG_IPV6 */
 
 	/** The following members are for internal use only and should not be
 	 * dereferenced by the user.
@@ -370,27 +193,12 @@ struct mdns_service
 	uint32_t flags;
 };
 
-/** Maximum no. of services allowed to be announced on a single interface. */
-#define MAX_MDNS_LST 5
-/** Maximum no. of different interfaces supported by mDNS. */
-#define MAX_INTERFACE 2
-
-/* Total number of interface config supported by mdns */
-#define MDNS_MAX_SERVICE_CONFIG 2
-
-/** protocol values for the proto member of the mdns_service descriptor */
-/** TCP Protocol */
-#define MDNS_PROTO_TCP 0
-/** UDP Protocol */
-#define MDNS_PROTO_UDP 1
-
 /** mdns_start
  *
  * Start the responder thread (and the querier thread if querying is enabled).
  *
- *
  * Note that the mdns_start() function must be called only after the network
- * stack is up.
+ * stack is initialized.
  *
  * The responder thread wait for application's request to announce services.
  * Using mdns_announce_service() and mdns_announce_service_arr() call, services
@@ -410,7 +218,7 @@ struct mdns_service
  * will not be launched, only query support will be enabled.  This is useful if
  * only the query functionality is desired.
  *
- * \return WM_SUCCESS for success or mdns error code
+ * \return kNoErr for success or mdns error code
  *
  * NOTES:
  *
@@ -439,49 +247,7 @@ int mdns_start(const char *domain, char *hostname);
  */
 void mdns_stop(void);
 
-/** Note Configuring CONFIG_MDNS_SERVICE_CACHE_SIZE in mDNS Querier
- *
- * This is a menuconfig option and can be configured from "make menuconfig" ->
- * Modules -> MDNS -> mDNS Full-Fledged Query(monitoring) API -> Maximum number
- * of service instances that can be monitored.
- *
- * Suppose CONFIG_MDNS_SERVICE_CACHE_SIZE is 16 and that a user has invoked
- * mdns_query_monitor to monitor services of type _http._tcp.local. Assume
- * the query callback handler returns WM_SUCCESS for all the instances
- * discovered.
- *
- * Further,suppose that this particular domain has 17 instances of this type.
- * The first 16 instances to be discovered will result in 16 callbacks with the
- * status MDNS_DISCOVERED.  These instances will be cached and monitored for
- * updates, disappearance, etc.  When the 17th instance is discovered, the
- * callback will be called as usual, but the status will be MDNS_CACHE_FULL,
- * and the service will not be monitored.  While a best effort is made to
- * deliver all of the service information, the mdns_service may be incomplete.
- * Specifically, the ipaddr may be 0 and the service name may be "".  Further,
- * the callback may be called again if the 17th instance of the service
- * announces itself on the network again.  If one of the other services
- * disappears, the next announcement from the 17th instance will result in a
- * callback with status MDNS_DISCOVERED, and from that point forward it will be
- * monitored.
- *
- * So what's the "best" value for CONFIG_MDNS_SERVICE_CACHE_SIZE?  This depends
- * on the application and on the field in which the application is deployed.  If
- * a particular application knows that it will never see more than 6 instances
- * of a service, then 6 is a fine value for CONFIG_MDNS_SERVICE_CACHE_SIZE.  In
- * this case, callbacks with a status of MDNS_CACHE_FULL would represent a
- * warning or error condition.  Similarly, if an application cannot handle any
- * more than 10 instances of a service, then CONFIG_MDNS_SERVICE_CACHE_SIZE
- * should be 10 and callbacks with a status of MDNS_CACHE_FULL can be ignored.
- * If the maximum number of service instances is not known, and the application
- * retains its own state for each instance of a service, it may be able to use
- * that state to do the right thing when the callback status is MDNS_CACHE_FULL.
- *
- * For applications with constrained memory ,a point to note is that each
- * service instance requires little above 1K bytes. This should be considered
- * while deciding the CONFIG_MDNS_SERVICE_CACHE_SIZE.
- *
- * The default value of CONFIG_MDNS_SERVICE_CACHE_SIZE is set to 2.
- */
+
 
 
 /** mdns query callback
@@ -522,7 +288,7 @@ void mdns_stop(void);
  *
  * NOTES:
  *
- * The query callback should return WM_SUCCESS in the case where it has
+ * The query callback should return kNoErr in the case where it has
  * discovered service of interest (MDNS_DISCOVERED, MDNS_UPDATED status). If
  * the callback return non-zero value for MDNS_DISCOVERED and MDNS_UPDATED
  * status codes, that particular service instance is not cached by the mDNS
@@ -533,13 +299,13 @@ void mdns_stop(void);
  * call any mdns API functions from within callbacks.
  *
  */
+#define MDNS_DISCOVERED     1
+#define MDNS_UPDATED        2
+#define MDNS_DISAPPEARED    3
+#define MDNS_CACHE_FULL     4
+
 typedef int (* mdns_query_cb)(void *data, const struct mdns_service *s,
 			int status);
-
-#define MDNS_DISCOVERED		1
-#define MDNS_UPDATED		2
-#define MDNS_DISAPPEARED	3
-#define MDNS_CACHE_FULL		4
 
 /** mdns_query_monitor
  *
@@ -565,20 +331,20 @@ typedef int (* mdns_query_cb)(void *data, const struct mdns_service *s,
  * handle can be obtained from net_get_sta_handle() or net_get_uap_handle()
  * function calls
  *
- * \return WM_SUCCESS: the query was successfully launched.  The caller should expect
+ * \return kNoErr: the query was successfully launched.  The caller should expect
  * the mdns_query_cb to be invoked as instances of the specified service are
  * discovered.
  *
- * \return WM_E_MDNS_INVAL: cb was NULL or fqst was not valid.
+ * \return ERR_MDNS_INVAL: cb was NULL or fqst was not valid.
  *
- * \return -WM_E_MDNS_NOMEM: CONFIG_MDNS_MAX_SERVICE_MONITORS is already being
+ * \return ERR_MDNS_NOMEM: CONFIG_MDNS_MAX_SERVICE_MONITORS is already being
  * monitored.  Either this value must be increased, or a service must be
  * unmonitored by calling mdns_query_unmonitor.
  *
- * \return -WM_E_MDNS_INUSE: The specified service type is already being monitored by another
+ * \return ERR_MDNS_INUSE: The specified service type is already being monitored by another
  * callback, and multiple callbacks per service are not supported.
  *
- * \return -WM_E_MDNS_NORESP: No response from the querier.  Perhaps it was not launched or
+ * \return ERR_MDNS_NORESP: No response from the querier.  Perhaps it was not launched or
  * it has crashed.
  *
  * Note: multiple calls to mdns_query_service_start are allowed.  This enables
@@ -598,6 +364,7 @@ int mdns_query_monitor(char *fqst, mdns_query_cb cb, void *data, netif_t iface);
  * generated before the service is unmonitored.
  */
 void mdns_query_unmonitor(char *fqst);
+
 
 /** mdns_announce_service
  *
@@ -628,26 +395,22 @@ void mdns_query_unmonitor(char *fqst);
  * Interface handle can be obtained from net_get_sta_handle or
  * net_get_uap_handle function calls.
  *
- * \return WM_SUCCESS: success
+ * \return kNoErr: success
  *
- * \return -WM_E_MDNS_INVAL: input was invalid.  Perhaps a label exceeded
+ * \return ERR_MDNS_INVAL: input was invalid.  Perhaps a label exceeded
  * MDNS_MAX_LABEL_LEN, or a name composed of the supplied label exceeded
  * MDNS_MAX_NAME_LEN. Perhaps hostname was NULL and the query capability is not
  * compiled. Perhaps service pointer or iface pointer is NULL
  *
- * \return -WM_E_MDNS_BADSRC: one of the service descriptors in the service
+ * \return ERR_MDNS_BADSRC: one of the service descriptors in the service
  * was invalid.  Perhaps key/val pair exceeded MDNS_MAX_KEYVAL_LEN
  *
- * \return -WM_E_MDNS_TOOBIG: The combination of name information and service
+ * \return ERR_MDNS_TOOBIG: The combination of name information and service
  * descriptors does not fit in a single packet, which is required by this
  * implementation
  *
- * \return -WM_FAIL: No space to add new interface or a new service in a given
+ * \return kGeneralErr: No space to add new interface or a new service in a given
  * interface.
- *
- * \return -WM_E_MDNS_FSOC: failed to create loopback control socket
- *
- * \return -WM_E_MDNS_FBIND: failed to bind control socket
  *
  */
 int mdns_announce_service(struct mdns_service *service, netif_t iface);
@@ -672,14 +435,10 @@ int mdns_announce_service(struct mdns_service *service, netif_t iface);
  * de-announced. Interface handle can be obtained from net_get_sta_handle or
  * net_get_uap_handle function calls
  *
- * \return WM_SUCCESS: success
+ * \return kNoErr: success
  *
- * \return -WM_E_MDNS_INVAL: invalid parameters. Perhaps service pointer or
+ * \return ERR_MDNS_INVAL: invalid parameters. Perhaps service pointer or
  * iface pointer is NULL
- *
- * \return -WM_E_MDNS_FSOC: failed to create loopback control socket
- *
- * \return -WM_E_MDNS_FBIND: failed to bind control socket
  *
  */
 int mdns_deannounce_service(struct mdns_service *service, netif_t iface);
@@ -706,22 +465,22 @@ int mdns_deannounce_service(struct mdns_service *service, netif_t iface);
  * Interface handle can be obtained from net_get_sta_handle or
  * net_get_uap_handle function calls.
  *
- * \return WM_SUCCESS: success
+ * \return kNoErr: success
  *
- * \return -WM_E_MDNS_INVAL: input was invalid.  Perhaps a label exceeded
+ * \return ERR_MDNS_INVAL: input was invalid.  Perhaps a label exceeded
  * MDNS_MAX_LABEL_LEN, or a name composed of the supplied labels exceeded
  * MDNS_MAX_NAME_LEN. Perhaps hostname was NULL and the query capability is not
  * compiled. Perhaps services pointer or iface pointer is NULL
  *
- * \return -WM_E_MDNS_BADSRC: one of the service descriptors in the services
+ * \return ERR_MDNS_BADSRC: one of the service descriptors in the services
  * list was invalid.  Perhaps one of the key/val pairs exceeded
  * MDNS_MAX_KEYVAL_LEN
  *
- * \return -WM_E_MDNS_TOOBIG: The combination of name information and service
+ * \return ERR_MDNS_TOOBIG: The combination of name information and service
  * descriptors does not fit in a single packet, which is required by this
  * implementation
  *
- * \return -WM_FAIL: No space to add new interface or services in a given
+ * \return kGeneralErr: No space to add new interface or services in a given
  * interface. Maximum no. of services that can be announced per interface is
  * \ref MAX_MDNS_LST
  *
@@ -745,14 +504,10 @@ int mdns_announce_service_arr(struct mdns_service *services[], netif_t iface);
  * de-announced. Interface handle can be obtained from net_get_sta_handle or
  * net_get_uap_handle function calls
  *
- * \return WM_SUCCESS: success
+ * \return kNoErr: success
  *
- * \return -WM_E_MDNS_INVAL: invalid parameters. Perhaps services pointer or
+ * \return ERR_MDNS_INVAL: invalid parameters. Perhaps services pointer or
  * iface pointer is NULL
- *
- * \return -WM_E_MDNS_FSOC: failed to create loopback control socket
- *
- * \return -WM_E_MDNS_FBIND: failed to bind control socket
  *
  */
 int mdns_deannounce_service_arr(struct mdns_service *services[], netif_t iface);
@@ -807,42 +562,56 @@ int mdns_deannounce_service_all(netif_t iface);
  *
  * \param state valid interface state from \ref iface_state
  *
- * \return WM_SUCCESS: success
- *
- * \return -WM_E_MDNS_FSOC: failed to create loopback control socket
- *
- * \return -WM_E_MDNS_FBIND: failed to bind control socket
+ * \return kNoErr for success or mdns error code
  *
  */
 int mdns_iface_state_change(netif_t iface, enum iface_state state);
 
-int mdns_iface_group_state_change(netif_t iface, enum iface_mc_group_state state);
-
-void mdns_set_hostname(char *hostname);
-int mdns_stat();
-
-#ifdef CONFIG_MDNS_TESTS
-/* mdns_tests
+/** mdns_set_hostname
  *
- * Run internal mdns tests
+ *  Set new host name, use mdns_iface_state_change(iface, REANNOUNCE) to anounce
+ *  the new host name.
  *
- * This function is useful to verify that various internal mdns functionality
- * is properly working after a port, or after adding new features.  If
- * MDNS_TEST is undefined, it is an empty function.  It is not meant to be
- * compiled or run in a production system.  Test output is written using
- * mdns_log().
  */
-void mdns_tests(void);
+void mdns_set_hostname(char *hostname);
 
-int mdns_cli_init(void);
-void dname_size_tests(void);
-void dname_cmp_tests(void);
-void increment_name_tests(void);
-void txt_to_c_ncpy_tests(void);
+/** Set mDNS TXT Records
+ *
+ * This function sets the TXT record field for a given mDNS service.
+ * mDNS TXT record string is in-place converted and stored in a format defined
+ * by TXT resource record format.
+ *
+ * \note This function MUST be called before adding or announcing
+ * the mDNS service. Otherwise the resultant behavior can be erroneous.
+ *
+ * \param s Pointer to mDNS service
+ *
+ * \param keyvals TXT record string consisting of one or more key value pairs,
+ * which can be separated by a separator like '|', '.'. For example,
+ * \code
+ * char keyvals[] = "key1=value1|key2=value2|key3=value3"
+ * \endcode
+ * The separator value is also passed to this function as mentioned below.
+ * keyvals string must persist between the calls to mdns_start and mdns_stop.
+ * Hence define these variables in global memory
+ *
+ *
+ * \param separator The separator used to separate individual key value pairs in
+ * the above mentioned TXT record string. If TXT record contains separator, replace
+ * with '/[separator]'. For example, if separator use '|', replace '|' with '/|' in
+ * key value pair.
+ *
+ * \return kNoErr on success
+ *
+ * \return ERR_MDNS_TOOBIG if length of TXT record exceeds the permissible
+ * limit as specified by \ref MDNS_MAX_KEYVAL_LEN
+ *
+ * \return ERR_MDNS_INVAL if value of TXT record string is invalid
+ *
+ */
+int mdns_set_txt_rec(struct mdns_service *s, char *keyvals, char separator);
 
-#endif
-
-#ifdef CONFIG_DNSSD_QUERY
+#if CONFIG_DNSSD_QUERY
 /** dnssd_query_monitor
  *
  * Query for and monitor instances of a service published by unicast DNS server.
@@ -851,8 +620,8 @@ void txt_to_c_ncpy_tests(void);
  * query callback is called as described above.
  *
  * \param fqst Pointer to a null-terminated string specifying the fully-
- * qualified service type.  For example, "_http._tcp.marvelltest" would query
- * for all http servers in the ".marvelltest" domain.
+ * qualified service type.  For example, "_http._tcp.mxchiptest" would query
+ * for all http servers in the ".mxchiptest" domain.
  *
  * \param cb an mdns_query_cb to be called when services matching the specified
  * fqst are discovered, are updated, or disappear.  Callback will be passed the
@@ -860,27 +629,27 @@ void txt_to_c_ncpy_tests(void);
  * the discovered service, and a status code.
  *
  * \param dns_addr DNS IP address in form of struct in_addr. One can get the IP
- * from DNS string using dns_gethostbyname API.
+ * from DNS string using gethostbyname API.
  *
  * \param data a void * that will passed to cb when services are discovered,
  * are updated, or disappear.  This can be anything that the user wants, such
  * as pointer to a custom internal data structure.
  *
- * \return WM_SUCCESS: the query was successfully launched.  The caller should
+ * \return kNoErr: the query was successfully launched.  The caller should
  * expect the mdns_query_cb to be invoked as instances of the specified service
  * are discovered.
  *
- * \return WM_E_MDNS_INVAL: cb was NULL or fqst was not valid.
+ * \return ERR_MDNS_INVAL: cb was NULL or fqst was not valid.
  *
- * \return -WM_E_MDNS_NOMEM: CONFIG_MDNS_MAX_SERVICE_MONITORS is already being
+ * \return ERR_MDNS_NOMEM: CONFIG_MDNS_MAX_SERVICE_MONITORS is already being
  * monitored.  Either this value must be increased, or a service must be
  * unmonitored by calling mdns_query_unmonitor.
  *
- * \return -WM_E_MDNS_INUSE: The specified service type is already being
+ * \return ERR_MDNS_INUSE: The specified service type is already being
  * monitored by another callback, and multiple callbacks per service are not
  * supported.
  *
- * \return -WM_E_MDNS_NORESP: No response from the querier.  Perhaps it was not
+ * \return ERR_MDNS_NORESP: No response from the querier.  Perhaps it was not
  * launched or it has crashed.
  *
  * Note #1: Only single dnssd query monitor is allowed.
@@ -888,7 +657,7 @@ void txt_to_c_ncpy_tests(void);
  * to save the footprint DNS and mDNS queriers are merged together.
  */
 int dnssd_query_monitor(char *fqst, mdns_query_cb cb,
-			struct in_addr dns_addr, void *data, net_if_t iface);
+			struct in_addr dns_addr, void *data, netif_t iface);
 
 /** dnssd_query_unmonitor
  *
@@ -904,39 +673,12 @@ int dnssd_query_monitor(char *fqst, mdns_query_cb cb,
 void dnssd_query_unmonitor(char *fqst);
 #endif
 
-/** Set mDNS TXT Records
+/** mdns_cli_init
  *
- * This function sets the TXT record field for a given mDNS service.
- * mDNS TXT record string is in-place converted and stored in a format defined
- * by TXT resource record format.
+ * Add mdns commands to mico CLI, shuld be excuted after cli_init or mico_system_init
  *
- * \note This function MUST be called before adding or announcing
- * the mDNS service. Otherwise the resultant behavior can be erroneous.
- *
- * \param s Pointer to mDNS service
- *
- * \param keyvals TXT record string consisting of one or more key value pairs,
- * which can be separated by a separator like ':', '|'. For example,
- * \code
- * char keyvals[] = "key1=value1|key2=value2|key3=value3"
- * \endcode
- * The separator value is also passed to this function as mentioned below.
- * keyvals string must persist between the calls to mdns_start and mdns_stop.
- * Hence define these variables in global memory
- *
- *
- * \param separator The separator used to separate individual key value pairs in
- * the above mentioned TXT record string. If TXT record contains single
- * key value pair then set separator value appropriately. For example, it can
- * be set to '|' if the character '|' is not used in key value pair.
- *
- * \return WM_SUCCESS on success
- *
- * \return -WM_E_MDNS_TOOBIG if length of TXT record exceeds the permissible
- * limit as specified by \ref MDNS_MAX_KEYVAL_LEN
- *
- * \return -WM_E_MDNS_INVAL if value of TXT record string is invalid
- *
+ * return: none
  */
-int mdns_set_txt_rec(struct mdns_service *s, char *keyvals, char separator);
+void mdns_cli_init(void);
+
 #endif

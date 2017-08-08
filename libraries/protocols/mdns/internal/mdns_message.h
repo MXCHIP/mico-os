@@ -1,18 +1,29 @@
-/*
- *  Copyright (C) 2015, Marvell International Ltd.
- *  All Rights Reserved.
+/**
+ ******************************************************************************
+ * @file    mdns_message.h
+ * @author  William Xu
+ * @version V1.0.0
+ * @date    3-August-2017
+ * @brief   mdns message defines
+ ******************************************************************************
+ *
+ *  UNPUBLISHED PROPRIETARY SOURCE CODE
+ *  Copyright (c) 2017 MXCHIP Inc.
+ *
+ *  The contents of this file may not be disclosed to third parties, copied or
+ *  duplicated in any form, in whole or in part, without the prior written
+ *  permission of MXCHIP Corporation.
+ ******************************************************************************
  */
 
 #ifndef MDNS_MESSAGE_H
 #define MDNS_MESSAGE_H
 
-#include "mico.h"
-#include "mdns_opt.h"
+#include "mdns_private.h"
 #include "mdns_port.h"
 #include "queue.h"
 
 /* settings */
-
 #define MDNS_MAX_QUESTIONS		48
 #define MDNS_MAX_ANSWERS		32
 #define MDNS_MAX_AUTHORITIES	32

@@ -1,9 +1,11 @@
-/*
- *  Copyright (C) 2015, Marvell International Ltd.
- *  All Rights Reserved.
- */
-
-/*
+/**
+ ******************************************************************************
+ * @file    mdns_responder_thread.c
+ * @author  William Xu
+ * @version V1.0.0
+ * @date    8-Aug-2017
+ * @brief   This file provide the mdns responder daemon thread
+ *
  * This code implements the responder portion of mdns.
  * Responder can
  * 1) ANNOUNCE new service(s)
@@ -46,14 +48,23 @@
  *    - send_init_probes() announces all services from global service pointer
  *      list associated with the given interface handle
  *    - interface_state is set to RUNNING
+ ******************************************************************************
  *
+ *  UNPUBLISHED PROPRIETARY SOURCE CODE
+ *  Copyright (c) 2017 MXCHIP Inc.
+ *
+ *  The contents of this file may not be disclosed to third parties, copied or
+ *  duplicated in any form, in whole or in part, without the prior written
+ *  permission of MXCHIP Corporation.
+ ******************************************************************************
  */
-#include <stdio.h>
-#include <mdns.h>
-#include <mdns_port.h>
-#include <errno.h>
 
+#include <stdio.h>
+#include "mdns.h"
 #include "mdns_private.h"
+#include "mdns_port.h"
+#include "mico_errno.h"
+
 /* Time interval (in msecs) between consecutive probes.
  * RFC 6762 mentions that minimum time interval between consecutive probes
  * should be 250ms.
@@ -777,8 +788,7 @@ int mdns_iface_group_state_change(netif_t iface, enum iface_mc_group_state state
 
     msg.iface = iface;
     msg.service = NULL;
-    ret = mdns_send_ctrl_iface_msg((int *)&msg, MDNS_CTRL_RESPONDER,
-            sizeof(mdns_ctrl_data));
+    ret = mdns_send_ctrl_msg(MDNS_CTRL_RESPONDER, &msg);
     return ret;
 }
 
@@ -800,8 +810,7 @@ int mdns_iface_state_change(netif_t iface, enum iface_state state)
 		return ERR_MDNS_INVAL;
 	msg.iface = iface;
 	msg.service = NULL;
-	ret = mdns_send_ctrl_iface_msg((int *)&msg, MDNS_CTRL_RESPONDER,
-			sizeof(mdns_ctrl_data));
+	ret = mdns_send_ctrl_msg(MDNS_CTRL_RESPONDER, &msg);
 	return ret;
 }
 
@@ -2487,7 +2496,7 @@ static void do_responder(void)
 			LOG("error: select() failed: %d", active_fds);
 
 		if (FD_ISSET(ctrl_sock, &fds)) {
-		    if( mdns_socket_loopback(MDNS_CTRL_RESPONDER, &ctrl_responder_queue) < 0 ) {
+		    if( mdns_socket_queue(MDNS_CTRL_RESPONDER, &ctrl_responder_queue, 0) < 0 ) {
 		        LOG("error: loopback socket err");
 		        continue;
 		    }
@@ -2623,7 +2632,7 @@ int responder_launch(const char *domain, char *hostname)
 	}
         /* populate the fqdn */
 	if (domain == NULL)
-#ifdef CONFIG_XMDNS
+#if CONFIG_XMDNS
 		domain = "site";
 #else
 		domain = "local";
@@ -2645,7 +2654,7 @@ int responder_launch(const char *domain, char *hostname)
 
 #if 0
 #ifdef CONFIG_IPV6
-#ifdef CONFIG_XMDNS
+#if CONFIG_XMDNS
 	ip6addr_aton("FF05::FB", &mdns_ipv6_addr);
 #else
 	ip6addr_aton("FF02::FB", &mdns_ipv6_addr);
@@ -2664,7 +2673,7 @@ int responder_launch(const char *domain, char *hostname)
 #endif	/*	CONFIG_IPV6	*/
 #endif
 	/* create both ends of the control socket */
-	ctrl_sock = mdns_socket_loopback(MDNS_CTRL_RESPONDER, NULL);
+	ctrl_sock = mdns_socket_queue(MDNS_CTRL_RESPONDER, NULL, sizeof(mdns_ctrl_data));
 
 	if (ctrl_sock < 0) {
 		LOG("Failed to create responder control socket: %d",

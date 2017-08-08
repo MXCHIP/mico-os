@@ -12,16 +12,15 @@ NAME := Lib_mdns
 GLOBAL_INCLUDES := include
 
 $(NAME)_SOURCES := mdns_cli.c \
-                   mdns_main.c \
+                   mdns_port.c \
                    mdns_query.c \
                    mdns_respond_thread.c \
                    mdns_respond.c \
-                   mdns.c \
-                   internal/debug.c \
+                   mdns_misc.c \
+                   internal/mdns_debug.c \
                    internal/dname.c
                    
 $(NAME)_INCLUDES := internal
-
 
 
 #$(NAME)_CFLAGS  = $(COMPILER_SPECIFIC_PEDANTIC_CFLAGS)

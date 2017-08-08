@@ -1,15 +1,25 @@
-/*
- *  Copyright (C) 2015, Marvell International Ltd.
- *  All Rights Reserved.
+/**
+ ******************************************************************************
+ * @file    mdns_port.c
+ * @author  William Xu
+ * @version V1.0.0
+ * @date    8-Aug-2017
+ * @brief   All functions in this file are implementation of mDNS APIs exposed 
+ *          to the application. All functions sends control message to mDNS responder
+ *          thread.
+ ******************************************************************************
+ *
+ *  UNPUBLISHED PROPRIETARY SOURCE CODE
+ *  Copyright (c) 2017 MXCHIP Inc.
+ *
+ *  The contents of this file may not be disclosed to third parties, copied or
+ *  duplicated in any form, in whole or in part, without the prior written
+ *  permission of MXCHIP Corporation.
+ ******************************************************************************
  */
 
-/*
- * All functions in this file are implementation of mDNS APIs exposed to the
- * application. All functions sends control message to mDNS responder thread.
- */
 #include <errno.h>
-#include <mdns.h>
-#include <mdns_port.h>
+#include "mdns_port.h"
 #include "mdns_private.h"
 
 
@@ -35,8 +45,7 @@ int mdns_announce_service(struct mdns_service *service, netif_t iface)
 	msg.cmd = MDNS_CTRL_ANNOUNCE_SERVICE;
 	msg.iface = iface;
 	msg.service = service;
-	ret = mdns_send_ctrl_iface_msg((int *)&msg, MDNS_CTRL_RESPONDER,
-			sizeof(mdns_ctrl_data));
+	ret = mdns_send_ctrl_msg(MDNS_CTRL_RESPONDER, &msg);
 
 	return ret;
 }
@@ -54,8 +63,7 @@ int mdns_deannounce_service(struct mdns_service *service, netif_t iface)
 	msg.cmd = MDNS_CTRL_DEANNOUNCE_SERVICE;
 	msg.iface = iface;
 	msg.service = service;
-	ret = mdns_send_ctrl_iface_msg((int *)&msg, MDNS_CTRL_RESPONDER,
-		sizeof(mdns_ctrl_data));
+	ret = mdns_send_ctrl_msg(MDNS_CTRL_RESPONDER, &msg);
 
 	return ret;
 }
@@ -75,8 +83,7 @@ int mdns_announce_service_arr(struct mdns_service *services[], netif_t iface)
 	msg.cmd = MDNS_CTRL_ANNOUNCE_SERVICE_ARR;
 	msg.iface = iface;
 	msg.service = services;
-	ret = mdns_send_ctrl_iface_msg((int *)&msg, MDNS_CTRL_RESPONDER,
-			sizeof(mdns_ctrl_data));
+	ret = mdns_send_ctrl_msg(MDNS_CTRL_RESPONDER, &msg);
 	return ret;
 }
 
@@ -90,8 +97,7 @@ int mdns_deannounce_service_arr(struct mdns_service *services[], netif_t iface)
 	msg.cmd = MDNS_CTRL_DEANNOUNCE_SERVICE_ARR;
 	msg.iface = iface;
 	msg.service = services;
-	ret = mdns_send_ctrl_iface_msg((int *)&msg, MDNS_CTRL_RESPONDER,
-		sizeof(mdns_ctrl_data));
+	ret = mdns_send_ctrl_msg(MDNS_CTRL_RESPONDER, &msg);
 	return ret;
 }
 
@@ -108,8 +114,7 @@ int mdns_deannounce_service_all(netif_t iface)
 	msg.cmd = MDNS_CTRL_DEANNOUNE_ALL;
 	msg.iface = iface;
 	msg.service = NULL;
-	ret = mdns_send_ctrl_iface_msg((int *)&msg, MDNS_CTRL_RESPONDER,
-		sizeof(mdns_ctrl_data));
+	ret = mdns_send_ctrl_msg(MDNS_CTRL_RESPONDER, &msg);
 	return ret;
 }
 

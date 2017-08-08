@@ -51,7 +51,7 @@ extern "C" {
 #define CONFIG_MODE_MONITOR                     (6)
 #define CONFIG_MODE_MONITOR_EASYLINK            (7)
 
-#if MICO_WLAN_CONFIG_MODE == CONFIG_MODE_WAC || MICO_WLAN_CONFIG_MODE == CONFIG_MODE_AWS
+#if MICO_WLAN_CONFIG_MODE == CONFIG_MODE_WAC
 #define EasyLink_Needs_Reboot
 #endif
 

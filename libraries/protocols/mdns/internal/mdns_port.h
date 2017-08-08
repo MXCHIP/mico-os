@@ -1,16 +1,22 @@
-/*
- *  Copyright 2008-2015, Marvell International Ltd.
- *  All Rights Reserved.
- */
-
-
-/*
- *
- * mdns_port.h: porting layer for mdns
- *
+/**
+ ******************************************************************************
+ * @file    mdns_port.h
+ * @author  William Xu
+ * @version V1.0.0
+ * @date    3-August-2017
+ * @brief   porting layer for mdns
  * The porting layer is comprised of functions that must be implemented and
  * linked with mdns.  Various compiler and system defines are also implemented
  * in this file.  Feel free to expand these to work with you system.
+ ******************************************************************************
+ *
+ *  UNPUBLISHED PROPRIETARY SOURCE CODE
+ *  Copyright (c) 2017 MXCHIP Inc.
+ *
+ *  The contents of this file may not be disclosed to third parties, copied or
+ *  duplicated in any form, in whole or in part, without the prior written
+ *  permission of MXCHIP Corporation.
+ ******************************************************************************
  */
 
 #ifndef __MDNS_PORT_H__
@@ -69,6 +75,18 @@
 #error "Please define endianness of target"
 #endif
 
+#define MDNS_THREAD_RESPONDER 1
+#define MDNS_THREAD_QUERIER   2
+
+/* mdns control sockets id
+ *
+ * mdns uses two control sockets to communicate between the mdns threads and
+ * any API calls. This control socket is actually a virtual socket bonded to
+ * os message queue.
+ */
+#define MDNS_CTRL_RESPONDER 0
+#define MDNS_CTRL_QUERIER   1
+
 /*
  * mdsn_thread_entry: Thread entry point function
  */
@@ -93,8 +111,6 @@ typedef void (*mdns_thread_entry)(void);
  * functions.
  *
  */
-#define MDNS_THREAD_RESPONDER 1
-#define MDNS_THREAD_QUERIER	2
 void *mdns_thread_create(mdns_thread_entry entry, int id);
 
 /*
@@ -119,7 +135,7 @@ void mdns_thread_yield(void *t);
  * The mdns daemon will write log messages depending on its build-time
  * log-level.  See mdns.h for details.
  */
-//#define mdns_log(...) wmlog("mdns", __VA_ARGS__);
+#define mdns_log(...) MICO_LOG(CONFIG_MDNS_DEBUG, "MDNS LOG", M, ##__VA_ARGS__)
 
 /*
  * mdns_time_ms: get current time in milliseconds
@@ -151,10 +167,6 @@ int mdns_rand_range(int n);
  * which mdns is to be running.  The multicast TTL should be set to 255 per the
  * mdns specification.
  *
- * mcast_addr: multicast address to join in network byte order
- *
- * port: multicast port in network byte order.
- *
  * Returns the socket descriptor suitable for use with FD_SET, select,
  * recvfrom, etc.  Returns -1 on error.
  *
@@ -167,39 +179,35 @@ int mdns_rand_range(int n);
  */
 int mdns_socket_mcast(void);
 
-/* mdns_socket_loopback: create a loopback datagram (e.g., UDP) socket
+
+/* mdns_iface_group_state_change: Join or leave multicast group for a net interface
+ * this function is called by
  *
- * port: desired port in network byte order.
- *
- * listen: boolean value.  1 indicates that the socket should be a non-blocking
- * listening socket.  Accordingly, it should be bound to the specified port on
- * the loopback address.  0 indicates that the socket will be used to send
- * packets to a listening loopback socket (i.e., a client socket).  Client
- * sockets should block on send and recv.
- *
- * Returns the socket descriptor.  If listen is 1, the socket should be
- * suitable for use with FD_SET, select, recvfrom, etc.  Otherwise, the socket
- * should be suitable for calls to sendto.  Returns -1 on error.
- *
- * Note: if available, the SO_REUSEADDR sockopt should be enabled if listen is
- * 1.  This allows for the stopping and restarting of mdns without waiting for
- * the socket timeout.
- *
- * Note: when recvfrom is called on this socket and non-blocking behavior is
- * desired, the MSG_DONTWAIT flag will be passed.  This may be sufficient to
- * ensure non-blocking behavior.
+ * iface: network interface
  */
-//int mdns_socket_loopback(uint16_t port, int listen);
-int mdns_socket_loopback(uint8_t id, mico_queue_t **queue);
+
+
+
+/* mdns_socket_loopback: Return or create a socket binded to an OS message queue,
+ * mdns use select the socket to wait for the event on the message queue.
+ *
+ * id: MDNS_CTRL_RESPONDER or MDNS_CTRL_QUERIER
+ *
+ * queue: Provide the address to store the message queue, generate a new one if not existed
+ *
+ * size: size of one queue message
+ *
+ * Returns the socket descriptor that bonded to message queue. the socket descriptor
+ * suitable for use with FD_SET, select.
+ */
+int mdns_socket_queue(uint8_t id, mico_queue_t **queue, int msg_size);
 
 /* mdns_socket_close: close a socket
  *
  * s: non-negative control socket returned from either mdns_socket_mcast or
- * mdns_socket_loopback.
+ * mdns_socket_queue.
  */
 int mdns_socket_close(int *s);
 
-int mico_mdns_start(const char *domain, char *hostname);
-int mico_mdns_stop(void);
 
 #endif /* __MDNS_PORT_H__ */

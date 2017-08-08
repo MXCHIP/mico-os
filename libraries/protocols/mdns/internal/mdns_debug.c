@@ -1,11 +1,24 @@
-/*
- *  Copyright (C) 2015, Marvell International Ltd.
- *  All Rights Reserved.
+/**
+ ******************************************************************************
+ * @file    mdns_debug.h
+ * @author  William Xu
+ * @version V1.0.0
+ * @date    3-August-2017
+ * @brief   mdns debug functions
+ ******************************************************************************
+ *
+ *  UNPUBLISHED PROPRIETARY SOURCE CODE
+ *  Copyright (c) 2017 MXCHIP Inc.
+ *
+ *  The contents of this file may not be disclosed to third parties, copied or
+ *  duplicated in any form, in whole or in part, without the prior written
+ *  permission of MXCHIP Corporation.
+ ******************************************************************************
  */
-
 #include "mdns_private.h"
 
-#if MDNS_DEBUG
+#if CONFIG_MDNS_DEBUG
+
 char *statenames[] = {
 	"INIT",
 	"FIRST_PROBE_SENT",

@@ -1,16 +1,19 @@
-/*
- *  Copyright (C) 2015, Marvell International Ltd.
- *  All Rights Reserved.
- */
-
-/*
- * DNS Name helper functions
+/**
+ ******************************************************************************
+ * @file    dname.c
+ * @author  William Xu
+ * @version V1.0.0
+ * @date    3-August-2017
+ * @brief   DNS Name helper functions
+ ******************************************************************************
  *
- * Internally, we use uint8_t to represent dns labels and names.  The reason is
- * that these may contain pointers to other parts of a dns message, which must
- * be unsigned.  Further, some labels and names may contain UTF-8, which is
- * better treated as unsigned.  However, we represent the text in TXT records
- * with normal chars, and data coming from the user is also treated as chars.
+ *  UNPUBLISHED PROPRIETARY SOURCE CODE
+ *  Copyright (c) 2017 MXCHIP Inc.
+ *
+ *  The contents of this file may not be disclosed to third parties, copied or
+ *  duplicated in any form, in whole or in part, without the prior written
+ *  permission of MXCHIP Corporation.
+ ******************************************************************************
  */
 
 #include <stdint.h>
@@ -19,7 +22,7 @@
 
 #include "mdns_private.h"
 #include "mdns_message.h"
-#include "ctype.h"
+#include <ctype.h>
 
 /* write the normal c string "label" to "dst" with appropriate dns length and
  * null termination.  Return a pointer to the byte after the last one written,
@@ -464,9 +467,9 @@ void dname_size_tests(void)
 	goto SUCCESS;
 
 ERROR:
-	wmprintf("Error");
+	printf("Error");
 SUCCESS:
-	wmprintf("Success");
+	printf("Success");
 }
 
 void dname_cmp_tests(void)
@@ -507,9 +510,9 @@ void dname_cmp_tests(void)
 	goto SUCCESS;
 
 ERROR:
-	wmprintf("Error");
+	printf("Error");
 SUCCESS:
-	wmprintf("Success");
+	printf("Success");
 }
 
 void increment_name_tests(void)
@@ -585,9 +588,9 @@ void increment_name_tests(void)
 	goto SUCCESS;
 
 ERROR:
-	wmprintf("Error");
+	printf("Error");
 SUCCESS:
-	wmprintf("Success");
+	printf("Success");
 }
 
 void txt_to_c_ncpy_tests(void)
@@ -628,9 +631,9 @@ void txt_to_c_ncpy_tests(void)
 	goto SUCCESS;
 
 ERROR:
-	wmprintf("Error");
+	printf("Error");
 SUCCESS:
-	wmprintf("Success");
+	printf("Success");
 }
 
 void dname_tests(void)

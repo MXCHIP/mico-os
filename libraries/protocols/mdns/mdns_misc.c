@@ -1,14 +1,23 @@
-/*
- *  Copyright (C) 2015, Marvell International Ltd.
- *  All Rights Reserved.
+/**
+ ******************************************************************************
+ * @file    mdns_misc.c
+ * @author  William Xu
+ * @version V1.0.0
+ * @date    8-Aug-2017
+ * @brief   This file provide the mdns common functions
+ ******************************************************************************
+ *
+ *  UNPUBLISHED PROPRIETARY SOURCE CODE
+ *  Copyright (c) 2017 MXCHIP Inc.
+ *
+ *  The contents of this file may not be disclosed to third parties, copied or
+ *  duplicated in any form, in whole or in part, without the prior written
+ *  permission of MXCHIP Corporation.
+ ******************************************************************************
  */
 
-#include "mico.h"
-
-#include <mdns.h>
-#include <mdns_port.h>
+#include "mdns_port.h"
 #include "mdns_private.h"
-
 
 /* parse a resource record from the current pointer and put it in the resource
  * structure r.  Return 0 for success, -1 for failure.
@@ -519,7 +528,7 @@ int mdns_set_txt_rec(struct mdns_service *s, char *keyvals, char separator)
 }
 
 
-#ifdef CONFIG_DNSSD_QUERY
+#if CONFIG_DNSSD_QUERY
 int dns_send_msg(struct mdns_message *m, int sock, unsigned short port,
 		 void *out_interface, struct in_addr out_addr)
 {
@@ -545,7 +554,7 @@ int dns_send_msg(struct mdns_message *m, int sock, unsigned short port,
 	*/
 	if (!ip) {
 		DBG("Interface is not up\n\r");
-		return -WM_FAIL;
+		return kGeneralErr;
 	}
 
 	len = sendto(sock, (char *)m->header, size, 0, (struct sockaddr *)&to,
@@ -562,82 +571,30 @@ int dns_send_msg(struct mdns_message *m, int sock, unsigned short port,
 #endif
 
 
-int mdns_send_ctrl_msg(int msg, uint16_t port)
+int mdns_send_ctrl_msg_uint32(uint16_t port, int msg)
 {
     int ret;
     mico_queue_t *ctrl_queue;
 
-    ret = mdns_socket_loopback(port, &ctrl_queue);
+    ret = mdns_socket_queue(port, &ctrl_queue, 0);
     if (ret == -1) {
         return ret;
     }
-    DBG("Responder mdns_send_ctrl_msg");
     ret = mico_rtos_push_to_queue(ctrl_queue, &msg, 0);
     return ret;
-
-#if 0
-	int ret;
-	struct sockaddr_in to;
-
-    if( ctrl_sender_sock < 0 ) {
-        ctrl_sender_sock = mdns_socket_loopback(htons(port), 0);
-        if (ctrl_sender_sock < 0) {
-            LOG("error: failed to create loopback socket\r\n");
-            return ctrl_sender_sock;
-        }
-    }
-
-	memset((char *)&to, 0, sizeof(to));
-	to.sin_family = PF_INET;
-	to.sin_port = htons(port);
-	to.sin_addr.s_addr = inet_addr("127.0.0.1");
-	ret = sendto(ctrl_sender_sock, (char *)&msg, sizeof(msg), 0, (struct sockaddr *)&to, sizeof(to));
-	DBG(">>>>>>>>>>>mdns_send_ctrl_msg %d\r\n", ret);
-	if (ret != -1)
-		ret = 0;
-
-	return ret;
-#endif
 }
 
-
-int mdns_send_ctrl_iface_msg(int *msg, uint16_t port, int size)
+int mdns_send_ctrl_msg(uint16_t port, void *msg)
 {
     int ret;
     mico_queue_t *ctrl_queue;
 
-    ret = mdns_socket_loopback(port, &ctrl_queue);
+    ret = mdns_socket_queue(port, &ctrl_queue, 0);
     if (ret == -1) {
         return ret;
     }
-    DBG("Responder mdns_send_ctrl_iface_msg, %d\r\n", ((mdns_ctrl_data *)msg)->cmd);
     ret = mico_rtos_push_to_queue(ctrl_queue, msg, 0);
     return ret;
-
-#if 0
-	int ret;
-	struct sockaddr_in to;
-
-	if( ctrl_sender_sock < 0 ) {
-	    ctrl_sender_sock = mdns_socket_loopback(htons(port), 0);
-	    if (ctrl_sender_sock < 0) {
-	        LOG("error: failed to create loopback socket\r\n");
-	        return ctrl_sender_sock;
-	    }
-	}
-
-
-	memset((char *)&to, 0, sizeof(to));
-	to.sin_family = PF_INET;
-	to.sin_port = htons(port);
-	to.sin_addr.s_addr = inet_addr("127.0.0.1");
-	ret = sendto(ctrl_sender_sock, (char *)msg, size, 0, (struct sockaddr *)&to, sizeof(to));
-	if (ret != -1)
-		ret = 0;
-
-	ret = mdns_socket_close(&s);
-	return ret;
-#endif
 }
 
 /* calculate the interval between the start and stop timestamps accounting for
@@ -710,6 +667,7 @@ void mdns_stop(void)
 	}
 }
 #endif
+
 #ifdef MDNS_TESTS
 void mdns_tests(void)
 {

@@ -1,21 +1,10 @@
-/*
- *  Copyright (C) 2015, Marvell International Ltd.
- *  All Rights Reserved.
- */
-
-#include <stdint.h>
-#include <mdns.h>
-#include <mdns_port.h>
-
-#include "mico.h"
-
-#include "mdns_opt.h"
-#include "mdns_private.h"
-#include "queue.h"
-
-#if MDNS_QUERY_API
-
-/* OVERVIEW
+/**
+ ******************************************************************************
+ * @file    mdns_query.c
+ * @author  William Xu
+ * @version V1.0.0
+ * @date    8-Aug-2017
+ * @brief   This file provide the mdns query api functions
  *
  * The querier monitors any service instances on the network with the service
  * types specified by calls to mdns_query_monitor.  Each service instance has
@@ -35,7 +24,22 @@
  * existing A records, and notify the user without having to traverse the
  * entire list of services that we are monitoring over and over.  See
  * update_service_cache for details on the algorithm.
+ ******************************************************************************
+ *
+ *  UNPUBLISHED PROPRIETARY SOURCE CODE
+ *  Copyright (c) 2017 MXCHIP Inc.
+ *
+ *  The contents of this file may not be disclosed to third parties, copied or
+ *  duplicated in any form, in whole or in part, without the prior written
+ *  permission of MXCHIP Corporation.
+ ******************************************************************************
  */
+
+#include <stdint.h>
+#include "mdns_private.h"
+#include "mdns_port.h"
+
+#ifdef MDNS_QUERY_API
 
 /* global mdns state */
 static void *query_thread;
@@ -43,7 +47,7 @@ static int ctrl_sock;
 static int query_enabled;
 static int mc_sock = -1;
 
-#ifdef CONFIG_DNSSD_QUERY
+#if CONFIG_DNSSD_QUERY
 static int uc_sock;
 #endif
 static struct mdns_message tx_msg;
@@ -87,7 +91,7 @@ struct arec {
 	SLIST_ENTRY(arec) list_item;
 	struct sinst_list sinsts;
 	uint32_t ipaddr;
-#ifdef CONFIG_DNSSD_QUERY
+#if CONFIG_DNSSD_QUERY
 	bool is_unicast;
 	struct in_addr dns_addr;
 #endif
@@ -119,7 +123,7 @@ struct aaaa_rec {
 	SLIST_ENTRY(aaaa_rec) list_item;
 	struct sinst_list sinsts;
 	uint32_t ipaddr[4];
-#ifdef CONFIG_DNSSD_QUERY
+#if CONFIG_DNSSD_QUERY
 	bool is_unicast;
 	struct in_addr dns_addr;
 #endif
@@ -156,88 +160,6 @@ static int do_callback(struct service_instance *s, int c)
 		LOG("Warning: callback returned failure.\r\n");
 	}
 	return ret;
-}
-
-
-/* Send a control message msg to the server listening at localhost:port.
- * Expect an int response code from the server.
- */
-int query_send_ctrl_msg(query_ctrl_msg *msg, uint16_t port)
-{
-    int ret;
-    mico_queue_t *ctrl_queue;
-
-    ret = mdns_socket_loopback(port, &ctrl_queue);
-    if (ret == -1) {
-        return ret;
-    }
-    ret = mico_rtos_push_to_queue(ctrl_queue, msg, 0);
-    return ret;
-
-
-#if 0
-	int ret;
-	struct sockaddr_in to;
-	int s;
-	fd_set fds;
-	struct timeval t;
-	int status;
-	struct sockaddr_in from;
-	socklen_t size = sizeof(struct sockaddr_in);
-
-	s = mdns_socket_loopback(port), NULL);
-	if (s < 0) {
-		LOG("error: failed to create loopback socket\r\n");
-		return -1;
-	}
-
-	memset((char *)&to, 0, sizeof(to));
-	to.sin_family = PF_INET;
-	to.sin_port = htons(port);
-	to.sin_addr.s_addr = inet_addr("127.0.0.1");
-
-	ret =
-	    sendto(s, (char *)msg, msg->length, 0, (struct sockaddr *)&to,
-		   sizeof(to));
-	if (ret < 0) {
-		//LOG("error: failed to send control message: %d\r\n", net_get_sock_error(s));
-	    LOG("error: failed to send control message\r\n");
-		ret = ERR_MDNS_NORESP;
-		goto done;
-	}
-
-	FD_ZERO(&fds);
-	FD_SET(s, &fds);
-	SET_TIMEOUT(&t, 2000);
-	ret = select(s + 1, &fds, NULL, NULL, &t);
-	if (ret == -1) {
-		LOG("error: select failed for control socket: %d\r\n", errno);
-		ret = ERR_MDNS_NORESP;
-		goto done;
-	}
-
-	if (!FD_ISSET(s, &fds)) {
-		LOG("error: no control response received.\r\n");
-		ret = ERR_MDNS_NORESP;
-		goto done;
-	}
-
-	ret =
-	    recvfrom(s, (char *)&status, sizeof(status), 0,
-		     (struct sockaddr *)&from, &size);
-	if (ret == -1) {
-		LOG("error: failed to recv response to control message: %d\r\n",
-		    errno);
-		ret = ERR_MDNS_NORESP;
-		goto done;
-	}
-	ret = status;
-done:
-	/* we do not check status of mdns_socket_close() */
-	/*   assuming it will never fail */
-	mdns_socket_close(&s);
-	return ret;
-#endif
 }
 
 /* find the service monitor for the specified fqst, or NULL if we're not
@@ -556,7 +478,7 @@ static int set_arec(struct service_instance *sinst, struct arec *arec)
 	/* We have an arec, and we're not on any other arec's list */
 	SLIST_INSERT_HEAD(&arec->sinsts, sinst, alist_item);
 	sinst->arec = arec;
-#ifdef CONFIG_DNSSD_QUERY
+#if CONFIG_DNSSD_QUERY
 	arec->is_unicast = sinst->smon->is_unicast;
 	arec->dns_addr = sinst->smon->dns_addr;
 #endif
@@ -596,7 +518,7 @@ static int set_aaaa_rec(struct service_instance *sinst, struct aaaa_rec
 	/* We have an aaaa_rec, and we're not on any other aaaa_rec's list */
 	SLIST_INSERT_HEAD(&aaaa_rec->sinsts, sinst, aaaa_list_item);
 	sinst->aaaa_rec = aaaa_rec;
-#ifdef CONFIG_DNSSD_QUERY
+#if CONFIG_DNSSD_QUERY
 	aaaa_rec->is_unicast = sinst->smon->is_unicast;
 	aaaa_rec->dns_addr = sinst->smon->dns_addr;
 #endif
@@ -1522,7 +1444,7 @@ static int prepare_query(struct mdns_message *m, uint32_t elapsed,
 
 	/* add questions for any unresolved A records. */
 	SLIST_FOREACH_SAFE(arec, &arecs_active, list_item, atmp) {
-#ifdef CONFIG_DNSSD_QUERY
+#if CONFIG_DNSSD_QUERY
 		if (arec->is_unicast != is_unicast)
 			continue;
 		if (arec->is_unicast == true)
@@ -1550,7 +1472,7 @@ static int prepare_query(struct mdns_message *m, uint32_t elapsed,
 
 	SLIST_FOREACH(smon, &smons_active, list_item) {
 
-#ifdef CONFIG_DNSSD_QUERY
+#if CONFIG_DNSSD_QUERY
 		if (smon->is_unicast != is_unicast)
 			continue;
 #endif
@@ -1570,7 +1492,7 @@ static int prepare_query(struct mdns_message *m, uint32_t elapsed,
 			DBG("Added query for service ");
 			debug_print_name(NULL, smon->fqst);
 			DBG("\r\n");
-#ifdef CONFIG_DNSSD_QUERY
+#if CONFIG_DNSSD_QUERY
 			/* Since we have only one unicast socket, there will be
 			   only one smon for unicast */
 			if (smon->is_unicast == true)
@@ -1581,7 +1503,7 @@ static int prepare_query(struct mdns_message *m, uint32_t elapsed,
 			smon->next_refresh =
 			    SUBTRACT(smon->next_refresh, elapsed);
 			*next_event = MIN(*next_event, smon->next_refresh);
-#ifdef CONFIG_DNSSD_QUERY
+#if CONFIG_DNSSD_QUERY
 			if (smon->is_unicast == true)
 				*out_addr = smon->dns_addr;
 #endif
@@ -1597,7 +1519,7 @@ static int prepare_query(struct mdns_message *m, uint32_t elapsed,
 					 NULL, NULL, NULL, elapsed);
 #endif /* CONFIG_IPV6 */
 			*next_event = MIN(*next_event, sinst->next_refresh);
-#ifdef CONFIG_DNSSD_QUERY
+#if CONFIG_DNSSD_QUERY
 			if (smon->is_unicast == true)
 				*out_addr = smon->dns_addr;
 #endif
@@ -1617,7 +1539,7 @@ static int prepare_query(struct mdns_message *m, uint32_t elapsed,
 	 * traffic by inducing responses with answers that actually are known.
 	 */
 	SLIST_FOREACH(smon, &smons_active, list_item) {
-#ifdef CONFIG_DNSSD_QUERY
+#if CONFIG_DNSSD_QUERY
 		if (smon->is_unicast != is_unicast)
 			continue;
 #endif
@@ -1626,7 +1548,7 @@ static int prepare_query(struct mdns_message *m, uint32_t elapsed,
 			smon->next_refresh = smon->refresh_period;
 			*next_event = MIN(*next_event, smon->next_refresh);
 		}
-#ifdef CONFIG_DNSSD_QUERY
+#if CONFIG_DNSSD_QUERY
 		if (smon->is_unicast == true)
 			*out_addr = smon->dns_addr;
 #endif
@@ -1634,7 +1556,7 @@ static int prepare_query(struct mdns_message *m, uint32_t elapsed,
 	return ret > 0 ? 1 : 0;
 }
 
-#ifdef CONFIG_DNSSD_QUERY
+#if CONFIG_DNSSD_QUERY
 extern bool dns_socket_used;
 #endif
 /* Main query thread */
@@ -1658,7 +1580,7 @@ static void do_querier(void)
 		FD_ZERO(&fds);
 		FD_SET(ctrl_sock, &fds);
 
-#ifdef CONFIG_DNSSD_QUERY
+#if CONFIG_DNSSD_QUERY
 		/* The select call on a uc_sock can only be made if that
 		   socket is not closed by \ref dnssd_query_unmonitor api.
 		   So adding the below check */
@@ -1669,7 +1591,7 @@ static void do_querier(void)
 		FD_SET(mc_sock, &fds);
 		max_sock = ctrl_sock > mc_sock ? ctrl_sock : mc_sock;
 
-#ifdef CONFIG_DNSSD_QUERY
+#if CONFIG_DNSSD_QUERY
 		if (dns_socket_used)
 			max_sock = max_sock > uc_sock ? max_sock : uc_sock;
 #endif
@@ -1687,7 +1609,7 @@ static void do_querier(void)
 		/* handle control events
 		 */
 		if (FD_ISSET(ctrl_sock, &fds)) {
-            if( mdns_socket_loopback(MDNS_CTRL_QUERIER, &ctrl_query_queue) == -1 ) {
+            if( mdns_socket_queue(MDNS_CTRL_QUERIER, &ctrl_query_queue, 0) == -1 ) {
                 LOG("error: loopback socket err");
                 continue;
             }
@@ -1733,7 +1655,7 @@ static void do_querier(void)
 
 
 		if (FD_ISSET(mc_sock, &fds)
-#ifdef CONFIG_DNSSD_QUERY
+#if CONFIG_DNSSD_QUERY
 		/*
 		 * We don't add uc_sock if we are not monitoring dnssd service.
 		 * Hence before using FD_ISSET(), check for dns_socket_used
@@ -1747,7 +1669,7 @@ static void do_querier(void)
 			if (FD_ISSET(mc_sock, &fds)) {
 				in_sock = mc_sock;
 			}
-#ifdef CONFIG_DNSSD_QUERY
+#if CONFIG_DNSSD_QUERY
 			else if (dns_socket_used &&
 				   FD_ISSET(uc_sock, &fds)) {
 				in_sock = uc_sock;
@@ -1770,7 +1692,7 @@ static void do_querier(void)
 		DBG("Preparing next query\r\n");
 		struct in_addr out_addr;
 		uint32_t mcast_next_event = UINT32_MAX;
-#ifdef CONFIG_DNSSD_QUERY
+#if CONFIG_DNSSD_QUERY
 		uint32_t ucast_next_event = UINT32_MAX;
 #endif
 		ret = prepare_query(&tx_msg, sleep_time, &mcast_next_event,
@@ -1783,7 +1705,7 @@ static void do_querier(void)
 					              config_g[i].iface_idx, 0);
 				}
 		}
-#ifdef CONFIG_DNSSD_QUERY
+#if CONFIG_DNSSD_QUERY
 		if (dns_socket_used) {
 			ret = prepare_query(&tx_msg, sleep_time,
 				&ucast_next_event, true, &out_addr);
@@ -1873,7 +1795,7 @@ int query_launch()
 #endif /* CONFIG_IPV6 */
 
 	/* create both ends of the control socket */
-	ctrl_sock = mdns_socket_loopback(MDNS_CTRL_QUERIER, NULL);
+	ctrl_sock = mdns_socket_queue(MDNS_CTRL_QUERIER, NULL, sizeof(query_ctrl_msg));
 	if (ctrl_sock < 0) {
 		LOG("Failed to create query control socket: %d\r\n", ctrl_sock);
 		return ctrl_sock;
@@ -1918,7 +1840,7 @@ int query_halt(void)
 {
 	int ret;
 
-	ret = mdns_send_ctrl_msg(MDNS_CTRL_HALT, MDNS_CTRL_QUERIER);
+	ret = mdns_send_ctrl_msg_uint32(MDNS_CTRL_QUERIER, MDNS_CTRL_HALT);
 	if (ret != 0) {
 		LOG("Warning: failed to send HALT message to mdns querier\r\n");
 		return kGeneralErr;
@@ -1939,7 +1861,7 @@ int query_halt(void)
 		LOG("Warning: failed to delete thread.\r\n");
 
 	ret = mdns_socket_close(&ctrl_sock);
-#ifdef CONFIG_DNSSD_QUERY
+#if CONFIG_DNSSD_QUERY
 	ret = dns_socket_close(&uc_sock);
 #endif
 	ret = mdns_socket_close(&mc_sock);
@@ -1999,7 +1921,7 @@ int mdns_add_iface(netif_t iface)
 	return config_idx;
 }
 
-#ifdef CONFIG_DNSSD_QUERY
+#if CONFIG_DNSSD_QUERY
 int dnssd_query_monitor(char *fqst, mdns_query_cb cb,
 			struct in_addr dns_addr, void *data, void *iface)
 {
@@ -2066,7 +1988,7 @@ int mdns_query_monitor(char *fqst, mdns_query_cb cb, void *data, netif_t iface)
 	if (config_idx == kGeneralErr)
 		return kGeneralErr;
 
-#ifdef CONFIG_DNSSD_QUERY
+#if CONFIG_DNSSD_QUERY
 	m->is_unicast = false;
 #endif
 	int ret = save_query_monitor(m, fqst, cb, data);
@@ -2076,7 +1998,7 @@ int mdns_query_monitor(char *fqst, mdns_query_cb cb, void *data, netif_t iface)
 	ctrl_msg.command = MDNS_CTRL_MONITOR;
 	ctrl_msg.length = sizeof(query_ctrl_msg);
 	LOG("Start monitor: %d\r\n", ctrl_msg.command);
-	return query_send_ctrl_msg(&ctrl_msg, MDNS_CTRL_QUERIER);
+	return mdns_send_ctrl_msg(MDNS_CTRL_QUERIER, &ctrl_msg);
 }
 
 void mdns_query_unmonitor(char *fqst)
@@ -2103,7 +2025,7 @@ void mdns_query_unmonitor(char *fqst)
 
 	ctrl_msg.command = MDNS_CTRL_UNMONITOR;
 	ctrl_msg.length = sizeof(query_ctrl_msg);
-	query_send_ctrl_msg(&ctrl_msg, MDNS_CTRL_QUERIER);
+	mdns_send_ctrl_msg(MDNS_CTRL_QUERIER, &ctrl_msg);
 	return;
 }
 
@@ -2134,7 +2056,7 @@ void mdns_query_unmonitor(char *fqst)
 {
 	return;
 }
-#ifdef CONFIG_DNSSD_QUERY
+#if CONFIG_DNSSD_QUERY
 int dnssd_query_monitor(char *fqst, mdns_query_cb cb,
 		      struct in_addr dns_addr, void *data, void *iface)
 {
