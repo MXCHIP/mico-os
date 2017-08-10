@@ -295,3 +295,8 @@ void autoconfig_start(int seconds, int mode)
 	_kernel_api.wifi_apis->autoconfig_start(seconds, mode);
 }
 
+void wlan_set_softap_tdma(int value)
+{
+	_kernel_api.wifi_apis->wlan_set_softap_tdma(value);
+}
+

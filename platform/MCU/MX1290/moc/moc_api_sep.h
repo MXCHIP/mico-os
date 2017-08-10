@@ -152,6 +152,7 @@ typedef struct {
 	int (*wifi_set_country)(int country_code);
 	int (*wlan_rx_mgnt_set)(int enable, mgnt_handler_t cb);
 	void (*autoconfig_start)(int seconds, int mode);
+    void (*wlan_set_softap_tdma)(int value);
 } wifi_api_v1_t;
 
 typedef struct {
