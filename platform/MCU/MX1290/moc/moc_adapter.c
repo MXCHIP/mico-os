@@ -300,3 +300,8 @@ void wlan_set_softap_tdma(int value)
 	_kernel_api.wifi_apis->wlan_set_softap_tdma(value);
 }
 
+int wifi_off_fastly(void)
+{
+    return _kernel_api.wifi_apis->wifi_off_fastly();
+}
+
