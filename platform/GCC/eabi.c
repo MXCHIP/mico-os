@@ -11,8 +11,6 @@
 #include <stddef.h>
 #include <string.h>
 
-//void* __dso_handle = 0;
-
 /* Make this a weak symbol to avoid a multiple definition error when linking
  * with libstdc++-v3.  */
 int __attribute__((weak))

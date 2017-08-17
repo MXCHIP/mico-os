@@ -33,8 +33,8 @@
 #ifndef __AESUtils_h__
 #define __AESUtils_h__
 
-#include "common.h"
-#include "debug.h"
+#include "mico_common.h"
+#include "mico_debug.h"
 
 #include "SecurityUtils.h"
 #define AES_UTILS_USE_MICO_AES 1

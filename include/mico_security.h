@@ -32,7 +32,8 @@
 #pragma once
 
 #include "mico_opt.h"
-#include "common.h"
+#include "mico_common.h"
+
 #include "Curve25519/curve25519-donna.h"
 #include "SHAUtils/sha.h"
 #include "stdint.h"

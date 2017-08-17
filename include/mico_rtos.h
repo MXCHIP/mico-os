@@ -33,8 +33,11 @@
 #define __MICORTOS_H__
 
 #include "mico_opt.h"
-#include "common.h"
+#include "mico_common.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 /** @addtogroup MICO_Core_APIs
   * @{
@@ -703,6 +706,10 @@ int mico_rtos_deinit_event_fd(int fd);
 /**
   * @}
   */
+
+#ifdef __cplusplus
+} /*"C" */
+#endif
 
 #endif
 

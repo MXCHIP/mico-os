@@ -29,13 +29,14 @@
  ******************************************************************************
  */
 
-#ifndef __MICOWLAN_H__
-#define __MICOWLAN_H__
+#ifndef __MICO_WLAN_H__
+#define __MICO_WLAN_H__
+
 
 #include "mico_opt.h"
-
-#include "common.h"
+#include "mico_common.h"
 #include "mico_socket.h"
+
 
 #ifdef __cplusplus
 extern "C" {

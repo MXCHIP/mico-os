@@ -18,8 +18,8 @@
 #ifndef __DHT11_H_
 #define __DHT11_H_
 
-#include "common.h"
-#include "platform.h"
+#include "mico_common.h"
+#include "mico_board.h"
 
 
 /** @addtogroup MICO_Drivers_interface

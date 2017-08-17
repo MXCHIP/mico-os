@@ -19,7 +19,7 @@
 #define __BME280_USER_H_
 
 #include "mico.h"
-#include "platform.h"
+#include "mico_board.h"
 
 
 /** @addtogroup MICO_Drivers_interface

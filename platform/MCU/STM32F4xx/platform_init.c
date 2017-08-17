@@ -18,17 +18,13 @@
 
 
 #include "platform_peripheral.h"
-#include "platform.h"
-#include "platform_config.h"
+#include "mico_board.h"
+#include "mico_board_conf.h"
 #include "platform_logging.h"
 #include <string.h> // For memcmp
 #include "crt0.h"
 #include "mico_rtos.h"
 #include "platform_init.h"
-
-#ifdef __GNUC__
-#include "../../GCC/stdio_newlib.h"
-#endif /* ifdef __GNUC__ */
 
 
 /******************************************************
@@ -87,69 +83,6 @@ mico_mutex_t        stdio_tx_mutex;
 /******************************************************
 *               Function Definitions
 ******************************************************/
-#if defined ( __ICCARM__ )
-static inline void __jump_to( uint32_t addr )
-{
-  __asm( "MOV R1, #0x00000001" );
-  __asm( "ORR R0, R0, R1" );  /* Last bit of jump address indicates whether destination is Thumb or ARM code */
-  __asm( "BLX R0" );
-}
-
-
-#elif defined ( __GNUC__ )
-__attribute__( ( always_inline ) ) static __INLINE void __jump_to( uint32_t addr )
-{
-  addr |= 0x00000001;  /* Last bit of jump address indicates whether destination is Thumb or ARM code */
-  __ASM volatile ("BX %0" : : "r" (addr) );
-}
-
-
-#elif defined ( __CC_ARM )
-static void __asm __jump_to( uint32_t addr )
-{
-                   
-
-  
-  MOV R1, #0x00000001
-  ORR R0, R0, R1  /* Last bit of jump address indicates whether destination is Thumb or ARM code */
-  BLX R0
-}
-#endif
-
-void startApplication( uint32_t app_addr )
-{
-  uint32_t* stack_ptr;
-  uint32_t* start_ptr;
-  
-  if (((*(volatile uint32_t*)app_addr) & 0x2FF80000 ) != 0x20000000)
-  app_addr += 0x200;
-  /* Test if user code is programmed starting from address "ApplicationAddress" */
-  if (((*(volatile uint32_t*)app_addr) & 0x2FF80000 ) == 0x20000000)
-  { 
-    SysTick->CTRL &= ~SysTick_CTRL_ENABLE_Msk;
-
-    /* Clear all interrupt enabled by bootloader */
-    for (int i = 0; i < 8; i++ )
-        NVIC->ICER[i] = 0xFFFFFFFF;
-    
-    stack_ptr = (uint32_t*) app_addr;  /* Initial stack pointer is first 4 bytes of vector table */
-    start_ptr = ( stack_ptr + 1 );  /* Reset vector is second 4 bytes of vector table */
-
-    #if defined ( __ICCARM__)
-    __ASM( "MOV LR,        #0xFFFFFFFF" );
-    __ASM( "MOV R1,        #0x01000000" );
-    __ASM( "MSR APSR_nzcvq,     R1" );
-    __ASM( "MOV R1,        #0x00000000" );
-    __ASM( "MSR PRIMASK,   R1" );
-    __ASM( "MSR FAULTMASK, R1" );
-    __ASM( "MSR BASEPRI,   R1" );
-    __ASM( "MSR CONTROL,   R1" );
-    #endif
-    
-    __set_MSP( *stack_ptr );
-    __jump_to( *start_ptr );
-  }  
-}
 
 void platform_mcu_reset( void )
 {
@@ -207,6 +140,28 @@ WEAK void init_memory( void )
   
 }
 
+void mico_main( void )
+{  
+#ifndef MICO_DISABLE_STDIO
+#ifndef NO_MICO_RTOS
+    mico_rtos_init_mutex( &stdio_tx_mutex );
+    mico_rtos_unlock_mutex( &stdio_tx_mutex );
+    mico_rtos_init_mutex( &stdio_rx_mutex );
+    mico_rtos_unlock_mutex( &stdio_rx_mutex );
+#endif
+
+    ring_buffer_init( (ring_buffer_t*) &stdio_rx_buffer, (uint8_t*) stdio_rx_data, STDIO_BUFFER_SIZE );
+    platform_uart_init( &platform_uart_drivers[MICO_STDIO_UART], &platform_uart_peripherals[MICO_STDIO_UART],
+                       &stdio_uart_config, (ring_buffer_t*) &stdio_rx_buffer );
+#endif
+
+    /* Ensure 802.11 device is in reset. */
+    host_platform_init( );
+
+    /* Customized board configuration. */
+    mico_board_init( );
+}
+
 void init_architecture( void )
 {
   uint8_t i;
@@ -232,21 +187,7 @@ void init_architecture( void )
 
   /* Initialise GPIO IRQ manager */
   platform_gpio_irq_manager_init();
-  
-#ifndef MICO_DISABLE_STDIO
-#ifndef NO_MICO_RTOS
-  mico_rtos_init_mutex( &stdio_tx_mutex );
-  mico_rtos_unlock_mutex ( &stdio_tx_mutex );
-  mico_rtos_init_mutex( &stdio_rx_mutex );
-  mico_rtos_unlock_mutex ( &stdio_rx_mutex );
-#endif
 
-  ring_buffer_init  ( (ring_buffer_t*)&stdio_rx_buffer, (uint8_t*)stdio_rx_data, STDIO_BUFFER_SIZE );
-  platform_uart_init( &platform_uart_drivers[STDIO_UART], &platform_uart_peripherals[STDIO_UART], &stdio_uart_config, (ring_buffer_t*)&stdio_rx_buffer );
-#endif
-
-  /* Ensure 802.11 device is in reset. */
-  host_platform_init( );
 
   /* Initialise nanosecond clock counter */
   platform_init_nanosecond_clock();
@@ -271,8 +212,8 @@ OSStatus stdio_hardfault( char* data, uint32_t size )
 #ifndef MICO_DISABLE_STDIO
   uint32_t idx;
   for(idx = 0; idx < size; idx++){
-    while ( ( platform_uart_peripherals[ STDIO_UART ].port->SR & USART_SR_TXE ) == 0 );
-    platform_uart_peripherals[ STDIO_UART ].port->DR = (data[idx] & (uint16_t)0x01FF);
+    while ( ( platform_uart_peripherals[ MICO_STDIO_UART ].port->SR & USART_SR_TXE ) == 0 );
+    platform_uart_peripherals[ MICO_STDIO_UART ].port->DR = (data[idx] & (uint16_t)0x01FF);
     
   }
 #endif
@@ -310,25 +251,4 @@ const char *mico_generate_cid( uint8_t* length )
 bool isWakeUpFlagPowerOn(void){
   return (RCC_GetFlagStatus(RCC_FLAG_SFTRST) == RESET) ? true : false;
 };
-
-/******************************************************
-*            NO-OS Functions
-******************************************************/
-
-
-#ifdef NO_MICO_RTOS
-static volatile uint32_t no_os_tick = 0;
-
-void SysTick_Handler(void)
-{
-  no_os_tick ++;
-  platform_watchdog_kick( );
-}
-
-uint32_t mico_get_time_no_os(void)
-{
-  return no_os_tick;
-}
-#endif
-
 

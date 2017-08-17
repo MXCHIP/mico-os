@@ -72,6 +72,17 @@ $(OUTPUT_DIR)/Modules/$(call GET_BARE_LOCATION,$(1))$(2:.c=.o): $(strip $($(1)_L
 endef
 
 ###############################################################################
+# MACRO: BUILD_ABS_C_RULE
+# Creates a target for building C languagec files (*.c)
+# $(1) is component, $(2) is the source file, source file has a absolute path according to project root path
+define BUILD_ABS_C_RULE
+-include $(OUTPUT_DIR)/Modules/$(2:.c=.d)
+$(OUTPUT_DIR)/Modules/$(2:.c=.o): $(2) $(CONFIG_FILE) $$(dir $(OUTPUT_DIR)/Modules/$(2)).d $(RESOURCES_DEPENDENCY) $(LIBS_DIR)/$(1).c_opts | $(EXTRA_PRE_BUILD_TARGETS)
+	$$(if $($(1)_START_PRINT),,$(eval $(1)_START_PRINT:=1) $(QUIET)$(ECHO) Compiling $(1) )
+	$(QUIET)$(CC) $(OPTIONS_IN_FILE_OPTION)$(LIBS_DIR)/$(1).c_opts -D__FILENAME__='"$$(notdir $$<)"' -o $$@ $$< $(COMPILER_SPECIFIC_STDOUT_REDIRECT)
+endef
+
+###############################################################################
 # MACRO: CHECK_HEADER_RULE
 # Compiles a C language header file to ensure it is stand alone complete
 # $(1) is component, $(2) is the source header file
@@ -91,7 +102,18 @@ define BUILD_CPP_RULE
 -include $(OUTPUT_DIR)/Modules/$(call GET_BARE_LOCATION,$(1))$(patsubst %.cc,%.d,$(2:.cpp=.d))
 $(OUTPUT_DIR)/Modules/$(call GET_BARE_LOCATION,$(1))$(patsubst %.cc,%.o,$(2:.cpp=.o)): $(strip $($(1)_LOCATION))$(2) $(CONFIG_FILE) $$(dir $(OUTPUT_DIR)/Modules/$(call GET_BARE_LOCATION,$(1))$(2)).d $(RESOURCES_DEPENDENCY) $(LIBS_DIR)/$(1).cpp_opts | $(EXTRA_PRE_BUILD_TARGETS)
 	$$(if $($(1)_START_PRINT),,$(eval $(1)_START_PRINT:=1) $(ECHO) Compiling $(1))
-	$(QUIET)$(CXX) $(OPTIONS_IN_FILE_OPTION)$(LIBS_DIR)/$(1).cpp_opts -o $$@ $$<  $(COMPILER_SPECIFIC_STDOUT_REDIRECT)
+	$(QUIET)$(CXX) $(OPTIONS_IN_FILE_OPTION)$(LIBS_DIR)/$(1).cpp_opts -D__FILENAME__='"$$(notdir $$<)"' -o $$@ $$<  $(COMPILER_SPECIFIC_STDOUT_REDIRECT)
+endef
+
+###############################################################################
+# MACRO: BUILD_ABS_CPP_RULE
+# Creates a target for building C++ language files (*.cpp)
+# $(1) is component name, $(2) is the source file, source file has a absolute path according to project root path
+define BUILD_ABS_CPP_RULE
+-include $(OUTPUT_DIR)/Modules/$(patsubst %.cc,%.d,$(2:.cpp=.d))
+$(OUTPUT_DIR)/Modules/$(patsubst %.cc,%.o,$(2:.cpp=.o)): $(2) $(CONFIG_FILE) $$(dir $(OUTPUT_DIR)/Modules/$(2)).d $(RESOURCES_DEPENDENCY) $(LIBS_DIR)/$(1).cpp_opts | $(EXTRA_PRE_BUILD_TARGETS)
+	$$(if $($(1)_START_PRINT),,$(eval $(1)_START_PRINT:=1) $(ECHO) Compiling $(1))
+	$(QUIET)$(CXX) $(OPTIONS_IN_FILE_OPTION)$(LIBS_DIR)/$(1).cpp_opts -D__FILENAME__='"$$(notdir $$<)"' -o $$@ $$<  $(COMPILER_SPECIFIC_STDOUT_REDIRECT)
 endef
 
 ###############################################################################
@@ -105,6 +127,16 @@ $(OUTPUT_DIR)/Modules/$(call GET_BARE_LOCATION,$(1))$(strip $(patsubst %.S,%.o, 
 endef
 
 ###############################################################################
+# MACRO: BUILD_ABS_S_RULE
+# Creates a target for building Assembly language files (*.s & *.S)
+# $(1) is component name, $(2) is the source file, source file has a absolute path according to project root path
+define BUILD_ABS_S_RULE
+$(OUTPUT_DIR)/Modules/$(strip $(patsubst %.S,%.o, $(2:.s=.o) )):$(2) $($(1)_PRE_BUILD_TARGETS) $(CONFIG_FILE) $$(dir $(OUTPUT_DIR)/Modules/$(strip $(patsubst %.S, %.o, $(2)))).d $(RESOURCES_DEPENDENCY) $(LIBS_DIR)/$(1).c_opts | $(EXTRA_PRE_BUILD_TARGETS)
+	$$(if $($(1)_START_PRINT),,$(eval $(1)_START_PRINT:=1) $(ECHO) Compiling $(1))
+	$(QUIET)$(CC) $(OPTIONS_IN_FILE_OPTION)$(LIBS_DIR)/$(1).c_opts -o $$@ $$< $(COMPILER_SPECIFIC_STDOUT_REDIRECT)
+endef
+
+###############################################################################
 # MACRO: BUILD_COMPONENT_RULES
 # Creates targets for building an entire component
 # Target for the component static library is created in this macro
@@ -112,7 +144,7 @@ endef
 # $(1) is component name
 define BUILD_COMPONENT_RULES
 
-$(eval LINK_LIBS +=$(if $($(1)_SOURCES),$(LIBS_DIR)/$(1).a))
+$(eval LINK_LIBS +=$(if $($(1)_SOURCES) $($(1)_ABS_SOURCES),$(LIBS_DIR)/$(1).a))
 
 
 ifneq ($($(1)_PRE_BUILD_TARGETS),)
@@ -121,6 +153,7 @@ endif
 
 # Make a list of the object files that will be used to build the static library
 $(eval $(1)_LIB_OBJS := $(addprefix $(strip $(OUTPUT_DIR)/Modules/$(call GET_BARE_LOCATION,$(1))),  $(filter %.o, $($(1)_SOURCES:.cc=.o) $($(1)_SOURCES:.cpp=.o) $($(1)_SOURCES:.c=.o) $($(1)_SOURCES:.s=.o) $($(1)_SOURCES:.S=.o)))  $(patsubst %.c,%.o,$(call RESOURCE_FILENAME, $($(1)_RESOURCES))))
+$(eval $(1)_LIB_OBJS += $(addprefix $(strip $(OUTPUT_DIR)/Modules/),  $(filter %.o, $($(1)_ABS_SOURCES:.cc=.o) $($(1)_ABS_SOURCES:.cpp=.o) $($(1)_ABS_SOURCES:.c=.o) $($(1)_ABS_SOURCES:.s=.o) $($(1)_ABS_SOURCES:.S=.o)))  $(patsubst %.c,%.o,$(call RESOURCE_FILENAME, $($(1)_RESOURCES))))
 
 
 $(LIBS_DIR)/$(1).c_opts: $($(1)_PRE_BUILD_TARGETS) $(CONFIG_FILE) | $(LIBS_DIR)
@@ -148,6 +181,10 @@ $(LIBS_DIR)/$(1).a: $$($(1)_LIB_OBJS) $($(1)_CHECK_HEADER_LIST) $(OUTPUT_DIR)/li
 $(foreach src, $(filter %.c, $($(1)_SOURCES)),$(eval $(call BUILD_C_RULE,$(1),$(src))))
 $(foreach src, $(filter %.cpp, $($(1)_SOURCES)) $(filter %.cc, $($(1)_SOURCES)),$(eval $(call BUILD_CPP_RULE,$(1),$(src))))
 $(foreach src, $(filter %.s %.S, $($(1)_SOURCES)),$(eval $(call BUILD_S_RULE,$(1),$(src))))
+
+$(foreach src, $(filter %.c, $($(1)_ABS_SOURCES)),$(eval $(call BUILD_ABS_C_RULE,$(1),$(src))))
+$(foreach src, $(filter %.cpp, $($(1)_ABS_SOURCES)) $(filter %.cc, $($(1)_ABS_SOURCES)),$(eval $(call BUILD_ABS_CPP_RULE,$(1),$(src))))
+$(foreach src, $(filter %.s %.S, $($(1)_ABS_SOURCES)),$(eval $(call BUILD_ABS_S_RULE,$(1),$(src))))
 
 
 $(eval $(1)_LINT_FLAGS +=  $(filter -D% -I%, $($(1)_CFLAGS) $($(1)_INCLUDES) $($(1)_DEFINES) $(MiCO_SDK_INCLUDES) $(MiCO_SDK_DEFINES) ) )

@@ -20,7 +20,7 @@
 */ 
 
 #include "LinkListUtils.h"
-#include "debug.h"
+#include "mico_debug.h"
 
 OSStatus linked_list_init( linked_list_t* list )
 {

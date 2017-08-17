@@ -36,6 +36,7 @@
 #include "string.h"
 #include "StringUtils.h"
 #include "CheckSumUtils.h"
+#include "bootloader.h"
 
 extern const platform_flash_t platform_flash_peripherals[];
 
@@ -46,6 +47,7 @@ extern const platform_flash_t platform_flash_peripherals[];
 extern uint8_t FileName[];
 
 /* Private function prototypes -----------------------------------------------*/
+
 /* Private functions ---------------------------------------------------------*/
 
 /**
@@ -57,12 +59,11 @@ extern uint8_t FileName[];
   */
 static int32_t Receive_Byte (uint8_t *c, uint32_t timeout)
 {
-  if (MicoUartRecv( STDIO_UART, c, 1, timeout )!=kNoErr)
+  if (uart_getchar( (char *)c, timeout )!=kNoErr)
     return -1;
   else
     return 0;
 }
-
 /**
   * @brief  Send a byte
   * @param  c: Character
@@ -70,7 +71,7 @@ static int32_t Receive_Byte (uint8_t *c, uint32_t timeout)
   */
 static uint32_t Send_Byte (uint8_t c)
 {
-  MicoUartSend( STDIO_UART, &c, 1 );
+  uart_putchar( (char)c );
   return 0;
 }
 

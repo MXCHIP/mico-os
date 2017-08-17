@@ -11,6 +11,11 @@
 
 #ifndef __MICO_CLI_H__
 #define __MICO_CLI_H__
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /** Structure for registering CLI commands */
 struct cli_command {
 	/** The name of the CLI command */
@@ -127,6 +132,10 @@ void driver_state_Command(CLI_ARGS);
 
 #ifdef MOC
 void task_Command(CLI_ARGS);
+#endif
+
+#ifdef __cplusplus
+} /*extern "C" */
 #endif
 
 #endif

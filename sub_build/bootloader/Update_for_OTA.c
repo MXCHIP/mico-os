@@ -31,8 +31,8 @@
  */
 
 #include "mico.h"
-#include "platform.h"
-#include "platform_config.h"
+#include "mico_board.h"
+#include "mico_board_conf.h"
 #include "CheckSumUtils.h"
 
 typedef int Log_Status;					
@@ -50,7 +50,12 @@ typedef int Log_Status;
 
 static uint8_t data[SizePerRW];
 static uint8_t newData[SizePerRW];
+
+#ifdef PARAMETER_PARTITION_SIZE
+uint8_t paraSaveInRam[PARAMETER_PARTITION_SIZE];
+#else
 uint8_t paraSaveInRam[16*1024];
+#endif
 
 #define update_log(M, ...) custom_log("UPDATE", M, ##__VA_ARGS__)
 #define update_log_trace() custom_log_trace("UPDATE")
@@ -247,7 +252,9 @@ OSStatus update(void)
   update_log("Update success");
   
 exit:
-  if(err != kNoErr) update_log("Update exit with err = %d", err);
+  if(err != kNoErr) {
+      update_log("Update exit with err = %d", err);
+  }
   return err;
 }
 

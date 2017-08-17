@@ -12,13 +12,14 @@
  * @file
  * Interface functions for Newlib libC implementation
  */
+#ifndef   __MBED__
 
 #include <sys/stat.h>
 #include <sys/times.h>
 #include <sys/unistd.h>
-#include "stdio_newlib.h"
 
-#include "common.h"
+#include "mico.h"
+
 
 #undef errno
 extern int errno;
@@ -101,7 +102,7 @@ int _read( int file, char *ptr, int len )
     switch ( file )
     {
         case STDIN_FILENO:
-            MicoUartRecv(STDIO_UART, ptr, len, 0xFFFFFFFF );
+            MicoUartRecv(MICO_STDIO_UART, ptr, len, 0xFFFFFFFF );
             break;
         default:
             errno = EBADF;
@@ -133,10 +134,10 @@ int _write( int file, char *ptr, int len )
     UNUSED_PARAMETER( channel );
 #ifndef MICO_DISABLE_STDIO
 
-    MicoUartSend( STDIO_UART, (const char*)ptr, len );
+    MicoUartSend( MICO_STDIO_UART, (const char*)ptr, len );
 
 #endif
     return len;
 }
 
-
+#endif

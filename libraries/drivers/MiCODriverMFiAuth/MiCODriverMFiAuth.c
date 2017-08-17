@@ -20,7 +20,7 @@
  ******************************************************************************
  */
 
-#include "MiCODrivers/MiCODriverI2c.h"
+#include "mico.h"
 
 #define CP_ADDRESS_1 0x20
 #define CP_ADDRESS_2 0x22
@@ -74,7 +74,7 @@ static mico_i2c_device_t MFi_CP =
 static OSStatus CP_ReadBuffer(uint8_t* pBuffer, uint8_t ReadAddr, uint16_t NumByteToRead);
 static OSStatus CP_BufferWrite(uint8_t* pBuffer, uint8_t WriteAddr, uint16_t NumByteToWrite);
 
-OSStatus MicoMFiAuthInitialize( int i2c )
+OSStatus MicoMFiAuthInitialize( mico_i2c_t i2c )
 {
     OSStatus err = kNoErr;
     // PLATFORM_TO_DO

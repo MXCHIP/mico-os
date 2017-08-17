@@ -18,7 +18,7 @@
 #ifndef __BUTTON_H_
 #define __BUTTON_H_
 
-#include "platform.h"
+#include "mico_board.h"
 #include "platform_peripheral.h"
 
 

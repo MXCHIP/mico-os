@@ -15,7 +15,7 @@
  ******************************************************************************
  */
 #include "AsciiLib.h"
-#include "common.h"
+#include "mico_common.h"
 
 const uint8_t OLED_Asc2_1206[95][12] =
 {

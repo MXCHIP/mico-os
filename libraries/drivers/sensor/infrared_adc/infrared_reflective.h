@@ -19,7 +19,7 @@
 #define __INFRARED_REFLECTIVE_H_
 
 
-#include "platform.h"
+#include "mico_board.h"
 
 /** @addtogroup MICO_Drivers_interface
   * @{

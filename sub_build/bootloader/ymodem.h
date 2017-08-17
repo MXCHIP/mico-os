@@ -34,9 +34,13 @@
 #ifndef __YMODEM_H_
 #define __YMODEM_H_
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /* Includes ------------------------------------------------------------------*/
-#include "platform.h"
-#include "common.h"
+#include "mico_board.h"
+#include "mico_common.h"
 /* Exported types ------------------------------------------------------------*/
 /* Exported constants --------------------------------------------------------*/
 /* Exported macro ------------------------------------------------------------*/
@@ -69,6 +73,10 @@
 /* Exported functions ------------------------------------------------------- */
 int32_t Ymodem_Receive (uint8_t *buf, mico_flash_t flash, uint32_t flashdestination, int32_t maxRecvSize);
 uint8_t Ymodem_Transmit (mico_flash_t, uint32_t, const  uint8_t* , uint32_t );
+
+#ifdef __cplusplus
+} /*extern "C" */
+#endif
 
 #endif  /* __YMODEM_H_ */
 

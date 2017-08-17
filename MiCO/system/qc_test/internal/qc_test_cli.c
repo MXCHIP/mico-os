@@ -18,7 +18,7 @@
 
 
 #include "mico.h"
-#include "platform.h"
+#include "mico_board.h"
 
 /******************************************************
 *               Variables Definitions
@@ -32,12 +32,12 @@ static char cmd_str[64];
 
 void mf_printf(char *str)
 {
-  MicoUartSend( MFG_TEST, str, strlen(str));
+  MicoUartSend( MICO_MFG_TEST, str, strlen(str));
 }
 
 void mf_putc(char ch)
 {
-  MicoUartSend( MFG_TEST, &ch, 1);
+  MicoUartSend( MICO_MFG_TEST, &ch, 1);
 }
 
 int mf_get_line( char** p_cmd_str )
@@ -56,7 +56,7 @@ int mf_get_line( char** p_cmd_str )
 
   memset(cmd_str, 0, sizeof(cmd_str));
   while(1) {
-    if( MicoUartRecv( MFG_TEST, p, 1, 100) != kNoErr)
+    if( MicoUartRecv( MICO_MFG_TEST, p, 1, 100) != kNoErr)
       continue;
 
     mf_putc(*p);

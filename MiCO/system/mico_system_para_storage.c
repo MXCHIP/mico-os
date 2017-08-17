@@ -54,7 +54,7 @@ static const uint32_t mico_context_section_offsets[ ] =
     [PARA_APP_DATA_SECTION]              = sizeof( system_config_t ),
 };
 
-void* mico_system_context_init( uint32_t user_config_data_size )
+mico_Context_t* mico_system_context_init( uint32_t user_config_data_size )
 {
   void *user_config_data = NULL;
 

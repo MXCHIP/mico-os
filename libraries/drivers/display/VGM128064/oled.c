@@ -16,7 +16,7 @@
  */
 
 #include "mico.h"
-#include "platform.h"
+#include "mico_board.h"
 
 #include "oled.h"
 #include "oledfont.h"  	 

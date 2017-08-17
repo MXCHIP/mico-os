@@ -20,7 +20,7 @@
 
 #include "mico.h"
 #include "hsb2rgb_led.h"
-#include "platform.h"
+#include "mico_board.h"
 
 
 /** @addtogroup MICO_Drivers_interface

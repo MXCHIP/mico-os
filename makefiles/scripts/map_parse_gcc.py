@@ -46,6 +46,7 @@ with open(map_file, 'r') as f:
 		if(not sections):
 			continue
 
+
 		def ram_size(arg):
 			for ram_info in ram_config:
 				if(ram_info['start'] < arg['address'] < ram_info['end']):

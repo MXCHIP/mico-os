@@ -16,9 +16,16 @@
  ******************************************************************************
  */
 
-#pragma once
+#ifndef _SYSTEM_INTERNAL_H_
+#define _SYSTEM_INTERNAL_H_
+
 
 #include "system.h"
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 
 #ifndef MICO_SYSTEM_LOG_INFO_DISABLE
   #define system_log(M, ...) custom_log("SYSTEM", M, ##__VA_ARGS__)
@@ -75,5 +82,7 @@ system_context_t *system_context( void );
 
 #ifdef __cplusplus
 } /*extern "C" */
+#endif
+
 #endif
 

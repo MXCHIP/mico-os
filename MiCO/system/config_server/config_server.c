@@ -17,7 +17,7 @@
 
 #include "mico.h"
 #include "system_internal.h"
-#include "platform.h"
+#include "mico_board.h"
 #include "easylink_internal.h"
 
 #include "SocketUtils.h"

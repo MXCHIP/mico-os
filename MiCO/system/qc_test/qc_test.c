@@ -85,7 +85,7 @@ static uint8_t* _qc_test_uart_init( void )
         uart_config.flags        = UART_WAKEUP_DISABLE;
 
         ring_buffer_init( (ring_buffer_t *) &rx_buffer, (uint8_t *) pbuffer, QC_UART_BUFFER_SIZR );
-        MicoUartInitialize( MFG_TEST, &uart_config, (ring_buffer_t *) &rx_buffer );
+        MicoUartInitialize( MICO_MFG_TEST, &uart_config, (ring_buffer_t *) &rx_buffer );
     }
     return pbuffer;
 }

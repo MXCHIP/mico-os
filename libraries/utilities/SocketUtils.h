@@ -32,7 +32,7 @@
 #ifndef __SocketUtils_h__
 #define __SocketUtils_h__
 
-#include "common.h"
+#include "mico_common.h"
 
 /** @addtogroup MICO_Middleware_Interface
   * @{

@@ -31,7 +31,7 @@
 
 #include "TLVUtils.h"
 
-#include "debug.h"
+#include "mico_debug.h"
 
 
 OSStatus TLVGetNext( const uint8_t *    inSrc, 

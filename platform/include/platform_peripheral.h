@@ -18,7 +18,7 @@
 #include "platform_logging.h"
 #include "platform_mcu_peripheral.h" /* Include MCU-specific types */
 #include "RingBufferUtils.h"
-#include "platform_config.h"
+#include "mico_board_conf.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -312,7 +312,7 @@ typedef struct
 
 typedef struct
 {
-    mico_flash_t               partition_owner;
+    int32_t                    partition_owner;
     const char*                partition_description;
     uint32_t                   partition_start_addr;
     uint32_t                   partition_length;

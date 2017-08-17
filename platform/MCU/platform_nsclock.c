@@ -19,7 +19,7 @@
  *
  */
 
-#include "platform_config.h"
+#include "mico_board_conf.h"
 #include "platform_peripheral.h"
 #include "platform_isr.h"
 #include "platform_core.h"

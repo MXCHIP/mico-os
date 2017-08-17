@@ -13,7 +13,8 @@ THUMB_GNU_ARCH_LIST := Cortex-M0 \
                        Cortex-M3 \
                        Cortex-M4 \
                        Cortex-M4F\
-                       Cortex-R3
+                       Cortex-R3 \
+                       Cortex-M0plus
 
 
 ifneq ($(filter $(HOST_ARCH), $(THUMB_GNU_ARCH_LIST) $(ARM_GNU_ARCH_LIST)),)
@@ -98,8 +99,9 @@ CXX     := "$(TOOLCHAIN_PATH)$(TOOLCHAIN_PREFIX)g++$(EXECUTABLE_SUFFIX)"
 AS      := "$(TOOLCHAIN_PATH)$(TOOLCHAIN_PREFIX)as$(EXECUTABLE_SUFFIX)"
 AR      := "$(TOOLCHAIN_PATH)$(TOOLCHAIN_PREFIX)ar$(EXECUTABLE_SUFFIX)"
 
-ADD_COMPILER_SPECIFIC_STANDARD_CFLAGS   = $(1) -Wall -Wfatal-errors -fsigned-char -ffunction-sections -fdata-sections -fno-common -std=gnu11 $(if $(filter yes,$(MXCHIP_INTERNAL) $(TESTER)),-Werror)
-ADD_COMPILER_SPECIFIC_STANDARD_CXXFLAGS = $(1) -Wall -Wfatal-errors -fsigned-char -ffunction-sections -fdata-sections -fno-common -fno-rtti -fno-exceptions  $(if $(filter yes,$(MXCHIP_INTERNAL) $(TESTER)),-Werror)
+
+ADD_COMPILER_SPECIFIC_STANDARD_CFLAGS   = $(1) -std=gnu99                   -c -Wall -Wextra -Wno-sign-compare -Wno-unused-variable -Wno-unused-parameter -Wno-missing-field-initializers -fmessage-length=0 -fno-exceptions -fno-builtin -ffunction-sections -fdata-sections -fno-common -funsigned-char -MMD -fno-delete-null-pointer-checks -fomit-frame-pointer -DTOOLCHAIN_GCC_ARM -DTOOLCHAIN_GCC
+ADD_COMPILER_SPECIFIC_STANDARD_CXXFLAGS = $(1) -std=gnu++98 -fno-rtti -Wvla -c -Wall -Wextra -Wno-sign-compare -Wno-unused-variable -Wno-unused-parameter -Wno-missing-field-initializers -fmessage-length=0 -fno-exceptions -fno-builtin -ffunction-sections -fdata-sections -fno-common -funsigned-char -MMD -fno-delete-null-pointer-checks -fomit-frame-pointer -DTOOLCHAIN_GCC_ARM -DTOOLCHAIN_GCC
 ADD_COMPILER_SPECIFIC_STANDARD_ADMFLAGS = $(1)
 COMPILER_SPECIFIC_OPTIMIZED_CFLAGS    := -Os
 COMPILER_SPECIFIC_UNOPTIMIZED_CFLAGS  := -O0
@@ -134,8 +136,9 @@ COMPILER_SPECIFIC_LINK_SCRIPT_DEFINE_OPTION = -Wl$(COMMA)-T
 COMPILER_SPECIFIC_LINK_SCRIPT      =  $(addprefix -Wl$(COMMA)-T ,$(1))
 LINKER                             := $(CXX) --static -Wl,-static -Wl,--warn-common
 LINK_SCRIPT_SUFFIX                 := .ld
-TOOLCHAIN_NAME := GCC
-OPTIONS_IN_FILE_OPTION    := @
+TOOLCHAIN_NAME                     := GCC
+TOOLCHAIN_NAME_MBED                := GCC_ARM
+OPTIONS_IN_FILE_OPTION             := @
 
 ENDIAN_CFLAGS_LITTLE   := -mlittle-endian
 ENDIAN_CXXFLAGS_LITTLE := -mlittle-endian
@@ -147,33 +150,40 @@ CLIB_LDFLAGS_NANO_FLOAT:= --specs=nano.specs -u _printf_float
 # Chip specific flags for GCC
 
 ifeq ($(HOST_ARCH),Cortex-M4F)
-CPU_CFLAGS     := -mthumb -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard
-CPU_CXXFLAGS   := -mthumb -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard
+CPU_CFLAGS     := -mthumb -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -D__CORTEX_M4 -D__FPU_PRESENT=1
+CPU_CXXFLAGS   := -mthumb -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -D__CORTEX_M4 -D__FPU_PRESENT=1
 CPU_ASMFLAGS   := -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard
-CPU_LDFLAGS    := -mthumb -mcpu=cortex-m4 -Wl,-A,thumb
+CPU_LDFLAGS    := -mthumb -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Wl,-A,thumb
 CLIB_LDFLAGS_NANO       += -mfpu=fpv4-sp-d16 -mfloat-abi=hard
 CLIB_LDFLAGS_NANO_FLOAT += -mfpu=fpv4-sp-d16 -mfloat-abi=hard
 endif
 
 ifeq ($(HOST_ARCH),Cortex-M4)
-CPU_CFLAGS     := -mthumb -mcpu=cortex-m4
-CPU_CXXFLAGS   := -mthumb -mcpu=cortex-m4
+CPU_CFLAGS     := -mthumb -mcpu=cortex-m4 -D__CORTEX_M4
+CPU_CXXFLAGS   := -mthumb -mcpu=cortex-m4 -D__CORTEX_M4
 CPU_ASMFLAGS   := -mcpu=cortex-m4 -mfpu=softvfp
 CPU_LDFLAGS    := -mthumb -mcpu=cortex-m4 -Wl,-A,thumb
 endif
 
 ifeq ($(HOST_ARCH),Cortex-M3)
-CPU_CFLAGS   := -mthumb -mcpu=cortex-m3
-CPU_CXXFLAGS := -mthumb -mcpu=cortex-m3
+CPU_CFLAGS   := -mthumb -mcpu=cortex-m3 -D__CORTEX_M3
+CPU_CXXFLAGS := -mthumb -mcpu=cortex-m3 -D__CORTEX_M3
 CPU_ASMFLAGS := -mcpu=cortex-m3 -mfpu=softvfp
 CPU_LDFLAGS  := -mthumb -mcpu=cortex-m3 -Wl,-A,thumb
 endif
 
 ifeq ($(HOST_ARCH),Cortex-M0)
-CPU_CFLAGS   := -mthumb -mcpu=cortex-m0
-CPU_CXXFLAGS := -mthumb -mcpu=cortex-m0
+CPU_CFLAGS   := -mthumb -mcpu=cortex-m0 -D__CORTEX_M0
+CPU_CXXFLAGS := -mthumb -mcpu=cortex-m0 -D__CORTEX_M0
 CPU_ASMFLAGS := -mcpu=cortex-m0 -mthumb
 CPU_LDFLAGS  := -mthumb -mcpu=cortex-m0 -Wl,-A,thumb
+endif
+
+ifeq ($(HOST_ARCH),Cortex-M0plus)
+CPU_CFLAGS   := -mthumb -mcpu=cortex-m0plus -D__CORTEX_M0PLUS
+CPU_CXXFLAGS := -mthumb -mcpu=cortex-m0plus -D__CORTEX_M0PLUS
+CPU_ASMFLAGS := -mcpu=cortex-m0plus -mthumb
+CPU_LDFLAGS  := -mthumb -mcpu=cortex-m0plus -Wl,-A,thumb
 endif
 
 ifeq ($(HOST_ARCH),Cortex-R4)

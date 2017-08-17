@@ -33,8 +33,8 @@
 #define __MICODRIVERI2C_H__
 
 #pragma once
-#include "common.h"
-#include "platform.h"
+#include "mico_common.h"
+#include "mico_board.h"
 #include "platform_peripheral.h"
 
 /** @addtogroup MICO_PLATFORM

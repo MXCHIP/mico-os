@@ -173,7 +173,7 @@ struct addrinfo {
 #define F_GETFL 3
 #define F_SETFL 4
 
-#define O_NONBLOCK 1
+
 
 /*
  * Options for level IPPROTO_IP
@@ -326,6 +326,8 @@ struct timeval {
     long      tv_sec;     /* seconds */
     long      tv_usec;    /* and microseconds */
 };
+
+#define O_NONBLOCK 1
 
 #define FD_SETSIZE        64    /**< MAX fd number is 64 in MICO. */
 #define howmany(x, y)   (((x) + ((y) - 1)) / (y))
@@ -716,7 +718,7 @@ struct hostent* gethostbyname(const char *name);
  *             destination string
  */
 
-const char * inet_ntop(int af, const void * restrict src, char * restrict dst, socklen_t size);
+const char * inet_ntop(int af, const void * src, char * dst, socklen_t size);
 
 /**
  * @brief      converts a presentation format address (that is, printable form
@@ -730,7 +732,7 @@ const char * inet_ntop(int af, const void * restrict src, char * restrict dst, s
  *             0 if the address was not parseable in the specified address family, or
  *             -1 if some system error occurred
  */
-int inet_pton(int af, const char * restrict src, void * restrict dst);
+int inet_pton(int af, const char * src, void * dst);
 
 /**
  * Translates the name of a service location (for example, a host name) and/or

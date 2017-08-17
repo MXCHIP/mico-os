@@ -16,7 +16,7 @@
  */
 
 #include "mico.h"
-#include "platform_config.h"
+#include "mico_board_conf.h"
 
 #include "StringUtils.h"  
 #include "system.h"      

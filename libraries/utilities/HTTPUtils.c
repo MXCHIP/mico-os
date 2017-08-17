@@ -29,10 +29,10 @@
  ******************************************************************************
  */
 
-#include "debug.h"
+#include "mico_debug.h"
 #include "StringUtils.h"
 #include "HTTPUtils.h"
-#include "platform.h"
+#include "mico_board.h"
 #include "mico.h"
 
 #include <errno.h>

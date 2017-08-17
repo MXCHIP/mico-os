@@ -114,6 +114,7 @@ $(NAME)_OPTIM_CFLAGS   ?= $(if $(findstring debug,$($(NAME)_BUILD_TYPE)), $(COMP
 $(NAME)_OPTIM_CXXFLAGS ?= $(if $(findstring debug,$($(NAME)_BUILD_TYPE)), $(COMPILER_SPECIFIC_DEBUG_CXXFLAGS), $(if $(findstring release_log,$($(NAME)_BUILD_TYPE)), $(COMPILER_SPECIFIC_RELEASE_LOG_CXXFLAGS), $(COMPILER_SPECIFIC_RELEASE_CXXFLAGS)))
 
 MiCO_SDK_INCLUDES           +=$(addprefix -I$($(NAME)_LOCATION),$(GLOBAL_INCLUDES))
+MiCO_SDK_INCLUDES           +=$(addprefix -I,$(GLOBAL_ABS_INCLUDES))
 MiCO_SDK_LINK_SCRIPT        +=$(if $(GLOBAL_LINK_SCRIPT),$(GLOBAL_LINK_SCRIPT),)
 MiCO_SDK_DEFAULT_LINK_SCRIPT+=$(if $(DEFAULT_LINK_SCRIPT),$(addprefix $($(NAME)_LOCATION),$(DEFAULT_LINK_SCRIPT)),)
 MiCO_SDK_DEFINES            +=$(GLOBAL_DEFINES)
@@ -227,23 +228,35 @@ EXTRA_CFLAGS :=    -DMiCO_SDK_VERSION_MAJOR=$(MiCO_SDK_VERSION_MAJOR) \
 # Load platform makefile to make variables like WLAN_CHIP, HOST_OPENOCD & HOST_ARCH available to all makefiles
 $(eval CURDIR := $(PLATFORM_DIRECTORY)/)
 include $(PLATFORM_DIRECTORY)/$(notdir $(PLATFORM_DIRECTORY)).mk
+
+ifneq ($(MBED_SUPPORT),)
+include $(MICO_OS_PATH)/platform/mbed/mbed.mk
+
+TARGETS := $(foreach target, $(MBED_TARGETS), TARGET_$(target))
+$(eval DIRS := $(shell $(PYTHON) $(LIST_SUB_DIRS_SCRIPT) mico-os/platform/mbed/targets))
+$(foreach DIR, $(DIRS), $(if $(filter $(notdir $(DIR)), $(TARGETS)), $(eval include $(DIR)/$(notdir $(DIR)).mk),))
+
+else
 $(eval CURDIR := $(MICO_OS_PATH)/platform/MCU/$(HOST_MCU_FAMILY)/)
 include $(MICO_OS_PATH)/platform/MCU/$(HOST_MCU_FAMILY)/$(HOST_MCU_FAMILY).mk
+endif
+
 MAIN_COMPONENT_PROCESSING :=1
 $(eval $(call PROCESS_COMPATIBILITY_CHECK,))
 
 # Now we know the target architecture - include all toolchain makefiles and check one of them can handle the architecture
 CC :=
 
-ifneq ($(filter $(HOST_ARCH),Cortex-M3 Cortex-M4 Cortex-M4F Cortex-R4),)
+
+ifneq ($(filter $(HOST_ARCH),Cortex-M3 Cortex-M4 Cortex-M4F Cortex-R4 Cortex-M0 Cortex-M0plus),)
 
 include $(MAKEFILES_PATH)/micoder_toolchain_arm-none-eabi.mk
 
-else # ifneq ($(filter $(HOST_ARCH),Cortex-M3 Cortex-M4 Cortex-R4),)
+else # ifneq ($(filter $(HOST_ARCH),Cortex-M3 Cortex-M4 Cortex-R4 Cortex-M0 Cortex-M0plus)
 ifneq ($(filter $(HOST_ARCH),MIPS),)
 include $(MAKEFILES_PATH)/mico_toolchain_Win32_MIPS.mk
 endif # ifneq ($(filter $(HOST_ARCH),MIPS),)
-endif # ifneq ($(filter $(HOST_ARCH),Cortex-M3 Cortex-M4 Cortex-R4),)
+endif # ifneq ($(filter $(HOST_ARCH),Cortex-M3 Cortex-M4 Cortex-R4 Cortex-M0 Cortex-M0plus),)
 
 ifndef CC
 $(error No matching toolchain found for architecture $(HOST_ARCH))
@@ -348,6 +361,7 @@ $(CONFIG_FILE): $(MiCO_SDK_MAKEFILES) | $(CONFIG_FILE_DIR)
 	$(QUIET)$(call WRITE_FILE_APPEND, $(CONFIG_FILE) ,NO_BOOTLOADER_REQUIRED         	:= $(NO_BOOTLOADER_REQUIRED))
 	$(QUIET)$(foreach comp,$(PROCESSED_COMPONENTS), $(call WRITE_FILE_APPEND, $(CONFIG_FILE) ,$(comp)_LOCATION         := $($(comp)_LOCATION)))
 	$(QUIET)$(foreach comp,$(PROCESSED_COMPONENTS), $(call WRITE_FILE_APPEND, $(CONFIG_FILE) ,$(comp)_SOURCES          += $($(comp)_SOURCES)))
+	$(QUIET)$(foreach comp,$(PROCESSED_COMPONENTS), $(call WRITE_FILE_APPEND, $(CONFIG_FILE) ,$(comp)_ABS_SOURCES      += $($(comp)_ABS_SOURCES)))
 	$(QUIET)$(foreach comp,$(PROCESSED_COMPONENTS), $(call WRITE_FILE_APPEND, $(CONFIG_FILE) ,$(comp)_CHECK_HEADERS    += $($(comp)_CHECK_HEADERS)))
 	$(QUIET)$(foreach comp,$(PROCESSED_COMPONENTS), $(call WRITE_FILE_APPEND, $(CONFIG_FILE) ,$(comp)_INCLUDES         := $(addprefix -I$($(comp)_LOCATION),$($(comp)_INCLUDES))))
 	$(QUIET)$(foreach comp,$(PROCESSED_COMPONENTS), $(call WRITE_FILE_APPEND, $(CONFIG_FILE) ,$(comp)_DEFINES          := $(addprefix -D,$($(comp)_DEFINES))))

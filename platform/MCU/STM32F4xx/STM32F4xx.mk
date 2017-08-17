@@ -60,7 +60,6 @@ GLOBAL_ASMFLAGS += $$(CPU_ASMFLAGS)  $$(ENDIAN_ASMFLAGS_LITTLE)
 GLOBAL_LDFLAGS  += $$(CPU_LDFLAGS)   $$(ENDIAN_LDFLAGS_LITTLE)
 
 
-GLOBAL_LDFLAGS  += -nostartfiles
 GLOBAL_LDFLAGS  += -Wl,--defsym,__STACKSIZE__=$$($(RTOS)_START_STACK)
 GLOBAL_LDFLAGS  += -L ./platform/MCU/$(NAME)/$(TOOLCHAIN_NAME)
 
@@ -73,6 +72,7 @@ $(NAME)_COMPONENTS += utilities
 $(NAME)_SOURCES := ../../$(HOST_ARCH)/crt0_$(TOOLCHAIN_NAME).c \
                    ../../$(HOST_ARCH)/platform_core.c \
                    ../../$(HOST_ARCH)/hardfault_handler.c \
+                   ../../$(HOST_ARCH)/platform_application.c \
                    ../platform_nsclock.c \
                    ../mico_platform_common.c \
                    ../wlan_platform_common.c \

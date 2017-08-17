@@ -31,7 +31,7 @@
 
 
 #include "TimeUtils.h"
-#include "debug.h"
+#include "mico_debug.h"
 #include "mico.h"
 #include <errno.h>
 

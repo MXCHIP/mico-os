@@ -33,7 +33,7 @@
 #ifndef __CheckSumUtils_h__
 #define __CheckSumUtils_h__
 
-#include "common.h"
+#include "mico_common.h"
 
 
 /** \defgroup MICO_Algorithm_APIs MICO Algorithm APIs

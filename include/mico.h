@@ -45,16 +45,22 @@
 #ifndef __MICO_H_
 #define __MICO_H_
 
+
+
 /* MiCO SDK APIs */
 #include "mico_opt.h"
-#include "debug.h"
-#include "common.h"
+#include "mico_debug.h"
+#include "mico_common.h"
 #include "mico_rtos.h"
 #include "mico_wlan.h"
 #include "mico_socket.h"
 #include "mico_security.h"
 #include "mico_platform.h"
 #include "mico_system.h"
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 
 #define MicoGetRfVer                wlan_driver_version
@@ -126,6 +132,26 @@ OSStatus MicoInit( void );
   * @return Point to the identifier 
   */
 const uint8_t* mico_generate_cid( uint8_t *length );
+
+/* Entry point for user Application */
+int main( void );
+
+/**
+ *  Start the application at the given address. This function does
+ *  not return. It is the applications responsibility for flushing to
+ *  or powering down external components such as filesystems or
+ *  socket connections before calling this function. For Cortex-M
+ *  devices this function powers down generic system components such as
+ *  the NVIC and set the vector table to that of the new image followed
+ *  by jumping to the reset handler of the new image.
+ *
+ *  @param address    Starting address of next application to run
+ */
+void mico_start_application(uintptr_t address);
+
+#ifdef __cplusplus
+} /*"C" */
+#endif
 
 #endif /* __MICO_H_ */
 

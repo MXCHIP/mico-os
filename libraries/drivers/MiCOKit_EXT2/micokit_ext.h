@@ -18,7 +18,7 @@
 #ifndef __MICOKIT_EXT_H_
 #define __MICOKIT_EXT_H_
 
-#include "common.h"
+#include "mico_common.h"
 
 //------------------------- MicoKit-EXT board modules drivers ------------------
 #include "rgb_led/P9813/rgb_led.h"

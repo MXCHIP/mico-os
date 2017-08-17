@@ -16,7 +16,7 @@
 #include <stddef.h>
 #include <limits.h>
 
-#include "common.h"
+#include "mico_common.h"
 
 #include "linkhash.h"
 

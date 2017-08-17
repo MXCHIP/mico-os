@@ -18,7 +18,8 @@
  ******************************************************************************
  */
 
-#include "common.h"
+#include "mico_common.h"
+#include "mico_rtos.h"
 #include "platform_peripheral.h"
 
 /******************************************************
@@ -62,9 +63,10 @@ typedef volatile struct _noos_mutex_t
 
 
 /******************************************************
- *               Static Function Declarations
+ *               Function Declarations
  ******************************************************/
-
+extern void mico_main(void);
+extern int __real_main(void);
 
 /******************************************************
  *               Variable Definitions
@@ -244,14 +246,7 @@ OSStatus mico_rtos_deinit_mutex( mico_mutex_t* mutex )
     mutex_pool_free(&noos_mutex);
     *mutex = NULL;
 
-    return kNoErr;    
-}
-
-extern uint32_t mico_get_time_no_os(void);
-
-mico_time_t mico_rtos_get_time(void)
-{
-    return mico_get_time_no_os( );
+    return kNoErr;
 }
 
 /**

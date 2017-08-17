@@ -33,8 +33,11 @@
 #define __StringUtils_h__
 
 #include <stdarg.h>
-#include "common.h"
+#include "mico_common.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 /** @addtogroup MICO_Middleware_Interface
   * @{
@@ -303,6 +306,9 @@ size_t strnlen(const char *s, size_t count);
   * @}
   */
 
+#ifdef __cplusplus
+} /*extern "C" */
+#endif
 
 #endif // __StringUtils_h__
 

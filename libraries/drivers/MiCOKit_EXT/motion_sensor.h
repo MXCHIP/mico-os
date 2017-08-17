@@ -18,7 +18,7 @@
 #ifndef __MOTION_SENSOR_H_
 #define __MOTION_SENSOR_H_
 
-#include "common.h"
+#include "mico_common.h"
 
 /** @addtogroup MICO_Drivers_interface
   * @{

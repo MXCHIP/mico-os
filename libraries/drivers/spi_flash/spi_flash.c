@@ -16,7 +16,7 @@
  */
 
 #include "platform_logging.h"
-#include "platform.h"
+#include "mico_board.h"
 #include "spi_flash.h"
 #include "spi_flash_internal.h"
 #include "spi_flash_platform_interface.h"
@@ -96,6 +96,29 @@ int sflash_sector_erase ( const sflash_handle_t* const handle, unsigned long dev
     retval = generic_sflash_command( handle, SFLASH_SECTOR_ERASE, 3, device_address_array, 0, NULL, NULL );
     check_string(retval == 0, "SPI Flash erase error");
     return retval;
+}
+
+int sflash_erase( const sflash_handle_t* const handle,  uint32_t start_addr, uint32_t end_addr)
+{
+  uint32_t start_sector, end_sector, i = 0;
+  int status = 0;
+
+  /* Get the sector where start the user flash area */
+  start_sector = start_addr>>12;
+  end_sector = end_addr>>12;
+
+  for(i = start_sector; i <= end_sector; i += 1)
+  {
+      /* Device voltage range supposed to be [2.7V to 3.6V], the operation will
+        be done by word */
+      status = sflash_sector_erase( handle, i<<12 );
+      if ( status != 0 )
+      {
+          return status;
+      }
+  }
+
+  return status;
 }
 
 int sflash_read_status_register( const sflash_handle_t* const handle, void* const dest_addr )

@@ -19,15 +19,15 @@ $(NAME)_SOURCES := micokit_ext_mfg.c \
 GLOBAL_INCLUDES := . \
                    ..
                    
-$(NAME)_COMPONENTS += drivers/display/VGM128064 \
-                      drivers/keypad/gpio_button \
+#$(NAME)_COMPONENTS += drivers/display/VGM128064 \
                       drivers/motor/dc_motor \
                       drivers/rgb_led/P9813 \
-                      drivers/sensor/BME280 \
                       drivers/sensor/DHT11 \
                       drivers/sensor/APDS9930 \
                       drivers/sensor/light_adc \
                       drivers/sensor/infrared_adc
+$(NAME)_COMPONENTS += drivers/keypad/gpio_button \
+                      drivers/sensor/BME280 \
                       
 
 #(info $(COMPILER_SPECIFIC_PEDANTIC_CFLAGS))

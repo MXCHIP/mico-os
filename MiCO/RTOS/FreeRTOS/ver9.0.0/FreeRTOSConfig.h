@@ -70,7 +70,7 @@
 #ifndef FREERTOS_CONFIG_H
 #define FREERTOS_CONFIG_H
 
-#include "platform_config.h"
+#include "mico_board_conf.h"
 
 /*-----------------------------------------------------------
  * Application specific definitions.

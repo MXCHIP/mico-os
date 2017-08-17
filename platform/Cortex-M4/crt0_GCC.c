@@ -51,7 +51,7 @@ void _exit( int status );
 #define link_constructors_size   ((unsigned long)&link_constructors_end  -  (unsigned long)&link_constructors_location )
 
 
-__attribute__((section(".copy_ramcode"))) void _start(void)
+__attribute__((section(".copy_ramcode"))) void _mico_start(void)
 {
     /* Copy from flash any code to be run from RAM. */
     uint32_t *dest = (uint32_t *)&link_run_from_ram_code_ram_location;
@@ -72,6 +72,16 @@ __attribute__((section(".copy_ramcode"))) void _start(void)
         "       bx    r0        \n\t");
 }
 
+void software_init_hook(void)
+{
+    /* Initialise clocks and memory. init_clocks() and init_memory() must NOT depend on globals as global data and bss sections aren't initialised yet */
+    init_clocks();
+    init_memory();
+
+    /* TODO: make this an unconditional goto?, so that return address stuff doesn't get put on the stack. (what happens if main returns in this case?) */
+    init_architecture();
+}
+
 void _start_init( void )
 {
     unsigned long ctor_num;
@@ -87,10 +97,6 @@ void _start_init( void )
     /* Enable CPU Cycle counting */
     DWT->CYCCNT = 0;
     DWT->CTRL |= DWT_CTRL_CYCCNTENA_Msk;
-	
-    /* Initialise clocks and memory. init_clocks() and init_memory() must NOT depend on globals as global data and bss sections aren't initialised yet */
-    init_clocks();
-    init_memory();
 
     /* Copy initial values for global variables into RAM  */
     if ( ( &link_global_data_start != &link_global_data_initial_values ) && ( link_global_data_size != 0 ) )
@@ -98,28 +104,12 @@ void _start_init( void )
         memcpy( &link_global_data_start, &link_global_data_initial_values, (size_t) link_global_data_size );
     }
 
-    /* BSS segment is for zero initialised elements, so memset it to zero */
-    memset( &link_bss_location, 0, (size_t) link_bss_size );
-
 #if 0 /* was ifdef DEBUG */
     /* This is not a valid way to fill the stack, since it is currently in use - causes a problem in release with debug on - optimisation of active stack overwriting causes hardfault */
     memset( &link_stack_location, 0xA5, link_stack_size ); /* Fill stack with pattern to allow checking of stack usage */
 #endif /* if 0 */
 
-    /*
-     * Run global C++ constructors if any
-     */
-
-    /* TODO: make this an unconditional goto?, so that return address stuff doesn't get put on the stack. (what happens if main returns in this case?) */
-    init_architecture();
-    init_platform();
-
-    for ( ctor_num = 0; ctor_num < link_constructors_size/sizeof(constructor_ptr_t); ctor_num++ )
-    {
-        link_constructors_location[ctor_num]();
-    }
-
-    main( );
+    _start( );
 
     /* the main loop has returned - there is now nothing to do - reboot. */
 

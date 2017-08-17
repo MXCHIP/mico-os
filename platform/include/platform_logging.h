@@ -12,8 +12,8 @@
 #ifndef __PlatformLogging_h__
 #define __PlatformLogging_h__
 
-#include "common.h"
-#include "debug.h"
+#include "mico_common.h"
+#include "mico_debug.h"
 
 #ifndef MICO_PLATFORM_LOG_INFO_DISABLE
 	#define platform_log(M, ...) custom_log("Platform", M, ##__VA_ARGS__)

@@ -33,8 +33,8 @@
 #pragma once
 
 #include "mico_opt.h"
+#include "mico_common.h"
 
-#include "common.h"
 #include "system.h"
 #include "command_console/mico_cli.h"
 #include "json_c/json.h"
@@ -111,7 +111,7 @@ typedef enum
   * @param  size_of_user_data: The length of config data used by application
   * @retval Address of core data.
   */
-void* mico_system_context_init( uint32_t size_of_user_data );
+mico_Context_t* mico_system_context_init( uint32_t size_of_user_data );
 
 /**
   * @brief  Get the address of the core data.

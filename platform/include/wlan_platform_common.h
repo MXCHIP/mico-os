@@ -15,7 +15,7 @@
 #pragma once
 
 #include "platform_peripheral.h"
-#include "platform_config.h"
+#include "mico_board_conf.h"
 
 #ifdef __cplusplus
 extern "C" {

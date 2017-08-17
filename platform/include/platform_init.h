@@ -119,7 +119,10 @@ void init_memory( void );
 void init_architecture( void) ;
 void init_platform( void) ;
 void init_platform_bootloader( void );
-void startApplication( uint32_t app_addr );
+
+void mico_main(void);
+
+void mico_board_init(void);
 
 #ifdef __cplusplus
 } /*extern "C" */

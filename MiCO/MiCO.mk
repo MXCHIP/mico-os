@@ -13,12 +13,7 @@ ifndef USES_BOOTLOADER
 USES_BOOTLOADER :=1
 endif
 
-ifeq ($(BUILD_TYPE),debug)
-#$(NAME)_COMPONENTS += test/malloc_debug
-endif
-
-
-ifneq ($(RTOS),NoRTOS)
+ifndef NO_MICO_SYSTEM
 $(NAME)_COMPONENTS += MiCO/core \
                       MiCO/system \
                       MiCO/security   
@@ -29,7 +24,11 @@ $(NAME)_COMPONENTS += utilities
 GLOBAL_DEFINES += 
 
 # Add MCU component
+ifneq ($(MBED_SUPPORT),)
+$(NAME)_COMPONENTS += platform/mbed
+else
 $(NAME)_COMPONENTS += platform/MCU/$(HOST_MCU_FAMILY)
+endif
 
 # Define the default ThreadX and FreeRTOS starting stack sizes
 FreeRTOS_START_STACK := 800

@@ -33,8 +33,8 @@
 #define __MICODRIVERFLASH_H__
 
 #pragma once
-#include "common.h"
-#include "platform.h"
+#include "mico_common.h"
+#include "mico_board.h"
 
 /** @addtogroup MICO_PLATFORM
 * @{
@@ -66,23 +66,6 @@
 /******************************************************
  *                 Type Definitions
  ******************************************************/
-     
-typedef enum
-{
-    MICO_PARTITION_ERROR = -1,
-    MICO_PARTITION_BOOTLOADER = MICO_PARTITION_USER_MAX,
-    MICO_PARTITION_APPLICATION,
-    MICO_PARTITION_ATE,
-    MICO_PARTITION_OTA_TEMP,
-    MICO_PARTITION_RF_FIRMWARE,
-    MICO_PARTITION_PARAMETER_1,
-    MICO_PARTITION_PARAMETER_2,
-#ifdef MICO_USE_BT_PARTITION
-    MICO_PARTITION_BT_FIRMWARE,
-#endif
-    MICO_PARTITION_MAX,
-    MICO_PARTITION_NONE,
-} mico_partition_t;
 
 typedef platform_logic_partition_t  mico_logic_partition_t;
 

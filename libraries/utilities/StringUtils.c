@@ -31,7 +31,7 @@
 
 
 #include "StringUtils.h"
-#include "debug.h"
+#include "mico_debug.h"
 #include <stddef.h>
 #include <stdarg.h>
 

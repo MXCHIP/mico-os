@@ -32,7 +32,7 @@
 #define __BMG160_USER_H_
 
 #include "mico_platform.h"
-#include "platform.h"
+#include "mico_board.h"
 
 
 #define s32 int32_t

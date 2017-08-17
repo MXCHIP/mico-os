@@ -36,8 +36,8 @@
 /* Includes ------------------------------------------------------------------*/
 #include "mico.h"
 #include "ymodem.h"
-#include "platform_config.h"
-#include "platform_internal.h"
+#include "mico_board_conf.h"
+//#include "platform_internal.h"
 #include "StringUtils.h"
 #include "bootloader.h"
 #include <ctype.h>                    
@@ -48,6 +48,7 @@
 /* Private macro -------------------------------------------------------------*/
 /* Private variables ---------------------------------------------------------*/
 extern platform_flash_t platform_flash_peripherals[];
+
 
 uint8_t tab_1024[1024] =
 {
@@ -164,15 +165,15 @@ void SerialUpload(mico_flash_t flash, uint32_t flashdestination, char * fileName
 {
   uint8_t status = 0;
   uint8_t key;
-  
+
   printf("Select Receive File\n\r");
-  MicoUartRecv( STDIO_UART, &key, 1, MICO_NEVER_TIMEOUT );
-  
+  MicoUartRecv( MICO_STDIO_UART, &key, 1, MICO_NEVER_TIMEOUT );
+
   if (key == CRC16)
   {
     /* Transmit the flash image through ymodem protocol */
     status = Ymodem_Transmit(flash, flashdestination, (uint8_t *)fileName, maxRecvSize);
-    
+
     if (status != 0)
     {
       printf("\n\rError while Transmitting\n\r");
@@ -199,7 +200,7 @@ void Main_Menu(void)
   mico_logic_partition_t *partition;
   mico_flash_t flash_dev;
   OSStatus err = kNoErr;
-  
+
   while (1)  {                                    /* loop forever                */
     printf ("\n\rMXCHIP> ");
 #if defined __GNUC__
@@ -347,7 +348,7 @@ void Main_Menu(void)
       }
       
       if (findCommandPara(cmdbuf, "e", NULL, 0) != -1){
-        printf ("\n\rErasing dev%d content From 0x%lx to 0x%lx\n\r", flash_dev, startAddress, endAddress);
+        printf ("\n\rErasing dev%ld content From 0x%lx to 0x%lx\n\r", flash_dev, startAddress, endAddress);
         platform_flash_init( &platform_flash_peripherals[ flash_dev ] );
         platform_flash_disable_protect( &platform_flash_peripherals[ flash_dev ], startAddress, endAddress );
         platform_flash_erase( &platform_flash_peripherals[ flash_dev ], startAddress, endAddress );
@@ -355,12 +356,12 @@ void Main_Menu(void)
       }
       
       if (findCommandPara(cmdbuf, "r", NULL, 0) != -1){
-        printf ("\n\rRead dev%d content From 0x%lx to 0x%lx\n\r", flash_dev, startAddress, endAddress);
+        printf ("\n\rRead dev%ld content From 0x%lx to 0x%lx\n\r", flash_dev, startAddress, endAddress);
         SerialUpload(flash_dev, startAddress, "FlashImage.bin", endAddress-startAddress+1);
         continue;
       }
       
-      printf ("\n\rUpdating dev%d content From 0x%lx to 0x%lx\n\r", flash_dev, startAddress, endAddress);
+      printf ("\n\rUpdating dev%ld content From 0x%lx to 0x%lx\n\r", flash_dev, startAddress, endAddress);
       platform_flash_disable_protect( &platform_flash_peripherals[ flash_dev ], startAddress, endAddress );
       SerialDownload(flash_dev, startAddress, endAddress-startAddress+1);                           
     }
@@ -373,7 +374,7 @@ void Main_Menu(void)
         partition = MicoFlashGetInfo( (mico_partition_t)i );
         if (partition->partition_owner == MICO_FLASH_NONE || partition->partition_description == NULL )
             continue;
-        printf( "|ID:%d| %11s |  Dev:%d  | 0x%08lx | 0x%08lx |\r\n", i, partition->partition_description, partition->partition_owner,
+        printf( "|ID:%d| %11s |  Dev:%ld  | 0x%08lx | 0x%08lx |\r\n", i, partition->partition_description, partition->partition_owner,
                partition->partition_start_addr, partition->partition_length);
       }
     }

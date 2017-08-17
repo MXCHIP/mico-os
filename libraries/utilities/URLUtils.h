@@ -32,7 +32,7 @@
 #ifndef __URLUtils_h__
 #define __URLUtils_h__
 
-#include "common.h"
+#include "mico_common.h"
 
 /** @addtogroup MICO_Middleware_Interface
   * @{
