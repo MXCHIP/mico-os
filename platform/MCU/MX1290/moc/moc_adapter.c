@@ -310,3 +310,10 @@ void ssl_set_ecc(int enable)
     _kernel_api.ssl_crypto_apis->ssl_set_ecc(enable);
 }
 
+/* return 1=success; 0=fail*/
+int disable_log_uart(void)
+{
+    return _kernel_api.uart_apis->disable_log_uart();
+}
+
+

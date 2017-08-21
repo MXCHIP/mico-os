@@ -206,6 +206,7 @@ typedef struct {
 	OSStatus (*MicoUartRecv)( mico_uart_t uart, void* data, uint32_t size, uint32_t timeout );
 	uint32_t (*MicoUartGetLengthInBuffer)( mico_uart_t uart ); 
 	void     (*MicoUartPinRedirect)(mico_uart_t uart);
+    int (*disable_log_uart)(void);
 } uart_api_t;
 
 typedef struct {
@@ -236,7 +237,7 @@ typedef struct
 	wifi_api_t *wifi_apis;
 	cli_api_t *cli_apis;
 
-        flash_api_t *flash_apis;
+    flash_api_t *flash_apis;
 	gpio_api_t *gpio_apis;
 	uart_api_t *uart_apis;
 	i2c_api_t *i2c_apis;
