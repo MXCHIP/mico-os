@@ -79,7 +79,7 @@ static uint8_t *cli_rx_data;
 static ring_buffer_t cli_rx_buffer;
 static const mico_uart_config_t cli_uart_config =
 {
-  .baud_rate    = STDIO_UART_BAUDRATE,
+  .baud_rate    = MICO_STDIO_UART_BAUDRATE,
   .data_width   = DATA_WIDTH_8BIT,
   .parity       = NO_PARITY,
   .stop_bits    = STOP_BITS_1,

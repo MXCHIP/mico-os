@@ -13,7 +13,10 @@ ifneq ($(wildcard $(CURDIR)Lib_MFi_WAC.$(HOST_ARCH).$(TOOLCHAIN_NAME).release.a)
 $(NAME)_PREBUILT_LIBRARY := Lib_MFi_WAC.$(HOST_ARCH).$(TOOLCHAIN_NAME).release.a
 else
 # Build from source
-include $(CURDIR)Lib_MFi_WAC_src.mk
+SRC_MAKEFILE := $(CURDIR)Lib_MFi_WAC_src.mk
+ifeq ($(SRC_MAKEFILE), $(wildcard $(SRC_MAKEFILE)))
+include $(SRC_MAKEFILE)
+endif
 endif
 
 $(NAME)_COMPONENTS += drivers/MiCODriverMFiAuth

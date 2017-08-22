@@ -25,6 +25,8 @@
 #include "StringUtils.h"
 #include "CheckSumUtils.h"
 
+#if MICO_CONFIG_SERVER_ENABLE
+
 #define kCONFIGURLRead          "/config-read"
 #define kCONFIGURLWrite         "/config-write"
 #define kCONFIGURLWriteByUAP    "/config-write-uap"  /* Don't reboot but connect to AP immediately */
@@ -566,4 +568,4 @@ OSStatus _LocalConfigRespondInComingMessage(int fd, HTTPHeader_t* inHeader, syst
   return err;
 
 }
-
+#endif

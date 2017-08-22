@@ -16,6 +16,9 @@
 
 #include <stdint.h>
 #include <string.h>
+#include <malloc.h>
+
+#include "mico_debug.h"
 #include "mico_common.h"
 #include "mico_platform.h"
 
@@ -501,6 +504,15 @@ OSStatus mico_uart_init( mico_uart_t uart, const mico_uart_config_t* config, rin
                                           optional_rx_buffer );
 }
 
+OSStatus mico_stdio_uart_init( const mico_uart_config_t* config, ring_buffer_t* optional_rx_buffer )
+{
+
+    return (OSStatus) platform_uart_init( &platform_uart_drivers[MICO_STDIO_UART],
+                                          &platform_uart_peripherals[MICO_STDIO_UART],
+                                          config, optional_rx_buffer );
+}
+
+
 OSStatus mico_uart_deinit( mico_uart_t uart )
 {
     if ( uart >= MICO_UART_NONE )
@@ -766,7 +778,7 @@ void mico_set_bootload_ver(void)
         if (ver[i] != 0xFF)
         return;
     }
-    snprintf((char *)ver, 33, "%s %s %d", MODEL, Bootloader_REVISION , STDIO_UART_BAUDRATE);
+    snprintf((char *)ver, 33, "%s %s %d", MODEL, Bootloader_REVISION , MICO_STDIO_UART_BAUDRATE);
     flashaddr = boot_partition->partition_length - 0x20;
     MicoFlashDisableSecurity( MICO_PARTITION_BOOTLOADER, 0x0, boot_partition->partition_length );
     MicoFlashWrite( MICO_PARTITION_BOOTLOADER, &flashaddr, ver , 32);
@@ -828,5 +840,25 @@ OSStatus MicoFlashDisableSecurity( mico_partition_t partition, uint32_t off_set,
 // {
 //   platform_nanosecond_delay( delayns );
 // }
+
+
+
+static micoMemInfo_t mico_memory;
+
+extern unsigned char __StackLimit[];
+extern unsigned char __end__[];
+
+micoMemInfo_t* mico_memory_info( void )
+{
+    struct mallinfo mi = mallinfo();
+
+    int total_mem = __StackLimit - __end__;
+
+    mico_memory.allocted_memory = mi.uordblks;
+    mico_memory.free_memory = total_mem - mi.uordblks;
+    mico_memory.num_of_chunks = mi.ordblks;
+    mico_memory.total_memory = total_mem;
+    return &mico_memory;
+}
 
 

@@ -110,7 +110,7 @@ OSStatus platform_spi_init( platform_spi_driver_t* driver, const platform_spi_t*
     if ( config->mode & SPI_USE_DMA ){
         if(driver->transfer_complete == NULL)
         {
-            err = mico_rtos_init_semaphore( &driver->transfer_complete, 0 );
+            err = mico_rtos_init_semaphore( &driver->transfer_complete, 1 );
         }
     }
 #endif

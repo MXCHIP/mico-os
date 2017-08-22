@@ -114,6 +114,8 @@ const platform_uart_t platform_uart_peripherals[] = {
     {
         .mbed_tx_pin = STDIO_UART_TX,
         .mbed_rx_pin = STDIO_UART_RX,
+        .mbed_rts_pin = NC,
+        .mbed_cts_pin = NC ,
     },
     [MICO_UART_2] =
     {
@@ -361,7 +363,6 @@ void platform_init_peripheral_irq_priorities( void )
 
 void mico_board_init( void )
 {
-    button_init_t init;
 
     platform_init_peripheral_irq_priorities();
 
@@ -378,6 +379,9 @@ void mico_board_init( void )
     mico_gpio_init( (mico_gpio_t) BOOT_SEL, INPUT_PULL_UP );
     mico_gpio_init( (mico_gpio_t) MFG_SEL, INPUT_PULL_UP );
 
+#ifndef BOOTLOADER
+    button_init_t init;
+
     //  Initialise EasyLink buttons
     init.gpio = EasyLink_BUTTON;
     init.pressed_func = PlatformEasyLinkButtonClickedCallback;
@@ -385,14 +389,9 @@ void mico_board_init( void )
     init.long_pressed_timeout = 5000;
 
     button_init( IOBUTTON_EASYLINK, init );
-
-#ifdef USE_MiCOKit_EXT
-    dc_motor_init( );
-    dc_motor_set( 0 );
-
-    rgb_led_init();
-    rgb_led_open(0, 0, 0);
 #endif
+    /* Initialise RTC */
+    //platform_rtc_init( );
 }
 
  void MicoSysLed(bool onoff)

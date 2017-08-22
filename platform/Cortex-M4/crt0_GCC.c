@@ -16,6 +16,8 @@
 
 #define SCB_AIRCR_VECTKEY        ( (unsigned long)( 0x5FA << SCB_AIRCR_VECTKEY_Pos ))
 
+extern void software_init_hook_rtos (void);
+
 extern void * link_global_data_initial_values;
 extern void * link_global_data_start;
 extern void * link_global_data_end;
@@ -72,14 +74,23 @@ __attribute__((section(".copy_ramcode"))) void _mico_start(void)
         "       bx    r0        \n\t");
 }
 
-void software_init_hook(void)
+WEAK void software_init_hook_rtos(void)
+{
+    // Do nothing by default.
+}
+
+void hardware_init_hook(void)
 {
     /* Initialise clocks and memory. init_clocks() and init_memory() must NOT depend on globals as global data and bss sections aren't initialised yet */
     init_clocks();
     init_memory();
 
-    /* TODO: make this an unconditional goto?, so that return address stuff doesn't get put on the stack. (what happens if main returns in this case?) */
     init_architecture();
+}
+
+void software_init_hook(void)
+{
+    software_init_hook_rtos();
 }
 
 void _start_init( void )

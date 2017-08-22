@@ -41,7 +41,6 @@ const uint32_t  mico_tick_rate_hz = 1000; // Default OS tick is 1000Hz
 
 #ifndef CORTEX_NVIC_PRIO_BITS
 	#define CORTEX_NVIC_PRIO_BITS          4
-	#warning "CORTEX_NVIC_PRIO_BITS not defined in device header file; using default!"
 #endif
 
 const int CFG_PRIO_BITS = CORTEX_NVIC_PRIO_BITS;

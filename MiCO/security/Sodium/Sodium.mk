@@ -16,7 +16,10 @@ ifneq ($(wildcard $(CURDIR)Lib_Sodium.$(HOST_ARCH).$(TOOLCHAIN_NAME).release.a),
 $(NAME)_PREBUILT_LIBRARY := Lib_Sodium.$(HOST_ARCH).$(TOOLCHAIN_NAME).release.a
 else
 # Build from source
-include $(CURDIR)Sodium_src.mk
+SRC_MAKEFILE := $(CURDIR)Sodium_src.mk
+ifeq ($(SRC_MAKEFILE), $(wildcard $(SRC_MAKEFILE)))
+include $(SRC_MAKEFILE)
+endif
 endif
 
 

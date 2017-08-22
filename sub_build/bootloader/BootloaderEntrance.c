@@ -121,39 +121,39 @@ void bootloader_start_app( uint32_t app_addr )
 
 int main(void)
 {
-  mico_logic_partition_t *partition;
+    mico_logic_partition_t *partition;
 
-  mico_set_bootload_ver();
+    mico_set_bootload_ver();
 
-  update();
+    update();
 
-  enable_protection();
+    enable_protection();
 
 #ifdef MICO_ENABLE_STDIO_TO_BOOT
-  if (stdio_break_in() == 1)
+    if (stdio_break_in() == 1)
     goto BOOT;
 #endif
 
-  if( MicoShouldEnterBootloader() == false )
-    bootloader_start_app( (MicoFlashGetInfo(MICO_PARTITION_APPLICATION))->partition_start_addr );
-  else if( MicoShouldEnterMFGMode() == true )
-    bootloader_start_app( (MicoFlashGetInfo(MICO_PARTITION_APPLICATION))->partition_start_addr );
-  else if( MicoShouldEnterATEMode() ){
-    partition = MicoFlashGetInfo( MICO_PARTITION_ATE );
-    if (partition->partition_owner != MICO_FLASH_NONE) {
-      bootloader_start_app( partition->partition_start_addr );
+    if ( MicoShouldEnterBootloader() == false )
+        bootloader_start_app((MicoFlashGetInfo(MICO_PARTITION_APPLICATION))->partition_start_addr);
+    else if ( MicoShouldEnterMFGMode() == true )
+        bootloader_start_app((MicoFlashGetInfo(MICO_PARTITION_APPLICATION))->partition_start_addr);
+    else if ( MicoShouldEnterATEMode() ) {
+        partition = MicoFlashGetInfo(MICO_PARTITION_ATE);
+        if ( partition->partition_owner != MICO_FLASH_NONE ) {
+            bootloader_start_app(partition->partition_start_addr);
+        }
     }
-  }
 
 #ifdef MICO_ENABLE_STDIO_TO_BOOT
-BOOT:
+    BOOT:
 #endif
-  
-  printf ( menu, MODEL, Bootloader_REVISION, HARDWARE_REVISION );
 
-  while(1){
-    Main_Menu ();
-  }
+    printf(menu, MODEL, Bootloader_REVISION, HARDWARE_REVISION);
+
+    while ( 1 ) {
+        Main_Menu();
+    }
 }
 
 

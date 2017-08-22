@@ -123,8 +123,8 @@ OSStatus mico_system_monitor_daemen_start( void )
   /* Register first monitor */
   err = mico_system_monitor_register(&mico_monitor, APPLICATION_WATCHDOG_TIMEOUT_SECONDS*1000);
   require_noerr( err, exit );
-  mico_init_timer(&_watchdog_reload_timer,APPLICATION_WATCHDOG_TIMEOUT_SECONDS*1000/2, _watchdog_reload_timer_handler, NULL);
-  mico_start_timer(&_watchdog_reload_timer);  
+  mico_rtos_init_timer(&_watchdog_reload_timer,APPLICATION_WATCHDOG_TIMEOUT_SECONDS*1000/2, _watchdog_reload_timer_handler, NULL);
+  mico_rtos_start_timer(&_watchdog_reload_timer);
 exit:
   return err;
 }

@@ -181,6 +181,9 @@ bool MicoShouldEnterBootloader(void);
 char *mico_get_bootloader_ver(void);
 
 
+void mico_board_init( void );
+
+
 #ifdef BOOTLOADER 
 void mico_set_bootload_ver(void);
 #endif

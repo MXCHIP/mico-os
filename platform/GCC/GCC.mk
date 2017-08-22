@@ -11,8 +11,6 @@ NAME := GCC
 
 $(NAME)_SOURCES = mem_newlib.c math_newlib.c stdio_newlib.c time_newlib.c eabi.c
 
-$(NAME)_LINK_FILES := mem_newlib.o math_newlib.o stdio_newlib.o time_newlib.o eabi.o
-
 GLOBAL_LDFLAGS += -Wl,--wrap,main
 
 ifneq ($(filter $(subst ., ,$(COMPONENTS)),mocOS),)

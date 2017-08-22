@@ -84,8 +84,6 @@ GLOBAL_DEFINES += $(foreach dev, $(MBED_DEVICES), DEVICE_$(dev)) \
 GLOBAL_LDFLAGS  +=-Wl,--wrap,main -Wl,--wrap,_malloc_r -Wl,--wrap,_free_r -Wl,--wrap,_realloc_r -Wl,--wrap,_calloc_r -Wl,--wrap,exit -Wl,--wrap,atexit
 GLOBAL_LDFLAGS  +=-Wl,--start-group -lstdc++ -lsupc++ -lm -lc -lgcc -lnosys -Wl,--end-group
                   
-$(NAME)_LINK_FILES := platform/mbed_alloc_wrappers.o
-
 
 
 

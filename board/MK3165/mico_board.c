@@ -421,8 +421,6 @@ void platform_init_peripheral_irq_priorities( void )
 
 void mico_board_init( void )
 {
-  button_init_t init;
-
   MicoGpioInitialize( (mico_gpio_t)MICO_SYS_LED, OUTPUT_PUSH_PULL );
   MicoGpioOutputLow( (mico_gpio_t)MICO_SYS_LED );
   MicoGpioInitialize( (mico_gpio_t)MICO_RF_LED, OUTPUT_OPEN_DRAIN_NO_PULL );
@@ -430,6 +428,9 @@ void mico_board_init( void )
   
   MicoGpioInitialize((mico_gpio_t)BOOT_SEL, INPUT_PULL_UP);
   MicoGpioInitialize((mico_gpio_t)MFG_SEL, INPUT_PULL_UP);
+
+#ifndef BOOTLOADER
+  button_init_t init;
 
   init.gpio = EasyLink_BUTTON;
   init.pressed_func = PlatformEasyLinkButtonClickedCallback;
@@ -437,36 +438,9 @@ void mico_board_init( void )
   init.long_pressed_timeout = RestoreDefault_TimeOut;
 
   button_init( IOBUTTON_EASYLINK, init );
-  
-#ifdef USE_MiCOKit_EXT
-  dc_motor_init( );
-  dc_motor_set( 0 );
-  
-  rgb_led_init();
-  rgb_led_open(0, 0, 0);
 #endif
 }
 
-void init_platform_bootloader( void )
-{
-  MicoGpioInitialize( (mico_gpio_t)MICO_SYS_LED, OUTPUT_PUSH_PULL );
-  MicoGpioOutputLow( (mico_gpio_t)MICO_SYS_LED );
-  MicoGpioInitialize( (mico_gpio_t)MICO_RF_LED, OUTPUT_OPEN_DRAIN_NO_PULL );
-  MicoGpioOutputHigh( (mico_gpio_t)MICO_RF_LED );
-  
-  MicoGpioInitialize((mico_gpio_t)BOOT_SEL, INPUT_PULL_UP);
-  MicoGpioInitialize((mico_gpio_t)MFG_SEL, INPUT_PULL_UP);
-  
-#ifdef USE_MiCOKit_EXT
-  dc_motor_init( );
-  dc_motor_set( 0 );
-  
-  rgb_led_init();
-  rgb_led_open(0, 0, 0);
-#endif
-
-  return;
-}
 
 void MicoSysLed(bool onoff)
 {

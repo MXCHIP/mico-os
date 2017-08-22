@@ -47,7 +47,6 @@
  *               Function Declarations
  ******************************************************/
 extern "C" void mico_main(void);
-extern "C" int __real_main(void);
 
 /******************************************************
  *               Variable Definitions
@@ -63,7 +62,11 @@ Timer noos_timer;
 extern "C" void mbed_main( void )
 {
     noos_timer.start();
+
+#if MICO_APPLICATION
+    /* Initialize MICO_STDIO_UART and board peripherals. */
     mico_main();
+#endif
 }
 
 mico_time_t mico_rtos_get_time(void)

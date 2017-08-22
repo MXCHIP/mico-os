@@ -91,6 +91,20 @@
 OSStatus mico_uart_init( mico_uart_t uart, const mico_uart_config_t* config, ring_buffer_t* optional_rx_buffer );
 
 
+/**@brief Initialises STDIO UART interface
+ *
+ * @note Make sure you want oto use STDIO UART other than printf
+ *
+ * @param  config   : UART configuration structure
+ * @param  optional_rx_buffer : Pointer to an optional RX ring buffer
+ *
+ * @return    kNoErr        : on success.
+ * @return    kGeneralErr   : if an error occurred with any step
+ */
+OSStatus mico_stdio_uart_init( const mico_uart_config_t* config, ring_buffer_t* optional_rx_buffer );
+
+
+
 /**@brief Initialises a STDIO UART interface, internal use only
  *
  * @note Prepares an UART hardware interface for stdio communications

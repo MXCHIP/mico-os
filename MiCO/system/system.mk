@@ -18,11 +18,7 @@ $(NAME)_SOURCES := mico_system_init.c \
                    mico_system_power_daemon.c \
                    system_misc.c 
 
-ifneq ($(MBED_SUPPORT),)
-$(NAME)_SOURCES  += command_console/mico_cli.cpp          
-else       
 $(NAME)_SOURCES  += command_console/mico_cli.c
-endif
 $(NAME)_INCLUDES += command_console
 
 $(NAME)_SOURCES += config_server/config_server_menu.c \
@@ -45,8 +41,6 @@ $(NAME)_SOURCES += mdns/system_discovery.c
 $(NAME)_SOURCES += tftp_ota/tftp_ota.c \
                    tftp_ota/tftpc.c
                    
-$(NAME)_LINK_FILES := mico_system_power_daemon.o
-
 $(NAME)_COMPONENTS := protocols/mdns \
                       system/qc_test \
                       system/easylink/MFi_WAC

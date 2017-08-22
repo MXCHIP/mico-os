@@ -168,7 +168,8 @@ OSStatus update(void)
   err = MicoFlashRead( MICO_PARTITION_PARAMETER_1, &boot_table_offset, (uint8_t *)&updateLog, sizeof(boot_table_t));
   require_noerr(err, exit);
 
-  /*Not a correct record*/
+  /*Not a correct record, check ota data and erase? */
+#if 0
   if(updateLogCheck( &updateLog, &dest_partition) != Log_NeedUpdate){
     size = ( ota_partition_info->partition_length )/SizePerRW;
     for(i = 0; i <= size; i++){
@@ -194,6 +195,9 @@ OSStatus update(void)
     }
     goto exit;
   }
+#endif
+
+  if ( updateLogCheck(&updateLog, &dest_partition) != Log_NeedUpdate ) goto exit;
 
   dest_partition_info = MicoFlashGetInfo( dest_partition );
   require_action( dest_partition_info->partition_owner != MICO_FLASH_NONE, exit, err = kUnsupportedErr );

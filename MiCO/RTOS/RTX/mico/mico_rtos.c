@@ -148,6 +148,7 @@ static mico_thread_t* cur_thread;
 
 void mbed_main( void )
 {
+    /* Initialize MICO_STDIO_UART and Printf Mutex. */
     mico_main();
 }
 
@@ -314,6 +315,11 @@ OSStatus mico_rtos_thread_join( mico_thread_t* thread )
 	}
 
 	return kNoErr;
+}
+
+void mico_rtos_thread_yield( void )
+{
+    osThreadYield();
 }
 
 bool mico_rtos_is_current_thread( mico_thread_t* thread )

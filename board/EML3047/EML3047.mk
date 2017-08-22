@@ -33,7 +33,6 @@ MODULE              	:= EML3047
 BUS := EML3047
 
 NO_WIFI_FIRMWARE        := YES     
-NO_MICO_SYSTEM          := YES   
 
 # # Extra build target in mico_standard_targets.mk, include bootloader, and copy output file to eclipse debug file (copy_output_for_eclipse)
 #EXTRA_TARGET_MAKEFILES +=  mico-os/board/EML3047/mico_standard_targets_for_stm32l0xx.mk
@@ -80,7 +79,6 @@ $(NAME)_SOURCES += mbed/PeripheralPins.c \
 # Global includes
 GLOBAL_INCLUDES  += mbed mbed/device
 
-
 ################################# LINK_SCRIPT ############################################################
 
 ifeq ($(APP),bootloader)
@@ -101,7 +99,7 @@ ifneq ($(filter spi_flash_write, $(APP)),)
 
 DEFAULT_LINK_SCRIPT += mbed/device/TOOLCHAIN_$(TOOLCHAIN_NAME_MBED)/STM32L071xB_PROG$(LINK_SCRIPT_SUFFIX)
 GLOBAL_DEFINES      += __JTAG_FLASH_WRITER_DATA_BUFFER_SIZE__=9920 \
-                       SECTOR_SIZE=1024
+                       SECTOR_SIZE=1024 \
                        MICO_DISABLE_STDIO \
                        VECT_TAB_SRAM \
                        VECT_TAB_OFFSET=0x2800

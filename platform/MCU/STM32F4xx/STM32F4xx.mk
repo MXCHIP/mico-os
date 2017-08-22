@@ -74,6 +74,7 @@ $(NAME)_SOURCES := ../../$(HOST_ARCH)/crt0_$(TOOLCHAIN_NAME).c \
                    ../../$(HOST_ARCH)/hardfault_handler.c \
                    ../../$(HOST_ARCH)/platform_application.c \
                    ../platform_nsclock.c \
+                   ../platform_retarget.c \
                    ../mico_platform_common.c \
                    ../wlan_platform_common.c \
                    platform_init.c \
@@ -89,12 +90,6 @@ ifdef SHARED_WIFI_SPI_BUS
 $(NAME)_SOURCES += wlan_bus_driver/wlan_bus_SPI.c
 endif #SHARED_WIFI_SPI_BUS
 endif #NO_WIFI
-
-
-# These need to be forced into the final ELF since they are not referenced otherwise
-$(NAME)_LINK_FILES := ../../$(HOST_ARCH)/crt0_$(TOOLCHAIN_NAME).o \
-                      ../../$(HOST_ARCH)/hardfault_handler.o \
-                      platform_vector_table.o \
 
 # $(NAME)_CFLAGS = $(COMPILER_SPECIFIC_PEDANTIC_CFLAGS)
 

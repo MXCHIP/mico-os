@@ -68,7 +68,7 @@ OSStatus platform_uart_init( platform_uart_driver_t* driver, const platform_uart
   	driver->last_transmit_result = kNoErr;
   	driver->last_receive_result  = kNoErr;
   	driver->is_recv_over_flow    = false;
-  	driver->is_flow_control      = false;
+  	driver->FlowControl          = FlowControlNone;
 
   	mico_rtos_init_semaphore( &driver->tx_complete, 1 );
   	mico_rtos_init_semaphore( &driver->rx_complete, 1 );
@@ -121,37 +121,29 @@ OSStatus platform_uart_init( platform_uart_driver_t* driver, const platform_uart
   	}
 
   	switch ( config->flow_control )
-  	{
-    		case FLOW_CONTROL_DISABLED:
-			flowcontrol = FlowControlNone;
-			break;
-    		case FLOW_CONTROL_RTS:
-      			flowcontrol = FlowControlRTS;
-      			break;
-    		case FLOW_CONTROL_CTS:
-      			flowcontrol = FlowControlCTS;
-      			break;
-    		case FLOW_CONTROL_CTS_RTS:
-      			flowcontrol = FlowControlRTSCTS;
-      			break;
-    		default:
-      			err = kParamErr;
-      			goto exit;
-  	}
+    {
+        case FLOW_CONTROL_DISABLED:
+            driver->FlowControl = FlowControlNone;
+            break;
+        case FLOW_CONTROL_RTS:
+            driver->FlowControl = FlowControlRTS;
+            break;
+        case FLOW_CONTROL_CTS:
+            driver->FlowControl = FlowControlCTS;
+            break;
+        case FLOW_CONTROL_CTS_RTS:
+            driver->FlowControl = FlowControlRTSCTS;
+            break;
+        default:
+            err = kParamErr;
+            goto exit;
+    }
 	serial_baud((serial_t*)&driver->serial_obj,config->baud_rate);
 	serial_format((serial_t*)&driver->serial_obj, wordlen, parity, stopbit);
-        /* NOTE: flow control must be inited at last. - by swyang */
-        /*only UART1 support flow control*/
-	if(config->flow_control != FLOW_CONTROL_DISABLED &&  driver->serial_obj.serial.uart!=UART_1 )
-	{
-		err = kUnsupportedErr;
-		goto exit;
-	}else{
-	    if(driver->serial_obj.serial.uart == UART_1){
-	         serial_set_flow_control((serial_t*)&driver->serial_obj, flowcontrol, peripheral->mbed_rts_pin, peripheral->mbed_cts_pin);
-	         driver->is_flow_control = true;
-	    }
-	}
+#if DEVICE_SERIAL_FC
+	if (driver->FlowControl != FlowControlNone)
+	    serial_set_flow_control((serial_t*)&driver->serial_obj, driver->FlowControl, peripheral->mbed_rts_pin, peripheral->mbed_cts_pin);
+#endif
 
 	if (optional_ring_buffer != NULL){
   		/* Note that the ring_buffer should've been initialised first */
@@ -161,9 +153,9 @@ OSStatus platform_uart_init( platform_uart_driver_t* driver, const platform_uart
 	}else{
       	return kOptionErr;
 	}
-	serial_irq_handler((serial_t*)&driver->serial_obj, platform_uart_irq, (uint32_t)driver);
-	serial_irq_set((serial_t*)&driver->serial_obj, RxIrq, 1);
-	serial_irq_set((serial_t*)&driver->serial_obj, TxIrq, 1);
+	serial_irq_handler(&driver->serial_obj, platform_uart_irq, (uint32_t)driver);
+	serial_irq_set(&driver->serial_obj, RxIrq, 1);
+	serial_irq_set(&driver->serial_obj, TxIrq, 1);
 exit:
     	platform_mcu_powersave_enable();
   	return err;
@@ -188,7 +180,7 @@ OSStatus platform_uart_deinit( platform_uart_driver_t* driver )
   	driver->tx_size              = 0;
   	driver->last_transmit_result = kNoErr;
   	driver->last_receive_result  = kNoErr;
-  	driver->is_flow_control      = false;
+  	driver->FlowControl          = FlowControlNone;
   	driver->is_recv_over_flow    = false;
 
 exit:
@@ -232,7 +224,7 @@ OSStatus platform_uart_receive_bytes( platform_uart_driver_t* driver, uint8_t* d
     mico_rtos_get_semaphore( &driver->rx_complete, 0 );
 
     /* Check if ring buffer already contains the required amount of data. */
-    if( ( driver->is_flow_control == true  ) &&  ( driver->is_recv_over_flow == true ) )
+    if( ( driver->FlowControl == FlowControlRTSCTS || driver->FlowControl == FlowControlRTS ) &&  ( driver->is_recv_over_flow == true ) )
      {
          driver->is_recv_over_flow = false;
          serial_irq_set((serial_t*)&driver->serial_obj, RxIrq, 1);
@@ -287,43 +279,6 @@ uint32_t platform_uart_get_length_in_buffer( platform_uart_driver_t* driver )
   return ring_buffer_used_space( driver->rx_buffer );
 }
 
-
-
-#if 0
-uint8_t platform_uart_get_port_number( USART_TypeDef* uart )
-{
-    if ( uart == USART1 )
-    {
-        return 0;
-    }
-    else if ( uart == USART2 )
-    {
-        return 1;
-    }
-    else if ( uart == USART3 )
-    {
-        return 2;
-    }
-    else if ( uart == UART4 )
-    {
-        return 3;
-    }
-    else if ( uart == UART5 )
-    {
-        return 4;
-    }
-    else if ( uart == USART6 )
-    {
-        return 5;
-    }
-    else
-    {
-        return 0xff;
-    }
-}
-#endif
-
-
 /******************************************************
 *            Interrupt Service Routines
 ******************************************************/
@@ -333,7 +288,7 @@ void platform_uart_irq( uint32_t id, SerialIrq event)
   	uint8_t recv_byte;
 	platform_uart_driver_t* driver = (platform_uart_driver_t*)id;
 
-	if(event == RxIrq){
+	if (event == RxIrq){
         if ( ring_buffer_is_full( driver->rx_buffer ) == 0 )
         {
              recv_byte = serial_getc((serial_t*)&driver->serial_obj);
@@ -344,7 +299,7 @@ void platform_uart_irq( uint32_t id, SerialIrq event)
                   driver->rx_size = 0;
              }
          } else{
-             if( driver->is_flow_control == true ){
+             if( driver->FlowControl == FlowControlRTSCTS || driver->FlowControl == FlowControlRTS ){
                   serial_irq_set((serial_t*)&driver->serial_obj, RxIrq, 0);
                   driver->is_recv_over_flow = true;
              }else{

@@ -20,9 +20,8 @@
 
 uint32_t platform_get_cycle_count( void )
 {
-    /* From the ARM Cortex-M3 Techinical Reference Manual
-     * 0xE0001004  DWT_CYCCNT  RW  0x00000000  Cycle Count Register */
-    return DWT->CYCCNT;
+    /* m0plus not support this */
+    return 0;
 }
 
 mico_bool_t platform_is_in_interrupt_context( void )

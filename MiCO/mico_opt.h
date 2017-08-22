@@ -91,6 +91,21 @@ extern "C" {
 #define MICO_DEFAULT_APPLICATION_STACK_SIZE     1500
 #endif
 
+/**
+ *  Do some MiCO initializing before main, like mico_board_init, stdio uart init...
+ */
+#if !defined MICO_APPLICATION
+#define MICO_APPLICATION                        1
+#endif
+
+
+/**
+ *  Start standard QC test function other than application
+ */
+#if !defined MICO_QUALITY_CONTROL_ENABLE
+#define MICO_QUALITY_CONTROL_ENABLE             0
+#endif
+
 /******************************************************************************
  *                             Wlan Configuration
  ******************************************************************************/

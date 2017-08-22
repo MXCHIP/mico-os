@@ -19,7 +19,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include "mico_rtos.h"
-#include "qc_test.h"
+//#include "qc_test.h"
 #include "mico_rtos_internal.h"
 #include "mico_rtos_common.h"
 #include "FreeRTOS.h"
@@ -97,18 +97,24 @@ typedef struct
     event_handler_t function;
     void*           arg;
 } mico_event_message_t;
-void __libc_init_array(void);
+
 
 /******************************************************
  *               Function Declarations
  ******************************************************/
+
+extern void __libc_fini_array(void);
+extern void __libc_init_array (void);
+extern int main(int argc, char **argv);
+
 extern void mico_rtos_stack_overflow(char *taskname);
+extern void mico_board_init( void );
+extern void mico_system_qc_test( void );
 extern bool MicoShouldEnterMFGMode(void);
 
 extern void mico_main(void);
+extern void pre_main (void);
 extern int __real_main(void);
-
-static void application_thread_main( void *arg );
 
 #ifdef __GNUC__
 void __malloc_lock(struct _reent *ptr);
@@ -141,39 +147,50 @@ uint32_t mico_rtos_max_priorities = RTOS_HIGHEST_PRIORITY - RTOS_LOWEST_PRIORITY
  *  Called from the crt0 _start function
  *
  */
-int __wrap_main( void )
+
+
+#if __MBED__
+#include "cmsis_nvic.h"
+
+extern void vPortSVCHandler     ( void );
+extern void xPortPendSVHandler     ( void );
+extern void xPortSysTickHandler     ( void );
+#endif
+
+/* software_init_hook_rtos -> pre_main -> __wrap_main -> mbed_main/mico_main -> __real_main*/
+
+void software_init_hook_rtos (void)
 {
     max_syscall_int_prio = (1 << (8 - CFG_PRIO_BITS));
     ms_to_tick_ratio = (uint32_t)( 1000 / mico_tick_rate_hz );
 
-#if defined ( __IAR_SYSTEMS_ICC__ )
-/* IAR allows init functions in __low_level_init(), but it is run before global
- * variables have been initialised, so the following init still needs to be done.
- * When using GCC, this is done in crt0_GCC.c
- */
-    init_architecture( );
-
-#endif /* #elif defined ( __IAR_SYSTEMS_ICC__ ) */
+#if __MBED__
+    NVIC_SetVector(SVCall_IRQn, (uint32_t)&vPortSVCHandler); //SVCall_IRQn
+    NVIC_SetVector(PendSV_IRQn, (uint32_t)&xPortPendSVHandler); //PendSV_IRQn
+    NVIC_SetVector(SysTick_IRQn, (uint32_t)&xPortSysTickHandler); //SysTick_IRQn
+#endif
 
     /* Create an initial thread */
-    _xTaskCreate( application_thread_main, "app_thread", (unsigned short)(app_stack_size/sizeof( portSTACK_TYPE )), NULL, MICO_PRIORITY_TO_NATIVE_PRIORITY(MICO_APPLICATION_PRIORITY), &app_thread_handle);
+    _xTaskCreate( (TaskFunction_t)pre_main, "app_thread", (unsigned short)(app_stack_size/sizeof( portSTACK_TYPE )), NULL, MICO_PRIORITY_TO_NATIVE_PRIORITY(MICO_APPLICATION_PRIORITY), &app_thread_handle);
 
     /* Start the FreeRTOS scheduler - this call should never return */
     vTaskStartScheduler( );
 
-    /* Should never get here, unless there is an error in vTaskStartScheduler */
-    return 0;
 }
 
-static void application_thread_main( void *arg )
+/* case: use mbed hal, mbed_main is called by platform_regarget.cpp at mbed-os */
+void mbed_main( void )
 {
-    UNUSED_PARAMETER( arg );
-    __libc_init_array();
+    /* Initialize MICO_STDIO_UART and Printf Mutex. */
     mico_main();
-    if ( MicoShouldEnterMFGMode( ) )
-        mico_system_qc_test( );
-    else
-        __real_main( );
+}
+
+void pre_main( void )
+{
+    __libc_init_array();
+
+    /* Jump to __wrap_main in platform_retarget.c */
+    main(0, NULL);
 
     vTaskDelete( NULL );
 }
@@ -766,14 +783,14 @@ OSStatus mico_rtos_deinit_event_flags( mico_event_flags_t* event_flags )
 
 #ifdef __GNUC__
 
-void __malloc_lock(struct _reent *ptr)
+void __rtos_malloc_lock(struct _reent *ptr)
 {
     UNUSED_PARAMETER( ptr );
     vTaskSuspendAll();
     return;
 }
 
-void __malloc_unlock(struct _reent *ptr)
+void __rtos_malloc_unlock(struct _reent *ptr)
 {
     UNUSED_PARAMETER( ptr );
     xTaskResumeAll();
@@ -881,7 +898,6 @@ void *mico_realloc( void *pv, size_t xWantedSize )
 {
 	return pvPortRealloc(pv, xWantedSize);
 }
-
 
 //#endif
 

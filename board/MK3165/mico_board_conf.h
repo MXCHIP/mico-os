@@ -29,7 +29,8 @@
 ******************************************************************************
 */ 
 
-#pragma once
+#ifndef __MICO_BOARD_CONF_H_
+#define __MICO_BOARD_CONF_H_
 
 #ifdef __cplusplus
 extern "C"
@@ -138,4 +139,5 @@ extern "C"
 } /*extern "C" */
 #endif
 
+#endif
  

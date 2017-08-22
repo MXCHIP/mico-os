@@ -44,10 +44,6 @@ extern "C"
 //#define MICO_DISABLE_WATCHDOG
 
 /************************************************************************
- * Uncomment to disable standard IO, i.e. printf(), etc. */
-//#define MICO_DISABLE_STDIO
-
-/************************************************************************
  * Uncomment to disable MCU powersave API functions */
 //#define MICO_DISABLE_MCU_POWERSAVE
 

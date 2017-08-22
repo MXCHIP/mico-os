@@ -28,7 +28,6 @@ GLOBAL_LDFLAGS  += $$(CPU_LDFLAGS)   $$(ENDIAN_LDFLAGS_LITTLE)
 
 
 # Components
-$(NAME)_COMPONENTS += $(TOOLCHAIN_NAME)
 $(NAME)_COMPONENTS += platform/mbed/mbed-os
 
 # Components, add mbed targets
@@ -48,6 +47,8 @@ $(NAME)_SOURCES := mico_platform_common.c \
                    peripherals/platform_watchdog.c \
                    peripherals/platform_mcu_powersave.c\
                    peripherals/platform_pwm.c
+                   
+$(NAME)_SOURCES +=../$(HOST_ARCH)/platform_core.c \
                    
                    
 $(NAME)_SOURCES += ../$(HOST_ARCH)/platform_application.c

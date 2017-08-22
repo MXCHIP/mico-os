@@ -110,9 +110,6 @@ extern mico_worker_thread_t mico_worker_thread;
 /* Legacy definitions */
 #define mico_thread_sleep                 mico_rtos_thread_sleep
 #define mico_thread_msleep                mico_rtos_thread_msleep
-#define mico_rtos_init_timer              mico_init_timer
-#define mico_rtos_start_timer             mico_start_timer
-#define mico_rtos_stop_timer              mico_stop_timer
 #define mico_rtos_reload_timer            mico_reload_timer
 #define mico_rtos_deinit_timer            mico_deinit_timer
 #define mico_rtos_is_timer_running        mico_is_timer_running

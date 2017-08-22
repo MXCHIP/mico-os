@@ -19,6 +19,8 @@ HOST_OPENOCD := stm32f4x
 $(NAME)_SOURCES := peripherals/platform_flash_embed.c \
                    peripherals/platform_flash.c \
                    peripherals/platform_flash_qspi.c
+                   
+GLOBAL_INCLUDES := .
 
 ifndef NO_WIFI
 $(NAME)_SOURCES += wlan_bus_driver/wlan_bus_$(BUS).c \

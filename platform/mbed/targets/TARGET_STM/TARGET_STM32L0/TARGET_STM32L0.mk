@@ -20,6 +20,8 @@ $(NAME)_SOURCES := peripherals/platform_flash_mbed.c  \
                    peripherals/platform_eeprom_mbed.c \
                    peripherals/platform_flash.c       \
                    peripherals/platform_ota.c
+                   
+GLOBAL_INCLUDES := .
 
 ###############################################
 # Use abslute path to reference mico-os codes #

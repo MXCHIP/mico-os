@@ -35,9 +35,6 @@
 *                    Constants
 ******************************************************/
 
-#ifndef STDIO_BUFFER_SIZE
-#define STDIO_BUFFER_SIZE   64
-#endif
 
 /******************************************************
 *                   Enumerations
@@ -63,23 +60,6 @@ extern OSStatus host_platform_init( void );
 extern platform_uart_t platform_uart_peripherals[];
 extern platform_uart_driver_t platform_uart_drivers[];
 
-#ifndef MICO_DISABLE_STDIO
-static const platform_uart_config_t stdio_uart_config =
-{
-  .baud_rate    = STDIO_UART_BAUDRATE,
-  .data_width   = DATA_WIDTH_8BIT,
-  .parity       = NO_PARITY,
-  .stop_bits    = STOP_BITS_1,
-  .flow_control = FLOW_CONTROL_DISABLED,
-  .flags        = 0,
-};
-
-static volatile ring_buffer_t stdio_rx_buffer;
-static volatile uint8_t             stdio_rx_data[STDIO_BUFFER_SIZE];
-mico_mutex_t        stdio_rx_mutex;
-mico_mutex_t        stdio_tx_mutex;
-#endif /* #ifndef MICO_DISABLE_STDIO */
-
 /******************************************************
 *               Function Definitions
 ******************************************************/
@@ -93,6 +73,8 @@ void platform_mcu_reset( void )
 * This brings up enough clocks to allow the processor to run quickly while initialising memory.
 * Other platform specific clock init can be done in init_platform() or init_architecture()
 */
+
+/* init_clocks is executed before rtos is start up */
 void init_clocks( void )
 {
   //RCC_DeInit( ); /* if not commented then the LSE PA8 output will be disabled and never comes up again */
@@ -135,33 +117,13 @@ void init_clocks( void )
 #endif
 }
 
+/* init_memory is executed before rtos is start up */
 WEAK void init_memory( void )
 {
   
 }
 
-void mico_main( void )
-{  
-#ifndef MICO_DISABLE_STDIO
-#ifndef NO_MICO_RTOS
-    mico_rtos_init_mutex( &stdio_tx_mutex );
-    mico_rtos_unlock_mutex( &stdio_tx_mutex );
-    mico_rtos_init_mutex( &stdio_rx_mutex );
-    mico_rtos_unlock_mutex( &stdio_rx_mutex );
-#endif
-
-    ring_buffer_init( (ring_buffer_t*) &stdio_rx_buffer, (uint8_t*) stdio_rx_data, STDIO_BUFFER_SIZE );
-    platform_uart_init( &platform_uart_drivers[MICO_STDIO_UART], &platform_uart_peripherals[MICO_STDIO_UART],
-                       &stdio_uart_config, (ring_buffer_t*) &stdio_rx_buffer );
-#endif
-
-    /* Ensure 802.11 device is in reset. */
-    host_platform_init( );
-
-    /* Customized board configuration. */
-    mico_board_init( );
-}
-
+/* init_architecture is executed before rtos is start up */
 void init_architecture( void )
 {
   uint8_t i;

@@ -72,6 +72,8 @@ extern int __real_main(void);
  *               Variable Definitions
  ******************************************************/
 
+static mico_time_t mico_time_offset = 0;
+
 uint8_t semaphore_pool_init = 0;
 noos_semaphore_t semaphore_pool[SEMAPHORE_POOL_NUM];
 
@@ -81,6 +83,37 @@ noos_mutex_t mutex_pool[MUTEX_POOL_NUM];
 /******************************************************
  *               Function Definitions
  ******************************************************/
+
+OSStatus mico_rtos_create_thread( mico_thread_t* thread, uint8_t priority, const char* name, mico_thread_function_t function, uint32_t stack_size, uint32_t arg )
+{
+    return kUnsupportedErr;
+}
+
+OSStatus mico_rtos_delete_thread( mico_thread_t* thread )
+{
+    return kUnsupportedErr;
+}
+
+OSStatus mico_rtos_thread_join( mico_thread_t* thread )
+{
+    return kUnsupportedErr;
+}
+
+bool mico_rtos_is_current_thread( mico_thread_t* thread )
+{
+    return kUnsupportedErr;
+}
+
+OSStatus mico_rtos_thread_force_awake( mico_thread_t* thread )
+{
+    return kUnsupportedErr;
+}
+
+
+OSStatus mico_rtos_print_thread_status( char* pcWriteBuffer, int xWriteBufferLen )
+{
+    return kNoErr;
+}
 
 OSStatus semaphore_pool_alloc( noos_semaphore_t **semaphore )
 {
@@ -269,28 +302,6 @@ OSStatus mico_rtos_delay_milliseconds( uint32_t num_ms )
     return kNoErr;
 }
 
-OSStatus mico_rtos_init_timer( mico_timer_t* timer, uint32_t time_ms, timer_handler_t function, void* arg )
-{
-    UNUSED_PARAMETER( timer );
-    UNUSED_PARAMETER( time_ms );
-    UNUSED_PARAMETER( function );
-    UNUSED_PARAMETER( arg );
-    return kUnsupportedErr;
-}
-
-
-OSStatus mico_rtos_start_timer( mico_timer_t* timer )
-{
-    UNUSED_PARAMETER( timer );
-    return kUnsupportedErr;
-}
-
-OSStatus mico_rtos_stop_timer( mico_timer_t* timer )
-{
-    UNUSED_PARAMETER( timer );
-    return kUnsupportedErr;
-}
-
 void mico_rtos_enter_critical( void )
 {
 }
@@ -298,4 +309,82 @@ void mico_rtos_enter_critical( void )
 void mico_rtos_exit_critical( void )
 {
 }
+
+OSStatus mico_rtos_init_queue( mico_queue_t* queue, const char* name, uint32_t message_size, uint32_t number_of_messages )
+{
+    return kUnsupportedErr;
+}
+
+OSStatus mico_rtos_push_to_queue( mico_queue_t* queue, void* message, uint32_t timeout_ms )
+{
+    return kUnsupportedErr;
+}
+
+
+OSStatus mico_rtos_push_to_queue_front( mico_queue_t* queue, void* message, uint32_t timeout_ms )
+{
+    return kUnsupportedErr;
+}
+
+
+OSStatus mico_rtos_pop_from_queue( mico_queue_t* queue, void* message, uint32_t timeout_ms )
+{
+    return kUnsupportedErr;
+}
+
+
+OSStatus mico_rtos_deinit_queue( mico_queue_t* queue )
+{
+    return kUnsupportedErr;
+}
+
+bool mico_rtos_is_queue_empty( mico_queue_t* queue )
+{
+    return kUnsupportedErr;
+}
+
+bool mico_rtos_is_queue_full( mico_queue_t* queue )
+{
+    return kUnsupportedErr;
+}
+
+
+OSStatus mico_rtos_init_timer( mico_timer_t* timer, uint32_t time_ms, timer_handler_t function, void* arg )
+{
+    return kUnsupportedErr;
+}
+
+OSStatus mico_rtos_start_timer( mico_timer_t* timer )
+{
+    return kUnsupportedErr;
+}
+
+OSStatus mico_rtos_stop_timer( mico_timer_t* timer )
+{
+    return kUnsupportedErr;
+}
+
+OSStatus mico_rtos_reload_timer( mico_timer_t* timer )
+{
+    return kUnsupportedErr;
+}
+
+OSStatus mico_rtos_deinit_timer( mico_timer_t* timer )
+{
+    return kUnsupportedErr;
+}
+
+OSStatus mico_time_get_time(mico_time_t* time_ptr)
+{
+    mico_time_t _time = mico_rtos_get_time();
+    *time_ptr = _time + mico_time_offset;
+    return kNoErr;
+}
+
+OSStatus mico_time_set_time(mico_time_t* time_ptr)
+{
+    mico_time_offset = *time_ptr - mico_rtos_get_time();
+    return kNoErr;
+}
+
 

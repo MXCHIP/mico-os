@@ -29,10 +29,9 @@
  ******************************************************************************
  */
 
-#pragma once
 
-#ifndef __PLATFORM_H_
-#define __PLATFORM_H_
+#ifndef __MICO_BOARD_H_
+#define __MICO_BOARD_H_
 
 #ifdef __cplusplus
 extern "C"
@@ -307,11 +306,11 @@ enum
 };
 
 #ifdef BOOTLOADER
-#define MICO_STDIO_UART       (MICO_UART_1)
-#define STDIO_UART_BAUDRATE (115200)
+#define MICO_STDIO_UART             (MICO_UART_1)
+#define MICO_STDIO_UART_BAUDRATE    (115200)
 #else
-#define MICO_STDIO_UART       (MICO_UART_1)
-#define STDIO_UART_BAUDRATE (115200) 
+#define MICO_STDIO_UART             (MICO_UART_1)
+#define MICO_STDIO_UART_BAUDRATE    (115200)
 #endif
 
 #define MICO_UART_FOR_APP     (MICO_UART_2)
@@ -361,6 +360,7 @@ enum
 #define MICO_I2C_CP         (MICO_I2C_NONE)
 #endif //USE_MiCOKit_EXT
 
+void mico_board_init( void );
 
 #ifdef __cplusplus
 } /*extern "C" */
