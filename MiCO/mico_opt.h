@@ -21,9 +21,9 @@
 
 #ifndef MICO_PREBUILT_LIBS
 #include "mico_config.h"
+#include "mico_board_conf.h"
 #endif
 
-#include "mico_board_conf.h"
 
 #ifdef __cplusplus
 extern "C" {

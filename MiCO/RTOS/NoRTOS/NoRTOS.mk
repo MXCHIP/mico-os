@@ -11,7 +11,8 @@ NAME := NoRTOS
 
 GLOBAL_DEFINES += NO_MICO_RTOS
 
-GLOBAL_INCLUDES := .
+GLOBAL_INCLUDES := . \
+                   ..
 
 $(NAME)_SOURCES := rtos.c \
                    ../mico_rtos_common.c

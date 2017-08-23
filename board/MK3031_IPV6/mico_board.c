@@ -30,10 +30,10 @@
 ******************************************************************************
 */
 
-#include "common.h"
+#include "mico_common.h"
 #include "mico_platform.h"
 
-#include "platform.h"
+#include "mico_board.h"
 #include "button.h"
 
 #ifdef USE_MiCOKit_EXT
@@ -205,7 +205,7 @@ const mico_logic_partition_t mico_partitions[] =
 /******************************************************
 *               Function Definitions
 ******************************************************/
-void init_platform( void )
+void mico_board_init( void )
 {
 #if defined (MOC) && (MOC == 1)
     button_init_t init;
@@ -229,13 +229,6 @@ void init_platform( void )
 
     button_init( IOBUTTON_EASYLINK, init );
 
-#ifdef USE_MiCOKit_EXT
-  dc_motor_init( );
-  dc_motor_set( 0 );
-
-  rgb_led_init();
-  rgb_led_open(0, 0, 0);
-#endif
 
 #endif
 }

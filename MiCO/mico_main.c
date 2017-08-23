@@ -27,6 +27,8 @@
 #include "mico.h"
 #include "mico_board_conf.h"
 
+#include "mico_rtos_common.h"
+
 #if MICO_QUALITY_CONTROL_ENABLE
 #include "qc_test.h"
 #endif
@@ -75,7 +77,7 @@ static const mico_uart_config_t stdio_uart_config =
 
 static volatile ring_buffer_t stdio_rx_buffer;
 static volatile uint8_t       stdio_rx_data[STDIO_BUFFER_SIZE];
-mico_mutex_t                  stdio_tx_mutex;
+mico_mutex_t                  stdio_tx_mutex = NULL;
 #endif /* #ifndef MICO_DISABLE_STDIO */
 
 /******************************************************
@@ -91,18 +93,23 @@ void mico_main( void )
     mico_board_init( );
 
 #ifndef MICO_DISABLE_STDIO
-    mico_rtos_init_mutex( &stdio_tx_mutex );
+    if( stdio_tx_mutex == NULL )
+        mico_rtos_init_mutex( &stdio_tx_mutex );
 
     ring_buffer_init( (ring_buffer_t*) &stdio_rx_buffer, (uint8_t*) stdio_rx_data, STDIO_BUFFER_SIZE );
     mico_stdio_uart_init( &stdio_uart_config, (ring_buffer_t*) &stdio_rx_buffer );
 #endif
 
+    mico_rtos_init( );
+
 #if MICO_QUALITY_CONTROL_ENABLE
-    if ( MicoShouldEnterMFGMode( ) ){
+#ifndef RTOS_mocOS
+    if ( MicoShouldEnterMFGMode( ) ) {
         mico_system_qc_test( );
         mico_rtos_delete_thread(NULL);
         mico_rtos_thread_yield();
     }
+#endif
 #endif
 
 #endif

@@ -9,7 +9,8 @@
 
 NAME := MiCO_RTX_Interface
 
-GLOBAL_INCLUDES := .
+GLOBAL_INCLUDES := . \
+	               ../..
 
 $(NAME)_SOURCES := mico_rtos.c \
 		           ../../mico_rtos_common.c

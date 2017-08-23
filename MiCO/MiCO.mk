@@ -19,6 +19,10 @@ $(NAME)_COMPONENTS += MiCO/core MiCO/security MiCO/system
 
 $(NAME)_SOURCES := mico_main.c core/mico_config.c
 
+ifneq ($(filter $(subst ., ,$(COMPONENTS)),mocOS mocIP),)
+$(NAME)_SOURCES += moc_main.c
+endif
+
 $(NAME)_COMPONENTS += utilities
 
 GLOBAL_DEFINES += 

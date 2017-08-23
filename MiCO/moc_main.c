@@ -19,14 +19,6 @@
 #include "moc_api.h"
 #include "mico_platform.h"
 
-#ifdef USE_MiCOKit_EXT
-#include "MiCOKit_EXT/micokit_ext.h"   // extension sensor board.
-#endif
-
-#ifdef USE_MiCOKit_STMEMS
-#include "MiCOKit_STmems/MiCOKit_STmems.h"   //// extension sensor board.
-#endif
-
 /******************************************************
 *                      Macros
 ******************************************************/
@@ -84,7 +76,7 @@ void moc_app_main( const mico_api_t *lib_api_t );
 ******************************************************/
 
 extern uint32_t app_stack_size;
-mico_mutex_t stdio_tx_mutex;
+extern mico_mutex_t stdio_tx_mutex;
 const mico_api_t *lib_api_p = NULL;
 extern uint32_t _ram_end_;
 #ifdef CONFIG_CPU_MX1290
@@ -106,8 +98,8 @@ USED const user_api_t user_handler = {
     .PID = DEV_MODEL,
     .SN = MICO_SN,
 #ifndef MICO_DISABLE_STDIO
-    .debug_uart = STDIO_UART,
-    .debug_baudrate = STDIO_UART_BAUDRATE,
+    .debug_uart = MICO_STDIO_UART,
+    .debug_baudrate = MICO_STDIO_UART_BAUDRATE,
 #else
     .debug_uart = MICO_UART_NONE,
     .debug_baudrate = 115200,
@@ -148,21 +140,9 @@ extern void _memory_init( void );
 /******************************************************
 *               Function Definitions
 ******************************************************/
-static void application_thread_main( mico_thread_arg_t arg )
+static void pre_main( void )
 {
-    UNUSED_PARAMETER( arg );
-    init_platform( );
-
-#ifdef USE_MiCOKit_EXT
-    micokit_ext_init();
-#endif
-
-#ifdef USE_MiCOKit_STMEMS
-    micokit_STmems_init();
-#endif
-
-    mico_rtos_init( );
-    application_start( );
+    main( );
     mico_rtos_delete_thread( NULL );
 }
 
@@ -202,8 +182,8 @@ void moc_app_main( const mico_api_t *moc_kernel_apis )
     /* Init nano second clock counter */
     platform_init_nanosecond_clock();
 
-    mico_rtos_create_thread( NULL, MICO_APPLICATION_PRIORITY, "app_thread", application_thread_main, app_stack_size,
-                             0 );
+    mico_rtos_create_thread( NULL, MICO_APPLICATION_PRIORITY, "app_thread", (mico_thread_function_t)pre_main,
+                             app_stack_size, 0 );
    
     return;
 

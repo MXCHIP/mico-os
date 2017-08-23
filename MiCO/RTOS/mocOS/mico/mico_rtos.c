@@ -75,6 +75,11 @@ void mico_rtos_suspend_thread(mico_thread_t* thread)
     lib_api_p->mico_rtos_suspend_thread(thread);
 }
 
+void mico_rtos_thread_yield(void)
+{
+    mico_rtos_delay_milliseconds(0);
+}
+
 void mico_rtos_suspend_all_thread(void)
 {
     lib_api_p->mico_rtos_suspend_all_thread();
@@ -157,23 +162,23 @@ bool mico_rtos_is_queue_full( mico_queue_t* queue )
     return lib_api_p->mico_rtos_is_queue_full( queue );
 }
 
-OSStatus mico_init_timer( mico_timer_t* timer, uint32_t time_ms, timer_handler_t function, void* arg )
+OSStatus mico_rtos_init_timer( mico_timer_t* timer, uint32_t time_ms, timer_handler_t function, void* arg )
 {
     return lib_api_p->mico_init_timer( timer, time_ms, function, arg );
 }
-OSStatus mico_start_timer( mico_timer_t* timer )
+OSStatus mico_rtos_start_timer( mico_timer_t* timer )
 {
     return lib_api_p->mico_start_timer( timer );
 }
-OSStatus mico_stop_timer( mico_timer_t* timer )
+OSStatus mico_rtos_stop_timer( mico_timer_t* timer )
 {
     return lib_api_p->mico_stop_timer( timer );
 }
-OSStatus mico_reload_timer( mico_timer_t* timer )
+OSStatus mico_rtos_reload_timer( mico_timer_t* timer )
 {
     return lib_api_p->mico_reload_timer( timer );
 }
-OSStatus mico_deinit_timer( mico_timer_t* timer )
+OSStatus mico_rtos_deinit_timer( mico_timer_t* timer )
 {
     return lib_api_p->mico_deinit_timer( timer );
 }
