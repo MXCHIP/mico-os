@@ -76,6 +76,7 @@ typedef int32_t mico_partition_t;
 #include "MiCODrivers/MiCODriverRng.h"
 #include "MiCODrivers/MiCODriverFlash.h"
 #include "MiCODrivers/MiCODriverMFiAuth.h"
+#include "MiCODrivers/MiCODriverI2s.h"
 
 #define MicoMcuPowerSaveConfig mico_mcu_powersave_config
 

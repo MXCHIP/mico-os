@@ -295,3 +295,25 @@ void autoconfig_start(int seconds, int mode)
 	_kernel_api.wifi_apis->autoconfig_start(seconds, mode);
 }
 
+void wlan_set_softap_tdma(int value)
+{
+	_kernel_api.wifi_apis->wlan_set_softap_tdma(value);
+}
+
+int wifi_off_fastly(void)
+{
+    return _kernel_api.wifi_apis->wifi_off_fastly();
+}
+
+void ssl_set_ecc(int enable)
+{
+    _kernel_api.ssl_crypto_apis->ssl_set_ecc(enable);
+}
+
+/* return 1=success; 0=fail*/
+int disable_log_uart(void)
+{
+    return _kernel_api.uart_apis->disable_log_uart();
+}
+
+

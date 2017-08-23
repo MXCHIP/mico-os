@@ -784,23 +784,28 @@ int send_easylink_minus(uint32_t ip, char *ssid, char *key)
 	return lib_api_p->send_easylink_minus(ip, ssid, key);
 }
 
-OSStatus MicoIISInitialize( const mico_iis_device_t* spi )
+OSStatus MicoIISInitialize( const mico_iis_device_t* iis )
 {
-  	return lib_api_p->iis_apis->iis_init(spi);
+  	return lib_api_p->iis_apis->iis_init(iis);
 }
 
-OSStatus MicoIISFinalize( const mico_iis_device_t* spi )
+OSStatus MicoIISFinalize( const mico_iis_device_t* iis )
 {
-    return lib_api_p->iis_apis->iis_finalize(spi);
+    return lib_api_p->iis_apis->iis_finalize(iis);
 }
 
-OSStatus MicoIISWrite( const mico_iis_device_t* spi, uint8_t *p_buf, uint32_t size )
+OSStatus MicoIISTransfer( const mico_iis_device_t* iis, const mico_iis_message_segment_t* segments, uint16_t number_of_segments )
 {
-	return lib_api_p->iis_apis->iis_write(spi, p_buf, size);
+	return lib_api_p->iis_apis->iis_transfer(iis,segments,number_of_segments);
 }
 
-OSStatus MicoIISRead( const mico_iis_device_t* spi, uint8_t *p_buf, uint32_t size )
+OSStatus MicoIISWrite( const mico_iis_device_t* iis, uint8_t *p_buf, uint32_t size )
 {
-	return lib_api_p->iis_apis->iis_read(spi, p_buf, size);
+	return lib_api_p->iis_apis->iis_write(iis, p_buf, size);
+}
+
+OSStatus MicoIISRead( const mico_iis_device_t* iis, uint8_t *p_buf, uint32_t size )
+{
+	return lib_api_p->iis_apis->iis_read(iis, p_buf, size);
 }
 

@@ -272,6 +272,16 @@ typedef struct
 } platform_spi_message_segment_t;
 
 /**
+ * IIS message segment
+ */
+typedef struct
+{
+    const void* tx_buffer;
+    void*       rx_buffer;
+    uint32_t    length;
+} platform_iis_message_segment_t;
+
+/**
  * I2C configuration
  */
 typedef struct

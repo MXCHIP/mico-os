@@ -177,10 +177,12 @@ typedef struct
 } spi_api_t;
 
 typedef struct {
-    OSStatus (*iis_init)( const mico_iis_device_t* spi );
-    OSStatus (*iis_finalize)( const mico_iis_device_t* spi );
-    OSStatus (*iis_write)( const mico_iis_device_t* spi, uint8_t *p_buf, uint32_t size );
-    OSStatus (*iis_read)( const mico_iis_device_t* spi, uint8_t *p_buf, uint32_t size );
+    OSStatus (*iis_init)( const mico_iis_device_t* iis );
+    OSStatus (*iis_finalize)( const mico_iis_device_t* iis );
+	OSStatus (*iis_transfer)( const mico_iis_device_t* iis, const mico_iis_message_segment_t* segments,
+                              uint16_t number_of_segments );
+    OSStatus (*iis_write)( const mico_iis_device_t* iis, uint8_t *p_buf, uint32_t size );
+    OSStatus (*iis_read)( const mico_iis_device_t* iis, uint8_t *p_buf, uint32_t size );
 }iis_api_t;
 
 /* API type define */
