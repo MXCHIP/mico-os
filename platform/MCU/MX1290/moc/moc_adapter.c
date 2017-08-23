@@ -27,7 +27,7 @@ static void _system_config_set( mico_system_config_t *cfg )
 
 static const platform_uart_config_t stdio_uart_config =
 {
-    .baud_rate = STDIO_UART_BAUDRATE,
+    .baud_rate = MICO_STDIO_UART_BAUDRATE,
     .data_width = DATA_WIDTH_8BIT,
     .parity = NO_PARITY,
     .stop_bits = STOP_BITS_1,
@@ -41,8 +41,7 @@ static volatile uint8_t stdio_rx_data[STDIO_BUFFER_SIZE];
 void init_debug_uart(void)
 {
 	ring_buffer_init( (ring_buffer_t*) &stdio_rx_buffer, (uint8_t*) stdio_rx_data, STDIO_BUFFER_SIZE );
-	MicoUartInitialize(STDIO_UART, &stdio_uart_config,
-                        (ring_buffer_t*) &stdio_rx_buffer );
+	mico_stdio_uart_init( &stdio_uart_config, (ring_buffer_t*) &stdio_rx_buffer );
 }
 #else
 void init_debug_uart(void)

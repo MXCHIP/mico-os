@@ -199,6 +199,12 @@ OSStatus MicoUartInitialize( mico_uart_t uart, const mico_uart_config_t* config,
 {
 	return lib_api_p->MicoUartInitialize(uart, config, optional_rx_buffer );
 }
+
+OSStatus mico_stdio_uart_init( const mico_uart_config_t* config, ring_buffer_t* optional_rx_buffer )
+{
+    return lib_api_p->MicoUartInitialize(MICO_STDIO_UART, config, optional_rx_buffer );
+}
+
 OSStatus MicoUartFinalize( mico_uart_t uart )
 {
 	return lib_api_p->MicoUartFinalize(uart);

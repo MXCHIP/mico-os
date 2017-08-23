@@ -454,7 +454,7 @@ static void partShow_Command(char *pcWriteBuffer, int xWriteBufferLen,int argc, 
             continue;
         if (partition->partition_owner == MICO_FLASH_NONE)
             continue;
-        cmd_printf( "%4ld | %11s |  Dev:%ld  | 0x%08lx | 0x%08lx |\r\n", i,
+        cmd_printf( "%4d | %11s |  Dev:%ld  | 0x%08lx | 0x%08lx |\r\n", i,
             partition->partition_description, partition->partition_owner, 
             partition->partition_start_addr, partition->partition_length);
     };

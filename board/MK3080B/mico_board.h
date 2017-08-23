@@ -31,7 +31,10 @@
 
 
 
-#pragma once
+#ifndef __MICO_BOARD_H_
+#define __MICO_BOARD_H_
+
+#include <stdint.h>
 
 #ifdef __cplusplus
 extern "C"
@@ -49,7 +52,7 @@ extern "C"
 /******************************************************
  *                   Enumerations
  ******************************************************/
-typedef enum
+enum
 {
     MICO_GPIO_1,
     MICO_GPIO_2,
@@ -66,30 +69,30 @@ typedef enum
     MICO_GPIO_23,
     MICO_GPIO_MAX, /* Denotes the total number of GPIO port aliases. Not a valid GPIO alias */
     MICO_GPIO_NONE,
-} mico_gpio_t;
+};
 
-typedef enum
+enum
 {
     MICO_SPI_1,
     MICO_SPI_MAX, /* Denotes the total number of SPI port aliases. Not a valid SPI alias */
     MICO_SPI_NONE,
-} mico_spi_t;
+};
 
-typedef enum
+enum
 {
     MICO_I2C_1,
     MICO_I2C_2,
     MICO_I2C_MAX, /* Denotes the total number of I2C port aliases. Not a valid I2C alias */
     MICO_I2C_NONE,
-} mico_i2c_t;
+};
 
-typedef enum
+enum
 {
     MICO_IIS_MAX, /* Denotes the total number of IIS port aliases. Not a valid IIS alias */
     MICO_IIS_NONE,
-} mico_iis_t;
+};
 
-typedef enum
+enum
 {
     MICO_PWM_1,
     MICO_PWM_2,
@@ -99,70 +102,81 @@ typedef enum
     MICO_PWM_6,
     MICO_PWM_MAX, /* Denotes the total number of PWM port aliases. Not a valid PWM alias */
     MICO_PWM_NONE,
-} mico_pwm_t;
+};
 
-typedef enum
+enum
 {
     MICO_ADC_1,
     MICO_ADC_MAX, /* Denotes the total number of ADC port aliases. Not a valid ADC alias */
     MICO_ADC_NONE,
-} mico_adc_t;
+};
 
-typedef enum
+enum
 {
     MICO_UART_1,
     MICO_UART_2,
     MICO_UART_MAX, /* Denotes the total number of UART port aliases. Not a valid UART alias */
     MICO_UART_NONE,
-} mico_uart_t;
+};
 
-typedef enum
+enum
 {
   MICO_FLASH_SPI,
   MICO_FLASH_MAX,
   MICO_FLASH_NONE,
-} mico_flash_t;
+};
 
 /* Donot change MICO_PARTITION_USER_MAX!! */
-typedef enum
+enum
 {
-    MICO_PARTITION_USER_MAX = 0,
+    MICO_PARTITION_ERROR = -1,
+    MICO_PARTITION_USER_MAX   = 0,
+    MICO_PARTITION_BOOTLOADER = MICO_PARTITION_USER_MAX,
+    MICO_PARTITION_APPLICATION,
+    MICO_PARTITION_ATE,
+    MICO_PARTITION_OTA_TEMP,
+    MICO_PARTITION_RF_FIRMWARE,
+    MICO_PARTITION_PARAMETER_1,
+    MICO_PARTITION_PARAMETER_2,
     MICO_PARTITION_USER = 7,
     MICO_PARTITION_SDS,
-} mico_user_partition_t;
+    MICO_PARTITION_MAX,
+    MICO_PARTITION_NONE,
+};
+
 
 typedef struct
 {
-  mico_gpio_t pin;
-  unsigned char config; /* @ref mico_gpio_config_t */
-  unsigned char out; /* 0: low, 1: high */
+    int8_t pin;
+    unsigned char config; /* @ref mico_gpio_config_t */
+    unsigned char out; /* 0: low, 1: high */
 }mico_gpio_init_t;
 
 typedef struct
 {
-  mico_gpio_t pin;
+    int8_t pin;
 } mico_pwm_pinmap_t;
 
 typedef struct
 {
-  mico_gpio_t mosi; 
-  mico_gpio_t miso; 
-  mico_gpio_t sclk; 
-  mico_gpio_t ssel; 
+    int8_t mosi;
+    int8_t miso;
+    int8_t sclk;
+    int8_t ssel;
 } mico_spi_pinmap_t;
 
 typedef struct
 {
-  mico_gpio_t tx;
-  mico_gpio_t rx;
-  mico_gpio_t rts;
-  mico_gpio_t cts;
+    int8_t tx;
+    int8_t rx;
+    int8_t rts;
+    int8_t cts;
 } mico_uart_pinmap_t;
 
 typedef struct
 {
-  mico_gpio_t sda;  
-  mico_gpio_t scl;
+    int8_t sda;
+    int8_t scl;
 } mico_i2c_pinmap_t;
     
 typedef struct
@@ -173,12 +187,12 @@ typedef struct
   const mico_i2c_pinmap_t *i2c_pinmap;
 } platform_peripherals_pinmap_t;
 
-#define STDIO_UART      MICO_UART_2
-#define STDIO_UART_BAUDRATE (115200) 
+#define MICO_STDIO_UART      MICO_UART_2
+#define MICO_STDIO_UART_BAUDRATE (115200)
 
-#define UART_FOR_APP    MICO_UART_1
-#define MFG_TEST        MICO_UART_1
-#define CLI_UART        MICO_UART_2
+#define MICO_UART_FOR_APP    MICO_UART_1
+#define MICO_MFG_TEST        MICO_UART_1
+#define MICO_CLI_UART        MICO_UART_2
 
 /* Components connected to external I/Os*/
 #define Standby_SEL      (MICO_GPIO_29)
@@ -239,3 +253,4 @@ typedef struct {
 } /*extern "C" */
 #endif
 
+#endif

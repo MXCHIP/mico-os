@@ -348,7 +348,7 @@ void Main_Menu(void)
       }
       
       if (findCommandPara(cmdbuf, "e", NULL, 0) != -1){
-        printf ("\n\rErasing dev%ld content From 0x%lx to 0x%lx\n\r", flash_dev, startAddress, endAddress);
+        printf ("\n\rErasing dev%d content From 0x%lx to 0x%lx\n\r", flash_dev, startAddress, endAddress);
         platform_flash_init( &platform_flash_peripherals[ flash_dev ] );
         platform_flash_disable_protect( &platform_flash_peripherals[ flash_dev ], startAddress, endAddress );
         platform_flash_erase( &platform_flash_peripherals[ flash_dev ], startAddress, endAddress );
@@ -356,12 +356,12 @@ void Main_Menu(void)
       }
       
       if (findCommandPara(cmdbuf, "r", NULL, 0) != -1){
-        printf ("\n\rRead dev%ld content From 0x%lx to 0x%lx\n\r", flash_dev, startAddress, endAddress);
+        printf ("\n\rRead dev%d content From 0x%lx to 0x%lx\n\r", flash_dev, startAddress, endAddress);
         SerialUpload(flash_dev, startAddress, "FlashImage.bin", endAddress-startAddress+1);
         continue;
       }
       
-      printf ("\n\rUpdating dev%ld content From 0x%lx to 0x%lx\n\r", flash_dev, startAddress, endAddress);
+      printf ("\n\rUpdating dev%d content From 0x%lx to 0x%lx\n\r", flash_dev, startAddress, endAddress);
       platform_flash_disable_protect( &platform_flash_peripherals[ flash_dev ], startAddress, endAddress );
       SerialDownload(flash_dev, startAddress, endAddress-startAddress+1);                           
     }

@@ -30,10 +30,10 @@
 ******************************************************************************
 */
 
-#include "common.h"
+#include "mico_common.h"
 #include "mico_platform.h"
 
-#include "platform.h"
+#include "mico_board.h"
 #include "button.h"
 #include "moc_api.h"
 
@@ -141,7 +141,7 @@ const platform_peripherals_pinmap_t peripherals_pinmap =
 /******************************************************
 *               Function Definitions
 ******************************************************/
-void init_platform( void )
+void mico_board_init( void )
 {
 #if defined (MOC) && (MOC == 1)
     button_init_t init;

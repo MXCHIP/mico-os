@@ -32,9 +32,8 @@
 #ifndef __MICODRIVERI2S_H__
 #define __MICODRIVERI2S_H__
 
-#pragma once
-#include "common.h"
-#include "platform.h"
+
+#include "mico_common.h"
 #include "platform_peripheral.h"
 
 /** @addtogroup MICO_PLATFORM

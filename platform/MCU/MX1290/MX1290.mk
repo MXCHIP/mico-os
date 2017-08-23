@@ -48,14 +48,12 @@ $(NAME)_SOURCES := ../../$(HOST_ARCH_M4)/crt0_$(TOOLCHAIN_NAME).c \
 
 $(NAME)_CFLAGS += -Wno-implicit-function-declaration -Wno-unused-variable
 
-# These need to be forced into the final ELF since they are not referenced otherwise
-$(NAME)_LINK_FILES := ../../$(HOST_ARCH_M4)/crt0_$(TOOLCHAIN_NAME).o
 
 ifneq ($(filter $(subst ., ,$(COMPONENTS)),mocOS),)
 ####################################################################################
 # MOC application
 ####################################################################################
-$(NAME)_SOURCES += ../moc_platform_common.c
+$(NAME)_SOURCES += ../moc_platform_common.c ../platform_retarget.c
 $(NAME)_SOURCES += moc/moc_adapter.c
 else
 ####################################################################################
@@ -65,6 +63,7 @@ $(NAME)_SOURCES += platform_vector_table.c \
                    GCC/platform_unhandled_isr.c \
                    ../../$(HOST_ARCH_M4)/hardfault_handler.c \
                    ../mico_platform_common.c \
+                   ../platform_retarget.c \
                    peripherals/sdk/src/drivers/mw300/lowlevel/mw300_pmu.c \
                    peripherals/sdk/src/drivers/mw300/lowlevel/mw300_pinmux.c \
                    peripherals/sdk/src/drivers/mw300/lowlevel/mw300_driver.c \

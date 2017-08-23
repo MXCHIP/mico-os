@@ -1,6 +1,6 @@
 /**
 ******************************************************************************
-* @file    platform.h
+* @file    mico_board.h
 * @author  William Xu
 * @version V1.0.0
 * @date    05-Oct-2016
@@ -30,8 +30,8 @@
 */ 
 
 
-
-#pragma once
+#ifndef __MICO_BOARD_H_
+#define __MICO_BOARD_H_
 
 #ifdef __cplusplus
 extern "C"
@@ -268,3 +268,4 @@ typedef struct {
 } /*extern "C" */
 #endif
 
+#endif
