@@ -121,6 +121,9 @@ const platform_gpio_t platform_gpio_pins[] =
   [MICO_USART1_RX]                    = { GPIOB,  7 },
   [MICO_USART1_TX]					  = { GPIOA,  15},
   [MICO_GPIO_POWER]                   = { GPIOD,  2 },
+  [MICO_GPIO_GPRS_START]              = { GPIOA,  8 },
+  [MICO_GPIO_GPRS_RST]                = { GPIOB,  5 },
+  [MICO_GPIO_GPRS_WAKEUP]             = { GPIOA,  1 },
 };
 
 const platform_pwm_t *platform_pwm_peripherals = NULL;

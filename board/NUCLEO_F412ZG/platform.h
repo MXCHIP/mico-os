@@ -82,6 +82,9 @@ typedef enum
     MICO_USART1_RX,
     MICO_USART1_TX,
 	MICO_GPIO_POWER,
+	MICO_GPIO_GPRS_RST,
+	MICO_GPIO_GPRS_START,
+	MICO_GPIO_GPRS_WAKEUP,
     MICO_GPIO_MAX, /* Denotes the total number of GPIO port aliases. Not a valid GPIO alias */
     MICO_GPIO_NONE,
 } mico_gpio_t;
