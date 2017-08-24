@@ -31,15 +31,13 @@
  */
 
 #include "mico_platform.h"
-#include "platform.h"
-#include "platform_config.h"
+#include "mico_board.h"
+#include "mico_board_conf.h"
 #include "platform_peripheral.h"
-#include "platform_config.h"
 #include "platform_logging.h"
 #include "spi_flash_platform_interface.h"
 #include "wlan_platform_common.h"
 #include "CheckSumUtils.h"
-#include "keypad/gpio_button/button.h"
 
 #ifdef USE_MiCOKit_STMEMS
 #include "MiCOKit_STmems/MiCOKit_STmems.h"
@@ -68,9 +66,6 @@
 /******************************************************
 *               Function Declarations
 ******************************************************/
-extern WEAK void PlatformEasyLinkButtonClickedCallback(void);
-extern WEAK void PlatformEasyLinkButtonLongPressedCallback(void);
-extern WEAK void bootloader_start(void);
 
 /******************************************************
 *               Variables Definitions
@@ -270,7 +265,7 @@ const mico_logic_partition_t mico_partitions[] =
   {
     .partition_owner           = MICO_FLASH_EMBEDDED,
     .partition_description     = "Application",
-    .partition_start_addr      = 0x0800C000,
+    .partition_start_addr      = 0x08008000,
     .partition_length          =    0xE1000,   //900k bytes
     .partition_options         = PAR_OPT_READ_EN | PAR_OPT_WRITE_DIS,
   },
@@ -456,31 +451,7 @@ void platform_init_peripheral_irq_priorities( void )
   NVIC_SetPriority( EXTI15_10_IRQn   , 14 ); /* GPIO                */
 }
 
-void init_platform( void )
-{
-  button_init_t init;
-  
-  MicoGpioInitialize( (mico_gpio_t)MICO_SYS_LED, OUTPUT_PUSH_PULL );
-  MicoGpioOutputLow( (mico_gpio_t)MICO_SYS_LED );
-  MicoGpioInitialize( (mico_gpio_t)MICO_RF_LED, OUTPUT_OPEN_DRAIN_NO_PULL );
-  MicoGpioOutputHigh( (mico_gpio_t)MICO_RF_LED );
-  
-  MicoGpioInitialize((mico_gpio_t)BOOT_SEL, INPUT_PULL_UP);
-  MicoGpioInitialize((mico_gpio_t)MFG_SEL, INPUT_PULL_UP);
-  
-  //Initialise EasyLink buttons
-  init.gpio = EasyLink_BUTTON;
-  init.pressed_func = PlatformEasyLinkButtonClickedCallback;
-  init.long_pressed_func = PlatformEasyLinkButtonLongPressedCallback;
-  init.long_pressed_timeout = RestoreDefault_TimeOut;
-
-  button_init( IOBUTTON_EASYLINK, init );
-
-}
-
-//#ifdef BOOTLOADER
-
-void init_platform_bootloader( void )
+void mico_board_init( void )
 {
   MicoGpioInitialize( (mico_gpio_t)MICO_SYS_LED, OUTPUT_PUSH_PULL );
   MicoGpioOutputLow( (mico_gpio_t)MICO_SYS_LED );
@@ -490,8 +461,6 @@ void init_platform_bootloader( void )
   MicoGpioInitialize((mico_gpio_t)BOOT_SEL, INPUT_PULL_UP);
   MicoGpioInitialize((mico_gpio_t)MFG_SEL, INPUT_PULL_UP);
 }
-
-//#endif
 
 void MicoSysLed(bool onoff)
 {
@@ -513,17 +482,11 @@ void MicoRfLed(bool onoff)
 
 bool MicoShouldEnterMFGMode(void)
 {
-//  if(MicoGpioInputGet((mico_gpio_t)BOOT_SEL)==false && MicoGpioInputGet((mico_gpio_t)MFG_SEL)==false)
-//    return true;
-//  else
     return false;
 }
 
 bool MicoShouldEnterBootloader(void)
 {
-//  if(MicoGpioInputGet((mico_gpio_t)BOOT_SEL)==false && MicoGpioInputGet((mico_gpio_t)MFG_SEL)==true)
-//    return true;
-//  else
     return false;
 }
 

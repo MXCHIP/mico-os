@@ -175,6 +175,21 @@ extern "C" {
 #define MICO_WLAN_CONNECTION_ENABLE             1
 #endif
 
+/**
+ *  MICO_CONFIG_EASYLINK_BTN_ENABLE: Enable EasyLink Button,
+ *  - Press to start easylink
+ *  - Long pressed  @ref MICO_CONFIG_EASYLINK_BTN_LONG_PRESS_TIMEOUT milliseconds
+ *    to clear all settings
+ *  Default: Enable
+ */
+#if !defined MICO_CONFIG_EASYLINK_BTN_ENABLE
+#define MICO_CONFIG_EASYLINK_BTN_ENABLE         1
+#endif
+
+#if !defined MICO_CONFIG_EASYLINK_BTN_LONG_PRESS_TIMEOUT
+#define MICO_CONFIG_EASYLINK_BTN_LONG_PRESS_TIMEOUT         5000
+#endif
+
 /************************************************************************
  * Command line interface */
 #if !defined MICO_CLI_ENABLE

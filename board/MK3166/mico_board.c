@@ -39,11 +39,7 @@
 #include "spi_flash_platform_interface.h"
 #include "wlan_platform_common.h"
 #include "CheckSumUtils.h"
-#include "keypad/gpio_button/button.h"
 
-#ifdef USE_MiCOKit_EXT
-#include "MiCOKit_EXT/micokit_ext.h"
-#endif
 
 /******************************************************
 *                      Macros
@@ -68,9 +64,6 @@
 /******************************************************
 *               Function Declarations
 ******************************************************/
-extern WEAK void PlatformEasyLinkButtonClickedCallback(void);
-extern WEAK void PlatformEasyLinkButtonLongPressedCallback(void);
-extern WEAK void bootloader_start(void);
 
 /******************************************************
 *               Variables Definitions
@@ -457,8 +450,6 @@ void platform_init_peripheral_irq_priorities( void )
 
 void mico_board_init( void )
 {
-
-
   MicoGpioInitialize( (mico_gpio_t)MICO_SYS_LED, OUTPUT_PUSH_PULL );
   MicoGpioOutputLow( (mico_gpio_t)MICO_SYS_LED );
   MicoGpioInitialize( (mico_gpio_t)MICO_RF_LED, OUTPUT_OPEN_DRAIN_NO_PULL );
@@ -466,17 +457,6 @@ void mico_board_init( void )
   
   MicoGpioInitialize((mico_gpio_t)BOOT_SEL, INPUT_PULL_UP);
   MicoGpioInitialize((mico_gpio_t)MFG_SEL, INPUT_PULL_UP);
-
-#ifndef BOOTLOADER
-  button_init_t init;
-
-  init.gpio = EasyLink_BUTTON;
-  init.pressed_func = PlatformEasyLinkButtonClickedCallback;
-  init.long_pressed_func = PlatformEasyLinkButtonLongPressedCallback;
-  init.long_pressed_timeout = RestoreDefault_TimeOut;
-
-  button_init( IOBUTTON_EASYLINK, init );
-#endif
 }
 
 void MicoSysLed(bool onoff)

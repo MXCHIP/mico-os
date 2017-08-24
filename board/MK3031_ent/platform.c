@@ -36,10 +36,6 @@
 #include "platform.h"
 #include "button.h"
 
-#ifdef USE_MiCOKit_EXT
-#include "MiCOKit_EXT/micokit_ext.h"
-#endif
-
 /******************************************************
 *                      Macros
 ******************************************************/
@@ -63,8 +59,6 @@
 /******************************************************
 *               Function Declarations
 ******************************************************/
-extern WEAK void PlatformEasyLinkButtonClickedCallback(void);
-extern WEAK void PlatformEasyLinkButtonLongPressedCallback(void);
 
 /******************************************************
 *               Variables Definitions
@@ -208,7 +202,6 @@ const mico_logic_partition_t mico_partitions[] =
 void init_platform( void )
 {
 #if defined (MOC) && (MOC == 1)
-    button_init_t init;
     extern int get_last_reset_reason(void);
 
     if ( get_last_reset_reason() & LAST_RST_CAUSE_WDT )
@@ -220,22 +213,6 @@ void init_platform( void )
     MicoGpioOutputLow( (mico_gpio_t)MICO_SYS_LED );
     MicoGpioInitialize( (mico_gpio_t)MICO_RF_LED, OUTPUT_PUSH_PULL );
     MicoGpioOutputHigh( (mico_gpio_t)MICO_RF_LED );
-
-    //	Initialise EasyLink buttons
-    init.gpio = EasyLink_BUTTON;
-    init.pressed_func = PlatformEasyLinkButtonClickedCallback;
-    init.long_pressed_func = PlatformEasyLinkButtonLongPressedCallback;
-    init.long_pressed_timeout = RestoreDefault_TimeOut;
-
-    button_init( IOBUTTON_EASYLINK, init );
-
-#ifdef USE_MiCOKit_EXT
-  dc_motor_init( );
-  dc_motor_set( 0 );
-
-  rgb_led_init();
-  rgb_led_open(0, 0, 0);
-#endif
 
 #endif
 }

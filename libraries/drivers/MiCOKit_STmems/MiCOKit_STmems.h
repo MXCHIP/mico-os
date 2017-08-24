@@ -18,7 +18,7 @@
 #ifndef __MICOKIT_STMEMS_H_
 #define __MICOKIT_STMEMS_H_
 
-#include "common.h"
+#include "mico_common.h"
 
 //------------------------- MiCOKit STmems board modules drivers ------------------
 #include "rgb_led/P9813/rgb_led.h"

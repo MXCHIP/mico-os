@@ -19,6 +19,7 @@
 #include "mico.h"
 #include "StringUtils.h"
 #include "time.h"
+#include "button.h"
 
 #include "system_internal.h"
 
@@ -242,6 +243,69 @@ OSStatus system_network_daemen_start( system_context_t * const inContext )
     MicoMcuPowerSaveConfig(true);
   }  
   return kNoErr;
+}
+
+static void PlatformEasyLinkButtonClickedCallback(void)
+{
+  system_log_trace();
+
+  require_quiet( sys_context, exit );
+
+#ifdef EasyLink_Needs_Reboot
+  if(sys_context->flashContentInRam.micoSystemConfig.easyLinkByPass != EASYLINK_BYPASS_NO){
+      sys_context->flashContentInRam.micoSystemConfig.easyLinkByPass = EASYLINK_BYPASS_NO;
+    needs_update = true;
+  }
+
+  /* Enter easylink mode temporary in configed mode */
+  if(sys_context->flashContentInRam.micoSystemConfig.configured == allConfigured){
+      sys_context->flashContentInRam.micoSystemConfig.configured = wLanUnConfigured;
+    needs_update = true;
+  }
+
+  mico_system_power_perform( &sys_context->flashContentInRam, eState_Software_Reset );
+#else
+  mico_system_wlan_start_autoconf( );
+#endif
+
+exit:
+  return;
+}
+
+static void PlatformEasyLinkButtonLongPressedCallback(void)
+{
+  system_log_trace();
+  mico_Context_t* context = NULL;
+  mico_logic_partition_t *partition = NULL;
+
+  context = mico_system_context_get( );
+  require( context, exit );
+
+  partition = MicoFlashGetInfo( MICO_PARTITION_PARAMETER_1 );
+
+  MicoFlashErase( MICO_PARTITION_PARAMETER_1 ,0x0, partition->partition_length );
+
+  partition = MicoFlashGetInfo( MICO_PARTITION_PARAMETER_2 );
+
+  MicoFlashErase( MICO_PARTITION_PARAMETER_2 ,0x0, partition->partition_length );
+
+  mico_system_power_perform( context, eState_Software_Reset );
+
+exit:
+  return;
+}
+
+void system_easylink_btn_init( mico_gpio_t btn, uint32_t long_pressed_timeout )
+{
+    button_init_t init;
+
+    //  Initialise EasyLink buttons
+    init.gpio = btn;
+    init.pressed_func = PlatformEasyLinkButtonClickedCallback;
+    init.long_pressed_func = PlatformEasyLinkButtonLongPressedCallback;
+    init.long_pressed_timeout = long_pressed_timeout;
+
+    button_init( IOBUTTON_EASYLINK, init );
 }
 
 void mico_sdk_version( uint8_t *major, uint8_t *minor, uint8_t *revision )

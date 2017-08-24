@@ -157,7 +157,7 @@ extern void xPortPendSVHandler     ( void );
 extern void xPortSysTickHandler     ( void );
 #endif
 
-/* software_init_hook_rtos -> pre_main -> __wrap_main -> mbed_main/mico_main -> __real_main*/
+/* software_init_hook_rtos -> pre_main -> __wrap_main -> mbed_main/mico_main -> __real_main */
 
 void software_init_hook_rtos (void)
 {

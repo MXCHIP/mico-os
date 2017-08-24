@@ -27,56 +27,6 @@ extern system_context_t* sys_context;
 
 extern void sendNotifySYSWillPowerOff(void);
 
-USED void PlatformEasyLinkButtonClickedCallback(void)
-{
-  system_log_trace();
-  
-  require_quiet( sys_context, exit );
-  
-#ifdef EasyLink_Needs_Reboot
-  if(sys_context->flashContentInRam.micoSystemConfig.easyLinkByPass != EASYLINK_BYPASS_NO){
-      sys_context->flashContentInRam.micoSystemConfig.easyLinkByPass = EASYLINK_BYPASS_NO;
-    needs_update = true;
-  }
-  
-  /* Enter easylink mode temporary in configed mode */
-  if(sys_context->flashContentInRam.micoSystemConfig.configured == allConfigured){
-      sys_context->flashContentInRam.micoSystemConfig.configured = wLanUnConfigured;
-    needs_update = true;
-  }
-
-  mico_system_power_perform( &sys_context->flashContentInRam, eState_Software_Reset );
-#else
-  mico_system_wlan_start_autoconf( );
-#endif
-
-exit: 
-  return;
-}
-
-USED void PlatformEasyLinkButtonLongPressedCallback(void)
-{
-  system_log_trace();
-  mico_Context_t* context = NULL;
-  mico_logic_partition_t *partition = NULL;
-  
-  context = mico_system_context_get( );
-  require( context, exit );
-
-  partition = MicoFlashGetInfo( MICO_PARTITION_PARAMETER_1 );
-
-  MicoFlashErase( MICO_PARTITION_PARAMETER_1 ,0x0, partition->partition_length );
-  
-  partition = MicoFlashGetInfo( MICO_PARTITION_PARAMETER_2 );
-
-  MicoFlashErase( MICO_PARTITION_PARAMETER_2 ,0x0, partition->partition_length );
-
-  mico_system_power_perform( context, eState_Software_Reset );
-
-exit:
-  return;
-}
-
 USED void PlatformStandbyButtonClickedCallback(void)
 {
   system_log_trace();
@@ -148,9 +98,6 @@ OSStatus mico_system_power_perform( mico_Context_t* const in_context, mico_syste
 exit:
   return err; 
 }
-
-
-
 
 
 

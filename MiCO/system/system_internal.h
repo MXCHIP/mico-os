@@ -72,7 +72,7 @@ void system_connect_wifi_normal( system_context_t * const inContext );
 
 void system_connect_wifi_fast( system_context_t * const inContext);
 
-
+void system_easylink_btn_init( int8_t btn, uint32_t long_pressed_timeout );
 
 OSStatus MICORestoreMFG                 ( void );
 

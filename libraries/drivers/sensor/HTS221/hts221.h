@@ -22,8 +22,8 @@
 #define __HTS221_H
 
 #include <stdint.h>
-#include "common.h"
-#include "platform.h"
+#include "mico_common.h"
+#include "mico_board.h"
     
 #ifdef __cplusplus
  extern "C" {

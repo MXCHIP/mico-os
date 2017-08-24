@@ -26,7 +26,7 @@ extern "C" {
 /* Includes ------------------------------------------------------------------*/
 
 #include "mico_platform.h"
-#include "platform.h"
+#include "mico_board.h"
   
 /** @addtogroup MICO_Drivers_interface
   * @{

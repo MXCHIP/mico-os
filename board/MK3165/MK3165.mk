@@ -48,8 +48,8 @@ GLOBAL_DEFINES += $$(if $$(NO_CRLF_STDIO_REPLACEMENT),,CRLF_STDIO_REPLACEMENT)
 GLOBAL_LDFLAGS  += -L $(MICO_OS_PATH)/board/MK$(MODULE)
 
 # Components
-$(NAME)_COMPONENTS += drivers/spi_flash
-$(NAME)_COMPONENTS += drivers/MiCOKit_EXT
+$(NAME)_COMPONENTS := drivers/spi_flash \
+                      drivers/keypad/gpio_button
 
 # Source files
 $(NAME)_SOURCES := mico_board.c

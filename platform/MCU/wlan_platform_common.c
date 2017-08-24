@@ -91,6 +91,16 @@ OSStatus host_platform_init( void )
     return kNoErr;
 }
 
+/* Used to give a 32k clock to EMW1062 wifi rf module */
+MICO_WEAK OSStatus host_platform_init_wlan_powersave_clock( void )
+{
+#ifndef MICO_USE_WIFI_32K_PIN
+    return kNoErr;
+#else
+    return host_platform_deinit_wlan_powersave_clock( );
+#endif
+}
+
 OSStatus host_platform_deinit( void )
 {
 #if defined ( MICO_USE_WIFI_RESET_PIN )

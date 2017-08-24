@@ -57,7 +57,7 @@ $(NAME)_COMPONENTS += drivers/spi_flash
 $(NAME)_COMPONENTS += drivers/MiCOKit_STmems
 
 # Source files
-$(NAME)_SOURCES := platform.c
+$(NAME)_SOURCES := mico_board.c
 
 SHARED_WIFI_SPI_BUS := YES
 

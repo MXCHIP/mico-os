@@ -87,6 +87,11 @@ OSStatus mico_system_init( mico_Context_t* in_context )
   require_noerr( err, exit ); 
 #endif
 
+
+#if MICO_CONFIG_EASYLINK_BTN_ENABLE
+  system_easylink_btn_init( EasyLink_BUTTON, MICO_CONFIG_EASYLINK_BTN_LONG_PRESS_TIMEOUT );
+#endif
+
 #if MICO_CLI_ENABLE
   /* MiCO command line interface */
   cli_init();
