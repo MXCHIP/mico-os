@@ -76,6 +76,16 @@ extern void join_fail( OSStatus err );
 extern void wifi_reboot_event( void );
 extern void mico_rtos_stack_overflow( char *taskname );
 
+/* This function is called by kernel QC.
+ * QC will call this function.
+ * The return string will add to the QC output after MAC address line.
+ * NULL don't change the QC output.
+ */
+static char *test_qc(void)
+{
+    return NULL;
+}
+
 /* MOC main function, called by MOC kernel */
 void moc_app_main( const mico_api_t *lib_api_t );
 
@@ -133,6 +143,7 @@ USED const user_api_t user_handler = {
     .pinmaps = &peripherals_pinmap,
     .gpio_init = gpio_init,
     .stdio_break_in = 1, // 1=enable: bootloader use user uart to enter boot mode.
+    .user_define_qc = test_qc,
 #endif
 };
 
