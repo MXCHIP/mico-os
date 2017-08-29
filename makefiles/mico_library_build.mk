@@ -85,8 +85,6 @@ $(SOURCE_ROOT)build/$(NAME)/%.o: %.S $(MAKEFILES_PATH)/mico_library_makefile.mk
 	$(QUIET)$(ECHO) Assembling $<
 	$(QUIET)$(CC) $(CFLAGS) -o $@ $<
 
-# Standard library defines
-CFLAGS += -c -MD -ggdb $(CPU_CFLAGS) $(ENDIAN_CFLAGS_LITTLE) -Wall -fsigned-char -ffunction-sections -fdata-sections -fno-common -std=gnu11 
 
 # MICO pre-built library defines
 CFLAGS += -DMiCO_PREBUILT_LIBS

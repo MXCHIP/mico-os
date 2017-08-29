@@ -198,8 +198,14 @@ StackType_t *pxPortInitialiseStack( StackType_t *pxTopOfStack, TaskFunction_t px
 	*pxTopOfStack = ( StackType_t ) pvParameters; /* R0 */
 	pxTopOfStack--;
 
-	/* The status register is set for system mode, with interrupts enabled. */
-	*pxTopOfStack = ( StackType_t ) portINITIAL_SPSR;
+    /* The status register is set for system mode, with interrupts enabled. */
+    if ((uint32_t)pxCode & 0x01) { // thumb
+        *pxTopOfStack = ( StackType_t ) (portINITIAL_SPSR | 0x20); // thumb
+    } else {
+        *pxTopOfStack = ( StackType_t ) portINITIAL_SPSR; // ARM
+    }
+	
+	
 	pxTopOfStack--;
 
 	/* Interrupt flags cannot always be stored on the stack and will
@@ -210,21 +216,6 @@ StackType_t *pxPortInitialiseStack( StackType_t *pxTopOfStack, TaskFunction_t px
 	return pxTopOfStack;	
 }
 
-/*-----------------------------------------------------------*/
-extern void vPortStartFirstTask( void );
-BaseType_t xPortStartScheduler( void )
-{
-
-	/* Start the timer that generates the tick ISR.  
-	   Interrupts are disabled here already. */
-	prvSetupTimerInterrupt();
-
-	/* Start the first task. */
-	vPortStartFirstTask();	
-
-	/* Should not get here! */
-	return 0;
-}
 /*-----------------------------------------------------------*/
 
 void vPortEndScheduler( void )
@@ -360,142 +351,6 @@ void vPortExitCritical( void )
 /*-----------------------------------------------------------*/
 void prvDefaultHandler( void )
 {
-}
-
-/*-----------------------------------------------------------*/
-uint32_t test_get_spsr( void )
-{    
-    uint32_t spsr_content;
-
-    __asm volatile(
-		"MRS %0,CPSR\n"
-		:"=r" (spsr_content)
-		:
-		:"memory"
-	);
-    
-    return spsr_content;
-}
-/*-----------------------------------------------------------*/
-
-uint32_t platform_is_in_irq_enable( void )
-{
-    #define ARM968_IF_MASK      0xC0
-	#define ARM968_IRQ_ENABLE   0x80
-    
-    uint32_t interrupt;
-
-    __asm volatile(
-		"MRS %0,CPSR\n"
-		"AND %0,%0,#0xC0\n"
-		:"=r" (interrupt)
-		:
-		:"memory"
-	);
-    
-    return (!(interrupt & ARM968_IRQ_ENABLE));
-}
-/*-----------------------------------------------------------*/
-
-uint32_t platform_is_in_fiq_enable( void )
-{
-    #define ARM968_IF_MASK      0xC0
-	#define ARM968_FIQ_ENABLE   0x40
-    
-    uint32_t interrupt;
-
-    __asm volatile(
-		"MRS %0,CPSR\n"
-		"AND %0,%0,#0xC0\n"
-		:"=r" (interrupt)
-		:
-		:"memory"
-	);
-    
-    return (!(interrupt & ARM968_FIQ_ENABLE));
-}
-
-/*-----------------------------------------------------------*/
-
-uint32_t platform_is_in_irq_context( void )
-{
-    #define ARM968_IRQ_MODE      0x12
-    
-    uint32_t mode;
-
-    __asm volatile(
-		"MRS %0,CPSR\n"
-		"AND %0,%0,#0x1f\n"
-		:"=r" (mode)
-		:
-		:"memory"
-	);
-		
-    return (ARM968_IRQ_MODE == mode);
-}
-/*-----------------------------------------------------------*/
-
-uint32_t platform_is_in_fiq_context( void )
-{
-    #define ARM968_FIQ_MODE      0x11
-    
-    uint32_t mode;
-
-    __asm volatile(
-		"MRS %0,CPSR\n"
-		"AND %0,%0,#0x1f\n"
-		:"=r" (mode)
-		:
-		:"memory"
-	);
-    
-    return (ARM968_FIQ_MODE == mode);
-}
-/*-----------------------------------------------------------*/
-
-uint32_t platform_spsr_content( void )
-{
-    uint32_t mode;
-
-    __asm volatile(
-		"MRS %0,SPSR\n"
-		:"=r" (mode)
-		:
-		:"memory"
-	);
-    
-    return mode;
-}
-/*-----------------------------------------------------------*/
-
-uint32_t platform_sp_content( void )
-{
-    uint32_t val;
-
-    __asm volatile(
-		"mov %0,SP\n"
-		:"=r" (val)
-		:
-		:"memory"
-	);
-    
-    return val;
-}
-
-/*-----------------------------------------------------------*/
-
-uint32_t platform_cpsr_content( void )
-{
-    uint32_t mode;
-
-    __asm volatile(
-		"MRS %0,CPSR\n"
-		:"=r" (mode)
-		:
-		:"memory"
-	);
-    
-    return mode;
 }
 
 uint8_t platform_is_in_interrupt_context( void )

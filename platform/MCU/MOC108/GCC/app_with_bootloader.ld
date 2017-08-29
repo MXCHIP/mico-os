@@ -54,7 +54,7 @@
 /* Split memory into area for vectors and ram */
 MEMORY
 {
-	flash  (rx) : ORIGIN = 0x0012000, LENGTH = 1M - 64k
+	flash  (rx) : ORIGIN = 0x0012000, LENGTH = 546936
 	ram   (rwx): ORIGIN = 0x00400020, LENGTH = 256k - 32
 }
 
@@ -137,6 +137,7 @@ SECTIONS
 
 /* This symbol defines end of code/data sections. Heap starts here. */
 	PROVIDE(end    	  = .);
+	PROVIDE(_heap_start    	  = .);
 	
 /* _stack symbol defines initial stack bottom addres. Stack grows to lower addresses.
    Typically you set this to be top of your RAM. Note: code never checks, if stack
@@ -147,6 +148,11 @@ SECTIONS
 	PROVIDE(_stack_irq         = 0x440000 - 0x3F0 - 0x7F0 - 0xFF0); /* 0xFF0*/
 	PROVIDE(_stack_fiq         = 0x440000 - 0x3F0 - 0x7F0); /* 0x7F0*/
 	PROVIDE(_stack_sys         = 0x440000 - 0x3F0); /* 0x3F0*/
+
+	PROVIDE(_heap_end      = _stack_unused);
+	PROVIDE(_heap_len      = _heap_end -  _heap_start);
+
+	ASSERT ((_heap_len > 0x19000 - 1 ), "Error: No room left for the heap") /*heap must bigger than 100k*/
 }
  GROUP(
    libgcc.a

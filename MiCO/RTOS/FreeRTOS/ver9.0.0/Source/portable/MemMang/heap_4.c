@@ -98,6 +98,12 @@ task.h is included from an application file. */
 /* Assumes 8bit bytes! */
 #define heapBITS_PER_BYTE		( ( size_t ) 8 )
 
+#if CONFIG_USE_LINKER_HEAP
+extern void         *_heap_start;
+extern void         *_heap_end;
+extern void         *_heap_len;
+
+#else
 /* Allocate the memory for the heap. */
 #if( configAPPLICATION_ALLOCATED_HEAP == 1 )
 	/* The application writer has already defined the array used for the RTOS
@@ -106,6 +112,7 @@ task.h is included from an application file. */
 #else
 	static uint8_t ucHeap[ configTOTAL_HEAP_SIZE ];
 #endif /* configAPPLICATION_ALLOCATED_HEAP */
+#endif
 
 /* Define the linked list structure.  This is used to link free blocks in order
 of their memory address. */
@@ -381,7 +388,56 @@ void vPortInitialiseBlocks( void )
 	/* This just exists to keep the linker quiet. */
 }
 /*-----------------------------------------------------------*/
+#if CONFIG_USE_LINKER_HEAP
 
+static void prvHeapInit( void )
+{
+BlockLink_t *pxFirstFreeBlock;
+uint8_t *pucAlignedHeap;
+size_t uxAddress;
+size_t xTotalHeapSize = (size_t)&_heap_len;
+
+	/* Ensure the heap starts on a correctly aligned boundary. */
+	uxAddress = ( size_t ) &_heap_start;
+
+	if( ( uxAddress & portBYTE_ALIGNMENT_MASK ) != 0 )
+	{
+		uxAddress += ( portBYTE_ALIGNMENT - 1 );
+		uxAddress &= ~( ( size_t ) portBYTE_ALIGNMENT_MASK );
+		xTotalHeapSize -= uxAddress - ( size_t ) &_heap_start;
+	}
+
+	pucAlignedHeap = ( uint8_t * ) uxAddress;
+
+	/* xStart is used to hold a pointer to the first item in the list of free
+	blocks.  The void cast is used to prevent compiler warnings. */
+	xStart.pxNextFreeBlock = ( void * ) pucAlignedHeap;
+	xStart.xBlockSize = ( size_t ) 0;
+
+	/* pxEnd is used to mark the end of the list of free blocks and is inserted
+	at the end of the heap space. */
+	uxAddress = ( ( size_t ) pucAlignedHeap ) + xTotalHeapSize;
+	uxAddress -= xHeapStructSize;
+	uxAddress &= ~( ( size_t ) portBYTE_ALIGNMENT_MASK );
+	pxEnd = ( void * ) uxAddress;
+	pxEnd->xBlockSize = 0;
+	pxEnd->pxNextFreeBlock = NULL;
+
+	/* To start with there is a single free block that is sized to take up the
+	entire heap space, minus the space taken by pxEnd. */
+	pxFirstFreeBlock = ( void * ) pucAlignedHeap;
+	pxFirstFreeBlock->xBlockSize = uxAddress - ( size_t ) pxFirstFreeBlock;
+	pxFirstFreeBlock->pxNextFreeBlock = pxEnd;
+
+	/* Only one block exists - and it covers the entire usable heap space. */
+	xMinimumEverFreeBytesRemaining = pxFirstFreeBlock->xBlockSize;
+	xFreeBytesRemaining = pxFirstFreeBlock->xBlockSize;
+
+	/* Work out the position of the top bit in a size_t variable. */
+	xBlockAllocatedBit = ( ( size_t ) 1 ) << ( ( sizeof( size_t ) * heapBITS_PER_BYTE ) - 1 );
+}
+
+#else
 static void prvHeapInit( void )
 {
 BlockLink_t *pxFirstFreeBlock;
@@ -428,6 +484,7 @@ size_t xTotalHeapSize = configTOTAL_HEAP_SIZE;
 	/* Work out the position of the top bit in a size_t variable. */
 	xBlockAllocatedBit = ( ( size_t ) 1 ) << ( ( sizeof( size_t ) * heapBITS_PER_BYTE ) - 1 );
 }
+#endif
 /*-----------------------------------------------------------*/
 
 static void prvInsertBlockIntoFreeList( BlockLink_t *pxBlockToInsert )
@@ -571,10 +628,19 @@ INSERTED:
 	return pvReturn;
 }
 
+#if CONFIG_USE_LINKER_HEAP
+int heap_total_size(void)
+{
+	return (int)&_heap_len;
+}
+
+#else
+
 int heap_total_size(void)
 {
 	return configTOTAL_HEAP_SIZE;
 }
+#endif
 
 int vPortGetBlocks(void)
 {

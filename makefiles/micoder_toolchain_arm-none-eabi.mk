@@ -186,7 +186,7 @@ CPU_LDFLAGS        := -mthumb $(CPU_BASE_FLAGS) -Wl,-A,thumb -Wl,-z,max-page-siz
 endif
 
 ifeq ($(HOST_ARCH),ARM968E-S)
-CPU_BASE_FLAGS     := -mcpu=arm968e-s -march=armv5te -marm -mlittle-endian
+CPU_BASE_FLAGS     := -mcpu=arm968e-s -march=armv5te -mthumb -mthumb-interwork -mlittle-endian
 CPU_CFLAGS         := $(CPU_BASE_FLAGS)
 CPU_CXXFLAGS       := $(CPU_BASE_FLAGS)
 CPU_ASMFLAGS       := $(CPU_BASE_FLAGS)
