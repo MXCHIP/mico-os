@@ -54,18 +54,35 @@ GLOBAL_LDFLAGS  += -L $(MICO_OS_PATH)/board/NUCLEO_F412ZG
 
 # Components
 $(NAME)_COMPONENTS += drivers/spi_flash
-$(NAME)_COMPONENTS += drivers/MiCOKit_STmems
+$(NAME)_COMPONENTS += drivers/keypad/gpio_button
 
 # Source files
 $(NAME)_SOURCES := mico_board.c
-
-SHARED_WIFI_SPI_BUS := YES
 
 ifndef NO_WIFI_FIRMWARE
 WIFI_FIRMWARE := $(MICO_OS_PATH)/resources/wifi_firmware/$(WLAN_CHIP)/$(WLAN_CHIP)$(WLAN_CHIP_REVISION)$(WLAN_CHIP_BIN_TYPE)-$(WLAN_CHIP_FIRMWARE_VER).bin
 endif
 
-WIFI_FIRMWARE_SECTOR_START    := 2      #0x2000
-FILESYSTEM_IMAGE_SECTOR_START := 256    #0x100000
+###################################################################################################
+
+# Add mbed support, add mbed target definitions here
+MBED_SUPPORT 	        := 1
+MBED_DEVICES            := ANALOGIN CAN ERROR_RED I2C I2CSLAVE I2C_ASYNCH INTERRUPTIN LOWPOWERTIMER PORTIN PORTINOUT PORTOUT PWMOUT RTC SERIAL SERIAL_ASYNCH SERIAL_FC SLEEP SPI SPISLAVE SPI_ASYNCH STDIO_MESSAGES TRNG
+MBED_TARGETS            := STM STM32F4 STM32F412xG
+
+GLOBAL_DEFINES          += INITIAL_SP=(0x20040000UL)
+GLOBAL_DEFINES          += OS_TASKCNT=14
+GLOBAL_DEFINES          += OS_MAINSTKSIZE=256
+GLOBAL_DEFINES          += OS_CLOCK=96000000
+GLOBAL_DEFINES          += OS_ROBINTOUT=1
+                           
+GLOBAL_DEFINES += TRANSACTION_QUEUE_SIZE_SPI=2 USB_STM_HAL USBHOST_OTHER MXCHIP_LIBRARY HSE_VALUE=((uint32_t)26000000)
+
+# Source files
+$(NAME)_SOURCES += mbed/PeripheralPins.c \
+                   mbed/system_stm32f4xx.c
+                   
+# Global includes
+GLOBAL_INCLUDES  += mbed
 
 

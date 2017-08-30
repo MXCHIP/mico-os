@@ -89,7 +89,7 @@ static void system_will_poweroff_delegate(void *arg);
  *                             Function Definitions
  ******************************************************************************/
 
-    static void net_status_changed_delegate(WiFiEvent event, void *arg)
+static void net_status_changed_delegate(WiFiEvent event, void *arg)
 {
     UNUSED_PARAMETER(arg);
     switch (event)

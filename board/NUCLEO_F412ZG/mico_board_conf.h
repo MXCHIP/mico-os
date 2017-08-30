@@ -89,20 +89,10 @@ extern "C"
  * Enable write protection to write-disabled embedded flash sectors */
 //#define MCU_EBANLE_FLASH_PROTECT 
 
-#define HSE_SOURCE              RCC_HSE_OFF               /* Use internal crystal                */
-#define AHB_CLOCK_DIVIDER       RCC_SYSCLK_Div1          /* AHB clock = System clock             */
-#define APB1_CLOCK_DIVIDER      RCC_HCLK_Div2            /* APB1 clock = AHB clock / 2           */
-#define APB2_CLOCK_DIVIDER      RCC_HCLK_Div1            /* APB2 clock = AHB clock / 1           */
-#define PLL_SOURCE              RCC_PLLSource_HSI        /* PLL source = external crystal        */
-#define PLL_M_CONSTANT          16                       /* PLLM = 16                            */
-#define PLL_N_CONSTANT          400                      /* PLLN = 400                           */
-#define PLL_P_CONSTANT          4                        /* PLLP = 4                             */
-#define PPL_Q_CONSTANT          7                        /* PLLQ = 7                             */
-#define PPL_R_CONSTANT          2                        /* PLLR = 2                             */
-#define SYSTEM_CLOCK_SOURCE     RCC_SYSCLKSource_PLLCLK  /* System clock source = PLL clock      */
-#define SYSTICK_CLOCK_SOURCE    SysTick_CLKSource_HCLK   /* SysTick clock source = AHB clock     */
-#define INT_FLASH_WAIT_STATE    FLASH_Latency_3          /* Internal flash wait state = 3 cycles */
-#define PWR_WakeUp_Pin          PWR_WakeUp_Pin2          /* PWR_Wake_Up_Pin                      */
+/************************************************************************
+ * Use nucleo user button as EasyLink button */
+#define MICO_CONFIG_EASYLINK_BTN_ENABLE                 1
+#define MICO_CONFIG_EASYLINK_BTN_IDLE_STATE             0
 
 /******************************************************
 *  EMW1062 Options
@@ -111,7 +101,7 @@ extern "C"
 #define EMW1062
 
 /*  WiFi driver use gSPI mode, and share spi bus with other devices by different /cs pins */
-#define MICO_WIFI_SHARE_SPI_BUS
+//#define MICO_WIFI_SHARE_SPI_BUS
   
 /*  GPIO pins are used to bootstrap Wi-Fi to SDIO or gSPI mode */
 //#define MICO_WIFI_USE_GPIO_FOR_BOOTSTRAP
@@ -126,7 +116,7 @@ extern "C"
 #define MICO_USE_WIFI_RESET_PIN
 
 /*  Wi-Fi 32K pin is present */
-#define MICO_USE_WIFI_32K_PIN                                                                       //WiFi濡�虫健閺冨爼鎸撻悽鍗烆樆闁劍褰佹笟锟�
+//#define MICO_USE_WIFI_32K_PIN
 
 /*  USE SDIO 1bit mode. */
 //#define SDIO_1_BIT
@@ -141,7 +131,7 @@ extern "C"
  */
 //#define MICO_USE_WIFI_32K_CLOCK_MCO
 
-//#define MICO_USE_BUILTIN_RF_DRIVER                                                                //鐞涖劎銇氶悽銊ュ敶闁劍鏆熼幑顕嗙礉閼板奔绗夐弰顖氼樆闁劎娈慠F driver
+//#define MICO_USE_BUILTIN_RF_DRIVER
 
 #ifdef __cplusplus
 } /*extern "C" */

@@ -87,9 +87,13 @@ typedef enum
 {
     WIFI_PIN_SPI_IRQ,
     WIFI_PIN_SPI_CS,
+
+    /* mbed use spi driver to initialize spi pins
     WIFI_PIN_SPI_CLK,
     WIFI_PIN_SPI_MOSI,
     WIFI_PIN_SPI_MISO,
+    */
+
     WIFI_PIN_SPI_MAX,
 } emw1062_spi_pin_t;
 
@@ -104,10 +108,8 @@ typedef enum
 /* Externed from <MiCO-SDK>/platforms/<Platform>/platform.c */
 extern const platform_gpio_t        wifi_control_pins[];
 extern const platform_gpio_t        wifi_sdio_pins   [];
-extern platform_gpio_driver_t       wifi_control_pin_drivers[];
-extern platform_gpio_driver_t       wifi_sdio_pin_drivers[];
-//extern const platform_gpio_t wifi_spi_pins    [];
-//extern const platform_spi_t  wifi_spi;
+extern const platform_gpio_t        wifi_spi_pins    [];
+extern const platform_spi_t         wifi_spi;
 
 
 
@@ -115,7 +117,7 @@ extern platform_gpio_driver_t       wifi_sdio_pin_drivers[];
  *               Function Declarations
  ******************************************************/
 
-extern void platform_wifi_spi_rx_dma_irq( void );
+extern void platform_mcu_powersave_exit_notify( void );
 extern OSStatus host_platform_deinit_wlan_powersave_clock( void );
 
 extern void set_wifi_chip_id(int type);

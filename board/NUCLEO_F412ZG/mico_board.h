@@ -48,38 +48,38 @@
 
 enum
 {
+    EasyLink_BUTTON,
     MICO_SYS_LED,
     MICO_RF_LED,
-    BOOT_SEL,
-    MFG_SEL,
-    EasyLink_BUTTON,
-    
-    MICO_GPIO_1,
-    MICO_GPIO_2,
-    MICO_GPIO_3,
-    MICO_GPIO_4,
-    MICO_GPIO_5,
-    MICO_GPIO_6,
-    MICO_GPIO_7,
-    MICO_GPIO_8,
-    
-    MICO_GPIO_9,
-    MICO_GPIO_10,
-    MICO_GPIO_11,
-    MICO_GPIO_12,
-    MICO_GPIO_13,
-    MICO_GPIO_14,
-    MICO_GPIO_15,
-    MICO_GPIO_16,
-    MICO_GPIO_17,
-    MICO_GPIO_18,
-    MICO_GPIO_19,
-    MICO_GPIO_20,
-    MICO_GPIO_21,
-    MICO_GPIO_22,
+
+
+    Arduino_RXD,
+    Arduino_TXD,
+    Arduino_D2,
+    Arduino_D3,
+    Arduino_D4,
+    Arduino_D5,
+    Arduino_D6,
+    Arduino_D7,
+
+    Arduino_D8,
+    Arduino_D9,
+    Arduino_CS,
+    Arduino_SI,
+    Arduino_SO,
+    Arduino_SCK,
+    Arduino_SDA,
+    Arduino_SCL,
+
+    Arduino_A0,
+    Arduino_A1,
+    Arduino_A2,
+    Arduino_A3,
+    Arduino_A4,
+    Arduino_A5,
+
     MICO_USART3_RX,
     MICO_USART3_TX,
-
     MICO_GPIO_MAX, /* Denotes the total number of GPIO port aliases. Not a valid GPIO alias */
     MICO_GPIO_NONE,
 };
@@ -87,14 +87,14 @@ enum
 
 enum
 {
-    MICO_SPI_1,
+    Arduino_SPI,
     MICO_SPI_MAX, /* Denotes the total number of SPI port aliases. Not a valid SPI alias */
     MICO_SPI_NONE,
 };
 
 enum
 {
-    MICO_I2C_1,
+    Arduino_I2C,
     MICO_I2C_MAX, /* Denotes the total number of I2C port aliases. Not a valid I2C alias */
     MICO_I2C_NONE,
 };
@@ -121,8 +121,8 @@ enum
 
 enum
 {
-    MICO_UART_1,
-    MICO_UART_2,
+    MICO_STDIO_UART,
+    Arduino_UART,
     MICO_UART_MAX, /* Denotes the total number of UART port aliases. Not a valid UART alias */
     MICO_UART_NONE,
 };
@@ -156,16 +156,17 @@ enum
 };
 
 #ifdef BOOTLOADER
-#define MICO_STDIO_UART             (MICO_UART_1)
 #define MICO_STDIO_UART_BAUDRATE    (115200)
 #else
-#define MICO_STDIO_UART             (MICO_UART_1)
 #define MICO_STDIO_UART_BAUDRATE    (115200)
 #endif
 
-#define MICO_UART_FOR_APP     (MICO_UART_1)
-#define MICO_MFG_TEST         (MICO_UART_1)
-#define MICO_CLI_UART         (MICO_UART_1)
+#define MICO_UART_FOR_APP     (MICO_STDIO_UART)
+#define MICO_MFG_TEST         (MICO_STDIO_UART)
+#define MICO_CLI_UART         (MICO_STDIO_UART)
+
+#define MFG_SEL               (Arduino_D6)
+#define BOOT_SEL              (Arduino_D5)
 
 /* Components connected to external I/Os*/
 #define USE_MICO_SPI_FLASH
@@ -173,45 +174,11 @@ enum
 //#define SFLASH_SUPPORT_SST_PARTS
 #define SFLASH_SUPPORT_WINBOND_PARTS
 
-
-/* Arduino extention connector */
-#define Arduino_RXD         (MICO_GPIO_1)
-#define Arduino_TXD         (MICO_GPIO_2)
-#define Arduino_D2          (MICO_GPIO_3)
-#define Arduino_D3          (MICO_GPIO_4)
-#define Arduino_D4          (MICO_GPIO_5)
-#define Arduino_D5          (MICO_GPIO_6)
-#define Arduino_D6          (MICO_GPIO_7)
-#define Arduino_D7          (MICO_GPIO_8)
-#define Arduino_D8          (MICO_GPIO_9)   //P9813_PIN_DIN
-#define Arduino_D9          (MICO_GPIO_10)  //P9813_PIN_CIN
-
-#define Arduino_CS          (MICO_GPIO_11)
-#define Arduino_SI          (MICO_GPIO_12)
-#define Arduino_SO          (MICO_GPIO_13)
-#define Arduino_SCK         (MICO_GPIO_14)
-
-#define Arduino_SDA         (MICO_GPIO_15)
-#define Arduino_SCL         (MICO_GPIO_16)
-
-#define Arduino_A0          (MICO_ADC_NONE)
-#define Arduino_A1          (MICO_ADC_NONE)
-#define Arduino_A2          (MICO_ADC_2)   //light sensor.
-#define Arduino_A3          (MICO_ADC_1)   //dc_motor
-#define Arduino_A4          (MICO_ADC_NONE)
-#define Arduino_A5          (MICO_ADC_NONE)
-
-#define Arduino_I2C         (MICO_I2C_1)
-#define Arduino_SPI         (MICO_SPI_1)
-#define Arduino_UART        (MICO_UART_2)
-
-#define USE_MiCOKit_STMEMS
 #define SSD1106_USE_I2C    //Control oled by I2C mode.
-#define NUCLEO_F412ZG_EASYLINK_BUTTON    //To decide EasylinkButton's input mode.
 
 #ifdef USE_MiCOKit_STMEMS
 #define MICO_I2C_CP         (Arduino_I2C)
-#include "MiCOKit_STmems/MiCOKit_STmems_def.h"
+//#include "MiCOKit_STmems/MiCOKit_STmems_def.h"
 #else
 #define MICO_I2C_CP         (MICO_I2C_NONE)
 #endif //USE_MiCOKit_STMEMS

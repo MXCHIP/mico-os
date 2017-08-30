@@ -60,18 +60,12 @@ char menu[] =
 "\r\n"
 "MICO bootloader for %s, %s, HARDWARE_REVISION: %s\r\n"
 "+ command -------------------------+ function ------------+\r\n"
-"| 0:BOOTUPDATE    <-r>             | Update bootloader    |\r\n"
 "| 1:FWUPDATE      <-r>             | Update application   |\r\n"
-"| 2:DRIVERUPDATE  <-r>             | Update RF driver     |\r\n"
-"| 3:PARUPDATE     <-id n><-r><-e>  | Update MICO partition|\r\n"
 "| 4:FLASHUPDATE   <-dev device>    |                      |\r\n"
 "|  <-e><-r><-start addr><-end addr>| Update flash content |\r\n"
 "| 5:MEMORYMAP                      | List flash memory map|\r\n"
 "| 6:BOOT                           | Excute application   |\r\n"
 "| 7:REBOOT                         | Reboot               |\r\n"
-#ifdef MICO_USE_BT_PARTITION
-"| 8:BT DRIVERUPDATE  <-r>          | Update BT driver     |\r\n"
-#endif
 "+----------------------------------+----------------------+\r\n"
 "|    (C) COPYRIGHT 2015 MXCHIP Corporation  By William Xu |\r\n"
 " Notes:\r\n"

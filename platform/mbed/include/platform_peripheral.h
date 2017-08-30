@@ -320,7 +320,7 @@ typedef struct
 /* DMA can be enabled by setting SPI_USE_DMA */
 typedef struct
 {
-    PinName        mbed_scl_pin;
+    PinName        mbed_sclk_pin;
     PinName        mbed_mosi_pin;
     PinName        mbed_miso_pin;
 } platform_spi_t;
@@ -328,11 +328,11 @@ typedef struct
 typedef struct
 {
     spi_t                   spi_obj;
-    platform_spi_t*         peripheral;
+    const platform_spi_t*   peripheral;
     mico_semaphore_t        transfer_complete;
     int                     event;
     mico_mutex_t            spi_mutex;
-    platform_irq_handle irq;
+    platform_irq_handle     irq;
 } platform_spi_driver_t;
 
 /* peripherals only for mico */
@@ -595,14 +595,6 @@ OSStatus platform_mcu_powersave_disable( void );
 // void platform_mcu_enter_standby( uint32_t secondsToWakeup );
 
 
-// /**
-//  * Notify the software stack that MCU has exited powersave mode due to interrupt
-//  *
-//  * @return @ref OSStatus
-//  */
-// void platform_mcu_powersave_exit_notify( void );
-
-
 OSStatus platform_watchdog_init( uint32_t timeout_ms );
 
 /**
@@ -666,7 +658,7 @@ uint32_t platform_uart_get_length_in_buffer( platform_uart_driver_t* driver );
 //  * @return @ref OSStatus
 //  */
 OSStatus platform_spi_init( platform_spi_driver_t* driver, const platform_spi_t* peripheral, const platform_spi_config_t* config );
-// OSStatus platform_wlan_spi_init( const platform_gpio_t* chip_select );
+OSStatus platform_wlan_spi_init( platform_gpio_driver_t* cs_drv, const platform_gpio_t* cs);
 
 
 // /**
@@ -675,7 +667,7 @@ OSStatus platform_spi_init( platform_spi_driver_t* driver, const platform_spi_t*
 //  * @return @ref OSStatus
 //  */
 OSStatus platform_spi_deinit( platform_spi_driver_t* driver );
-// OSStatus platform_wlan_spi_deinit( const platform_gpio_t* chip_select );
+OSStatus platform_wlan_spi_deinit( platform_gpio_driver_t* cs_drv );
 
 
 // /**
@@ -684,7 +676,7 @@ OSStatus platform_spi_deinit( platform_spi_driver_t* driver );
 //  * @return @ref OSStatus
 //  */
 OSStatus platform_spi_transfer( platform_spi_driver_t* driver, const platform_spi_config_t* config, const platform_spi_message_segment_t* segments, uint16_t number_of_segments );
-// OSStatus platform_wlan_spi_transfer( const platform_gpio_t* chip_select, const platform_spi_message_segment_t* segments, uint16_t number_of_segments );
+OSStatus platform_wlan_spi_transfer( platform_gpio_driver_t* cs_drv, const platform_spi_message_segment_t* segments, uint16_t number_of_segments );
 
 
 // /** Initialises a SPI slave interface

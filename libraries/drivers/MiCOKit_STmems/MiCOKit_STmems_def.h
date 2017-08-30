@@ -29,7 +29,7 @@
 #define P9813_PIN_CIN       (Arduino_D9)
 #define P9813_PIN_DIN       (Arduino_D8)
 
-#define DC_MOTOR            (MICO_GPIO_21)
+#define DC_MOTOR            (Arduino_A3)
 
 #define MICOKIT_STMEMS_KEY1                (Arduino_D5)
 #define MICOKIT_STMEMS_KEY2                (Arduino_D6)

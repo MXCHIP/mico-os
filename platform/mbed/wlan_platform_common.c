@@ -58,6 +58,8 @@ OSStatus host_platform_deinit_wlan_powersave_clock( void );
  *               Variables Definitions
  ******************************************************/
 
+static platform_gpio_driver_t wifi_control_pin_drivers[WIFI_PIN_CONTROL_MAX];
+
 /******************************************************
  *               Function Definitions
  ******************************************************/

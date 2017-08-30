@@ -86,7 +86,7 @@ OSStatus platform_spi_init( platform_spi_driver_t* driver, const platform_spi_t*
 
     driver->peripheral = (platform_spi_t*) peripheral;
 
-    spi_init( (spi_t *)&driver->spi_obj, peripheral->mbed_mosi_pin, peripheral->mbed_miso_pin, peripheral->mbed_scl_pin, NC );
+    spi_init( (spi_t *)&driver->spi_obj, peripheral->mbed_mosi_pin, peripheral->mbed_miso_pin, peripheral->mbed_sclk_pin, NC );
     spi_frequency( (spi_t *)&driver->spi_obj, config->speed );
 
     if ( config->mode & SPI_CLOCK_IDLE_HIGH )
@@ -124,6 +124,8 @@ exit:
 OSStatus platform_spi_deinit( platform_spi_driver_t* driver )
 {
     OSStatus err = kNoErr;
+
+    spi_free(&driver->spi_obj);
 
 #if DEVICE_SPI_ASYNCH
     platform_irq_deinit( &driver->irq );

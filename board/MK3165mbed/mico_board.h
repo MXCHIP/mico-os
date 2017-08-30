@@ -205,13 +205,6 @@ EMW3165 on EMB-3165-A platform pin definitions ...
 
 enum
 {
-//    MICO_SYS_LED,
-//    MICO_RF_LED,
-//    BOOT_SEL,
-//    MFG_SEL,
-//    EasyLink_BUTTON,
-//    STDIO_UART_RX,
-//    STDIO_UART_TX,
     FLASH_PIN_SPI_CS,
     FLASH_PIN_SPI_CLK,
     FLASH_PIN_SPI_MOSI,
@@ -226,7 +219,7 @@ enum
     MICO_GPIO_17,
     MICO_GPIO_18,
     MICO_GPIO_19,
-    MICO_GPIO_27,  
+    MICO_GPIO_27,
     MICO_GPIO_29,
     MICO_GPIO_30,
     MICO_GPIO_31,

@@ -59,25 +59,20 @@ extern OSStatus mico_platform_init      ( void );
 
 /* Externed from platforms/<Platform>/platform.c */
 extern const platform_gpio_t            platform_gpio_pins[];
-extern platform_gpio_driver_t           platform_gpio_drivers[];
-extern platform_gpio_irq_driver_t       platform_gpio_irq_drivers[];
-// extern const platform_adc_t             platform_adc_peripherals[];
 extern const platform_i2c_t             platform_i2c_peripherals[];
-extern platform_i2c_driver_t            platform_i2c_drivers[];
 extern const platform_pwm_t             platform_pwm_peripherals[];
-extern platform_pwm_driver_t            platform_pwm_drivers[];
 extern const platform_spi_t             platform_spi_peripherals[];
-extern platform_spi_driver_t            platform_spi_drivers[];
 extern const platform_uart_t            platform_uart_peripherals[];
-extern platform_uart_driver_t           platform_uart_drivers[];
-// extern WEAK platform_spi_slave_driver_t platform_spi_slave_drivers[];
 extern const platform_flash_t           platform_flash_peripherals[];
-extern platform_flash_driver_t          platform_flash_drivers[];
 extern const mico_logic_partition_t     mico_partitions[];
 
-// #ifdef MICO_WIFI_SHARE_SPI_BUS
-// extern const platform_spi_t wifi_spi;
-// #endif
+platform_gpio_driver_t      platform_gpio_drivers[MICO_GPIO_MAX];
+platform_gpio_irq_driver_t  platform_gpio_irq_drivers[MICO_GPIO_MAX];
+platform_uart_driver_t      platform_uart_drivers[MICO_UART_MAX];
+platform_i2c_driver_t       platform_i2c_drivers[MICO_I2C_MAX];
+platform_pwm_driver_t       platform_pwm_drivers[MICO_PWM_MAX];
+platform_spi_driver_t       platform_spi_drivers[MICO_SPI_MAX];
+platform_flash_driver_t     platform_flash_drivers[MICO_FLASH_MAX];
 
 /******************************************************
 *               Function Definitions
@@ -358,13 +353,6 @@ OSStatus MicoSpiInitialize( const mico_spi_device_t* spi )
     if ( spi->port >= MICO_SPI_NONE )
         return kUnsupportedErr;
 
-#ifdef MICO_WIFI_SHARE_SPI_BUS
-    if( platform_spi_peripherals[spi->port].port == wifi_spi.port )
-    {
-        return platform_wlan_spi_init( &platform_gpio_pins[spi->chip_select] );
-    }
-#endif
-
     if ( platform_spi_drivers[spi->port].spi_mutex == NULL )
         mico_rtos_init_mutex( &platform_spi_drivers[spi->port].spi_mutex );
 
@@ -388,14 +376,6 @@ OSStatus MicoSpiFinalize( const mico_spi_device_t* spi )
     if ( spi->port >= MICO_SPI_NONE )
         return kUnsupportedErr;
 
-#ifdef MICO_WIFI_SHARE_SPI_BUS
-    if( platform_spi_peripherals[spi->port].port == wifi_spi.port )
-    {
-        return kUnsupportedErr;
-        //return platform_wlan_spi_deinit( &platform_gpio_pins[spi->chip_select] );
-    }
-#endif
-
     if ( platform_spi_drivers[spi->port].spi_mutex == NULL )
         mico_rtos_init_mutex( &platform_spi_drivers[spi->port].spi_mutex );
 
@@ -414,13 +394,6 @@ OSStatus MicoSpiTransfer( const mico_spi_device_t* spi, const mico_spi_message_s
 
     if ( spi->port >= MICO_SPI_NONE )
         return kUnsupportedErr;
-
-#ifdef MICO_WIFI_SHARE_SPI_BUS
-    if( platform_spi_peripherals[spi->port].port == wifi_spi.port )
-    {
-        return platform_wlan_spi_transfer( &platform_gpio_pins[spi->chip_select], segments, number_of_segments );
-    }
-#endif
 
     if ( platform_spi_drivers[spi->port].spi_mutex == NULL )
         mico_rtos_init_mutex( &platform_spi_drivers[spi->port].spi_mutex );

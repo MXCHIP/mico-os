@@ -42,23 +42,27 @@
 
 
 //--------------------------------  pin defines --------------------------------
-typedef enum _button_index_e{
-	IOBUTTON_EASYLINK = 0,
-	IOBUTTON_USER_1,
-	IOBUTTON_USER_2,
-	IOBUTTON_USER_3,
-	IOBUTTON_USER_4,
-} button_index_e;
+
+enum _button_idle_state_e{
+    IOBUTTON_IDLE_STATE_LOW = 0,
+    IOBUTTON_IDLE_STATE_HIGH,
+};
+
+typedef uint8_t btn_idle_state;
 
 typedef void (*button_pressed_cb)(void) ;
 typedef void (*button_long_pressed_cb)(void) ;
 
-typedef struct _button_init_t{
-	mico_gpio_t gpio;
-	int long_pressed_timeout;
-	button_pressed_cb pressed_func;
-	button_long_pressed_cb long_pressed_func;
-} button_init_t;
+typedef struct _button_context_t {
+  mico_gpio_t gpio;
+  btn_idle_state idle;
+  int long_pressed_timeout;
+  button_pressed_cb pressed_func;
+  button_long_pressed_cb long_pressed_func;
+  /* Use by driver, do not initialze */
+  mico_timer_t _user_button_timer;
+  uint32_t start_time;
+} button_context_t;
 
 //------------------------------ user interfaces -------------------------------
 
@@ -66,12 +70,11 @@ typedef struct _button_init_t{
 /**
  * @brief Initialize button device.
  *
- * @param index: index of context
- * @param init: button_init_t struct
+ * @param btn_context: button driver context data, should be persist at button's life time
  *
  * @return none
  */
-void button_init( int index, button_init_t init );
+void button_init( button_context_t *btn_context );
 
 /**
   * @}

@@ -78,6 +78,9 @@ static const uint32_t bus_direction_mapping[] =
     [BUS_WRITE] = SDIO_TRANSFER_DIR_TO_CARD //SDIO_TransferDir_ToCard
 };
 
+static platform_gpio_driver_t wifi_control_pin_drivers[WIFI_PIN_CONTROL_MAX];
+static platform_gpio_driver_t wifi_sdio_pin_drivers[WIFI_PIN_SDIO_MAX];
+
 /******************************************************
  *                   Enumerations
  ******************************************************/

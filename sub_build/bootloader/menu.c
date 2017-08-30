@@ -218,7 +218,7 @@ void Main_Menu(void)
       cmdname[j] = cmdbuf[i];
     }
     cmdname[j] = '\0';
-    
+#if 0
     /***************** Command "0" or "BOOTUPDATE": Update the application  *************************/
     if(strcmp(cmdname, "BOOTUPDATE") == 0 || strcmp(cmdname, "0") == 0) {
       partition = MicoFlashGetInfo( MICO_PARTITION_BOOTLOADER );
@@ -235,7 +235,9 @@ void Main_Menu(void)
     }
     
     /***************** Command "1" or "FWUPDATE": Update the MICO application  *************************/
-    else if(strcmp(cmdname, "FWUPDATE") == 0 || strcmp(cmdname, "1") == 0)	{
+    else
+#endif
+    if(strcmp(cmdname, "FWUPDATE") == 0 || strcmp(cmdname, "1") == 0)	{
       partition = MicoFlashGetInfo( MICO_PARTITION_APPLICATION );
       if (findCommandPara(cmdbuf, "r", NULL, 0) != -1){
         printf ("\n\rRead application...\n\r");
@@ -247,7 +249,7 @@ void Main_Menu(void)
       require_noerr( err, exit);
       SerialDownload( partition->partition_owner, partition->partition_start_addr, partition->partition_length ); 							   	
     }
-    
+#if 0
     /***************** Command "2" or "DRIVERUPDATE": Update the RF driver  *************************/
     else if(strcmp(cmdname, "DRIVERUPDATE") == 0 || strcmp(cmdname, "2") == 0) {
       partition = MicoFlashGetInfo( MICO_PARTITION_RF_FIRMWARE );
@@ -266,7 +268,7 @@ void Main_Menu(void)
       require_noerr( err, exit);
       SerialDownload( partition->partition_owner, partition->partition_start_addr, partition->partition_length );    
     }
-    
+
     /***************** Command "3" or "PARAUPDATE": Update the application  *************************/
     else if(strcmp(cmdname, "PARUPDATE") == 0 || strcmp(cmdname, "3") == 0)  {
       if (findCommandPara(cmdbuf, "id", idStr, 0) != -1){
@@ -298,7 +300,7 @@ void Main_Menu(void)
       require_noerr( err, exit);
       SerialDownload( partition->partition_owner, partition->partition_start_addr, partition->partition_length );                        
     }
-    
+#endif
     /***************** Command "4" or "FLASHUPDATE": : Update the Flash  *************************/
     else if(strcmp(cmdname, "FLASHUPDATE") == 0 || strcmp(cmdname, "4") == 0) {
       if (findCommandPara(cmdbuf, "dev", flash_dev_str, 1) == -1  ){

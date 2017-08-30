@@ -57,13 +57,6 @@ extern OSStatus host_platform_init( void );
 const platform_gpio_t platform_gpio_pins[] =
 {
   /* Common GPIOs for internal use */
-//    [MICO_SYS_LED]                      = { GPIOB,  13 },
-//    [MICO_RF_LED]                       = { GPIOB,  8 },
-//    [BOOT_SEL]                          = { GPIOB,  1 },
-//    [MFG_SEL]                           = { GPIOB,  0 },
-//    [EasyLink_BUTTON]                   = { GPIOA,  1 },
-//    [STDIO_UART_RX]                     = { GPIOA,  3 },
-//    [STDIO_UART_TX]                     = { GPIOA,  2 },
     [FLASH_PIN_SPI_CS  ]                = { SFLASH_CS },
 
   /* GPIOs for external use */
@@ -88,7 +81,6 @@ const platform_gpio_t platform_gpio_pins[] =
     [MICO_GPIO_38]                      = { MBED_GPIO_38 },   // ADC_1
 };
 
-platform_gpio_driver_t      platform_gpio_drivers[MICO_GPIO_MAX];
 platform_gpio_irq_driver_t  platform_gpio_irq_drivers[MICO_GPIO_MAX];
 
 
@@ -107,7 +99,6 @@ const platform_i2c_t platform_i2c_peripherals[] = {
     }
 };
 
-platform_i2c_driver_t platform_i2c_drivers[MICO_I2C_MAX];
 
 const platform_uart_t platform_uart_peripherals[] = {
     [MICO_UART_1] =
@@ -125,7 +116,6 @@ const platform_uart_t platform_uart_peripherals[] = {
         .mbed_cts_pin =  MBED_GPIO_35 ,
     }
 };
-platform_uart_driver_t platform_uart_drivers[MICO_UART_MAX];
 
 const platform_spi_t platform_spi_peripherals[] =
 {
@@ -136,8 +126,6 @@ const platform_spi_t platform_spi_peripherals[] =
         .mbed_miso_pin    = SFLASH_MISO,
     }
 };
-
-platform_spi_driver_t platform_spi_drivers[MICO_SPI_MAX];
 
 
 /* Flash memory devices */
@@ -157,7 +145,6 @@ const platform_flash_t platform_flash_peripherals[] =
   },
 };
 
-platform_flash_driver_t platform_flash_drivers[MICO_FLASH_MAX];
 
 /* Logic partition on flash devices */
 const mico_logic_partition_t mico_partitions[] =
@@ -236,7 +223,7 @@ const platform_gpio_t wifi_control_pins[] =
 {
   [WIFI_PIN_RESET]        = { PB_14 },
 };
-platform_gpio_driver_t wifi_control_pin_drivers[WIFI_PIN_CONTROL_MAX];
+
 
 /* Wi-Fi SDIO bus pins. Used by platform/MCU/STM32F2xx/EMW1062_driver/wlan_SDIO.c */
 const platform_gpio_t wifi_sdio_pins[] =
@@ -249,7 +236,7 @@ const platform_gpio_t wifi_sdio_pins[] =
   [WIFI_PIN_SDIO_D2     ] = { SDIO_D2      },
   [WIFI_PIN_SDIO_D3     ] = { SDIO_D3      },
 };
-platform_gpio_driver_t wifi_sdio_pin_drivers[WIFI_PIN_SDIO_MAX];
+
 
 
 // /* Bluetooth control pins.*/

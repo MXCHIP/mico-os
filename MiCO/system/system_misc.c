@@ -245,6 +245,10 @@ OSStatus system_network_daemen_start( system_context_t * const inContext )
   return kNoErr;
 }
 
+#if MICO_CONFIG_EASYLINK_BTN_ENABLE
+
+button_context_t easylink_btn;
+
 static void PlatformEasyLinkButtonClickedCallback(void)
 {
   system_log_trace();
@@ -297,16 +301,16 @@ exit:
 
 void system_easylink_btn_init( mico_gpio_t btn, uint32_t long_pressed_timeout )
 {
-    button_init_t init;
+    easylink_btn.gpio = btn;
+    easylink_btn.idle = MICO_CONFIG_EASYLINK_BTN_IDLE_STATE;
+    easylink_btn.pressed_func = PlatformEasyLinkButtonClickedCallback;
+    easylink_btn.long_pressed_func = PlatformEasyLinkButtonLongPressedCallback;
+    easylink_btn.long_pressed_timeout = long_pressed_timeout;
 
-    //  Initialise EasyLink buttons
-    init.gpio = btn;
-    init.pressed_func = PlatformEasyLinkButtonClickedCallback;
-    init.long_pressed_func = PlatformEasyLinkButtonLongPressedCallback;
-    init.long_pressed_timeout = long_pressed_timeout;
-
-    button_init( IOBUTTON_EASYLINK, init );
+    button_init( &easylink_btn );
 }
+
+#endif
 
 void mico_sdk_version( uint8_t *major, uint8_t *minor, uint8_t *revision )
 {

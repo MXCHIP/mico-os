@@ -39,10 +39,6 @@
 #include "wlan_platform_common.h"
 #include "CheckSumUtils.h"
 
-#ifdef USE_MiCOKit_STMEMS
-#include "MiCOKit_STmems/MiCOKit_STmems.h"
-#endif
-
 /******************************************************
 *                      Macros
 ******************************************************/
@@ -75,161 +71,83 @@
 const platform_gpio_t platform_gpio_pins[] =
 {
   /* Common GPIOs for internal use */  
-  [MICO_SYS_LED]                      = { GPIOB,  7 }, //PASS,BLUE LD2
-  [MICO_RF_LED]                       = { GPIOB,  14 },//PASS,RED LD3
-  [BOOT_SEL]                          = { GPIOE,  11 },//PASS,Arduino_D5 KEY1
-  [MFG_SEL]                           = { GPIOE,  9 }, //PASS,Arduino_D6 KEY2
-  [EasyLink_BUTTON]                   = { GPIOC, 13 }, //PASS,USER BUTTON BLUE
+  [MICO_SYS_LED]                      = { PB_7 }, //PASS,BLUE LD2
+  [MICO_RF_LED]                       = { PB_14 },//PASS,RED LD3
+  [EasyLink_BUTTON]                   = { PC_13 }, //PASS,USER BUTTON BLUE
 
   /* GPIOs for external use */
-  [MICO_GPIO_1]                       = { GPIOG,  9 },//PASS,Arduino_D0,Arduino_RXD,USART6_RX,USER_UART,Arduino_UART
-  [MICO_GPIO_2]                       = { GPIOG,  14 },//PASS,Arduino_D1,Arduino_TXD,USART6_TX,USER_UART,Arduino_UART
-  [MICO_GPIO_3]                       = { GPIOF, 15 },//PASS,Arduino_D2,MIC MP34DT01 sensor
-  [MICO_GPIO_4]                       = { GPIOE, 13 },//PASS,Arduino_D3,MIC MP34DT01 sensor
-  [MICO_GPIO_5]                       = { GPIOF, 14 },//PASS,Arduino_D4,MIC MP34DT01 sensor
-  [MICO_GPIO_6]                       = { GPIOE, 11 },//PASS,Arduino_D5,Arduino_D5 KEY1
-  [MICO_GPIO_7]                       = { GPIOE,  9 },//PASS,Arduino_D6,Arduino_D6 KEY2
-  [MICO_GPIO_8]                       = { GPIOF, 13 },//PASS,Arduino_D7,FLASH SPI_SCS
+  [Arduino_RXD]                       = { D0 },//PASS,Arduino_D0,Arduino_RXD,USART6_RX,USER_UART,Arduino_UART
+  [Arduino_TXD]                       = { D1 },//PASS,Arduino_D1,Arduino_TXD,USART6_TX,USER_UART,Arduino_UART
+  [Arduino_D2]                        = { D2 },//PASS,Arduino_D2,MIC MP34DT01 sensor
+  [Arduino_D3]                        = { D3 },//PASS,Arduino_D3,MIC MP34DT01 sensor
+  [Arduino_D4]                        = { D4 },//PASS,Arduino_D4,MIC MP34DT01 sensor
+  [Arduino_D5]                        = { D5 },//PASS,Arduino_D5,Arduino_D5 KEY1
+  [Arduino_D6]                        = { D6 },//PASS,Arduino_D6,Arduino_D6 KEY2
+  [Arduino_D7]                        = { D7 },//PASS,Arduino_D7,FLASH SPI_SCS
 
-  [MICO_GPIO_9]                       = { GPIOF, 12 },//PASS,Arduino_D8,STmems RGB LED sensor SDA
-  [MICO_GPIO_10]                      = { GPIOD, 15 },//PASS,Arduino_D9,STmems RGB LED sensor SCL
-  [MICO_GPIO_11]                      = { GPIOD, 14 },//PASS,Arduino_D10,Arduino_CS,WIFI SPI_SCS
-  [MICO_GPIO_12]                      = { GPIOA,  7 },//PASS,or PB5//PASS,Arduino_D11,Arduino_SI,WIFI&FLASH SPI_MOSI,SPI1
-  [MICO_GPIO_13]                      = { GPIOA,  6 },//PASS,Arduino_D12,Arduino_SO,WIFI&FLASH SPI_MISO
-  [MICO_GPIO_14]                      = { GPIOA,  5 },//PASS,Arduino_D13,Arduino_SCK,WIFI&FLASH SPI_SCK
-  [MICO_GPIO_15]                      = { GPIOB,  9 },//PASS,Arduino_D14,Arduino_SDA,STmems OLED
+  [Arduino_D8]                        = { D8 },//PASS,Arduino_D8,STmems RGB LED sensor SDA
+  [Arduino_D9]                        = { D9 },//PASS,Arduino_D9,STmems RGB LED sensor SCL
+  [Arduino_CS]                        = { D10 },//PASS,Arduino_D10,Arduino_CS,WIFI SPI_SCS
+  [Arduino_SI]                        = { D11 },//PASS,or PB5//PASS,Arduino_D11,Arduino_SI,WIFI&FLASH SPI_MOSI,SPI1
+  [Arduino_SO]                        = { D12 },//PASS,Arduino_D12,Arduino_SO,WIFI&FLASH SPI_MISO
+  [Arduino_SCK]                       = { D13 },//PASS,Arduino_D13,Arduino_SCK,WIFI&FLASH SPI_SCK
+  [Arduino_SDA]                       = { D14 },//PASS,Arduino_D14,Arduino_SDA,STmems OLED
                                                       //STmems Temperature & humidity sensor,STmems Pressure Sensor
                                                       //STmems UV Index Sensor,Motion Sensor,IIC1
-  [MICO_GPIO_16]                      = { GPIOB,  8 },//PASS,Arduino_D15,Arduino_SCL,STmems OLED
+  [Arduino_SCL]                       = { D14 },//PASS,Arduino_D15,Arduino_SCL,STmems OLED
                                                       //STmems Temperature & humidity sensor,STmems Pressure Sensor
                                                       //STmems UV Index Sensor,Motion Sensor
   
-  [MICO_GPIO_17]                      = { GPIOA,  3 },//PASS,Arduino_A0,WIFI RESET
-  [MICO_GPIO_18]                      = { GPIOC,  0 },//PASS,Arduino_A1,WIFI SPI_IRQ
-  [MICO_GPIO_19]                      = { GPIOC,  3 },//PASS,Arduino_A2,STmems Light sensor,ADC
-  [MICO_GPIO_21]                      = { GPIOC,  1 },//PASS,Arduino_A3,STmems DC Motor sensor,DAC
-  [MICO_GPIO_20]                      = { GPIOC,  4 },//PASS,Arduino_A4,WIFI WAKEIN
-  [MICO_GPIO_22]                      = { GPIOC,  5 },//PASS,Arduino_A5,WIFI WAKEOUT
+  [Arduino_A0]                        = { A0 },//PASS,Arduino_A0,WIFI RESET
+  [Arduino_A1]                        = { A1 },//PASS,Arduino_A1,WIFI SPI_IRQ
+  [Arduino_A2]                        = { A2 },//PASS,Arduino_A2,STmems Light sensor,ADC
+  [Arduino_A3]                        = { A3 },//PASS,Arduino_A3,STmems DC Motor sensor,DAC
+  [Arduino_A4]                        = { A4 },//PASS,Arduino_A4,WIFI WAKEIN
+  [Arduino_A5]                        = { A5 },//PASS,Arduino_A5,WIFI WAKEOUT
 
-  [MICO_USART3_RX]                      = { GPIOD,  9 },//PASS,STDIO_UART_RX,USART3_RX,Nucleo STLK_RX
-  [MICO_USART3_TX]                      = { GPIOD,  8 },//PASS,STDIO_UART_TX,USART3_TX,Nucleo STLK_TX
+  [MICO_USART3_RX]                    = { SERIAL_RX },//PASS,STDIO_UART_RX,USART3_RX,Nucleo STLK_RX
+  [MICO_USART3_TX]                    = { SERIAL_TX },//PASS,STDIO_UART_TX,USART3_TX,Nucleo STLK_TX
 };
+
 
 const platform_pwm_t *platform_pwm_peripherals = NULL;
 
 const platform_i2c_t platform_i2c_peripherals[] =
 {
-  [MICO_I2C_1] =
-  {
-    .port                         = I2C1,
-    .pin_scl                      = &platform_gpio_pins[MICO_GPIO_16],
-    .pin_sda                      = &platform_gpio_pins[MICO_GPIO_15],
-    .peripheral_clock_reg         = RCC_APB1Periph_I2C1,
-    .tx_dma                       = DMA1,
-    .tx_dma_peripheral_clock      = RCC_AHB1Periph_DMA1,
-    .tx_dma_stream                = DMA1_Stream7,//6
-    .rx_dma_stream                = DMA1_Stream0,//0
-    .tx_dma_stream_id             = 7,
-    .rx_dma_stream_id             = 0,
-    .tx_dma_channel               = DMA_Channel_1,
-    .rx_dma_channel               = DMA_Channel_1,
-    .gpio_af_scl                  = GPIO_AF_I2C1,
-    .gpio_af_sda                  = GPIO_AF_I2C1
-  },
+    [Arduino_I2C] = {
+        .mbed_scl_pin = Arduino_SCL,
+        .mbed_sda_pin = Arduino_SDA,
+    }
 };
-
-platform_i2c_driver_t platform_i2c_drivers[MICO_I2C_MAX];
 
 const platform_uart_t platform_uart_peripherals[] =
 {
-  [MICO_UART_1] =
-  {
-    .port                         = USART3,
-    .pin_tx                       = &platform_gpio_pins[MICO_USART3_TX],
-    .pin_rx                       = &platform_gpio_pins[MICO_USART3_RX],
-    .pin_cts                      = NULL,
-    .pin_rts                      = NULL,
-    .tx_dma_config =
+    [MICO_STDIO_UART] =
     {
-      .controller                 = DMA1,
-      .stream                     = DMA1_Stream4,
-      .channel                    = DMA_Channel_7,
-      .irq_vector                 = DMA1_Stream4_IRQn,
-      .complete_flags             = DMA_HISR_TCIF4,
-      .error_flags                = ( DMA_HISR_TEIF4 | DMA_HISR_FEIF4 | DMA_HISR_DMEIF4 ),
+        .mbed_tx_pin = STDIO_UART_TX,
+        .mbed_rx_pin = STDIO_UART_RX,
+        .mbed_rts_pin = NC,
+        .mbed_cts_pin = NC ,
     },
-    .rx_dma_config =
+    [Arduino_UART] =
     {
-      .controller                 = DMA1,
-      .stream                     = DMA1_Stream1,
-      .channel                    = DMA_Channel_4,
-      .irq_vector                 = DMA1_Stream1_IRQn,
-      .complete_flags             = DMA_LISR_TCIF1,
-      .error_flags                = ( DMA_LISR_TEIF1 | DMA_LISR_FEIF1 | DMA_LISR_DMEIF1 ),
-    },
-  },
-  [MICO_UART_2] =
-  {
-    .port                         = USART6,
-    .pin_tx                       = &platform_gpio_pins[MICO_GPIO_2],
-    .pin_rx                       = &platform_gpio_pins[MICO_GPIO_1],
-    .pin_cts                      = NULL,
-    .pin_rts                      = NULL,
-    .tx_dma_config =
-    {
-      .controller                 = DMA2,
-      .stream                     = DMA2_Stream7,
-      .channel                    = DMA_Channel_5,
-      .irq_vector                 = DMA2_Stream7_IRQn,
-      .complete_flags             = DMA_HISR_TCIF7,
-      .error_flags                = ( DMA_HISR_TEIF7 | DMA_HISR_FEIF7 ),
-    },
-    .rx_dma_config =
-    {
-      .controller                 = DMA2,
-      .stream                     = DMA2_Stream1,
-      .channel                    = DMA_Channel_5,
-      .irq_vector                 = DMA2_Stream1_IRQn,
-      .complete_flags             = DMA_LISR_TCIF1,
-      .error_flags                = ( DMA_LISR_TEIF1 | DMA_LISR_FEIF1 | DMA_LISR_DMEIF1 ),
-    },
-  },
+        .mbed_tx_pin = Arduino_TXD,
+        .mbed_rx_pin = Arduino_RXD,
+        .mbed_rts_pin =  NC,
+        .mbed_cts_pin =  NC ,
+    }
 };
-platform_uart_driver_t platform_uart_drivers[MICO_UART_MAX];
 
 const platform_spi_t platform_spi_peripherals[] =
 {
-  [MICO_SPI_1]  =
-  {
-    .port                         = SPI1,
-    .gpio_af                      = GPIO_AF_SPI1,
-    .peripheral_clock_reg         = RCC_APB2Periph_SPI1,
-    .peripheral_clock_func        = RCC_APB2PeriphClockCmd,
-    .pin_mosi                     = &platform_gpio_pins[MICO_GPIO_12],
-    .pin_miso                     = &platform_gpio_pins[MICO_GPIO_13],
-    .pin_clock                    = &platform_gpio_pins[MICO_GPIO_14],
-    .tx_dma =
+    [Arduino_SPI]  =
     {
-      .controller                 = DMA2,
-      .stream                     = DMA2_Stream5,
-      .channel                    = DMA_Channel_3,
-      .irq_vector                 = DMA2_Stream5_IRQn,
-      .complete_flags             = DMA_HISR_TCIF5,
-      .error_flags                = ( DMA_HISR_TEIF5 | DMA_HISR_FEIF5 ),
-    },
-    .rx_dma =
-    {
-      .controller                 = DMA2,
-      .stream                     = DMA2_Stream2,
-      .channel                    = DMA_Channel_3,
-      .irq_vector                 = DMA2_Stream2_IRQn,
-      .complete_flags             = DMA_LISR_TCIF2,
-      .error_flags                = ( DMA_LISR_TEIF2 | DMA_LISR_FEIF2 | DMA_LISR_DMEIF2 ),
-    },
-  }
+        .mbed_sclk_pin     = D13,
+        .mbed_mosi_pin    = D11,
+        .mbed_miso_pin    = D12,
+    }
 };
 
-platform_spi_driver_t platform_spi_drivers[MICO_SPI_MAX];
 
 /* Flash memory devices */
 const platform_flash_t platform_flash_peripherals[] =
@@ -247,8 +165,6 @@ const platform_flash_t platform_flash_peripherals[] =
     .flash_length                 = 0x200000,   //2M
   },
 };
-
-platform_flash_driver_t platform_flash_drivers[MICO_FLASH_MAX];
 
 /* Logic partition on flash devices */
 const mico_logic_partition_t mico_partitions[] =
@@ -319,19 +235,19 @@ const mico_logic_partition_t mico_partitions[] =
 #if defined ( USE_MICO_SPI_FLASH )
 const mico_spi_device_t mico_spi_flash =
 {
-  .port        = MICO_SPI_1,
-  .chip_select = MICO_GPIO_8,       //arduino D7
+  .port        = Arduino_SPI,
+  .chip_select = Arduino_D7,       //arduino D7
   .speed       = 40000000,
   .mode        = (SPI_CLOCK_RISING_EDGE | SPI_CLOCK_IDLE_HIGH | SPI_USE_DMA | SPI_MSB_FIRST ),
   .bits        = 8
 };
 #endif
 
-const platform_adc_t platform_adc_peripherals[] =
-{
-  [MICO_ADC_1] = { ADC1, ADC_Channel_11, RCC_APB2Periph_ADC1, 1, (platform_gpio_t*)&platform_gpio_pins[MICO_GPIO_21] },//PC1
-  [MICO_ADC_2] = { ADC1, ADC_Channel_13, RCC_APB2Periph_ADC1, 1, (platform_gpio_t*)&platform_gpio_pins[MICO_GPIO_19] },//PC3
-};
+//const platform_adc_t platform_adc_peripherals[] =
+//{
+//  //[MICO_ADC_1] = { ADC1, ADC_Channel_11, RCC_APB2Periph_ADC1, 1, (platform_gpio_t*)&platform_gpio_pins[MICO_GPIO_21] },//PC1
+//  //[MICO_ADC_2] = { ADC1, ADC_Channel_13, RCC_APB2Periph_ADC1, 1, (platform_gpio_t*)&platform_gpio_pins[MICO_GPIO_19] },//PC3
+//};
 
 /* Wi-Fi control pins. Used by platform/MCU/wlan_platform_common.c
 * SDIO: EMW1062_PIN_BOOTSTRAP[1:0] = b'00
@@ -339,54 +255,39 @@ const platform_adc_t platform_adc_peripherals[] =
 */
 const platform_gpio_t wifi_control_pins[] =
 {
-  [WIFI_PIN_RESET   ]        = { GPIOA,  3 },
-  [WIFI_PIN_32K_CLK]         = { GPIOF,  5 },
+  [WIFI_PIN_RESET   ]        = { A0 },
+  [WIFI_PIN_32K_CLK]         = { PF_5 },
 };
 
 /* Wi-Fi gSPI bus pins. Used by platform/MCU/STM32F2xx/EMW1062_driver/wlan_spi.c */
 const platform_gpio_t wifi_spi_pins[] =
 {
-  [WIFI_PIN_SPI_IRQ ] = { GPIOC,  0 },
-  [WIFI_PIN_SPI_CS  ] = { GPIOD, 14 },
-  [WIFI_PIN_SPI_CLK ] = { GPIOA,  5 },
-  [WIFI_PIN_SPI_MOSI] = { GPIOA,  7 },
-  [WIFI_PIN_SPI_MISO] = { GPIOA,  6 },
+  [WIFI_PIN_SPI_IRQ ] = { A1 },
+  [WIFI_PIN_SPI_CS  ] = { D10 },
 };
 
-const platform_spi_t wifi_spi =
+const mico_spi_device_t wifi_spi_device =
 {
-  .port                         = SPI1,
-  .gpio_af                      = GPIO_AF_SPI1,
-  .peripheral_clock_reg         = RCC_APB2Periph_SPI1,
-  .peripheral_clock_func        = RCC_APB2PeriphClockCmd,
-  .pin_mosi                     = &wifi_spi_pins[WIFI_PIN_SPI_MOSI],
-  .pin_miso                     = &wifi_spi_pins[WIFI_PIN_SPI_MISO],
-  .pin_clock                    = &wifi_spi_pins[WIFI_PIN_SPI_CLK],
-  .tx_dma =
-  {
-    .controller                 = DMA2,
-    .stream                     = DMA2_Stream5,
-    .channel                    = DMA_Channel_3,
-    .irq_vector                 = DMA2_Stream5_IRQn,
-    .complete_flags             = DMA_HISR_TCIF5,
-    .error_flags                = ( DMA_HISR_TEIF5 | DMA_HISR_FEIF5 ),
-  },
-  .rx_dma =
-  {
-    .controller                 = DMA2,
-    .stream                     = DMA2_Stream2,
-    .channel                    = DMA_Channel_3,
-    .irq_vector                 = DMA2_Stream2_IRQn,
-    .complete_flags             = DMA_LISR_TCIF2,
-    .error_flags                = ( DMA_LISR_TEIF2 | DMA_LISR_FEIF2 | DMA_LISR_DMEIF2 ),
-  },
+  .port        = Arduino_SPI,
+  .chip_select = Arduino_CS,       //arduino D10
+  .speed       = 40000000,
+  .mode        = (SPI_CLOCK_RISING_EDGE | SPI_CLOCK_IDLE_HIGH | SPI_USE_DMA | SPI_MSB_FIRST ),
+  .bits        = 8
 };
+
+//const platform_spi_t wifi_spi =
+//{
+//    .mbed_sclk_pin     = D13,
+//    .mbed_mosi_pin    = D11,
+//    .mbed_miso_pin    = D12,
+//};
 
 
 
 /******************************************************
 *           Interrupt Handler Definitions
 ******************************************************/
+#if 0
 #if defined (MICO_WIFI_SHARE_SPI_BUS) || !defined (MICO_NO_WIFI)
 MICO_RTOS_DEFINE_ISR( DMA2_Stream2_IRQHandler )
 {
@@ -396,12 +297,12 @@ MICO_RTOS_DEFINE_ISR( DMA2_Stream2_IRQHandler )
 
 MICO_RTOS_DEFINE_ISR( USART6_IRQHandler )
 {
-  platform_uart_irq( &platform_uart_drivers[MICO_UART_2] );
+  platform_uart_irq( &platform_uart_drivers[Arduino_UART] );
 }
 
 MICO_RTOS_DEFINE_ISR( USART3_IRQHandler )
 {
-  platform_uart_irq( &platform_uart_drivers[MICO_UART_1] );
+  platform_uart_irq( &platform_uart_drivers[MICO_STDIO_UART] );
 }
 
 MICO_RTOS_DEFINE_ISR( DMA1_Stream4_IRQHandler )
@@ -424,7 +325,7 @@ MICO_RTOS_DEFINE_ISR( DMA2_Stream1_IRQHandler )
 {
   platform_uart_rx_dma_irq( &platform_uart_drivers[MICO_UART_2] );
 }
-
+#endif
 
 /******************************************************
 *               Function Definitions
