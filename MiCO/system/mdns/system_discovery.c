@@ -34,7 +34,7 @@ OSStatus system_discovery_init(system_context_t * const inContext)
     memset(&mico_system_service, 0x0, sizeof(struct mdns_service));
     mico_system_service.servname = inContext->flashContentInRam.micoSystemConfig.name;
     mico_system_service.servtype = "easylink";
-    mico_system_service.port = MICO_CONFIG_SERVER_PORT;
+    mico_system_service.port = MICO_SYSTEM_DISCOVERY_PORT;
     mico_system_service.proto = MDNS_PROTO_TCP;
 
     val = __strdup_trans_dot(inContext->micoStatus.mac);

@@ -216,6 +216,12 @@ extern "C" {
 #endif
 
 /************************************************************************
+ * Add service _easylink._tcp._local. for discovery */
+#if !defined MICO_SYSTEM_DISCOVERY_PORT
+#define MICO_SYSTEM_DISCOVERY_PORT               8000
+#endif
+
+/************************************************************************
  * MiCO TCP server used for configuration and ota. */
 #if !defined MICO_CONFIG_SERVER_ENABLE
 #define MICO_CONFIG_SERVER_ENABLE                0
