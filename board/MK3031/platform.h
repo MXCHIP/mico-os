@@ -196,7 +196,7 @@ typedef enum
     MICO_PARTITION_USER = 7,
 } mico_user_partition_t;
 
-
+#define MICO_PARTITION_FILESYS MICO_PARTITION_OTA_TEMP
 #define STDIO_UART          MICO_UART_1
 #define STDIO_UART_BAUDRATE (115200) 
 
