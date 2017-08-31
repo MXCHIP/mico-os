@@ -30,15 +30,11 @@
 ******************************************************************************
 */
 
-#include "common.h"
+#include "mico_common.h"
 #include "mico_platform.h"
 
-#include "platform.h"
+#include "mico_board.h"
 #include "button.h"
-
-#ifdef USE_MiCOKit_EXT
-#include "MiCOKit_EXT/micokit_ext.h"
-#endif
 
 /******************************************************
 *                      Macros
@@ -203,7 +199,7 @@ const mico_logic_partition_t mico_partitions[] =
 /******************************************************
 *               Function Definitions
 ******************************************************/
-void init_platform( void )
+void mico_board_init( void )
 {
 #if defined (MOC) && (MOC == 1)
     extern int get_last_reset_reason(void);

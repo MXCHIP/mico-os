@@ -83,7 +83,7 @@ PIN	FUN1	FUN2	FUN3	FUN4
 MICO_SYS_LED GPIO_16 
 */
 
-typedef enum
+enum
 {
     MICO_GPIO_1, 
     MICO_GPIO_2,
@@ -121,33 +121,33 @@ typedef enum
     MICO_SYS_LED,
     MICO_GPIO_MAX, /* Denotes the total number of GPIO port aliases. Not a valid GPIO alias */
     MICO_GPIO_NONE,
-} mico_gpio_t;
+};
 
-typedef enum
+enum
 {
     MICO_SPI_1,
     MICO_SPI_2,
     MICO_SPI_MAX, /* Denotes the total number of SPI port aliases. Not a valid SPI alias */
     MICO_SPI_NONE,
-} mico_spi_t;
+};
 
-typedef enum
+enum
 {
     MICO_I2C_1,
     MICO_I2C_2,
     MICO_I2C_MAX, /* Denotes the total number of I2C port aliases. Not a valid I2C alias */
     MICO_I2C_NONE,
-} mico_i2c_t;
+};
 
-typedef enum
+enum
 {
     MICO_IIS_1,
 	MICO_IIS_2,
     MICO_IIS_MAX, /* Denotes the total number of IIS port aliases. Not a valid IIS alias */
     MICO_IIS_NONE,
-} mico_iis_t;
+};
 
-typedef enum
+enum
 {
     MICO_PWM_1,
     MICO_PWM_2,
@@ -157,9 +157,9 @@ typedef enum
     MICO_PWM_6,
     MICO_PWM_MAX, /* Denotes the total number of PWM port aliases. Not a valid PWM alias */
     MICO_PWM_NONE,
-} mico_pwm_t;
+};
 
-typedef enum
+enum
 {
     MICO_ADC_1,
     MICO_ADC_2,
@@ -171,38 +171,48 @@ typedef enum
     MICO_ADC_8,
     MICO_ADC_MAX, /* Denotes the total number of ADC port aliases. Not a valid ADC alias */
     MICO_ADC_NONE,
-} mico_adc_t;
+};
 
-typedef enum
+enum
 {
     MICO_UART_1,
     MICO_UART_2,
     MICO_UART_3,
     MICO_UART_MAX, /* Denotes the total number of UART port aliases. Not a valid UART alias */
     MICO_UART_NONE,
-} mico_uart_t;
+};
 
-typedef enum
+enum
 {
   MICO_FLASH_SPI,
   MICO_FLASH_MAX,
   MICO_FLASH_NONE,
-} mico_flash_t;
+};
 
 /* Donot change MICO_PARTITION_USER_MAX!! */
-typedef enum
+enum
 {
-    MICO_PARTITION_USER_MAX = 0,
+    MICO_PARTITION_ERROR = -1,
+    MICO_PARTITION_USER_MAX   = 0,
+    MICO_PARTITION_BOOTLOADER = MICO_PARTITION_USER_MAX,
+    MICO_PARTITION_APPLICATION,
+    MICO_PARTITION_ATE,
+    MICO_PARTITION_OTA_TEMP,
+    MICO_PARTITION_RF_FIRMWARE,
+    MICO_PARTITION_PARAMETER_1,
+    MICO_PARTITION_PARAMETER_2,
     MICO_PARTITION_USER = 7,
-} mico_user_partition_t;
+    MICO_PARTITION_MAX,
+    MICO_PARTITION_NONE,
+} ;
 
 
-#define STDIO_UART          MICO_UART_1
-#define STDIO_UART_BAUDRATE (115200) 
+#define MICO_STDIO_UART          MICO_UART_1
+#define MICO_STDIO_UART_BAUDRATE (115200)
 
-#define UART_FOR_APP     MICO_UART_2
-#define MFG_TEST         MICO_UART_2
-#define CLI_UART         MICO_UART_1
+#define MICO_UART_FOR_APP     MICO_UART_2
+#define MICO_MFG_TEST         MICO_UART_2
+#define MICO_CLI_UART         MICO_UART_1
 
 /* Components connected to external I/Os*/
 #define Standby_SEL      (MICO_GPIO_29)

@@ -49,7 +49,7 @@ GLOBAL_LDFLAGS += -L $(MICO_OS_PATH)/board/MK$(MODULE)
 $(NAME)_COMPONENTS += drivers/MiCOKit_EXT
 
 # Source files
-$(NAME)_SOURCES := platform.c
+$(NAME)_SOURCES := mico_board.c
 
 # MOC configuration
 MOC_APP_OFFSET      := 0x64000

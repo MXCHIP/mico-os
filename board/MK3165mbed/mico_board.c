@@ -44,9 +44,6 @@
 /******************************************************
 *               Function Declarations
 ******************************************************/
-extern WEAK void PlatformEasyLinkButtonClickedCallback(void);
-extern WEAK void PlatformEasyLinkButtonLongPressedCallback(void);
-extern WEAK void bootloader_start(void);
 
 extern OSStatus host_platform_init( void );
 
@@ -81,7 +78,6 @@ const platform_gpio_t platform_gpio_pins[] =
     [MICO_GPIO_38]                      = { MBED_GPIO_38 },   // ADC_1
 };
 
-platform_gpio_irq_driver_t  platform_gpio_irq_drivers[MICO_GPIO_MAX];
 
 
 // const platform_pwm_t *platform_pwm_peripherals = NULL;
@@ -121,7 +117,7 @@ const platform_spi_t platform_spi_peripherals[] =
 {
     [MICO_SPI_1]  =
     {
-        .mbed_scl_pin     = SFLASH_SCL,
+        .mbed_sclk_pin     = SFLASH_SCL,
         .mbed_mosi_pin    = SFLASH_MOSI,
         .mbed_miso_pin    = SFLASH_MISO,
     }
@@ -236,94 +232,6 @@ const platform_gpio_t wifi_sdio_pins[] =
   [WIFI_PIN_SDIO_D2     ] = { SDIO_D2      },
   [WIFI_PIN_SDIO_D3     ] = { SDIO_D3      },
 };
-
-
-
-// /* Bluetooth control pins.*/
-// static const platform_gpio_t internal_bt_control_pins[] =
-// {
-//     /* Reset pin unavailable */
-//     [MICO_BT_PIN_POWER      ] = { GPIOC,  3 },
-//     [MICO_BT_PIN_HOST_WAKE  ] = { GPIOC,  2 },
-//     [MICO_BT_PIN_DEVICE_WAKE] = { GPIOC,  1 }
-// };
-
-// const platform_gpio_t* mico_bt_control_pins[] =
-// {
-//     /* Reset pin unavailable */
-//     [MICO_BT_PIN_POWER      ] = &internal_bt_control_pins[MICO_BT_PIN_POWER      ],
-//     [MICO_BT_PIN_HOST_WAKE  ] = &internal_bt_control_pins[MICO_BT_PIN_HOST_WAKE  ],
-//     [MICO_BT_PIN_DEVICE_WAKE] = &internal_bt_control_pins[MICO_BT_PIN_DEVICE_WAKE],
-//     [MICO_BT_PIN_RESET      ] = NULL,
-// };
-
-// /* Bluetooth UART pins.*/
-// static const platform_gpio_t internal_bt_uart_pins[] =
-// {
-//     [MICO_BT_PIN_UART_TX ] = { GPIOA,  2 },
-//     [MICO_BT_PIN_UART_RX ] = { GPIOA,  3 },
-//     [MICO_BT_PIN_UART_CTS] = { GPIOA,  0 },
-//     [MICO_BT_PIN_UART_RTS] = { GPIOA,  1 },
-// };
-
-// const platform_gpio_t* mico_bt_uart_pins[] =
-// {
-//     [MICO_BT_PIN_UART_TX ] = &internal_bt_uart_pins[MICO_BT_PIN_UART_TX ],
-//     [MICO_BT_PIN_UART_RX ] = &internal_bt_uart_pins[MICO_BT_PIN_UART_RX ],
-//     [MICO_BT_PIN_UART_CTS] = &internal_bt_uart_pins[MICO_BT_PIN_UART_CTS],
-//     [MICO_BT_PIN_UART_RTS] = &internal_bt_uart_pins[MICO_BT_PIN_UART_RTS],
-// };
-
-// static const platform_uart_t internal_bt_uart_peripheral =
-// {
-//   .port                         = USART2,
-//   .pin_tx                       = &internal_bt_uart_pins[MICO_BT_PIN_UART_TX ],
-//   .pin_rx                       = &internal_bt_uart_pins[MICO_BT_PIN_UART_RX ],
-//   .pin_cts                      = &internal_bt_uart_pins[MICO_BT_PIN_UART_CTS ],
-//   .pin_rts                      = &internal_bt_uart_pins[MICO_BT_PIN_UART_RTS ],
-//   .tx_dma_config =
-//   {
-//     .controller                 = DMA1,
-//     .stream                     = DMA1_Stream6,
-//     .channel                    = DMA_Channel_4,
-//     .irq_vector                 = DMA1_Stream6_IRQn,
-//     .complete_flags             = DMA_HISR_TCIF6,
-//     .error_flags                = ( DMA_HISR_TEIF6 | DMA_HISR_FEIF6 ),
-//   },
-//   .rx_dma_config =
-//   {
-//     .controller                 = DMA1,
-//     .stream                     = DMA1_Stream5,
-//     .channel                    = DMA_Channel_4,
-//     .irq_vector                 = DMA1_Stream5_IRQn,
-//     .complete_flags             = DMA_HISR_TCIF5,
-//     .error_flags                = ( DMA_HISR_TEIF5 | DMA_HISR_FEIF5 | DMA_HISR_DMEIF5 ),
-//   },
-// };
-
-// static platform_uart_driver_t internal_bt_uart_driver;
-// const platform_uart_t*        mico_bt_uart_peripheral = &internal_bt_uart_peripheral;
-// platform_uart_driver_t*       mico_bt_uart_driver     = &internal_bt_uart_driver;
-
-
-// /* Bluetooth UART configuration. Used by libraries/bluetooth/internal/bus/UART/bt_bus.c */
-// const platform_uart_config_t mico_bt_uart_config =
-// {
-//     .baud_rate    = 115200,
-//     .data_width   = DATA_WIDTH_8BIT,
-//     .parity       = NO_PARITY,
-//     .stop_bits    = STOP_BITS_1,
-//     .flow_control = FLOW_CONTROL_CTS_RTS, //FLOW_CONTROL_DISABLED,
-// };
-
-// /*BT chip specific configuration information*/
-// const platform_bluetooth_config_t mico_bt_config =
-// {
-//     .patchram_download_mode      = PATCHRAM_DOWNLOAD_MODE_MINIDRV_CMD,
-//     .patchram_download_baud_rate = 115200,
-//     .featured_baud_rate          = 3000000
-// };
-
 
 // /******************************************************
 // *               Function Definitions

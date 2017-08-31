@@ -46,7 +46,7 @@ extern "C"
 ******************************************************/
 
 #define HARDWARE_REVISION   "1.0"
-#define DEFAULT_NAME        "NUCLEO"
+#define DEFAULT_NAME        "NUCLEO-F412ZG"
 #define MODEL               "NUCLEO-F412ZG"
 
 
