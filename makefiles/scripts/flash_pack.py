@@ -73,7 +73,7 @@ def compress_given_files(dir):
 			return None
 		fileWOext, fileExtension = os.path.splitext(path)
 		for givenExt in TO_GZIP_FILES:
-			if fileExtension == givenExt:
+			if fileExtension == givenExt and fileExtension != "":
 				gzPath = path + ".gz"
 				f_in = open(path, 'rb')
 				f_out = gzip.open(gzPath, 'wb')
