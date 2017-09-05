@@ -118,11 +118,13 @@ const platform_gpio_t platform_gpio_pins[] =
 
   [MICO_USART3_RX]                    = { GPIOD,  9 },//PASS,STDIO_UART_RX,USART3_RX,Nucleo STLK_RX
   [MICO_USART3_TX]                    = { GPIOD,  8 },//PASS,STDIO_UART_TX,USART3_TX,Nucleo STLK_TX
-  [MICO_USART1_RX]                    = { GPIOB,  7 },
-  [MICO_USART1_TX]					  = { GPIOA,  15},
+  [MICO_USART_NBIOT_TX]               = { GPIOA,  9 },
+  [MICO_USART_NBIOT_RX]               = { GPIOA,  10},
+  [MICO_USART_NBIOT_RTS]              = { GPIOA,  12},
+  [MICO_USART_NBIOT_CTS]              = { GPIOA,  11},
   [MICO_GPIO_POWER]                   = { GPIOD,  2 },
-  [MICO_GPIO_GPRS_START]              = { GPIOA,  8 },
-  [MICO_GPIO_GPRS_RST]                = { GPIOB,  5 },
+  [MICO_GPIO_GPRS_START]              = { GPIOB,  5 },
+  [MICO_GPIO_GPRS_RST]                = { GPIOA,  8 },
   [MICO_GPIO_GPRS_WAKEUP]             = { GPIOA,  1 },
 };
 
@@ -208,8 +210,8 @@ const platform_uart_t platform_uart_peripherals[] =
   [MICO_UART_3] =
   {
     .port                         = USART1,
-    .pin_tx                       = &platform_gpio_pins[MICO_USART1_TX],
-    .pin_rx                       = &platform_gpio_pins[MICO_USART1_RX],
+    .pin_tx                       = &platform_gpio_pins[MICO_USART_NBIOT_TX],
+    .pin_rx                       = &platform_gpio_pins[MICO_USART_NBIOT_RX],
     .pin_cts                      = NULL,
     .pin_rts                      = NULL,
     .tx_dma_config =
@@ -477,6 +479,7 @@ MICO_RTOS_DEFINE_ISR( DMA2_Stream5_IRQHandler )
 {
   platform_uart_rx_dma_irq( &platform_uart_drivers[MICO_UART_3] );
 }
+
 
 /******************************************************
 *               Function Definitions

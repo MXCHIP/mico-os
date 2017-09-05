@@ -79,8 +79,10 @@ typedef enum
     MICO_GPIO_22,
     MICO_USART3_RX,
     MICO_USART3_TX,
-    MICO_USART1_RX,
-    MICO_USART1_TX,
+	MICO_USART_NBIOT_TX,
+	MICO_USART_NBIOT_RX,
+	MICO_USART_NBIOT_RTS,
+	MICO_USART_NBIOT_CTS,
 	MICO_GPIO_POWER,
 	MICO_GPIO_GPRS_RST,
 	MICO_GPIO_GPRS_START,
@@ -129,6 +131,8 @@ typedef enum
     MICO_UART_1,
     MICO_UART_2,
 	MICO_UART_3,
+	MICO_UART_4,
+	MICO_UART_5,
     MICO_UART_MAX, /* Denotes the total number of UART port aliases. Not a valid UART alias */
     MICO_UART_NONE,
 } mico_uart_t;
@@ -156,7 +160,7 @@ typedef enum
 #endif
 
 #define UART_FOR_APP     (MICO_UART_2)
-#define UART_FOR_GPRS    (MICO_UART_3)
+#define UART_FOR_NBIOT   (MICO_UART_3)
 #define MFG_TEST         (MICO_UART_1)
 #define CLI_UART         (MICO_UART_1)
 
