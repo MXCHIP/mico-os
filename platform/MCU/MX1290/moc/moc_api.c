@@ -555,6 +555,22 @@ OSStatus MicoPwmStop(mico_pwm_t pwm)
 	return lib_api_p->pwm_apis->pwm_stop(pwm);
 }
 
+
+OSStatus MicoGtimerInitialize(mico_gtimer_t gtimer)
+{
+	return lib_api_p->gtimer_apis->MicoGtimerInitialize(gtimer);
+}
+
+OSStatus MicoGtimerStart(mico_gtimer_t gtimer, mico_gtimer_mode_t mode, uint32_t time, mico_gtimer_irq_callback_t function, void *arg)
+{
+	return lib_api_p->gtimer_apis->MicoGtimerStart(gtimer, mode, time, function, arg);
+}
+
+OSStatus MicoGtimerStop(mico_gtimer_t gtimer)
+{
+	return lib_api_p->gtimer_apis->MicoGtimerStop(gtimer);
+}
+
 OSStatus MicoWdgInitialize( uint32_t timeout )
 {
 	return lib_api_p->wdg_apis->wdg_init(timeout);

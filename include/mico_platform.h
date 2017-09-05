@@ -68,6 +68,7 @@ typedef platform_spi_slave_data_buffer_t        mico_spi_slave_data_buffer_t;
 #include "MiCODrivers/MiCODriverFlash.h"
 #include "MiCODrivers/MiCODriverMFiAuth.h"
 #include "MiCODrivers/MiCODriverI2s.h"
+#include "MiCODrivers/MiCODriverGtimer.h"
 
 #define mico_mcu_powersave_config MicoMcuPowerSaveConfig
 
