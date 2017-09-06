@@ -461,7 +461,7 @@ OSStatus micoWlanGetIP6Status(ipv6_addr_t ipv6_addr[], uint8_t ipv6_addr_num, ne
  */
 OSStatus micoWlanGetLinkStatus(LinkStatusTypeDef *outStatus);
 
-/** @brief  Start a wlan scanning in 2.4GHz in MICO backfround.
+/** @brief  Start a wlan scanning in 2.4GHz asynchronous.
  *  
  *  @detail Once the scan is completed, MICO sends a notify: 
  *          mico_notify_WIFI_SCAN_COMPLETED, with callback function:
@@ -470,7 +470,7 @@ OSStatus micoWlanGetLinkStatus(LinkStatusTypeDef *outStatus);
  */
 void micoWlanStartScan(void);
 
-/** @brief  Start a wlan scanning in 2.4GHz in MICO backfround. 
+/** @brief  Start a wlan scanning in 2.4GHz asynchronous.
  *  
  *  @detail Once the scan is completed, MICO sends a notify: 
  *          mico_notify_WIFI_SCAN_ADV_COMPLETED, with callback function:

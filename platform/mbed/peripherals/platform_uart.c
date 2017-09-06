@@ -155,7 +155,7 @@ OSStatus platform_uart_init( platform_uart_driver_t* driver, const platform_uart
 	}
 	serial_irq_handler(&driver->serial_obj, platform_uart_irq, (uint32_t)driver);
 	serial_irq_set(&driver->serial_obj, RxIrq, 1);
-	serial_irq_set(&driver->serial_obj, TxIrq, 1);
+	//serial_irq_set(&driver->serial_obj, TxIrq, 1);
 exit:
     	platform_mcu_powersave_enable();
   	return err;
