@@ -62,13 +62,18 @@ else
 $(NAME)_COMPONENTS += MCU/MOC108/peripherals
 endif
 
-ifneq ($(wildcard $(CURDIR)MX108.$(HOST_ARCH).$(TOOLCHAIN_NAME).release.a),)
 ifeq ($(CONFIG_IPV6),1)
-GLOBAL_CFLAGS += -DCONFIG_IPV6
-$(NAME)_PREBUILT_LIBRARY += MX108-IPV6.$(HOST_ARCH).$(TOOLCHAIN_NAME).release.a
+IPV6 := -IPV6
 else
-$(NAME)_PREBUILT_LIBRARY += MX108.$(HOST_ARCH).$(TOOLCHAIN_NAME).release.a
+IPV6 :=
 endif
+ifeq ($(CONFIG_SOFTAP),1)
+SOFTAP := -SOFTAP
+else
+SOFTAP :=
+endif
+ifneq ($(wildcard $(CURDIR)MX108$(IPV6)$(SOFTAP).$(HOST_ARCH).$(TOOLCHAIN_NAME).release.a),)
+$(NAME)_PREBUILT_LIBRARY += MX108$(IPV6)$(SOFTAP).$(HOST_ARCH).$(TOOLCHAIN_NAME).release.a
 else
 # Build from source
 $(NAME)_COMPONENTS += MCU/MOC108/MX108
