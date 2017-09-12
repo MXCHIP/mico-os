@@ -42,7 +42,6 @@ $(NAME)_SOURCES += mdns/mico_mdns.c \
 $(NAME)_SOURCES += tftp_ota/tftp_ota.c \
                    tftp_ota/tftpc.c
                    
-$(NAME)_LINK_FILES := mico_system_power_daemon.o
 
 $(NAME)_COMPONENTS := system/qc_test system/easylink/MFi_WAC
 
