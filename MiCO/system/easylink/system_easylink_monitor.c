@@ -194,7 +194,7 @@ static OSStatus _monitor_timed_check_cb(void *arg)
     }
 
     if( wlan_channel_walker == MICO_TRUE){
-        mico_wlan_set_channel( wlan_channel );
+        mico_wlan_monitor_set_channel( wlan_channel );
         mico_easylink_monitor_delegate_channel_changed( wlan_channel );
         wlan_channel++;
         if ( wlan_channel >= 14 ) wlan_channel = 1;
