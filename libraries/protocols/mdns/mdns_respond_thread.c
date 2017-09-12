@@ -517,8 +517,7 @@ static int get_config_idx_from_ip(uint32_t incoming_ip)
 	    interface_ip = inet_addr(interface_ip_info.ip);
 	    interface_mask = inet_addr(interface_ip_info.mask);
 
-        if ((interface_ip & interface_mask) ==
-                (incoming_ip & interface_mask))
+        if ( interface_ip != 0 && (interface_ip & interface_mask) == (incoming_ip & interface_mask))
 			return i;
 #ifdef CONFIG_BONJ_CONFORMANCE
 		/* If current interface has link local address or incoming

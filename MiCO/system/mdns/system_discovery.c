@@ -71,6 +71,7 @@ OSStatus system_discovery_init(system_context_t * const inContext)
 
     mdns_start(NULL, DEFAULT_NAME);
     mdns_announce_service(&mico_system_service, INTERFACE_STA);
+    mdns_announce_service(&mico_system_service, INTERFACE_UAP);
 
     return kNoErr;
 }

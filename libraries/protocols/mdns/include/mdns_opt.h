@@ -27,13 +27,6 @@ extern "C" {
 
 /* If developer needs change these options, define them in mico_config.h */
 
-/** Define this option to include debugging and logging.
- *  By default this option is disabled.
- */
-#if !defined CONFIG_MDNS_DEBUG
-#define CONFIG_MDNS_DEBUG                      MICO_DEBUG_OFF
-#endif
-
 /** Developers who require the ability to query for services.
   * This enables the mdns_query_* functions.  These functions
   * will return ERR_MDNS_NOIMPL if the mdns library was built without

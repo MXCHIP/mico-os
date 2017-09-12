@@ -195,34 +195,39 @@ extern "C" {
 #define MICO_CONFIG_EASYLINK_BTN_LONG_PRESS_TIMEOUT         5000
 #endif
 
-/************************************************************************
- * Command line interface */
+/**
+ * Command line interface
+ */
 #if !defined MICO_CLI_ENABLE
 #define MICO_CLI_ENABLE                         1
 #endif
 
-/************************************************************************
- * Start a system monitor daemon, application can register some monitor  
- * points, If one of these points is not executed in a predefined period, 
- * a watchdog reset will occur. */
+/**
+ * Start a system monitor daemon, application can register some monitor
+ * points, If one of these points is not executed in a predefined period,
+ * a watchdog reset will occur.
+ */
 #if !defined MICO_SYSTEM_MONITOR_ENABLE
 #define MICO_SYSTEM_MONITOR_ENABLE              1
 #endif
 
-/************************************************************************
- * Add service _easylink._tcp._local. for discovery */
+/**
+ * Add service _easylink._tcp._local. for discovery
+ */
 #if !defined MICO_SYSTEM_DISCOVERY_ENABLE
 #define MICO_SYSTEM_DISCOVERY_ENABLE              1
 #endif
 
-/************************************************************************
- * Add service _easylink._tcp._local. for discovery */
+/**
+ * _easylink._tcp._local. service port
+ */
 #if !defined MICO_SYSTEM_DISCOVERY_PORT
 #define MICO_SYSTEM_DISCOVERY_PORT               8000
 #endif
 
-/************************************************************************
- * MiCO TCP server used for configuration and ota. */
+/**
+  * MiCO TCP server used for configuration and ota.
+  */
 #if !defined MICO_CONFIG_SERVER_ENABLE
 #define MICO_CONFIG_SERVER_ENABLE                0
 #endif
@@ -233,6 +238,18 @@ extern "C" {
 
 #if !defined MICO_CONFIG_SERVER_REPORT_SYSTEM_DATA
 #define MICO_CONFIG_SERVER_REPORT_SYSTEM_DATA   MICO_CONFIG_SERVER_ENABLE
+#endif
+
+/******************************************************************************
+ *                            Debug and Log
+ ******************************************************************************/
+
+#if !defined CONFIG_APP_DEBUG
+#define CONFIG_APP_DEBUG                       MICO_DEBUG_ON
+#endif
+
+#if !defined CONFIG_MDNS_DEBUG
+#define CONFIG_MDNS_DEBUG                      MICO_DEBUG_OFF
 #endif
 
 #ifdef __cplusplus
