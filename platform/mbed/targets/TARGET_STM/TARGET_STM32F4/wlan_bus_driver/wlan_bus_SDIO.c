@@ -39,7 +39,6 @@
 #define COMMAND_FINISHED_CMD53_TIMEOUT_LOOPS (100000)
 #define SDIO_TX_RX_COMPLETE_TIMEOUT_LOOPS    (100000)
 #define SDIO_DMA_TIMEOUT_LOOPS               (1000000)
-#define MAX_TIMEOUTS                         (30)
 #define SDIO_ERROR_MASK                      ( SDIO_STA_CCRCFAIL | SDIO_STA_DCRCFAIL | SDIO_STA_CTIMEOUT | SDIO_STA_DTIMEOUT | SDIO_STA_TXUNDERR | SDIO_STA_RXOVERR | SDIO_STA_STBITERR )
 #define SDIO_IRQ_CHANNEL                     ((IRQn_Type)0x31)
 #define DMA2_3_IRQ_CHANNEL                   ((IRQn_Type)DMA2_Stream3_IRQn)
@@ -556,6 +555,10 @@ restart:
         {
             temp_sta = SDIO->STA;
             loop_count--;
+            if( command == SDIO_CMD_5 )
+            {
+                SDIO->ICR |= SDIO_ICR_CCRCFAILC;
+            }
             if ( loop_count == 0 || ( ( response_expected == RESPONSE_NEEDED ) && ( ( temp_sta & SDIO_ERROR_MASK ) != 0 ) ) )
             {
                 goto restart;

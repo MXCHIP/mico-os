@@ -63,6 +63,8 @@
 *               Function Declarations
 ******************************************************/
 
+extern OSStatus host_platform_init( void );
+
 /******************************************************
 *               Variables Definitions
 ******************************************************/
@@ -73,7 +75,8 @@ const platform_gpio_t platform_gpio_pins[] =
   [MICO_SW2]                      = { PE_11 },
   [MICO_SW3]                      = { PE_10 },
 
-  [FLASH_CS]                      = { PA_4 },   //Flash chip select
+  [MICO_FLASH_CS]                      = { PA_4 },   //Flash chip select
+  [MICO_WIFI_CS  ]                     = { SDIO_CMD },
 };
 
 
@@ -94,11 +97,17 @@ const platform_uart_t platform_uart_peripherals[] =
 
 const platform_spi_t platform_spi_peripherals[] =
 {
-    [MICO_SPI_1]  =
+    [MICO_SPI_FLASH]  =
     {
         .mbed_sclk_pin    = PA_5,
         .mbed_mosi_pin    = PB_5,
         .mbed_miso_pin    = PB_4,
+    },
+    [MICO_SPI_WIFI]  =
+    {
+        .mbed_sclk_pin    = SDIO_D2,
+        .mbed_mosi_pin    = SDIO_CLK,
+        .mbed_miso_pin    = SDIO_D3,
     }
 };
 
@@ -136,7 +145,7 @@ const mico_logic_partition_t mico_partitions[] =
     .partition_owner           = MICO_FLASH_EMBEDDED,
     .partition_description     = "Application",
     .partition_start_addr      = 0x08008000,
-    .partition_length          =   0x80000, //0xF8000,   //1024k-32k bytes
+    .partition_length          =   0x80000, //0x80000 //512kbytes    0xF8000,   //1024k-32k bytes
     .partition_options         = PAR_OPT_READ_EN | PAR_OPT_WRITE_DIS,
   },
   [MICO_PARTITION_ATE] =
@@ -189,8 +198,8 @@ const mico_logic_partition_t mico_partitions[] =
 #if defined ( USE_MICO_SPI_FLASH )
 const mico_spi_device_t mico_spi_flash =
 {
-  .port        = MICO_SPI_1,
-  .chip_select = FLASH_CS,
+  .port        = MICO_SPI_FLASH,
+  .chip_select = MICO_FLASH_CS,
   .speed       = 40000000,
   .mode        = (SPI_CLOCK_RISING_EDGE | SPI_CLOCK_IDLE_HIGH | SPI_USE_DMA | SPI_MSB_FIRST ),
   .bits        = 8
@@ -227,49 +236,20 @@ const platform_gpio_t wifi_sdio_pins[] =
   [WIFI_PIN_SDIO_D3     ] = { SDIO_D3      },
 };
 
-
-/******************************************************
-*           Interrupt Handler Definitions
-******************************************************/
-#if 0
-#if defined (MICO_WIFI_SHARE_SPI_BUS) || !defined (MICO_NO_WIFI)
-MICO_RTOS_DEFINE_ISR( DMA2_Stream2_IRQHandler )
+/* Wi-Fi gSPI bus pins. Used by platform/MCU/STM32F2xx/EMW1062_driver/wlan_spi.c */
+const platform_gpio_t wifi_spi_pins[] =
 {
-  platform_wifi_spi_rx_dma_irq( );
-}
-#endif
+  [WIFI_PIN_SPI_IRQ ] = { SDIO_D1 },
+};
 
-MICO_RTOS_DEFINE_ISR( USART6_IRQHandler )
+const mico_spi_device_t wifi_spi_device =
 {
-  platform_uart_irq( &platform_uart_drivers[Arduino_UART] );
-}
-
-MICO_RTOS_DEFINE_ISR( USART3_IRQHandler )
-{
-  platform_uart_irq( &platform_uart_drivers[MICO_STDIO_UART] );
-}
-
-MICO_RTOS_DEFINE_ISR( DMA1_Stream4_IRQHandler )
-{
-  platform_uart_tx_dma_irq( &platform_uart_drivers[MICO_UART_1] );
-}
-
-MICO_RTOS_DEFINE_ISR( DMA2_Stream7_IRQHandler )
-{
-  platform_uart_tx_dma_irq( &platform_uart_drivers[MICO_UART_2] );
-}
-
-MICO_RTOS_DEFINE_ISR( DMA1_Stream1_IRQHandler )
-{
-
-  platform_uart_rx_dma_irq( &platform_uart_drivers[MICO_UART_1] );
-}
-
-MICO_RTOS_DEFINE_ISR( DMA2_Stream1_IRQHandler )
-{
-  platform_uart_rx_dma_irq( &platform_uart_drivers[MICO_UART_2] );
-}
-#endif
+  .port        = MICO_SPI_WIFI,
+  .chip_select = MICO_WIFI_CS,
+  .speed       = 40000000,
+  .mode        = (SPI_CLOCK_RISING_EDGE | SPI_CLOCK_IDLE_HIGH | SPI_USE_DMA | SPI_MSB_FIRST ),
+  .bits        = 8
+};
 
 /******************************************************
 *               Function Definitions
@@ -298,13 +278,16 @@ void platform_init_peripheral_irq_priorities( void )
 
 void mico_board_init( void )
 {
-  MicoGpioInitialize( (mico_gpio_t)MICO_SYS_LED, OUTPUT_PUSH_PULL );
-  MicoGpioOutputLow( (mico_gpio_t)MICO_SYS_LED );
-  MicoGpioInitialize( (mico_gpio_t)MICO_RF_LED, OUTPUT_OPEN_DRAIN_NO_PULL );
-  MicoGpioOutputHigh( (mico_gpio_t)MICO_RF_LED );
+    /* Ensure 802.11 device is in reset. */
+    host_platform_init( );
+
+    MicoGpioInitialize( (mico_gpio_t)MICO_SYS_LED, OUTPUT_PUSH_PULL );
+    MicoGpioOutputLow( (mico_gpio_t)MICO_SYS_LED );
+    MicoGpioInitialize( (mico_gpio_t)MICO_RF_LED, OUTPUT_OPEN_DRAIN_NO_PULL );
+    MicoGpioOutputHigh( (mico_gpio_t)MICO_RF_LED );
   
-  MicoGpioInitialize((mico_gpio_t)BOOT_SEL, INPUT_PULL_UP);
-  MicoGpioInitialize((mico_gpio_t)MFG_SEL, INPUT_PULL_UP);
+    MicoGpioInitialize((mico_gpio_t)BOOT_SEL, INPUT_PULL_UP);
+    MicoGpioInitialize((mico_gpio_t)MFG_SEL, INPUT_PULL_UP);
 }
 
 void MicoSysLed(bool onoff)

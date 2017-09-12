@@ -63,6 +63,8 @@
 *               Function Declarations
 ******************************************************/
 
+extern OSStatus host_platform_init( void );
+
 /******************************************************
 *               Variables Definitions
 ******************************************************/
@@ -263,7 +265,6 @@ const platform_gpio_t wifi_control_pins[] =
 const platform_gpio_t wifi_spi_pins[] =
 {
   [WIFI_PIN_SPI_IRQ ] = { A1 },
-  [WIFI_PIN_SPI_CS  ] = { D10 },
 };
 
 const mico_spi_device_t wifi_spi_device =
@@ -354,13 +355,16 @@ void platform_init_peripheral_irq_priorities( void )
 
 void mico_board_init( void )
 {
-  MicoGpioInitialize( (mico_gpio_t)MICO_SYS_LED, OUTPUT_PUSH_PULL );
-  MicoGpioOutputLow( (mico_gpio_t)MICO_SYS_LED );
-  MicoGpioInitialize( (mico_gpio_t)MICO_RF_LED, OUTPUT_OPEN_DRAIN_NO_PULL );
-  MicoGpioOutputHigh( (mico_gpio_t)MICO_RF_LED );
+    /* Ensure 802.11 device is in reset. */
+    host_platform_init( );
+
+    MicoGpioInitialize( (mico_gpio_t)MICO_SYS_LED, OUTPUT_PUSH_PULL );
+    MicoGpioOutputLow( (mico_gpio_t)MICO_SYS_LED );
+    MicoGpioInitialize( (mico_gpio_t)MICO_RF_LED, OUTPUT_OPEN_DRAIN_NO_PULL );
+    MicoGpioOutputHigh( (mico_gpio_t)MICO_RF_LED );
   
-  MicoGpioInitialize((mico_gpio_t)BOOT_SEL, INPUT_PULL_UP);
-  MicoGpioInitialize((mico_gpio_t)MFG_SEL, INPUT_PULL_UP);
+    MicoGpioInitialize((mico_gpio_t)BOOT_SEL, INPUT_PULL_UP);
+    MicoGpioInitialize((mico_gpio_t)MFG_SEL, INPUT_PULL_UP);
 }
 
 void MicoSysLed(bool onoff)

@@ -15,8 +15,8 @@
  *  permission of MXCHIP Corporation.
  ******************************************************************************
  */
-#include "platform_config.h"
-#include "common.h"
+#include "mico_board_conf.h"
+#include "mico_common.h"
 
 #if defined (EMW1088)
 #if CONFIG_XZ_DECOMPRESSION

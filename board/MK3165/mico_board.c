@@ -63,6 +63,8 @@
 *               Function Declarations
 ******************************************************/
 
+extern OSStatus host_platform_init( void );
+
 /******************************************************
 *               Variables Definitions
 ******************************************************/
@@ -413,13 +415,16 @@ void platform_init_peripheral_irq_priorities( void )
 
 void mico_board_init( void )
 {
-  MicoGpioInitialize( (mico_gpio_t)MICO_SYS_LED, OUTPUT_PUSH_PULL );
-  MicoGpioOutputLow( (mico_gpio_t)MICO_SYS_LED );
-  MicoGpioInitialize( (mico_gpio_t)MICO_RF_LED, OUTPUT_OPEN_DRAIN_NO_PULL );
-  MicoGpioOutputHigh( (mico_gpio_t)MICO_RF_LED );
+    /* Ensure 802.11 device is in reset. */
+    host_platform_init( );
+
+    MicoGpioInitialize( (mico_gpio_t)MICO_SYS_LED, OUTPUT_PUSH_PULL );
+    MicoGpioOutputLow( (mico_gpio_t)MICO_SYS_LED );
+    MicoGpioInitialize( (mico_gpio_t)MICO_RF_LED, OUTPUT_OPEN_DRAIN_NO_PULL );
+    MicoGpioOutputHigh( (mico_gpio_t)MICO_RF_LED );
   
-  MicoGpioInitialize((mico_gpio_t)BOOT_SEL, INPUT_PULL_UP);
-  MicoGpioInitialize((mico_gpio_t)MFG_SEL, INPUT_PULL_UP);
+    MicoGpioInitialize((mico_gpio_t)BOOT_SEL, INPUT_PULL_UP);
+    MicoGpioInitialize((mico_gpio_t)MFG_SEL, INPUT_PULL_UP);
 }
 
 

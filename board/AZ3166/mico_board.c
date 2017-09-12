@@ -44,9 +44,6 @@
 /******************************************************
 *               Function Declarations
 ******************************************************/
-extern WEAK void PlatformEasyLinkButtonClickedCallback(void);
-extern WEAK void PlatformEasyLinkButtonLongPressedCallback(void);
-extern WEAK void bootloader_start(void);
 
 /******************************************************
 *               Variables Definitions
@@ -88,8 +85,6 @@ const platform_gpio_t platform_gpio_pins[] =
   [MICO_GPIO_38]                      = { MBED_GPIO_38 },   // ADC_1
 };
 
-platform_gpio_driver_t      platform_gpio_drivers[MICO_GPIO_MAX];
-platform_gpio_irq_driver_t  platform_gpio_irq_drivers[MICO_GPIO_MAX];
 
 const platform_pwm_t platform_pwm_peripherals[] ={
      [MICO_PWM_1] = {
@@ -102,7 +97,6 @@ const platform_pwm_t platform_pwm_peripherals[] ={
          .mbed_pwm_pin = MBED_GPIO_12,
      },
  };
-platform_pwm_driver_t platform_pwm_drivers[MICO_PWM_MAX];
 
 // const platform_adc_t platform_adc_peripherals[] =
 // {
@@ -116,7 +110,6 @@ const platform_i2c_t platform_i2c_peripherals[] = {
         .mbed_sda_pin = I2C_SDA,
     }
 };
-platform_i2c_driver_t platform_i2c_drivers[MICO_I2C_MAX];
 
 const platform_uart_t platform_uart_peripherals[] = {
     [MICO_UART_1] =
@@ -125,7 +118,6 @@ const platform_uart_t platform_uart_peripherals[] = {
         .mbed_rx_pin = STDIO_UART_RX,
     }
 };
-platform_uart_driver_t platform_uart_drivers[MICO_UART_MAX];
 
 // const platform_spi_t platform_spi_peripherals[] =
 // {
@@ -203,7 +195,6 @@ const platform_flash_t platform_flash_peripherals[] =
    },
 };
 
-platform_flash_driver_t platform_flash_drivers[MICO_FLASH_MAX];
 
 /* Logic partition on flash devices */
 const platform_logic_partition_t mico_partitions[] =

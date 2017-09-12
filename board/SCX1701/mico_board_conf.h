@@ -78,8 +78,8 @@ extern "C"
 #define RestoreDefault_TimeOut                      (3000)
 
 /************************************************************************
- * CPU clock 100MHZ*/
-#define MCU_CLOCK_HZ            (168000000)
+ * CPU clock HZ*/
+#define MCU_CLOCK_HZ            (OS_CLOCK)
 
 /************************************************************************
  * How many bits are used in NVIC priority configuration */

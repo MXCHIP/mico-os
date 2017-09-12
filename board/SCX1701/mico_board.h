@@ -51,7 +51,8 @@ enum
     MICO_SW2,
     MICO_SW3,
 
-    FLASH_CS,
+    MICO_FLASH_CS,
+    MICO_WIFI_CS,
 
     MICO_GPIO_MAX, /* Denotes the total number of GPIO port aliases. Not a valid GPIO alias */
     MICO_GPIO_NONE,
@@ -60,7 +61,8 @@ enum
 
 enum
 {
-    MICO_SPI_1,
+    MICO_SPI_FLASH,
+    MICO_SPI_WIFI,
     MICO_SPI_MAX, /* Denotes the total number of SPI port aliases. Not a valid SPI alias */
     MICO_SPI_NONE,
 };
@@ -127,7 +129,7 @@ enum
 };
 
 #define MICO_STDIO_UART       (MICO_UART_1)
-#define MICO_UART_FOR_APP     (MICO_UART_1)
+#define MICO_UART_FOR_APP     (MICO_UART_NONE)
 #define MICO_MFG_TEST         (MICO_UART_1)
 #define MICO_CLI_UART         (MICO_UART_1)
 

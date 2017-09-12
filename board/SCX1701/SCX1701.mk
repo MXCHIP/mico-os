@@ -33,7 +33,7 @@ HOST_MCU_FAMILY      	:= STM32F4xx
 HOST_MCU_VARIANT     	:= STM32F407
 HOST_MCU_PART_NUMBER 	:= STM32F407VGT6
 
-BUS := SDIO
+BUS ?= SDIO
 
 
 # Extra build target in mico_standard_targets.mk, include bootloader, and copy output file to eclipse debug file (copy_output_for_eclipse)
@@ -41,10 +41,6 @@ EXTRA_TARGET_MAKEFILES +=  $(MAKEFILES_PATH)/mico_standard_targets.mk
 
 # Global includes
 GLOBAL_INCLUDES  := .
-
-# Global defines
-# HSE_VALUE = STM32 crystal frequency = 26MHz (needed to make UART work correctly)
-
 
 GLOBAL_DEFINES += $$(if $$(NO_CRLF_STDIO_REPLACEMENT),,CRLF_STDIO_REPLACEMENT)
 GLOBAL_LDFLAGS  += -L $(MICO_OS_PATH)/board/SCX1701

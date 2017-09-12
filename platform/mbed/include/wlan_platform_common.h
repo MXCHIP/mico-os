@@ -86,9 +86,10 @@ typedef enum
 typedef enum
 {
     WIFI_PIN_SPI_IRQ,
-    WIFI_PIN_SPI_CS,
+
 
     /* mbed use spi driver to initialize spi pins
+    WIFI_PIN_SPI_CS,
     WIFI_PIN_SPI_CLK,
     WIFI_PIN_SPI_MOSI,
     WIFI_PIN_SPI_MISO,

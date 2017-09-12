@@ -40,6 +40,7 @@ else
 $(info MiCO core based on pre-build library: ===$(MICO_PREBUILT_LIBRARY)=== )
 ifneq ($(wildcard $(CURDIR)$(MICO_PREBUILT_LIBRARY)),)
 $(NAME)_PREBUILT_LIBRARY := $(MICO_PREBUILT_LIBRARY)
+$(NAME)_SOURCES += rf_driver/wlan_firmware.c
 else
 # Build from source (MXCHIP internal)
 $(info MiCO core based on source code ! $(MICO_PREBUILT_LIBRARY) is not found! )
