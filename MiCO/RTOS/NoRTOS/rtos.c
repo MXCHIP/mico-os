@@ -22,13 +22,11 @@
 #include "mico_rtos.h"
 #include "platform_peripheral.h"
 
+#include "portmacro.h"
+
 /******************************************************
  *                      Macros
  ******************************************************/
-
-#define DISABLE_INTERRUPTS() do { __asm("CPSID i"); } while (0)
-
-#define ENABLE_INTERRUPTS() do { __asm("CPSIE i"); } while (0)
 
 /******************************************************
  *                    Constants
@@ -72,7 +70,15 @@ extern int __real_main(void);
  *               Variable Definitions
  ******************************************************/
 
+
 static mico_time_t mico_time_offset = 0;
+
+#ifdef  MICO_DEFAULT_TICK_RATE_HZ
+uint32_t  ms_to_tick_ratio = (uint32_t)( 1000 / MICO_DEFAULT_TICK_RATE_HZ );
+#else
+uint32_t  ms_to_tick_ratio = 1; // Default OS tick is 1000Hz
+#endif
+
 
 uint8_t semaphore_pool_init = 0;
 noos_semaphore_t semaphore_pool[SEMAPHORE_POOL_NUM];
@@ -278,7 +284,6 @@ OSStatus mico_rtos_deinit_mutex( mico_mutex_t* mutex )
 
     mutex_pool_free(&noos_mutex);
     *mutex = NULL;
-
     return kNoErr;
 }
 

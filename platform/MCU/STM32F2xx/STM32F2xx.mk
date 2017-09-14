@@ -18,6 +18,7 @@ HOST_OPENOCD := stm32f2x
 
 GLOBAL_INCLUDES := . \
                    .. \
+                   ../include \
                    ../.. \
                    ../../include \
                    ../../$(TOOLCHAIN_NAME) \

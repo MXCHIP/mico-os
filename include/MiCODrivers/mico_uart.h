@@ -36,7 +36,6 @@
 #pragma once
 #include "mico_common.h"
 #include "RingBufferUtils.h"
-#include "mico_board.h"
 #include "platform_peripheral.h"
 
 /* Legacy definitions */

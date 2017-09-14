@@ -247,6 +247,7 @@ typedef struct
 	wdg_api_t *wdg_apis;
 	adc_api_t *adc_apis;
 	power_save_api_t *ps_apis;
+	gtimer_api_t *gtimer_apis;
 } kernel_api_v1_t;
 
 typedef kernel_api_v1_t kernel_api_t;

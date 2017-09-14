@@ -42,6 +42,7 @@ $(NAME)_COMPONENTS += $(TOOLCHAIN_NAME)
 
 GLOBAL_INCLUDES := . \
                    .. \
+                   ../include \
                    ../.. \
                    ../../include \
                    ../../$(TOOLCHAIN_NAME) \

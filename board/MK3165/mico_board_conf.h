@@ -85,6 +85,10 @@ extern "C"
  * Enable write protection to write-disabled embedded flash sectors */
 //#define MCU_EBANLE_FLASH_PROTECT 
 
+/************************************************************************
+ * Enable QC mode for this board */
+#define MICO_QUALITY_CONTROL_ENABLE       1
+
 #define HSE_SOURCE              RCC_HSE_ON               /* Use external crystal                 */
 #define AHB_CLOCK_DIVIDER       RCC_SYSCLK_Div1          /* AHB clock = System clock             */
 #define APB1_CLOCK_DIVIDER      RCC_HCLK_Div2            /* APB1 clock = AHB clock / 2           */

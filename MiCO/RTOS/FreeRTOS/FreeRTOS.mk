@@ -15,7 +15,11 @@ VERSION := 8.2.0
 $(NAME)_SOURCES := ver$(VERSION)/Source/portable/MemMang/heap_4.c
 else
 VERSION := 9.0.0
+ifneq ($(filter $(HOST_MCU_FAMILY),MOC108),)
+$(NAME)_SOURCES := ver$(VERSION)/Source/portable/MemMang/heap_4.c
+else
 $(NAME)_SOURCES := ver$(VERSION)/Source/portable/MemMang/heap_3.c
+endif
 endif
 
 VERSION_MAJOR 	= $(word 1, $(subst ., ,$(VERSION)))
@@ -24,7 +28,7 @@ VERSION_REVISION= $(word 3, $(subst ., ,$(VERSION)))
 
 $(NAME)_COMPONENTS += MiCO/RTOS/FreeRTOS/mico
 
-# Define some macros to allow for some network-specific checks
+# Define some macros to allow for some rtos-specific checks
 GLOBAL_DEFINES += RTOS_$(NAME)=1
 GLOBAL_DEFINES += MXCHIP
 GLOBAL_DEFINES += configUSE_MUTEXES
@@ -70,6 +74,9 @@ else
 Cortex-M4F_SOURCES  := ver$(VERSION)/Source/portable/GCC/ARM_CM4F/port.c 
 Cortex-M4F_INCLUDES := ver$(VERSION)/Source/portable/GCC/ARM_CM4F
 endif
+
+ARM968E-S_SOURCES	:= ver$(VERSION)/Source/portable/GCC/ARM968E_S/port.c 
+ARM968E-S_INCLUDES 	:= ver$(VERSION)/Source/portable/GCC/ARM968E_S
 
 $(NAME)_SOURCES += $($(HOST_ARCH)_SOURCES)
 GLOBAL_INCLUDES += $($(HOST_ARCH)_INCLUDES)

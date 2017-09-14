@@ -243,10 +243,10 @@ typedef  struct  _ScanResult_adv
   char ApNum;       /**< The number of access points found in scanning.*/
   struct { 
     char ssid[32];  /**< The SSID of an access point.*/
-    char ApPower;   /**< Signal strength, min:0, max:100*/
     char bssid[6];  /**< The BSSID of an access point.*/
     char channel;   /**< The RF frequency, 1-13*/
     wlan_sec_type_t security;   /**< Security type, @ref wlan_sec_type_t*/
+    int16_t rssi;   /**< Signal strength*/
   } * ApList;
 } ScanResult_adv; 
 
@@ -258,7 +258,7 @@ typedef  struct  _ScanResult
   char ApNum;       /**< The number of access points found in scanning. */
   struct {  
     char ssid[32];  /**< The SSID of an access point. */
-    char ApPower;   /**< Signal strength, min:0, max:100. */
+    int16_t rssi;   /**< Signal strength*/
   } * ApList; 
 } ScanResult;  
 

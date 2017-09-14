@@ -268,7 +268,7 @@ void Main_Menu(void)
       require_noerr( err, exit);
       SerialDownload( partition->partition_owner, partition->partition_start_addr, partition->partition_length );    
     }
-
+#endif
     /***************** Command "3" or "PARAUPDATE": Update the application  *************************/
     else if(strcmp(cmdname, "PARUPDATE") == 0 || strcmp(cmdname, "3") == 0)  {
       if (findCommandPara(cmdbuf, "id", idStr, 0) != -1){
@@ -300,7 +300,6 @@ void Main_Menu(void)
       require_noerr( err, exit);
       SerialDownload( partition->partition_owner, partition->partition_start_addr, partition->partition_length );                        
     }
-#endif
     /***************** Command "4" or "FLASHUPDATE": : Update the Flash  *************************/
     else if(strcmp(cmdname, "FLASHUPDATE") == 0 || strcmp(cmdname, "4") == 0) {
       if (findCommandPara(cmdbuf, "dev", flash_dev_str, 1) == -1  ){

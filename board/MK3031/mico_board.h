@@ -206,7 +206,6 @@ enum
     MICO_PARTITION_NONE,
 } ;
 
-
 #define MICO_STDIO_UART          MICO_UART_1
 #define MICO_STDIO_UART_BAUDRATE (115200)
 

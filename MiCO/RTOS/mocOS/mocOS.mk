@@ -15,7 +15,7 @@ $(NAME)_COMPONENTS += MiCO/RTOS/mocOS/mico
 
 GLOBAL_INCLUDES := ..
 
-# Define some macros to allow for some network-specific checks
+# Define some macros to allow for some rtos-specific checks
 GLOBAL_DEFINES += RTOS_$(NAME)=1
 GLOBAL_DEFINES += $(NAME)_VERSION=$$(SLASH_QUOTE_START)v$(VERSION)$$(SLASH_QUOTE_END)
 

@@ -18,6 +18,7 @@ HOST_OPENOCD := lpc5410x
 
 GLOBAL_INCLUDES := . \
                    .. \
+                   ../include \
                    ../.. \
                    ../../include \
                    ../../$(TOOLCHAIN_NAME) \

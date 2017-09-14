@@ -16,6 +16,7 @@ $(NAME)_SOURCES := mico_system_init.c \
                    mico_system_para_storage.c \
                    mico_system_time.c \
                    mico_system_power_daemon.c \
+                   mico_filesystem.c \
                    system_misc.c 
 
 $(NAME)_SOURCES  += command_console/mico_cli.c

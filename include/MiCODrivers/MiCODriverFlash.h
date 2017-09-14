@@ -34,7 +34,6 @@
 
 #pragma once
 #include "mico_common.h"
-#include "mico_board.h"
 
 /** @addtogroup MICO_PLATFORM
 * @{

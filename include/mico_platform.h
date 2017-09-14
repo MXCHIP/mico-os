@@ -35,7 +35,6 @@
 
 #include "mico_opt.h"
 #include "mico_common.h"
-#include "mico_board.h" /* This file is unique for each platform */
 #include "platform_peripheral.h"
 
 #ifdef __cplusplus
@@ -62,6 +61,7 @@ typedef int8_t mico_uart_t;  /**< MiCO UART peripheral handle, MICO_UART_XX defi
 
 typedef int8_t mico_flash_t;
 typedef int8_t mico_partition_t;
+typedef int8_t mico_gtimer_t;
 
 
 #include "MiCODrivers/mico_gpio.h"
@@ -77,6 +77,9 @@ typedef int8_t mico_partition_t;
 #include "MiCODrivers/MiCODriverFlash.h"
 #include "MiCODrivers/MiCODriverMFiAuth.h"
 #include "MiCODrivers/MiCODriverI2s.h"
+#ifdef CONFIG_CPU_MX1290
+#include "MiCODrivers/MiCODriverGtimer.h"
+#endif
 
 #define MicoMcuPowerSaveConfig mico_mcu_powersave_config
 

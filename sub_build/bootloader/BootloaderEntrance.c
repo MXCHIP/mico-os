@@ -61,6 +61,7 @@ char menu[] =
 "MICO bootloader for %s, %s, HARDWARE_REVISION: %s\r\n"
 "+ command -------------------------+ function ------------+\r\n"
 "| 1:FWUPDATE      <-r>             | Update application   |\r\n"
+"| 3:PARUPDATE     <-id n><-r><-e>  | Update MICO partition|\r\n"
 "| 4:FLASHUPDATE   <-dev device>    |                      |\r\n"
 "|  <-e><-r><-start addr><-end addr>| Update flash content |\r\n"
 "| 5:MEMORYMAP                      | List flash memory map|\r\n"

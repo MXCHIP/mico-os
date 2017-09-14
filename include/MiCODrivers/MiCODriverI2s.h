@@ -63,6 +63,7 @@ typedef struct
     uint32_t     bits;
     uint8_t      master_enable;// 1=master mode; 0=slave mode
     uint32_t     clk_freq;
+    bool         is_mono_channel;
 } mico_iis_device_t;
 
 typedef platform_iis_message_segment_t mico_iis_message_segment_t;

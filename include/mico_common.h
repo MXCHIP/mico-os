@@ -107,7 +107,11 @@ typedef uint8_t         mico_bool_t;
 #endif
 
 #ifndef ssize_t
-#define ssize_t int
+typedef int ssize_t;
+#endif
+
+#ifndef size_t
+typedef unsigned int size_t;
 #endif
 
 // ==== MiCO Timer Typedef ====

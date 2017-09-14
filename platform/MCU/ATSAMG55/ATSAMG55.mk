@@ -18,6 +18,7 @@ HOST_OPENOCD := at91samg5x
 
 GLOBAL_INCLUDES := . \
                    .. \
+                   ../include \
                    ../.. \
                    ../../include \
                    ../../$(TOOLCHAIN_NAME) \

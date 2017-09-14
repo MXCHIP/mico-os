@@ -65,7 +65,7 @@ static char * ssid_get(void)
 
 void qc_test_tcpip(void)
 {
-    mfg_connect (ssid_get());
+    //mfg_connect (ssid_get());
 }
 
 

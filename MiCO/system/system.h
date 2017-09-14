@@ -23,12 +23,10 @@
 #include "mico_rtos.h"
 #include "mico_wlan.h"
 
-
 #ifndef MICO_PREBUILT_LIBS
 #include "mico_config.h"
-#endif
-
 #include "mico_board_conf.h"
+#endif
 
 #ifdef __cplusplus
 extern "C" {
