@@ -92,9 +92,7 @@ GLOBAL_INCLUDES += peripherals/boot2
                             
 GLOBAL_DEFINES += CONFIG_FLASH_PARTITION_COUNT=10 \
                   ARM_GNU
-                  
-$(NAME)_LINK_FILES += ../../$(HOST_ARCH_M4)/hardfault_handler.o \
-                      platform_vector_table.o
+
 endif
 
 ifneq ($(filter spi_flash_write, $(APP)),)
