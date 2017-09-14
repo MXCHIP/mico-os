@@ -84,6 +84,8 @@ typedef int              sys_prot_t;
 /* Select how LwIP debug will print */
 #define LWIP_PLATFORM_DIAG(x)    {printf x;}
 
+#define LWIP_DONT_PROVIDE_BYTEORDER_FUNCTIONS
+
 #ifdef MICO_LWIP_DEBUG
 #define LWIP_PLATFORM_ASSERT(x) MICO_ASSERTION_FAIL_ACTION()
 #else

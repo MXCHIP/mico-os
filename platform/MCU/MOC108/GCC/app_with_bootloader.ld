@@ -78,37 +78,74 @@ SECTIONS
 /* code, instructions.for example: i=i+1; */
 	.text : 
 	{
-	    *(.text)
-	    *(.text.*)
-	    *(.stub)
-	    /* .gnu.warning sections are handled specially by elf32.em.  */
-	    *(.gnu.warning)
-	    *(.gnu.linkonce.t*)
-	    *(.glue_7t) *(.glue_7)
-	} > flash	
+	    *(.text*)
+	    KEEP(*(.init))
+        KEEP(*(.fini))
 
-/* read only data.for example: const int rom_data[3]={1,2,3}; */
-	.rodata ALIGN(8) : 
+        /* .ctors */
+        *crtbegin.o(.ctors)
+        *crtbegin?.o(.ctors)
+        *(EXCLUDE_FILE(*crtend?.o *crtend.o) .ctors)
+        *(SORT(.ctors.*))
+        *(.ctors)
+
+        /* .dtors */
+        *crtbegin.o(.dtors)
+        *crtbegin?.o(.dtors)
+        *(EXCLUDE_FILE(*crtend?.o *crtend.o) .dtors)
+        *(SORT(.dtors.*))
+        *(.dtors)
+        
+        *(.rodata*)
+        KEEP(*(.eh_frame*))
+        
+	} > flash	
+	
+	.ARM.extab ALIGN(8) :
+    {
+        *(.ARM.extab* .gnu.linkonce.armextab.*)
+    } > flash
+
+	.ARM.exidx ALIGN(8):
 	{
-		*(.rodata)
-		*(.rodata.*)
-		*(.gnu.linkonce.r*)
+	    *(.ARM.exidx* .gnu.linkonce.armexidx.*)
 	} > flash
 	
-	.ARM.exidx :
-	{
-	    *(.ARM.exidx*)
-	    *(.gnu.linkonce.armexidx.*)
-	} > flash
-	
-/* globals.for example: int ram_data[3]={4,5,6}; */		/* VMA in RAM, but keep LMA in flash */
 	_begin_data = .;
 	.data : AT ( _begin_data )
 	{
-		*(.data .data.*)
-		*(.sdata) 
-		*(.gnu.linkonce.d*)
+	    __data_start__ = .;
+	    _sdata = .;
+		*(.data*)
+    	
+    	. = ALIGN(4);
+        /* preinit data */
+        PROVIDE_HIDDEN (__preinit_array_start = .);
+        KEEP(*(.preinit_array))
+        PROVIDE_HIDDEN (__preinit_array_end = .);
+
+        . = ALIGN(4);
+        /* init data */
+        PROVIDE_HIDDEN (__init_array_start = .);
+        KEEP(*(SORT(.init_array.*)))
+        KEEP(*(.init_array))
+        PROVIDE_HIDDEN (__init_array_end = .);
+
+        . = ALIGN(4);
+        /* finit data */
+        PROVIDE_HIDDEN (__fini_array_start = .);
+        KEEP(*(SORT(.fini_array.*)))
+        KEEP(*(.fini_array))
+        PROVIDE_HIDDEN (__fini_array_end = .);
+
+        KEEP(*(.jcr*))
     	SORT(CONSTRUCTORS)
+    	
+        /* All data end */
+        __data_end__ = .;
+        _edata = .;
+        
+        KEEP(*(.dummydata))
 	} >ram
 	
 	/* Loader will copy data from _flash_begin to _ram_begin..ram_end */
@@ -119,17 +156,16 @@ SECTIONS
 /* uninitialized data section - global   int i; */
 	.bss ALIGN(8):
 	{
+	    . = ALIGN(4);
 		_bss_start = .;
-		*(.bss .bss.*)
-		*(.scommon)
-		*(.sbss)
-	   *(.dynbss)
+		__bss_start__ = .;
+		_sbss = .;
+		*(.bss*)
 	   *(COMMON)
-	   /* Align here to ensure that the .bss section occupies space up to
-	      _end.  Align after .bss to ensure correct alignment even if the
-	      .bss section disappears because there are no input sections.  */
-	   . = ALIGN(32 / 8);
+	   . = ALIGN(4);
 		_bss_end = .;
+		__bss_end__ = .;
+		_ebss = .;
 	} > ram						/* in RAM */
 
 	. = ALIGN (8);
@@ -138,6 +174,19 @@ SECTIONS
 /* This symbol defines end of code/data sections. Heap starts here. */
 	PROVIDE(end    	  = .);
 	PROVIDE(_heap_start    	  = .);
+	
+	.heap (COPY):
+    {
+        __end__ = .;
+        end = __end__;
+        *(.heap*)
+        __HeapLimit = .;
+    } > ram
+    
+    .stack_dummy (COPY):
+    {
+        *(.stack*)
+    } > ram
 	
 /* _stack symbol defines initial stack bottom addres. Stack grows to lower addresses.
    Typically you set this to be top of your RAM. Note: code never checks, if stack
@@ -153,8 +202,16 @@ SECTIONS
 	PROVIDE(_heap_len      = _heap_end -  _heap_start);
 
 	ASSERT ((_heap_len > 0x19000 - 1 ), "Error: No room left for the heap") /*heap must bigger than 100k*/
+	
+	__StackTop = ORIGIN(ram) + LENGTH(ram);
+    _estack = __StackTop;
+    __StackLimit = __StackTop - SIZEOF(.stack_dummy);
+    PROVIDE(__stack = __StackTop);
+    
 }
  GROUP(
+   libstdc++.a
+   libsupc++.a
    libgcc.a
    libg.a
    libc.a

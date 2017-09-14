@@ -128,19 +128,32 @@ WEAK void init_memory( void )
 
 void init_architecture( void )
 {
+}
+
+extern void entry_main(void);
+
+/* mico_main is executed after rtos is start up and before real main*/
+void mico_main( void )
+{
+    /* Customized board configuration. */
+    init_platform( );
+
 #ifndef MICO_DISABLE_STDIO
-#ifndef NO_MICO_RTOS
-  mico_rtos_init_mutex( &stdio_tx_mutex );
-  mico_rtos_unlock_mutex ( &stdio_tx_mutex );
-  mico_rtos_init_mutex( &stdio_rx_mutex );
-  mico_rtos_unlock_mutex ( &stdio_rx_mutex );
+    if( stdio_tx_mutex == NULL )
+        mico_rtos_init_mutex( &stdio_tx_mutex );
+
+    ring_buffer_init  ( (ring_buffer_t*)&stdio_rx_buffer, (uint8_t*)stdio_rx_data, STDIO_BUFFER_SIZE );
+    platform_uart_init( &platform_uart_drivers[STDIO_UART], &platform_uart_peripherals[STDIO_UART], &stdio_uart_config, (ring_buffer_t*)&stdio_rx_buffer );
 #endif
 
-  ring_buffer_init  ( (ring_buffer_t*)&stdio_rx_buffer, (uint8_t*)stdio_rx_data, STDIO_BUFFER_SIZE );
-  platform_uart_init( &platform_uart_drivers[STDIO_UART], &platform_uart_peripherals[STDIO_UART], &stdio_uart_config, (ring_buffer_t*)&stdio_rx_buffer );
-#endif
+    mico_rtos_init( );
+}
 
-  
+
+void software_init_hook(void)
+{
+    entry_main();
+    main();
 }
 
 OSStatus stdio_hardfault( char* data, uint32_t size )

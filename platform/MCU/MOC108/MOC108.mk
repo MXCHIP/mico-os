@@ -44,7 +44,6 @@ endif
 
 GLOBAL_LDFLAGS += -Wl,-wrap,printf
 
-GLOBAL_LDFLAGS  += -nostartfiles
 GLOBAL_LDFLAGS  += -L ./platform/MCU/$(NAME)/$(TOOLCHAIN_NAME)
 GLOBAL_LDFLAGS  += --specs=nosys.specs
 

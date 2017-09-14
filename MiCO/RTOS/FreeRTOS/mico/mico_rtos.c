@@ -163,9 +163,18 @@ int main( void )
     return 0;
 }
 
+WEAK void mico_main(void)
+{
+
+}
+
 static void application_thread_main( void *arg )
 {
     UNUSED_PARAMETER( arg );
+
+    /* Initialize after rtos is in itialized */
+    mico_main();
+
     if ( MicoShouldEnterMFGMode( ) )
         mico_system_qc_test( );
     else
