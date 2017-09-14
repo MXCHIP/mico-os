@@ -48,8 +48,14 @@ $(NAME)_SOURCES := ../../$(HOST_ARCH_M4)/crt0_$(TOOLCHAIN_NAME).c \
 
 $(NAME)_CFLAGS += -Wno-implicit-function-declaration -Wno-unused-variable
 
+ifeq ($(MiCO_SDK_VERSION_MAJOR),3)
+ifeq ($(MiCO_SDK_VERSION_MINOR),5)
+ifneq ($(filter 0 1 2 3,$(MiCO_SDK_VERSION_REVISION)),)
 # These need to be forced into the final ELF since they are not referenced otherwise
 $(NAME)_LINK_FILES := ../../$(HOST_ARCH_M4)/crt0_$(TOOLCHAIN_NAME).o
+endif
+endif
+endif
 
 ifneq ($(filter $(subst ., ,$(COMPONENTS)),mocOS),)
 ####################################################################################
@@ -92,9 +98,15 @@ GLOBAL_INCLUDES += peripherals/boot2
                             
 GLOBAL_DEFINES += CONFIG_FLASH_PARTITION_COUNT=10 \
                   ARM_GNU
-                  
+
+ifeq ($(MiCO_SDK_VERSION_MAJOR),3)
+ifeq ($(MiCO_SDK_VERSION_MINOR),5)
+ifneq ($(filter 0 1 2 3,$(MiCO_SDK_VERSION_REVISION)),)                  
 $(NAME)_LINK_FILES += ../../$(HOST_ARCH_M4)/hardfault_handler.o \
                       platform_vector_table.o
+endif
+endif
+endif
 endif
 
 ifneq ($(filter spi_flash_write, $(APP)),)
