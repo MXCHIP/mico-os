@@ -809,3 +809,9 @@ OSStatus MicoIISRead( const mico_iis_device_t* iis, uint8_t *p_buf, uint32_t siz
 	return lib_api_p->iis_apis->iis_read(iis, p_buf, size);
 }
 
+
+OSStatus mico_wlan_get_channel( uint8_t *channel )
+{
+  *channel = lib_api_p->mico_wlan_get_channel();
+  return kNoErr;
+}
