@@ -1,6 +1,60 @@
 =====================================================================
 MiCO SDK - CHANGELOG
 =====================================================================
+
+Changes for MiCO v3.6.0
+* Toolchain
+  * Add duplicate source check, add --whole-archive flag in linker
+
+* Libraries, Protocols, Drivers 
+  * WiFi signal strength unit are changed to RSSI(dBm), so applications should change when using 
+    wifi scan function and link status function.
+  * SPI flash driver add deep-sleep mode api
+  * Add general timer apis for MX1290 chip only
+  * Update FTFS file system and works on EMW3031
+  * Bug fix: Fix flash api bug in parameter check
+
+* Platforms
+  * Add new platform MOC108 and EMW3060 module
+  * EMW3031, EMW5031:
+    * Add I2S apis
+    * Reverse ATE application's firmware to P84
+    * Bug fix: Fix timer thread crush issse in some circumstance by promote thread's priority
+  * EMW3080:
+    * Enable or disable ECC by function "ssl_set_ecc"
+    * SoftAP's power consumption is reduced by calling "wlan_et_softap_tdma"
+    * Stop wlan subsystem is faster
+    * Display SDS data in QC mode
+    * Works with wifi channwl change announcement 
+    * Bug fix: Fix IGMP group join issue when DHCP is done
+    * Bug fix: Fix lowpower mode issues
+    * Bug fix: Fix gpio initialize not correctly if initialize data is not illegal
+  * EMW3239
+    * Extend parameter partition size to 16k
+  * EMW1062, EMW316x, EMW3239
+    * Easylink result callback has ssid length and key length on local_ip_addr[0] and local_ip_addr[1]
+
+Changes for MiCO v3.5.4
+* Libraries, Protocols, Drivers
+  * EasyLink monitor mode: Add callback "mico_system_delegate_config_result" to choose strategy 
+    if connection is failed while doing EasyLink
+  * Enable tickless mode in FreeRTOS v9
+  * Add pton and ntop
+  
+* Platforms
+  * EMW3031, EMW5031: 
+    * Update ATE and firmware version to P103, fix Wi-Fi EVM problem
+    * Support WPA enterprise mode: EAP-TLS
+    * Bug fix: Connection lost issue under some router
+  * EMW3080:
+    * Add ECC Algorithm in mocSSL
+    * Add MicoWakeupSource api to choose the wakeup source from standby mode
+    * Station and softAP dual mode performance optimized
+    * Bug fix: Memory leak in api "micoWlanStartAdv"
+    * Bug fix: Standby mode
+    * Bug fix: Uart rx not work issue
+    * Bug fix: API gethostbyname stalled if DNS result has TTL = 0
+
 Changes for MiCO v3.5.3
 * Libraries, Protocols, Drivers
   * Syetem default settings does not be written into flash
