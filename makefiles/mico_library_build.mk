@@ -87,7 +87,7 @@ $(SOURCE_ROOT)build/$(NAME)/%.o: %.S $(MAKEFILES_PATH)/mico_library_makefile.mk
 
 
 # MICO pre-built library defines
-CFLAGS += -DMiCO_PREBUILT_LIBS
+CFLAGS += -DMiCO_PREBUILT_LIBS -DMiCO_SDK_VERSION_MAJOR=3
 
 ifdef DEBUG
 CFLAGS += -DDEBUG

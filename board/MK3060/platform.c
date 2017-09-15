@@ -74,19 +74,19 @@ extern WEAK void PlatformEasyLinkButtonLongPressedCallback(void);
 
 const platform_gpio_t platform_gpio_pins[] =
 {
-    [MICO_GPIO_4] =   4,
-    [MICO_GPIO_5] =  22,
-    [MICO_GPIO_6] =  23,
-    [MICO_GPIO_7] =  20,
-    [MICO_GPIO_8] =  21,
-    [MICO_GPIO_9] =   0,
-    [MICO_GPIO_10] =  1,
-    [MICO_GPIO_12] = 15,
-    [MICO_GPIO_13] = 17,
-    [MICO_GPIO_14] = 16,
-    [MICO_GPIO_15] = 14,
-    [MICO_GPIO_20] = 30,
-    [MICO_GPIO_23] = 29,
+    [MICO_GPIO_4] =  { 4},
+    [MICO_GPIO_5] =  {22},
+    [MICO_GPIO_6] =  {23},
+    [MICO_GPIO_7] =  {20},
+    [MICO_GPIO_8] =  {21},
+    [MICO_GPIO_9] =  { 0},
+    [MICO_GPIO_10] = { 1},
+    [MICO_GPIO_12] = {15},
+    [MICO_GPIO_13] = {17},
+    [MICO_GPIO_14] = {16},
+    [MICO_GPIO_15] = {14},
+    [MICO_GPIO_20] = {30},
+    [MICO_GPIO_23] = {29},
 };
 
 const platform_pwm_t platform_pwm_peripherals[] = {};

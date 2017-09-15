@@ -80,7 +80,7 @@ int __wrap_printf (const char* format, ...)
 {
   int size;
   va_list ap;
-	static uint8_t print_buf[1024];
+	static char print_buf[1024];
 
 	va_start(ap, format);
 	size = vsnprintf(print_buf, sizeof(print_buf) - 1, format, ap);

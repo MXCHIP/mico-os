@@ -91,7 +91,7 @@ mico_mutex_t        stdio_tx_mutex;
 ******************************************************/
 
 
-__attribute__( ( always_inline ) ) void __jump_to( uint32_t addr )
+void __jump_to( uint32_t addr )
 {
  // addr |= 0x00000001;  /* Last bit of jump address indicates whether destination is Thumb or ARM code */
   __asm volatile ("BX %0" : : "r" (addr) );
