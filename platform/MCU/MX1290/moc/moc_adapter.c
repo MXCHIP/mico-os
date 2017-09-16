@@ -306,6 +306,11 @@ int wifi_off_fastly(void)
     return _kernel_api.wifi_apis->wifi_off_fastly();
 }
 
+int OpenEasylink_softap(int timeout, char *ssid, char*key, int channel)
+{
+    return _kernel_api.wifi_apis->OpenEasylink_softap(timeout, ssid, key, channel);
+}
+
 void ssl_set_ecc(int enable)
 {
     _kernel_api.ssl_crypto_apis->ssl_set_ecc(enable);

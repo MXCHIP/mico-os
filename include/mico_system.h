@@ -288,7 +288,7 @@ OSStatus mico_easylink_wac( mico_Context_t * const inContext, mico_bool_t enable
   * @param  enable: MICO_TRUE to start and MICO_FALSE to stop
   * @retval kNoErr is returned on success, otherwise, kXXXErr is returned.
   */
-OSStatus mico_easylink( mico_Context_t * const in_context, mico_bool_t enable );
+OSStatus mico_easylink( mico_Context_t * const in_context, mico_bool_t enable, mico_bool_t softap );
 
 /**
   * @brief  Start wlan configuration mode: User mode, setup a routine that monitor wlan

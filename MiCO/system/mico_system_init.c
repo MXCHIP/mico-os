@@ -40,7 +40,9 @@ static OSStatus system_config_mode_worker( void *arg )
 
     micoWlanPowerOn();
 #if (MICO_WLAN_CONFIG_MODE == CONFIG_MODE_EASYLINK)
-    err = mico_easylink( in_context, MICO_TRUE );
+    err = mico_easylink( in_context, MICO_TRUE, MICO_FALSE );
+#elif (MICO_WLAN_CONFIG_MODE == CONFIG_MODE_EASYLINK_WITH_SOFTAP)
+    err = mico_easylink( in_context, MICO_TRUE, MICO_TRUE );
 #elif ( MICO_WLAN_CONFIG_MODE == CONFIG_MODE_SOFTAP)
     err = mico_easylink_softap( in_context, MICO_TRUE );
 #elif ( MICO_WLAN_CONFIG_MODE == CONFIG_MODE_MONITOR)
