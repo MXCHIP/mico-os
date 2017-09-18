@@ -140,7 +140,7 @@ typedef struct {
 	int (*mico_wlan_monitor_rx_type)(int type);
 	int (*mico_wlan_start_monitor)(void);
 	int (*mico_wlan_stop_monitor)(void);
-	int (*mico_wlan_set_channel)(int channel);
+	int (*mico_wlan_monitor_set_channel)(int channel);
 	void (*mico_wlan_register_monitor_cb)(monitor_cb_t fn);
 	void (*wlan_set_channel)(int channel);
 	int (*mxchip_active_scan)(char*ssid, int is_adv);

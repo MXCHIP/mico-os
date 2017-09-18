@@ -186,7 +186,7 @@ mico_api_t *moc_adapter(new_mico_api_t *new_mico_api)
   mico_api.mico_wlan_monitor_rx_type = _kernel_api.wifi_apis->mico_wlan_monitor_rx_type;
   mico_api.mico_wlan_start_monitor = _kernel_api.wifi_apis->mico_wlan_start_monitor;
   mico_api.mico_wlan_stop_monitor = _kernel_api.wifi_apis->mico_wlan_stop_monitor;
-  mico_api.mico_wlan_set_channel = _kernel_api.wifi_apis->mico_wlan_set_channel;
+  mico_api.mico_wlan_monitor_set_channel = _kernel_api.wifi_apis->mico_wlan_monitor_set_channel;
   mico_api.mico_wlan_register_monitor_cb = _kernel_api.wifi_apis->mico_wlan_register_monitor_cb;
   mico_api.wlan_set_channel = _kernel_api.wifi_apis->wlan_set_channel;
   mico_api.mxchip_active_scan = _kernel_api.wifi_apis->mxchip_active_scan;
