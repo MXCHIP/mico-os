@@ -38,11 +38,18 @@
 #include "common.h"
 
 #include "platform.h" /* This file is unique for each platform */
+#include  "platform_config.h"
 #include "platform_peripheral.h"
 
 #ifdef __cplusplus
 extern "C" {
 #endif
+
+#ifndef PLATFORM_CONFIG_EASYLINK_SOFTAP_COEXISTENCE
+#define PLATFORM_CONFIG_EASYLINK_SOFTAP_COEXISTENCE        0
+#endif
+
+
 
 typedef platform_spi_slave_config_t             mico_spi_slave_config_t;
 

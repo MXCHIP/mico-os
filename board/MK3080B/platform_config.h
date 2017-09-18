@@ -79,11 +79,15 @@
 
 /************************************************************************
  * Enable write protection to write-disabled embedded flash sectors */
-//#define MCU_EBANLE_FLASH_PROTECT 
+//#define MCU_ENABLE_FLASH_PROTECT
 
 /************************************************************************
  * Platform provide OTA temporary partition as secondary application partition */
 //#define MICO_ENABLE_SECONDARY_APPLICATION
+
+/************************************************************************
+ * Support Easylink&softap mode */
+#define PLATFORM_CONFIG_EASYLINK_SOFTAP_COEXISTENCE        1
 
 /******************************************************
 *                   Enumerations

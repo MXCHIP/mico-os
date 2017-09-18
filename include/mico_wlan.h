@@ -486,10 +486,10 @@ OSStatus micoWlanSuspendSoftAP(void);
 OSStatus micoWlanStartEasyLink(int inTimeout);
 
 /** @brief  Start EasyLink plus configuration with user extra data
- * 
- *  @detail This function has the same function as OpenEasylink2(), but it can 
+ *
+ *  @detail This function has the same function as OpenEasylink2(), but it can
  *          read more data besides SSID and password, these data is sent from
- *          Easylink APP.  
+ *          Easylink APP.
  *          MICO sends a callback: mico_notify_EASYLINK_GET_EXTRA_DATA
  *          with function:
  *          void (*function)(int datalen, char*data, mico_Context_t * const inContext);
@@ -503,6 +503,20 @@ OSStatus micoWlanStartEasyLink(int inTimeout);
  */
 
 OSStatus micoWlanStartEasyLinkPlus(int inTimeout);
+
+/** @brief  Start EasyLink plus configuration with UAP coexistence
+ *
+ *  @param  inTimeout: If easylink is executed longer than this parameter in backgound.
+ *          MICO stops EasyLink and sends a callback where nwkpara is NULL
+ *  @param  ssid: SSID of UAP
+ *  @param  key: Password of UAP
+ *  @param  channel: Wi-Fi channel of UAP
+ *
+ *  @return   kNoErr        : on success.
+ *  @return   kGeneralErr   : if an error occurred
+ */
+OSStatus mico_wlan_easylink_uap_start(int timeout, char *ssid, char*key, int channel);
+
 
 /** @brief  Stop EasyLink configuration procedure
  *  
@@ -657,14 +671,14 @@ int mico_wlan_stop_monitor(void);
  *  @detail This function change the monitor channel (from 1~13).
  *       it can change the channel dynamically, don't need restart monitor mode.
  */
-OSStatus mico_wlan_set_channel( uint8_t channel );
+OSStatus mico_wlan_monitor_set_channel( uint8_t channel );
 
 /** @brief  Get the monitor channel
  * 
  *  @detail This function get the monitor channel (from 1~13).
  *       it can change the channel dynamically, don't need restart monitor mode.
  */
-OSStatus mico_wlan_get_channel( uint8_t *channel );
+OSStatus mico_wlan_monitor_get_channel( uint8_t *channel );
 
 /** @brief  Register the monitor callback function
  *        Once received a 802.11 packet call the registered function to return the packet.
