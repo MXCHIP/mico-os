@@ -368,7 +368,7 @@ OSStatus mico_easylink_monitor_with_easylink( mico_Context_t * const in_context,
         require_noerr_string( err, exit, "ERROR: Unable to start the EasyLink monitor thread." );
 
         /* Make sure easylink is already running, and waiting for sem trigger */
-        mico_rtos_delay_milliseconds( 100 );
+        mico_rtos_delay_milliseconds( 1000 );
     }
 
     exit:
