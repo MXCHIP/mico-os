@@ -666,6 +666,7 @@ OSStatus MicoSpiInitialize( const mico_spi_device_t* spi )
 
 OSStatus MicoSpiFinalize( const mico_spi_device_t* spi )
 {
+    platform_spi_drivers[spi->port].initialized = MICO_FALSE;
     return lib_api_p->spi_apis->spi_finalize(spi);
 }
 
