@@ -381,10 +381,6 @@ static void mdns_send_message(int fd, dns_message_iterator_t* message )
   addr.sin_addr.s_addr = htonl(INADDR_MULTICAST_MDNS);
   addr.sin_port = htons(5353);
   sendto(fd, message->header, message->iter - (uint8_t*)message->header, 0, (struct sockaddr *)&addr, sizeof(addr));
-  addr.sin_family = AF_INET;
-  addr.sin_addr.s_addr = htonl(INADDR_BROADCAST);
-  addr.sin_port = htons(INADDR_BROADCAST);
-  sendto(fd, message->header, message->iter - (uint8_t*)message->header, 0, (struct sockaddr *)&addr, sizeof(addr));
 }
 
 static void dns_write_uint16( dns_message_iterator_t* iter, uint16_t data )
