@@ -37,6 +37,8 @@
 #include "platform_config.h"
 #include "platform_logging.h"
 #include "CheckSumUtils.h"
+#include "keypad/gpio_button/button.h"
+
 
 #ifdef USE_MiCOKit_EXT
 #include "MiCOKit_EXT/micokit_ext.h"
@@ -187,6 +189,8 @@ const platform_adc_t platform_adc_peripherals[] = {};
 
 void init_platform( void )
 {
+  button_init_t init;
+	  
   MicoGpioInitialize( (mico_gpio_t)MICO_SYS_LED, OUTPUT_PUSH_PULL );
   MicoGpioOutputLow( (mico_gpio_t)MICO_SYS_LED );
   MicoGpioInitialize( (mico_gpio_t)MICO_RF_LED, OUTPUT_OPEN_DRAIN_NO_PULL );
@@ -194,6 +198,13 @@ void init_platform( void )
   
   MicoGpioInitialize((mico_gpio_t)BOOT_SEL, INPUT_PULL_UP);
   MicoGpioInitialize((mico_gpio_t)MFG_SEL, INPUT_PULL_UP);
+
+  init.gpio = EasyLink_BUTTON;
+  init.pressed_func = PlatformEasyLinkButtonClickedCallback;
+  init.long_pressed_func = PlatformEasyLinkButtonLongPressedCallback;
+  init.long_pressed_timeout = RestoreDefault_TimeOut;
+
+  button_init( IOBUTTON_EASYLINK, init );
 }
 
 void init_platform_bootloader( void )
