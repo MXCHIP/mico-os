@@ -125,7 +125,5 @@ time_t time(time_t *tloc)
     return t;
 }
 
-uint64_t platform_get_nanosecond_clock_value( void )
-{
-    return 0;
-}
+
+
