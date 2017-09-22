@@ -151,24 +151,32 @@ const mico_logic_partition_t mico_partitions[] =
 	{
 	    .partition_owner            = MICO_FLASH_EMBEDDED,
 	    .partition_description      = "Application",
-	    .partition_start_addr       = 0x12000,
-	    .partition_length           = 0xF6000,   //984k bytes
+	    .partition_start_addr       = 0x13000,
+	    .partition_length           = 0x8E000, //568k bytes
 	    .partition_options          = PAR_OPT_READ_EN | PAR_OPT_WRITE_EN,
 	},
     [MICO_PARTITION_OTA_TEMP] =
     {
         .partition_owner           = MICO_FLASH_EMBEDDED,
         .partition_description     = "OTA Storage",
-        .partition_start_addr      = 0x108000,
-        .partition_length          = 0xF5000, //980k bytes
+        .partition_start_addr      = 0xA1000,
+        .partition_length          = 0x5F000, //380k bytes
         .partition_options         = PAR_OPT_READ_EN | PAR_OPT_WRITE_EN,
     },
-    [MICO_PARTITION_USER] =
+    [MICO_PARTITION_PARAMETER_3] =
     {
         .partition_owner            = MICO_FLASH_EMBEDDED,
-        .partition_description      = "USER",
-        .partition_start_addr       = 0x1FD000,
-        .partition_length           = 0x3000, //12k bytes
+        .partition_description      = "PARAMETER3",
+        .partition_start_addr       = 0x12000,
+        .partition_length           = 0x1000, //4k bytes
+        .partition_options          = PAR_OPT_READ_EN | PAR_OPT_WRITE_EN,
+    },
+    [MICO_PARTITION_PARAMETER_4] =
+    {
+        .partition_owner            = MICO_FLASH_EMBEDDED,
+        .partition_description      = "PARAMETER4",
+        .partition_start_addr       = 0xD000,
+        .partition_length           = 0x1000, //4k bytes
         .partition_options          = PAR_OPT_READ_EN | PAR_OPT_WRITE_EN,
     },
     [MICO_PARTITION_SYSTEM_DATA] = 
@@ -251,13 +259,15 @@ bool MicoExtShouldEnterTestMode(void)
 }
 #endif
 
+#define BOOT_MODE_REG (*(uint32_t *)0x40001C)
+
+#define BOOT_MODE_APP   0
+#define BOOT_MODE_ATE   1
+#define BOOT_MODE_QC    2
+
 bool MicoShouldEnterMFGMode(void)
 {
-    return false;
-  if(MicoGpioInputGet((mico_gpio_t)BOOT_SEL)==false && MicoGpioInputGet((mico_gpio_t)MFG_SEL)==false)
-    return true;
-  else
-    return false;
+    return BOOT_MODE_REG == BOOT_MODE_QC ? true : false;
 }
 
 bool MicoShouldEnterBootloader(void)

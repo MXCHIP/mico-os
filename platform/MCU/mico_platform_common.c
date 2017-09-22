@@ -730,13 +730,17 @@ exit:
 
 char *mico_get_bootloader_ver(void)
 {
-    static char ver[33];
-    const mico_logic_partition_t* bootloader_partition = &mico_partitions[ MICO_PARTITION_BOOTLOADER ];
-    uint32_t version_offset = bootloader_partition->partition_length - 0x20;
+  #ifdef CONFIG_MX108
+  return (char *)0x00000020;
+  #else
+  static char ver[33];
+  const mico_logic_partition_t* bootloader_partition = &mico_partitions[ MICO_PARTITION_BOOTLOADER ];
+  uint32_t version_offset = bootloader_partition->partition_length - 0x20;
 
-    memset(ver, 0, sizeof(ver));
-    MicoFlashRead( MICO_PARTITION_BOOTLOADER, &version_offset, (uint8_t *)ver , 32);
-    return ver;
+  memset(ver, 0, sizeof(ver));
+  MicoFlashRead( MICO_PARTITION_BOOTLOADER, &version_offset, (uint8_t *)ver , 32);
+  return ver;
+  #endif
 }
 
 #ifdef BOOTLOADER 
