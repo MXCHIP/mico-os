@@ -71,7 +71,7 @@
 
 /************************************************************************
  * CPU clock */
-#define MCU_CLOCK_HZ            (100000000)
+#define MCU_CLOCK_HZ            (125000000)
 
 /************************************************************************
  * How many bits are used in NVIC priority configuration */
