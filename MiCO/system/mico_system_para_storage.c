@@ -458,11 +458,18 @@ OSStatus mico_ota_switch_to_new_fw( int ota_data_len, uint16_t ota_data_crc )
     mico_logic_partition_t* ota_partition = MicoFlashGetInfo( MICO_PARTITION_OTA_TEMP );
 
     memset( &sys_context->flashContentInRam.bootTable, 0, sizeof(boot_table_t) );
+#ifdef CONFIG_MX108
+    sys_context->flashContentInRam.bootTable.dst_adr = 0x13200;
+    sys_context->flashContentInRam.bootTable.src_adr = ota_partition->partition_start_addr;
+    sys_context->flashContentInRam.bootTable.siz = ota_data_len;
+    sys_context->flashContentInRam.bootTable.crc = ota_data_crc;
+#else
     sys_context->flashContentInRam.bootTable.length = ota_data_len;
     sys_context->flashContentInRam.bootTable.start_address = ota_partition->partition_start_addr;
     sys_context->flashContentInRam.bootTable.type = 'A';
     sys_context->flashContentInRam.bootTable.upgrade_type = 'U';
     sys_context->flashContentInRam.bootTable.crc = ota_data_crc;
+#endif
     mico_system_context_update( &sys_context->flashContentInRam );
 #endif
     return kNoErr;

@@ -603,11 +603,18 @@ OSStatus _LocalConfigRespondInComingMessage(int fd, HTTPHeader_t* inHeader, syst
       system_log("Receive OTA data!");
       CRC16_Final( &http_context->crc16_contex, &crc);
       memset(&inContext->flashContentInRam.bootTable, 0, sizeof(boot_table_t));
+#ifdef CONFIG_MX108
+      inContext->flashContentInRam.bootTable.dst_adr = 0x13200;
+      inContext->flashContentInRam.bootTable.src_adr = ota_partition->partition_start_addr;
+      inContext->flashContentInRam.bootTable.siz = inHeader->contentLength;
+      inContext->flashContentInRam.bootTable.crc = crc;
+#else
       inContext->flashContentInRam.bootTable.length = inHeader->contentLength;
       inContext->flashContentInRam.bootTable.start_address = ota_partition->partition_start_addr;
       inContext->flashContentInRam.bootTable.type = 'A';
       inContext->flashContentInRam.bootTable.upgrade_type = 'U';
       inContext->flashContentInRam.bootTable.crc = crc;
+#endif
       mico_system_context_update( &inContext->flashContentInRam );
       SocketClose( &fd );
       mico_system_power_perform( &inContext->flashContentInRam, eState_Software_Reset );
