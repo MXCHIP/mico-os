@@ -161,6 +161,7 @@ typedef enum
 
 #define UART_FOR_APP     (MICO_UART_2)
 #define UART_FOR_NBIOT   (MICO_UART_3)
+#define UART_FOR_GPRS    (MICO_UART_3)
 #define MFG_TEST         (MICO_UART_1)
 #define CLI_UART         (MICO_UART_1)
 
