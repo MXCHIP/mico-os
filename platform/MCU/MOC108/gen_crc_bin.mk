@@ -1,20 +1,20 @@
 EXTRA_POST_BUILD_TARGETS += gen_standard_images
 
 ifeq ($(HOST_OS),Win32)
-ENCRYPT := "$(SOURCE_ROOT)/mico-os/platform/MCU/MOC108/encrypt_win.exe"
-XZ 		:= "$(SOURCE_ROOT)/mico-os/platform/MCU/MOC108/xz_win.exe"
+CRC := "$(SOURCE_ROOT)/mico-os/platform/MCU/MOC108/tools/crc/win/crc.exe"
+XZ 		:= "$(SOURCE_ROOT)/mico-os/platform/MCU/MOC108/tools/xz/win/xz.exe"
 else  # Win32
 ifeq ($(HOST_OS),Linux32)
-ENCRYPT := "$(SOURCE_ROOT)/mico-os/platform/MCU/MOC108/encrypt_linux"
-XZ 		:= "$(SOURCE_ROOT)/mico-os/platform/MCU/MOC108/xz_linux"
+CRC := "$(SOURCE_ROOT)/mico-os/platform/MCU/MOC108/tools/crc/linux/crc"
+XZ 		:= "$(SOURCE_ROOT)/mico-os/platform/MCU/MOC108/tools/xz/linux/xz"
 else # Linux32
 ifeq ($(HOST_OS),Linux64)
-ENCRYPT := "$(SOURCE_ROOT)/mico-os/platform/MCU/MOC108/encrypt_linux"
-XZ 		:= "$(SOURCE_ROOT)/mico-os/platform/MCU/MOC108/xz_linux"
+CRC := "$(SOURCE_ROOT)/mico-os/platform/MCU/MOC108/tools/crc/linux/crc"
+XZ 		:= "$(SOURCE_ROOT)/mico-os/platform/MCU/MOC108/tools/xz/linux/xz"
 else # Linux64
 ifeq ($(HOST_OS),OSX)
-ENCRYPT := "$(SOURCE_ROOT)/mico-os/platform/MCU/MOC108/encrypt_osx"
-XZ 		:= "$(SOURCE_ROOT)/mico-os/platform/MCU/MOC108/xz_osx"
+CRC := "$(SOURCE_ROOT)/mico-os/platform/MCU/MOC108/tools/crc/osx/crc"
+XZ 		:= "$(SOURCE_ROOT)/mico-os/platform/MCU/MOC108/tools/xz/osx/xz"
 else # OSX
 $(error not surport for $(HOST_OS))
 endif # OSX
@@ -47,7 +47,7 @@ GEN_COMMON_BIN_OUTPUT_FILE_SCRIPT:= $(SCRIPTS_PATH)/gen_common_bin_output_file.p
 MICO_ALL_BIN_OUTPUT_FILE :=$(LINK_OUTPUT_FILE:$(LINK_OUTPUT_SUFFIX)=.all$(BIN_OUTPUT_SUFFIX))
 
 gen_crc_bin: build_done
-	$(eval OUT_MSG := $(shell $(ENCRYPT) $(BIN_OUTPUT_FILE) 0 0 0 0))
+	$(eval OUT_MSG := $(shell $(CRC) $(BIN_OUTPUT_FILE) 0 0 0 0))
 
 gen_xz_bin: gen_crc_bin
 	$(eval OUT_MSG := $(shell $(XZ) --lzma2=dict=32KiB --check=crc32 -k $(CRC_BIN_OUTPUT_FILE)))
