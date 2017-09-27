@@ -91,6 +91,10 @@ typedef enum {
     SDIO_0 = (int)SDIO_BASE,
 } SDIOName;
 
+typedef enum {
+    MCO_1 = (int)0,
+} MCOName;
+
 #ifdef __cplusplus
 }
 #endif

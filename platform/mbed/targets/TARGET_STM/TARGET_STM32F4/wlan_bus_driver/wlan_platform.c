@@ -20,14 +20,20 @@
 #include "platform_logging.h"
 #include "wlan_platform_common.h"
 
+#if defined ( MICO_USE_WIFI_32K_CLOCK_MCO ) && defined ( MICO_USE_WIFI_32K_PIN )
+#include "device.h"
+#include "pinmap.h"
+#include "PeripheralPins.h"
+#include "PeripheralPins_Extra.h"
+#endif
+
 /* Used to give a 32k clock to EMW1062 wifi rf module */
 OSStatus host_platform_init_wlan_powersave_clock( void )
 {
 #if defined ( MICO_USE_WIFI_32K_CLOCK_MCO ) && defined ( MICO_USE_WIFI_32K_PIN )
-    platform_gpio_set_alternate_function( wifi_control_pins[WIFI_PIN_32K_CLK].port, wifi_control_pins[WIFI_PIN_32K_CLK].pin_number, GPIO_OType_PP, GPIO_PuPd_NOPULL, GPIO_AF_MCO );
-
+    pinmap_pinout( wifi_control_pins[ WIFI_PIN_32K_CLK ].mbed_pin, PinMap_MCO );
     /* enable LSE output on MCO1 */
-    RCC_MCO1Config( RCC_MCO1Source_LSE, RCC_MCO1Div_1 );
+    HAL_RCC_MCOConfig(RCC_MCO1, RCC_MCO1SOURCE_LSE, RCC_MCODIV_1);
     return kNoErr;
 #elif defined ( MICO_USE_WIFI_32K_PIN )
     return host_platform_deinit_wlan_powersave_clock( );

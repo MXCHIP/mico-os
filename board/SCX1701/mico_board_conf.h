@@ -46,8 +46,8 @@ extern "C"
 ******************************************************/
 
 #define HARDWARE_REVISION   "1.0"
-#define DEFAULT_NAME        "NUCLEO-F412ZG"
-#define MODEL               "NUCLEO-F412ZG"
+#define DEFAULT_NAME        "Center Communicator"
+#define MODEL               "SCX1701"
 
 
 /* MICO RTOS tick rate in Hz */
@@ -99,11 +99,9 @@ extern "C"
 /*  Wi-Fi chip module */
 #define EMW1062
 
-/*  WiFi driver use gSPI mode, and share spi bus with other devices by different /cs pins */
-//#define MICO_WIFI_SHARE_SPI_BUS
-  
 /*  GPIO pins are used to bootstrap Wi-Fi to SDIO or gSPI mode */
-//#define MICO_WIFI_USE_GPIO_FOR_BOOTSTRAP
+//#define MICO_WIFI_USE_GPIO_FOR_BOOTSTRAP_0
+//#define MICO_WIFI_USE_GPIO_FOR_BOOTSTRAP_1
 
 /*  Wi-Fi GPIO0 pin is used for out-of-band interrupt */
 #define MICO_WIFI_OOB_IRQ_GPIO_PIN  ( 0 )
@@ -128,7 +126,7 @@ extern "C"
  *  1. MCO (MCU Clock Output) - default
  *  2. WLAN 32K internal oscillator (30% inaccuracy)
  */
-//#define MICO_USE_WIFI_32K_CLOCK_MCO
+#define MICO_USE_WIFI_32K_CLOCK_MCO
 
 //#define MICO_USE_BUILTIN_RF_DRIVER
 

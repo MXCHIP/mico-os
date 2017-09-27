@@ -339,14 +339,19 @@ OSStatus MicoPwmStop( mico_pwm_t pwm )
   return (OSStatus) platform_pwm_stop( &platform_pwm_peripherals[pwm] );
 }
 
-OSStatus MicoRtcGetTime(mico_rtc_time_t* time)
+OSStatus mico_rtc_init(void)
 {
-  return (OSStatus) platform_rtc_get_time( time );
+    return platform_rtc_init();
 }
 
-OSStatus MicoRtcSetTime(mico_rtc_time_t* time)
+OSStatus mico_rtc_get_time(time_t *t)
 {
-  return (OSStatus) platform_rtc_set_time( time );
+    return platform_rtc_get_time(t);
+}
+
+OSStatus mico_rtc_set_time(time_t t)
+{
+    return platform_rtc_set_time(t);
 }
 
 OSStatus MicoSpiInitialize( const mico_spi_device_t* spi )

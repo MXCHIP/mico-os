@@ -16,9 +16,11 @@
  */
 
 
-#include "platform.h"
 #include "platform_peripheral.h"
-#include "debug.h"
+#include "mico_common.h"
+#include "mico_debug.h"
+
+#include "rtc_api.h"
 
 /******************************************************
 *                      Macros
@@ -68,6 +70,8 @@ typedef enum
 /******************************************************
  *               Static Function Declarations
  ******************************************************/
+
+#if 0
 static OSStatus stm32f2_rtc_change_clock                   ( rtc_clock_state_t* current, rtc_clock_state_t target );
 static uint32_t convert_rtc_calendar_values_to_units_passed( void );
 static void     reset_rtc_values                           ( void );
@@ -77,6 +81,7 @@ static int      add_1p25ms_contribution                    ( uint32_t ms, uint32
 static void     add_second_to_time                         ( platform_rtc_time_t* time );
 static void     subtract_second_from_time                  ( platform_rtc_time_t* time );
 #endif /* #ifndef MICO_DISABLE_MCU_POWERSAVE */
+#endif
 
 /******************************************************
 *               Variables Definitions
@@ -119,58 +124,10 @@ static rtc_clock_state_t   current_clock_state  = CLOCKING_EVERY_SEC;
 OSStatus platform_rtc_init(void)
 {
 #ifdef MICO_ENABLE_MCU_RTC
-  RTC_InitTypeDef RTC_InitStruct;
-  
-  RTC_DeInit( );
-  
-  RTC_InitStruct.RTC_HourFormat = RTC_HourFormat_24;
-  
-  /* RTC ticks every second */
-  RTC_InitStruct.RTC_AsynchPrediv = 0x7F;
-  RTC_InitStruct.RTC_SynchPrediv = 0xFF;
-  
-  RTC_Init( &RTC_InitStruct );
-
-#ifdef USE_RTC_BKP
-  /* Enable the PWR clock */
-  RCC_APB1PeriphClockCmd(RCC_APB1Periph_PWR, ENABLE);
-  /* Allow access to BKP Domain */
-  PWR_BackupAccessCmd(ENABLE);
-  PWR_BackupRegulatorCmd(ENABLE);
-#endif
-
-  /* Enable the LSE OSC */
-  RCC_LSEConfig(RCC_LSE_ON);
-  /* Wait till LSE is ready */
-  while(RCC_GetFlagStatus(RCC_FLAG_LSERDY) == RESET)
-  {
-  }
-  /* Select the RTC Clock Source */
-  RCC_RTCCLKConfig(RCC_RTCCLKSource_LSE);
-  
-  /* Enable the RTC Clock */
-  RCC_RTCCLKCmd(ENABLE);
-  
-  /* RTC configuration -------------------------------------------------------*/
-  /* Wait for RTC APB registers synchronisation */
-  RTC_WaitForSynchro();
-  
-#ifdef USE_RTC_BKP
-  if (RTC_ReadBackupRegister(RTC_BKP_DR0) != USE_RTC_BKP) {
-    /* set it to 12:20:30 08/04/2013 monday */
-    platform_rtc_set_time(&default_rtc_time);
-    RTC_WriteBackupRegister(RTC_BKP_DR0, USE_RTC_BKP);
-  }
+    rtc_init();
+    return kNoErr;
 #else
-  //#ifdef RTC_ENABLED
-  /* application must have mico_application_default_time structure declared somewhere, otherwise it wont compile */
-  /* write default application time inside rtc */
-  platform_rtc_set_time(&mico_default_time);
-  //#endif /* RTC_ENABLED */
-#endif
-  return kNoErr;
-#else
-  return kUnsupportedErr;
+    return kUnsupportedErr;
 #endif
 }
 
@@ -181,33 +138,14 @@ OSStatus platform_rtc_init(void)
 *
 * @return    kNoErr : on success.
 */
-OSStatus platform_rtc_get_time( platform_rtc_time_t* time)
+
+OSStatus platform_rtc_get_time(  time_t *t )
 {
 #ifdef MICO_ENABLE_MCU_RTC
-  RTC_TimeTypeDef rtc_read_time;
-  RTC_DateTypeDef rtc_read_date;
-  
-  if( time == 0 )
-  {
-    return kParamErr;
-  }
-  
-  /* save current rtc time */
-  RTC_GetTime( RTC_Format_BIN, &rtc_read_time );
-  RTC_GetDate( RTC_Format_BIN, &rtc_read_date );
-  
-  /* fill structure */
-  time->sec     = rtc_read_time.RTC_Seconds;
-  time->min     = rtc_read_time.RTC_Minutes;
-  time->hr      = rtc_read_time.RTC_Hours;
-  time->weekday = rtc_read_date.RTC_WeekDay;
-  time->date    = rtc_read_date.RTC_Date;
-  time->month   = rtc_read_date.RTC_Month;
-  time->year    = rtc_read_date.RTC_Year;
-  
+  *t = rtc_read();
   return kNoErr;
 #else /* #ifdef MICO_ENABLE_MCU_RTC */
-  UNUSED_PARAMETER(time);
+  UNUSED_PARAMETER(t);
   return kUnsupportedErr;
 #endif /* #ifdef MICO_ENABLE_MCU_RTC */
 }
@@ -218,39 +156,17 @@ OSStatus platform_rtc_get_time( platform_rtc_time_t* time)
 *
 * @return    kNoErr : on success.
 */
-OSStatus platform_rtc_set_time( const platform_rtc_time_t* time )
+OSStatus platform_rtc_set_time( time_t t )
 {
 #ifdef MICO_ENABLE_MCU_RTC
-  RTC_TimeTypeDef rtc_write_time;
-  RTC_DateTypeDef rtc_write_date;
-  bool    valid = false;
-    
-  MICO_VERIFY_TIME(time, valid);
-  if( valid == false )
-  {
-    return kParamErr;
-  }
-
-  rtc_write_time.RTC_H12     = 0;
-  rtc_write_time.RTC_Seconds = time->sec;
-  rtc_write_time.RTC_Minutes = time->min;
-  rtc_write_time.RTC_Hours   = time->hr;
-  rtc_write_date.RTC_WeekDay = time->weekday;
-  rtc_write_date.RTC_Date    = time->date;
-  rtc_write_date.RTC_Month   = time->month;
-  rtc_write_date.RTC_Year    = time->year;
-  
-  
-  RTC_SetTime( RTC_Format_BIN, &rtc_write_time );
-  RTC_SetDate( RTC_Format_BIN, &rtc_write_date );
-  
+  rtc_write(t);
   return kNoErr;
 #else /* #ifdef MICO_ENABLE_MCU_RTC */
   UNUSED_PARAMETER(time);
   return kUnsupportedErr;
 #endif /* #ifdef MICO_ENABLE_MCU_RTC */
 }
-
+#if 0
 OSStatus platform_rtc_enter_powersave ( void )
 {
 
@@ -710,7 +626,7 @@ static int add_1p25ms_contribution( uint32_t units_1p25ms, uint32_t* seconds_con
 #endif /* #ifdef MICO_ENABLE_MCU_RTC */
 
 
-
+#endif
 
 
 

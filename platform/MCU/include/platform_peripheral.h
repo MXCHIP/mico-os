@@ -785,6 +785,8 @@ OSStatus platform_pwm_start( const platform_pwm_t* pwm );
 OSStatus platform_pwm_stop( const platform_pwm_t* pwm );
 
 
+OSStatus platform_rtc_init( void );
+
 /**
  * Get current real-time clock
  *
@@ -792,8 +794,7 @@ OSStatus platform_pwm_stop( const platform_pwm_t* pwm );
  *
  * @return @ref OSStatus
  */
-OSStatus platform_rtc_get_time( platform_rtc_time_t* time );
-
+OSStatus platform_rtc_get_time( time_t *t );
 
 /**
  * Set real-time clock
@@ -802,7 +803,7 @@ OSStatus platform_rtc_get_time( platform_rtc_time_t* time );
  *
  * @return @ref OSStatus
  */
-OSStatus platform_rtc_set_time( const platform_rtc_time_t* time );
+OSStatus platform_rtc_set_time( time_t t );
 
 
 /**

@@ -37,4 +37,6 @@
 
 #define MICO_CLI_ENABLE     0
 
+#define MICO_QUALITY_CONTROL_ENABLE    0
+
 #endif

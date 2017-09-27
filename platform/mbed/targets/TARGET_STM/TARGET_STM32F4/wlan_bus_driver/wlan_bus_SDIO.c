@@ -143,7 +143,7 @@ static uint32_t                     current_command;
 
 //static SDIO_HandleTypeDef SDIOHandle;
 
-static platform_gpio_irq_driver_t   wifi_sdio_pin_irq_driver;
+static platform_gpio_irq_driver_t   wifi_sdio_oob_irq_driver;
 
 /******************************************************
  *             Function declarations
@@ -171,7 +171,7 @@ static void sdio_oob_irq_handler( void* arg )
 OSStatus host_enable_oob_interrupt( void )
 {
     platform_gpio_init( &wifi_sdio_pin_drivers[WIFI_PIN_SDIO_OOB_IRQ], &wifi_sdio_pins[WIFI_PIN_SDIO_OOB_IRQ], INPUT_HIGH_IMPEDANCE );
-    platform_gpio_irq_enable( &wifi_sdio_pin_irq_driver, &wifi_sdio_pins[WIFI_PIN_SDIO_OOB_IRQ], IRQ_TRIGGER_RISING_EDGE, sdio_oob_irq_handler, 0 );
+    platform_gpio_irq_enable( &wifi_sdio_oob_irq_driver, &wifi_sdio_pins[WIFI_PIN_SDIO_OOB_IRQ], IRQ_TRIGGER_RISING_EDGE, sdio_oob_irq_handler, 0 );
     return kNoErr;
 }
 
@@ -194,6 +194,15 @@ uint8_t host_platform_get_oob_interrupt_pin( void )
 #endif
 
 #ifdef SDIO_1_BIT
+
+static platform_gpio_irq_driver_t   wifi_sdio_pin_irq_driver;
+
+
+uint8_t host_platform_get_oob_interrupt_pin( void )
+{
+    return MICO_WIFI_OOB_IRQ_GPIO_PIN;
+}
+
 static void sdio_int_pin_irq_handler( void* arg ) //SDIO 1 Bit mode
 {
     UNUSED_PARAMETER(arg);
@@ -276,7 +285,7 @@ void sdio_irq( void )
     if ( ( intstatus & SDIO_STA_SDIOIT ) != 0 )
     {
         /* Clear the interrupt and then inform MiCO thread */
-#if defined (STM32F412Zx) || (STM32F412Vx) || (STM32F412Rx)
+#if defined (STM32F412Zx) || defined (STM32F412Vx) || defined (STM32F412Rx)
         SDIO->MASK &= ~SDIO_MASK_SDIOITIE;
 #endif
         SDIO->ICR = SDIO_ICR_SDIOITC;
@@ -353,10 +362,16 @@ OSStatus host_platform_bus_init( void )
     pin_mode(wifi_sdio_pins[ WIFI_PIN_SDIO_D0 ].mbed_pin, PullUp);
 
 #ifdef SDIO_1_BIT
-    platform_gpio_init( &wifi_sdio_pins[WIFI_PIN_SDIO_IRQ], INPUT_PULL_UP );
-    platform_gpio_irq_enable( &wifi_sdio_pins[WIFI_PIN_SDIO_IRQ], IRQ_TRIGGER_FALLING_EDGE, sdio_int_pin_irq_handler, 0 );
+    platform_gpio_init( &wifi_sdio_pin_drivers[WIFI_PIN_SDIO_IRQ], &wifi_sdio_pins[WIFI_PIN_SDIO_IRQ], INPUT_PULL_UP );
+    platform_gpio_irq_enable( &wifi_sdio_pin_irq_driver, &wifi_sdio_pins[WIFI_PIN_SDIO_IRQ], IRQ_TRIGGER_FALLING_EDGE, sdio_int_pin_irq_handler, 0 );
+#else
+    pinmap_pinout( wifi_sdio_pins[ WIFI_PIN_SDIO_D1 ].mbed_pin, PinMap_SDIO_D1 );
+    pinmap_pinout( wifi_sdio_pins[ WIFI_PIN_SDIO_D2 ].mbed_pin, PinMap_SDIO_D2 );
+    pinmap_pinout( wifi_sdio_pins[ WIFI_PIN_SDIO_D3 ].mbed_pin, PinMap_SDIO_D3 );
+    pin_mode(wifi_sdio_pins[ WIFI_PIN_SDIO_D1 ].mbed_pin, PullUp);
+    pin_mode(wifi_sdio_pins[ WIFI_PIN_SDIO_D2 ].mbed_pin, PullUp);
+    pin_mode(wifi_sdio_pins[ WIFI_PIN_SDIO_D3 ].mbed_pin, PullUp);
 #endif
-
 
     /* Enable the SDIO AHB Clock and the DMA2 Clock */
     __HAL_RCC_DMA2_CLK_ENABLE();
@@ -429,7 +444,7 @@ OSStatus host_platform_bus_deinit( void )
 
 #ifdef SDIO_1_BIT
     platform_gpio_irq_disable( &wifi_sdio_pin_irq_driver );
-    platform_gpio_deinit( & );
+    //platform_gpio_deinit( & );
 #endif
 
     for ( a = 0; a < WIFI_PIN_SDIO_MAX; a++ )
@@ -613,23 +628,10 @@ void host_platform_enable_high_speed_sdio( void )
 {
     SDIO_InitTypeDef sdio_init_structure;
 
-    pinmap_pinout( wifi_sdio_pins[ WIFI_PIN_SDIO_CLK ].mbed_pin, PinMap_SDIO_CLK );
-    pinmap_pinout( wifi_sdio_pins[ WIFI_PIN_SDIO_CMD ].mbed_pin, PinMap_SDIO_CMD );
-    pinmap_pinout( wifi_sdio_pins[ WIFI_PIN_SDIO_D0 ].mbed_pin, PinMap_SDIO_D0 );
-    pinmap_pinout( wifi_sdio_pins[ WIFI_PIN_SDIO_D1 ].mbed_pin, PinMap_SDIO_D1 );
-    pinmap_pinout( wifi_sdio_pins[ WIFI_PIN_SDIO_D2 ].mbed_pin, PinMap_SDIO_D2 );
-    pinmap_pinout( wifi_sdio_pins[ WIFI_PIN_SDIO_D3 ].mbed_pin, PinMap_SDIO_D3 );
-    pin_mode(wifi_sdio_pins[ WIFI_PIN_SDIO_CLK ].mbed_pin, PullUp);
-    pin_mode(wifi_sdio_pins[ WIFI_PIN_SDIO_CMD ].mbed_pin, PullUp);
-    pin_mode(wifi_sdio_pins[ WIFI_PIN_SDIO_D0 ].mbed_pin, PullUp);
-    pin_mode(wifi_sdio_pins[ WIFI_PIN_SDIO_D1 ].mbed_pin, PullUp);
-    pin_mode(wifi_sdio_pins[ WIFI_PIN_SDIO_D2 ].mbed_pin, PullUp);
-    pin_mode(wifi_sdio_pins[ WIFI_PIN_SDIO_D3 ].mbed_pin, PullUp);
-
     __HAL_RCC_SDIO_FORCE_RESET();
     __HAL_RCC_SDIO_RELEASE_RESET();
 
-    sdio_init_structure.ClockDiv            = (uint8_t) 0; /* 0x78, clock is taken from the high speed APB bus ; */ /* About 400KHz */
+    sdio_init_structure.ClockDiv            = (uint8_t) 0; /* 0 = 24MHz if SDIO clock = 48MHz */
     sdio_init_structure.ClockEdge           = SDIO_CLOCK_EDGE_RISING;
     sdio_init_structure.ClockBypass         = SDIO_CLOCK_BYPASS_DISABLE;
     sdio_init_structure.ClockPowerSave      = SDIO_CLOCK_POWER_SAVE_DISABLE;

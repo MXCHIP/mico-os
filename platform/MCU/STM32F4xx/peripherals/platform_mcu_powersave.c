@@ -60,18 +60,6 @@
 ******************************************************/
 
 /* Default RTC time. Set to 12:20:30 08/04/2013 Monday */
-#ifndef MICO_DISABLE_MCU_POWERSAVE
-static const platform_rtc_time_t default_rtc_time =
-{
-   .sec     = 30,
-   .min     = 20,
-   .hr      = 12,
-   .weekday = 1,
-   .date    = 8,
-   .month   = 4,
-   .year    = 13,
-};
-#endif
 
 #ifndef MICO_DISABLE_MCU_POWERSAVE
 static unsigned long  stop_mode_power_down_hook( unsigned long sleep_ms );
@@ -164,8 +152,7 @@ OSStatus platform_mcu_powersave_init(void)
   
 #ifdef USE_RTC_BKP
   if (RTC_ReadBackupRegister(RTC_BKP_DR0) != USE_RTC_BKP) {
-    /* set it to 12:20:30 08/04/2013 monday */
-    platform_rtc_set_time(&default_rtc_time);
+    platform_rtc_set_time(0);
     RTC_WriteBackupRegister(RTC_BKP_DR0, USE_RTC_BKP);
   }
 #else
@@ -403,8 +390,7 @@ static unsigned long stop_mode_power_down_hook( unsigned long sleep_ms )
 
 void platform_mcu_enter_standby(uint32_t secondsToWakeup)
 { 
-  platform_rtc_time_t time;
-  uint32_t currentSecond;
+  time_t time;
   RTC_AlarmTypeDef  RTC_AlarmStructure;
 
 #if defined(STM32F410xx) || defined(STM32F412xG) ||defined(STM32F446xx)
@@ -421,12 +407,11 @@ void platform_mcu_enter_standby(uint32_t secondsToWakeup)
   platform_log("Wake up in %ld seconds", secondsToWakeup);
  
   platform_rtc_get_time(&time);
-  currentSecond = time.hr*3600 + time.min*60 + time.sec;
-  currentSecond += secondsToWakeup;
+  time += secondsToWakeup;
   RTC_AlarmStructure.RTC_AlarmTime.RTC_H12     = RTC_HourFormat_24;
-  RTC_AlarmStructure.RTC_AlarmTime.RTC_Hours   = currentSecond/3600%24;
-  RTC_AlarmStructure.RTC_AlarmTime.RTC_Minutes = currentSecond/60%60;
-  RTC_AlarmStructure.RTC_AlarmTime.RTC_Seconds = currentSecond%60;
+  RTC_AlarmStructure.RTC_AlarmTime.RTC_Hours   = time/3600%24;
+  RTC_AlarmStructure.RTC_AlarmTime.RTC_Minutes = time/60%60;
+  RTC_AlarmStructure.RTC_AlarmTime.RTC_Seconds = time%60;
   RTC_AlarmStructure.RTC_AlarmDateWeekDay = 0x31;
   RTC_AlarmStructure.RTC_AlarmDateWeekDaySel = RTC_AlarmDateWeekDaySel_Date;
   RTC_AlarmStructure.RTC_AlarmMask = RTC_AlarmMask_DateWeekDay ;

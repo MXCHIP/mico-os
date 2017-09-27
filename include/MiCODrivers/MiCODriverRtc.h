@@ -57,8 +57,6 @@
  *                 Type Definitions
  ******************************************************/
 
-typedef platform_rtc_time_t           mico_rtc_time_t;
-
  /******************************************************
  *                    Structures
  ******************************************************/
@@ -71,37 +69,22 @@ typedef platform_rtc_time_t           mico_rtc_time_t;
                 Function Declarations
  ******************************************************/
 
-
-
-/**@brief This function will initialize the on board CPU real time clock
+/** Initialize the RTC peripheral
  *
- * @note  This function should be called by MICO system when initializing clocks, so
- *        It is not needed to be called by application
- *
- * @return    kNoErr        : on success.
- * @return    kGeneralErr   : if an error occurred with any step
  */
-void MicoRtcInitialize(void);
+OSStatus mico_rtc_init(void);
 
-/**@brief This function will return the value of time read from the on board CPU real time clock. Time value must be given in the format of
- * the structure mico_rtc_time_t
+/** Get the current time from the RTC peripheral
  *
- * @param time        : pointer to a time structure
- *
- * @return    kNoErr        : on success.
- * @return    kGeneralErr   : if an error occurred with any step
+ * @return The current time
  */
-OSStatus MicoRtcGetTime(mico_rtc_time_t* time);
+OSStatus mico_rtc_get_time(time_t *t);
 
-/**@brief This function will set MCU RTC time to a new value. Time value must be given in the format of
- * the structure mico_rtc_time_t
+/** Set the current time to the RTC peripheral
  *
- * @param time        : pointer to a time structure
- *
- * @return    kNoErr        : on success.
- * @return    kGeneralErr   : if an error occurred with any step
+ * @param t The current time to be set
  */
-OSStatus MicoRtcSetTime(mico_rtc_time_t* time);
+OSStatus mico_rtc_set_time(time_t t);
 
 /** @} */
 /** @} */

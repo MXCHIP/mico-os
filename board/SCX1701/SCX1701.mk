@@ -33,8 +33,9 @@ HOST_MCU_FAMILY      	:= STM32F4xx
 HOST_MCU_VARIANT     	:= STM32F407
 HOST_MCU_PART_NUMBER 	:= STM32F407VGT6
 
-BUS ?= SDIO
-
+ifndef BUS
+BUS := SDIO
+endif
 
 # Extra build target in mico_standard_targets.mk, include bootloader, and copy output file to eclipse debug file (copy_output_for_eclipse)
 EXTRA_TARGET_MAKEFILES +=  $(MAKEFILES_PATH)/mico_standard_targets.mk

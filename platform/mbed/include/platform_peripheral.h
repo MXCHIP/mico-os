@@ -344,6 +344,20 @@ typedef struct
     uint32_t                   flash_protect_opt;
 } platform_flash_t;
 
+/**
+ * RTC time
+ */
+typedef struct
+{
+    uint8_t sec;
+    uint8_t min;
+    uint8_t hr;
+    uint8_t weekday;/* 1-sunday... 7-saturday */
+    uint8_t date;
+    uint8_t month;
+    uint8_t year;
+} platform_rtc_time_t;
+
 
 #include "platform_mcu_peripheral.h" /* Include MCU-specific types */
 
@@ -448,19 +462,6 @@ typedef struct
     //uint8_t      flags;      /* MESSAGE_DISABLE_DMA : if set, this flag disables use of DMA for the message */
 } platform_i2c_message_t;
 
-/**
- * RTC time
- */
-typedef struct
-{
-    uint8_t sec;
-    uint8_t min;
-    uint8_t hr;
-    uint8_t weekday;/* 1-sunday... 7-saturday */
-    uint8_t date;
-    uint8_t month;
-    uint8_t year;
-} platform_rtc_time_t;
 
 typedef struct
 {
@@ -905,24 +906,25 @@ OSStatus platform_pwm_start( platform_pwm_driver_t* driver );
 OSStatus platform_pwm_stop( platform_pwm_driver_t* driver );
 
 
-// /**
-//  * Get current real-time clock
-//  *
-//  * @param[in] time : variable that will contain the current real-time clock
-//  *
-//  * @return @ref OSStatus
-//  */
-// OSStatus platform_rtc_get_time( platform_rtc_time_t* time );
+OSStatus platform_rtc_init( void );
 
+/**
+ * Get current real-time clock
+ *
+ * @param[in] time : variable that will contain the current real-time clock
+ *
+ * @return @ref OSStatus
+ */
+OSStatus platform_rtc_get_time( time_t *t );
 
-// /**
-//  * Set real-time clock
-//  *
-//  * @param[in] time : real-time clock
-//  *
-//  * @return @ref OSStatus
-//  */
-// OSStatus platform_rtc_set_time( const platform_rtc_time_t* time );
+/**
+ * Set real-time clock
+ *
+ * @param[in] time : real-time clock
+ *
+ * @return @ref OSStatus
+ */
+OSStatus platform_rtc_set_time( time_t t );
 
 
 // /**
@@ -970,11 +972,11 @@ OSStatus platform_pwm_stop( platform_pwm_driver_t* driver );
 //  */
 // void platform_nanosecond_delay( uint64_t delayns );
 
-// /**
-//  * Read random numbers
-//  *
-//  */
-// OSStatus platform_random_number_read( void *inBuffer, int inByteCount );
+/**
+ * Read random numbers
+ *
+ */
+OSStatus platform_random_number_read( void *inBuffer, int inByteCount );
 
 /**
  * Init flash driver and hardware interface

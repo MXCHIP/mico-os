@@ -219,7 +219,7 @@ const mico_spi_device_t mico_spi_flash =
 const platform_gpio_t wifi_control_pins[] =
 {
   [WIFI_PIN_RESET]        = { PD_15 },
-  [WIFI_PIN_32K_CLK]      = { PC_6 },
+  [WIFI_PIN_32K_CLK]      = { PA_8 },
   [WIFI_PIN_POWER]        = { PE_2 },
 };
 
@@ -227,13 +227,17 @@ const platform_gpio_t wifi_control_pins[] =
 /* Wi-Fi SDIO bus pins. Used by platform/MCU/STM32F2xx/EMW1062_driver/wlan_SDIO.c */
 const platform_gpio_t wifi_sdio_pins[] =
 {
+#ifdef SDIO_1_BIT
+  [WIFI_PIN_SDIO_IRQ] = { SDIO_D1 },
+#else
   [WIFI_PIN_SDIO_OOB_IRQ] = { SDIO_OOB_IRQ },
-  [WIFI_PIN_SDIO_CLK    ] = { SDIO_CLK     },
-  [WIFI_PIN_SDIO_CMD    ] = { SDIO_CMD     },
-  [WIFI_PIN_SDIO_D0     ] = { SDIO_D0      },
   [WIFI_PIN_SDIO_D1     ] = { SDIO_D1      },
   [WIFI_PIN_SDIO_D2     ] = { SDIO_D2      },
   [WIFI_PIN_SDIO_D3     ] = { SDIO_D3      },
+#endif
+  [WIFI_PIN_SDIO_CLK    ] = { SDIO_CLK     },
+  [WIFI_PIN_SDIO_CMD    ] = { SDIO_CMD     },
+  [WIFI_PIN_SDIO_D0     ] = { SDIO_D0      },
 };
 
 /* Wi-Fi gSPI bus pins. Used by platform/MCU/STM32F2xx/EMW1062_driver/wlan_spi.c */
@@ -280,6 +284,23 @@ void mico_board_init( void )
 {
     /* Ensure 802.11 device is in reset. */
     host_platform_init( );
+
+#ifndef BOOTLOADER
+
+    RTC_HandleTypeDef RtcHandle;
+
+    /* Check Backup domain, and initialze RTC. */
+    __PWR_CLK_ENABLE();
+    HAL_PWR_EnableBkUpAccess();
+
+    RtcHandle.Instance = RTC;
+
+    if (HAL_RTCEx_BKUPRead(&RtcHandle, RTC_BKP_DR0) != USE_RTC_BKP) {
+        mico_rtc_init();
+        mico_rtc_set_time(0);
+        HAL_RTCEx_BKUPWrite(&RtcHandle, RTC_BKP_DR0, USE_RTC_BKP);
+    }
+#endif
 
     MicoGpioInitialize( (mico_gpio_t)MICO_SYS_LED, OUTPUT_PUSH_PULL );
     MicoGpioOutputLow( (mico_gpio_t)MICO_SYS_LED );

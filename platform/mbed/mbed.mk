@@ -42,6 +42,8 @@ $(NAME)_SOURCES := mico_platform_common.c \
                    peripherals/platform_init.c \
                    peripherals/platform_irq.c \
                    peripherals/platform_spi.c \
+                   peripherals/platform_rtc.c \
+                   peripherals/platform_rng.c \
                    peripherals/platform_gpio.c \
                    peripherals/platform_i2c.c \
                    peripherals/platform_uart.c \

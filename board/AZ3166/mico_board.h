@@ -309,8 +309,8 @@ enum
 #define MICO_STDIO_UART_BAUDRATE (115200)
 #endif
 
-#define MICO_UART_FOR_APP        (MICO_UART_2)
-#define MICO_MFG_TEST            (MICO_UART_2)
+#define MICO_UART_FOR_APP        (MICO_UART_1)
+#define MICO_MFG_TEST            (MICO_UART_1)
 #define MICO_CLI_UART            (MICO_UART_1)
 
 /* Components connected to external I/Os*/

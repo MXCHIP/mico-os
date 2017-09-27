@@ -56,6 +56,7 @@ extern const PinMap PinMap_SDIO_D2[];
 extern const PinMap PinMap_SDIO_D3[];
 #endif
 
-
+//*** MCO ***
+extern const PinMap PinMap_MCO[];
 
 #endif

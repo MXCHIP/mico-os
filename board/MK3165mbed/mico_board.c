@@ -264,6 +264,21 @@ void mico_board_init( void )
     /* Ensure 802.11 device is in reset. */
     host_platform_init( );
 
+#ifndef BOOTLOADER
+    RTC_HandleTypeDef RtcHandle;
+    RtcHandle.Instance = RTC;
+
+    /* Check Backup domain, and initialze RTC. */
+    __PWR_CLK_ENABLE();
+    HAL_PWR_EnableBkUpAccess();
+
+    if (HAL_RTCEx_BKUPRead(&RtcHandle, RTC_BKP_DR0) != USE_RTC_BKP) {
+        mico_rtc_init();
+        mico_rtc_set_time(0);
+        HAL_RTCEx_BKUPWrite(&RtcHandle, RTC_BKP_DR0, USE_RTC_BKP);
+    }
+#endif
+
     /* Initialise leds */
     mico_gpio_init       ( (mico_gpio_t) MICO_SYS_LED, OUTPUT_PUSH_PULL );
     mico_gpio_output_low ( (mico_gpio_t) MICO_SYS_LED );

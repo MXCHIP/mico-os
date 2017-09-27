@@ -16,7 +16,11 @@
  */
 
 #include "platform_peripheral.h"
-#include "platform.h"
+#include "mico_rtos.h"
+
+#if DEVICE_TRNG
+#include "trng_api.h"
+#endif
 
 /******************************************************
  *                   Macros
@@ -39,24 +43,29 @@
 /******************************************************
  *                     Variables
  ******************************************************/
-
+#if DEVICE_TRNG
+static trng_t trng_driver;
+#endif
 /******************************************************
  *               Function Declarations
  ******************************************************/
 
-OSStatus platform_random_number_read( void *inBuffer, int inByteCount )
+OSStatus platform_random_number_read( void *output, int length )
 {
-    // PLATFORM_TO_DO
-     // PLATFORM_TO_DO
+#if DEVICE_TRNG
+    size_t output_length = 0;
+    trng_init(&trng_driver);
+    trng_get_bytes(&trng_driver, output, length, &output_length);
+#else
     int idx;
-    uint32_t *pWord = inBuffer;
+    uint32_t *pWord = output;
     uint32_t tempRDM;
     uint8_t *pByte = NULL;
     int inWordCount;
     int remainByteCount;
 
-    inWordCount = inByteCount/4;
-    remainByteCount = inByteCount%4;
+    inWordCount = length/4;
+    remainByteCount = length%4;
     pByte = (uint8_t *)pWord+inWordCount*4;
 
     for(idx = 0; idx<inWordCount; idx++, pWord++){
@@ -71,4 +80,5 @@ OSStatus platform_random_number_read( void *inBuffer, int inByteCount )
     }
     
     return kNoErr;
+#endif
 }

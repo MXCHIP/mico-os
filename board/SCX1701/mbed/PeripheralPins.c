@@ -297,3 +297,8 @@ const PinMap PinMap_SDIO_D3[] = {
     {NC,      NC,   0}
 };
 
+const PinMap PinMap_MCO[] = {
+    {PA_8,    MCO_1, STM_PIN_DATA(STM_MODE_AF_PP, GPIO_NOPULL, GPIO_AF0_MCO)},
+    {NC,      NC,    0}
+};
+

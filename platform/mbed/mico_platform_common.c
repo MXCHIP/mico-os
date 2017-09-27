@@ -335,15 +335,21 @@ void MicoSystemStandBy( uint32_t secondsToWakeup )
    return (OSStatus) platform_pwm_stop( &platform_pwm_drivers[pwm] );
  }
 
-// OSStatus MicoRtcGetTime(mico_rtc_time_t* time)
-// {
-//   return (OSStatus) platform_rtc_get_time( time );
-// }
+OSStatus mico_rtc_init(void)
+{
+    return platform_rtc_init();
+}
 
-// OSStatus MicoRtcSetTime(mico_rtc_time_t* time)
-// {
-//   return (OSStatus) platform_rtc_set_time( time );
-// }
+OSStatus mico_rtc_get_time(time_t *t)
+{
+    return platform_rtc_get_time(t);
+}
+
+OSStatus mico_rtc_set_time(time_t t)
+{
+    return platform_rtc_set_time(t);
+}
+
 
 OSStatus MicoSpiInitialize( const mico_spi_device_t* spi )
 {
@@ -518,10 +524,10 @@ uint32_t mico_uart_recvd_data_len( mico_uart_t uart )
     return (OSStatus) platform_uart_get_length_in_buffer( &platform_uart_drivers[uart] );
 }
 
-// OSStatus MicoRandomNumberRead( void *inBuffer, int inByteCount )
-// {
-//   return (OSStatus) platform_random_number_read( inBuffer, inByteCount );
-// }
+OSStatus MicoRandomNumberRead( void *inBuffer, int inByteCount )
+{
+   return (OSStatus) platform_random_number_read( inBuffer, inByteCount );
+}
 
 void mico_system_reboot( void )
 {

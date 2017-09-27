@@ -31,7 +31,7 @@
 
 #pragma once
 
-#include "common.h"
+#include "mico_common.h"
 
 
 /** @addtogroup MICO_Middleware_Interface

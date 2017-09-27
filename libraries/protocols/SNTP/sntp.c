@@ -232,7 +232,9 @@ OSStatus sntp_get_time( const struct in_addr *ntp_server_ip, ntp_timestamp_t* ti
     ntp_log("Time Synchronized, %s",asctime(localtime((const time_t *)&timestamp->seconds)));
 
     exit:
-    if ( err != kNoErr ) ntp_log("Exit: NTP client exit with err = %d", err);
+    if ( err != kNoErr ) {
+        ntp_log("Exit: NTP client exit with err = %d", err);
+    }
     SocketClose( &Ntp_fd );
     return err;
 }

@@ -98,12 +98,11 @@ extern "C" {
 #define MICO_APPLICATION                        1
 #endif
 
-
 /**
  *  Start standard QC test function other than application
  */
 #if !defined MICO_QUALITY_CONTROL_ENABLE
-#define MICO_QUALITY_CONTROL_ENABLE             0
+#define MICO_QUALITY_CONTROL_ENABLE             1
 #endif
 
 /******************************************************************************

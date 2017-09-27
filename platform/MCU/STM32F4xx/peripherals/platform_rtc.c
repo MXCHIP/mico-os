@@ -15,7 +15,7 @@
  ******************************************************************************
  */
 
-
+#include <time.h>
 #include "mico_board.h"
 #include "platform_peripheral.h"
 #include "mico_debug.h"
@@ -25,7 +25,7 @@
 ******************************************************/
 
 #define MICO_VERIFY_TIME(time, valid) \
-if( (time->sec > 60) || ( time->min > 60 ) || (time->hr > 24) || ( time->date > 31 ) || ( time->month > 12 )) \
+if( (time->tm_sec > 60) || ( time->tm_min > 60 ) || (time->tm_hour > 24) || ( time->tm_mday > 31 ) || ( time->tm_mon > 12 )) \
   { \
     valid= false; \
   } \
@@ -74,8 +74,6 @@ static void     reset_rtc_values                           ( void );
 #if ( defined( MICO_ENABLE_MCU_RTC ) && !defined( MICO_DISABLE_MCU_POWERSAVE ) )
 static OSStatus compensate_time_error                      ( uint32_t sec, bool subtract );
 static int      add_1p25ms_contribution                    ( uint32_t ms, uint32_t* seconds_contribution );
-static void     add_second_to_time                         ( platform_rtc_time_t* time );
-static void     subtract_second_from_time                  ( platform_rtc_time_t* time );
 #endif /* #ifndef MICO_DISABLE_MCU_POWERSAVE */
 
 /******************************************************
@@ -104,7 +102,7 @@ static const char leap_days[] =
     0, 31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31
 };
 
-static platform_rtc_time_t saved_rtc_time;
+static time_t saved_rtc_time;
 static rtc_clock_state_t   current_clock_state  = CLOCKING_EVERY_SEC;
 
 /******************************************************
@@ -119,17 +117,7 @@ static rtc_clock_state_t   current_clock_state  = CLOCKING_EVERY_SEC;
 OSStatus platform_rtc_init(void)
 {
 #ifdef MICO_ENABLE_MCU_RTC
-  RTC_InitTypeDef RTC_InitStruct;
-  
-  RTC_DeInit( );
-  
-  RTC_InitStruct.RTC_HourFormat = RTC_HourFormat_24;
-  
-  /* RTC ticks every second */
-  RTC_InitStruct.RTC_AsynchPrediv = 0x7F;
-  RTC_InitStruct.RTC_SynchPrediv = 0xFF;
-  
-  RTC_Init( &RTC_InitStruct );
+    RTC_InitTypeDef RTC_InitStruct;
 
 #ifdef USE_RTC_BKP
   /* Enable the PWR clock */
@@ -147,18 +135,24 @@ OSStatus platform_rtc_init(void)
   }
   /* Select the RTC Clock Source */
   RCC_RTCCLKConfig(RCC_RTCCLKSource_LSE);
-  
+
   /* Enable the RTC Clock */
   RCC_RTCCLKCmd(ENABLE);
-  
+
   /* RTC configuration -------------------------------------------------------*/
   /* Wait for RTC APB registers synchronisation */
   RTC_WaitForSynchro();
   
 #ifdef USE_RTC_BKP
   if (RTC_ReadBackupRegister(RTC_BKP_DR0) != USE_RTC_BKP) {
-    /* set it to 12:20:30 08/04/2013 monday */
-    platform_rtc_set_time(&default_rtc_time);
+    RTC_DeInit( );
+    RTC_InitStruct.RTC_HourFormat = RTC_HourFormat_24;
+    /* RTC ticks every second */
+    RTC_InitStruct.RTC_AsynchPrediv = 0x7F;
+    RTC_InitStruct.RTC_SynchPrediv = 0xFF;
+
+    RTC_Init( &RTC_InitStruct );
+    platform_rtc_set_time(0);
     RTC_WriteBackupRegister(RTC_BKP_DR0, USE_RTC_BKP);
   }
 #else
@@ -174,37 +168,68 @@ OSStatus platform_rtc_init(void)
 #endif
 }
 
+#if 0
+RTC_DateTypeDef dateStruct;
+RTC_TimeTypeDef timeStruct;
+struct tm timeinfo;
 
+RtcHandle.Instance = RTC;
+
+// Read actual date and time
+// Warning: the time must be read first!
+HAL_RTC_GetTime(&RtcHandle, &timeStruct, RTC_FORMAT_BIN);
+HAL_RTC_GetDate(&RtcHandle, &dateStruct, RTC_FORMAT_BIN);
+
+// Setup a tm structure based on the RTC
+/* tm_wday information is ignored by mktime */
+timeinfo.tm_mon  = dateStruct.Month - 1;
+timeinfo.tm_mday = dateStruct.Date;
+timeinfo.tm_year = dateStruct.Year + 68;
+timeinfo.tm_hour = timeStruct.Hours;
+timeinfo.tm_min  = timeStruct.Minutes;
+timeinfo.tm_sec  = timeStruct.Seconds;
+// Daylight Saving Time information is not available
+timeinfo.tm_isdst  = -1;
+
+// Convert to timestamp
+time_t t = mktime(&timeinfo);
+
+return t;
+#endif
 /**
 * This function will return the value of time read from the on board CPU real time clock. Time value must be given in the format of
 * the structure mico_rtc_time_t
 *
 * @return    kNoErr : on success.
 */
-OSStatus platform_rtc_get_time( platform_rtc_time_t* time)
+OSStatus platform_rtc_get_time( time_t *t )
 {
 #ifdef MICO_ENABLE_MCU_RTC
-  RTC_TimeTypeDef rtc_read_time;
-  RTC_DateTypeDef rtc_read_date;
+    RTC_DateTypeDef dateStruct;
+    RTC_TimeTypeDef timeStruct;
+
+    struct tm timeinfo;
   
-  if( time == 0 )
-  {
-    return kParamErr;
-  }
+    if( t == 0 )   return kParamErr;
   
-  /* save current rtc time */
-  RTC_GetTime( RTC_Format_BIN, &rtc_read_time );
-  RTC_GetDate( RTC_Format_BIN, &rtc_read_date );
+    /* save current rtc time */
+    RTC_GetTime( RTC_Format_BIN, &timeStruct );
+    RTC_GetDate( RTC_Format_BIN, &dateStruct );
   
-  /* fill structure */
-  time->sec     = rtc_read_time.RTC_Seconds;
-  time->min     = rtc_read_time.RTC_Minutes;
-  time->hr      = rtc_read_time.RTC_Hours;
-  time->weekday = rtc_read_date.RTC_WeekDay;
-  time->date    = rtc_read_date.RTC_Date;
-  time->month   = rtc_read_date.RTC_Month;
-  time->year    = rtc_read_date.RTC_Year;
+  // Setup a tm structure based on the RTC
+  /* tm_wday information is ignored by mktime */
+  timeinfo.tm_mon  = dateStruct.RTC_Month - 1;
+  timeinfo.tm_mday = dateStruct.RTC_Date;
+  timeinfo.tm_year = dateStruct.RTC_Year + 68;
+  timeinfo.tm_hour = timeStruct.RTC_Hours;
+  timeinfo.tm_min  = timeStruct.RTC_Minutes;
+  timeinfo.tm_sec  = timeStruct.RTC_Seconds;
+  // Daylight Saving Time information is not available
+  timeinfo.tm_isdst  = -1;
   
+  // Convert to timestamp
+  *t = mktime(&timeinfo);
+
   return kNoErr;
 #else /* #ifdef MICO_ENABLE_MCU_RTC */
   UNUSED_PARAMETER(time);
@@ -218,32 +243,39 @@ OSStatus platform_rtc_get_time( platform_rtc_time_t* time)
 *
 * @return    kNoErr : on success.
 */
-OSStatus platform_rtc_set_time( const platform_rtc_time_t* time )
+OSStatus platform_rtc_set_time( time_t t )
 {
 #ifdef MICO_ENABLE_MCU_RTC
-  RTC_TimeTypeDef rtc_write_time;
-  RTC_DateTypeDef rtc_write_date;
+  RTC_TimeTypeDef timeStruct;
+  RTC_DateTypeDef dateStruct;
   bool    valid = false;
+
+  // Convert the time into a tm
+  struct tm *timeinfo = localtime(&t);
     
-  MICO_VERIFY_TIME(time, valid);
+  MICO_VERIFY_TIME(timeinfo, valid);
   if( valid == false )
   {
     return kParamErr;
   }
 
-  rtc_write_time.RTC_H12     = 0;
-  rtc_write_time.RTC_Seconds = time->sec;
-  rtc_write_time.RTC_Minutes = time->min;
-  rtc_write_time.RTC_Hours   = time->hr;
-  rtc_write_date.RTC_WeekDay = time->weekday;
-  rtc_write_date.RTC_Date    = time->date;
-  rtc_write_date.RTC_Month   = time->month;
-  rtc_write_date.RTC_Year    = time->year;
-  
-  
-  RTC_SetTime( RTC_Format_BIN, &rtc_write_time );
-  RTC_SetDate( RTC_Format_BIN, &rtc_write_date );
-  
+  // Fill RTC structures
+  if (timeinfo->tm_wday == 0) {
+      dateStruct.RTC_WeekDay    = 7;
+  } else {
+      dateStruct.RTC_WeekDay    = timeinfo->tm_wday;
+  }
+  dateStruct.RTC_Month          = timeinfo->tm_mon + 1;
+  dateStruct.RTC_Date           = timeinfo->tm_mday;
+  dateStruct.RTC_Year           = timeinfo->tm_year - 68;
+  timeStruct.RTC_Hours          = timeinfo->tm_hour;
+  timeStruct.RTC_Minutes        = timeinfo->tm_min;
+  timeStruct.RTC_Seconds        = timeinfo->tm_sec;
+
+  // Change the RTC current date/time
+  RTC_SetTime( RTC_Format_BIN, &timeStruct );
+  RTC_SetDate( RTC_Format_BIN, &dateStruct );
+
   return kNoErr;
 #else /* #ifdef MICO_ENABLE_MCU_RTC */
   UNUSED_PARAMETER(time);
@@ -276,7 +308,7 @@ OSStatus platform_rtc_abort_powersave( void )
 //#ifdef RTC_ENABLED /* !!If we dont set the time after the clocks have been changed. */
     /*get an error while trying to enter STM RTC initialisation mode */
     /* restore time saved before */
-    platform_rtc_set_time( &saved_rtc_time );
+    platform_rtc_set_time( saved_rtc_time );
 //#endif /* #ifdef RTC_ENABLED */
     return kNoErr;
 }
@@ -309,7 +341,7 @@ OSStatus platform_rtc_exit_powersave( uint32_t requested_sleep_time, uint32_t *c
     /*get an error while trying to enter STM RTC initialisation mode */
 
     /* update RTC time */
-    platform_rtc_set_time(&saved_rtc_time);
+    platform_rtc_set_time(saved_rtc_time);
 //#endif /* #ifdef RTC_ENABLED */
 
     /* Change, rtc clock state and update rtc peripheral, even when RTC is not enabled */
@@ -500,174 +532,6 @@ static uint32_t convert_rtc_calendar_values_to_units_passed( void )
 
 #if ( defined( MICO_ENABLE_MCU_RTC ) && !defined( MICO_DISABLE_MCU_POWERSAVE ) )
 
-static void add_second_to_time( platform_rtc_time_t* time )
-{
-    if ( time->sec == 59 )
-    {
-        if ( time->min == 59 )
-        {
-            if ( time->hr == 23 )
-            {
-                if( time->date == ( LEAP_YEAR_OR_NOT(time->year) ? leap_days[time->month] :not_leap_days[time->month] ) )
-                {
-                    if( time->month == 12 )
-                    {
-                        /* Adding one second leads to year increment */
-                        time->year++;
-                        time->month=1;
-                        time->date=1;
-                        time->hr=0;
-                        time->min=0;
-                        time->sec=0;
-                        if( time->weekday == 7 )
-                        {
-                            time->weekday=1;
-                        }
-                        else
-                        {
-                            time->weekday++;
-                        }
-                    }
-                    else
-                    {
-                        /* Adding one seconds leads to month increment */
-                        time->month++;
-                        time->date=1;
-                        time->hr=0;
-                        time->min=0;
-                        time->sec=0;
-                        if( time->weekday == 7 )
-                        {
-                            time->weekday=1;
-                        }
-                        else
-                        {
-                            time->weekday++;
-                        }
-                    }
-                }
-                else
-                {
-                    /* Adding one seconds leads to data increment */
-                    if ( time->weekday == 7 )
-                    {
-                        time->weekday=1;
-                    }
-                    else
-                    {
-                        time->weekday++;
-                    }
-                    time->date++;
-                    time->hr=0;
-                    time->min=0;
-                    time->sec=0;
-                }
-            }
-            else
-            {
-                /* Adding one seconds leads to hour increment */
-                time->hr++;
-                time->min=0;
-                time->sec=0;
-            }
-        }
-        else
-        {
-            /* Adding one seconds leads to minute increment */
-            time->min++;
-            time->sec=0;
-        }
-    }
-    else
-    {
-        time->sec++;
-    }
-}
-
-static void subtract_second_from_time( platform_rtc_time_t* time )
-{
-    if ( time->sec == 0 )
-    {
-        if ( time->min == 0 )
-        {
-            if ( time->hr == 0 )
-            {
-                if( time->date == 1 )
-                {
-                    if( time->month == 1 )
-                    {
-                        /* Subtracting one second leads to year decrement */
-                        time->year--;
-                        time->month=12;
-                        time->date=(uint8_t)( LEAP_YEAR_OR_NOT(time->year) ? leap_days[time->month] :not_leap_days[time->month] );
-                        time->hr=23;
-                        time->min=59;
-                        time->sec=59;
-                        if(time->weekday == 1)
-                        {
-                            time->weekday=7;
-                        }
-                        else
-                        {
-                            time->weekday--;
-                        }
-                    }
-                    else
-                    {
-                        /* Subtracting one second leads to month decrement */
-                        time->month--;
-                        time->date=(uint8_t)( LEAP_YEAR_OR_NOT(time->year) ? leap_days[time->month] :not_leap_days[time->month] );
-                        time->hr=23;
-                        time->min=59;
-                        time->sec=59;
-                        if(time->weekday == 1)
-                        {
-                            time->weekday=7;
-                        }
-                        else
-                        {
-                            time->weekday--;
-                        }
-                    }
-                }
-                else
-                {
-                    /* Subtracting one second leads to date decrement */
-                    if ( time->weekday == 1 )
-                    {
-                        time->weekday=7;
-                    }
-                    else
-                    {
-                        time->weekday--;
-                    }
-                    time->date--;
-                    time->hr=23;
-                    time->min=59;
-                    time->sec=59;
-                }
-            }
-            else
-            {
-                /* Subtracting one second leads to hour decrement */
-                time->hr--; /*  */
-                time->min=59;
-                time->sec=59;
-            }
-        }
-        else
-        {
-            /* Subtracting one second leads to minute decrement */
-            time->min--;
-            time->sec=59;
-        }
-    }
-    else
-    {
-        time->sec--;
-    }
-}
-
 static OSStatus compensate_time_error( uint32_t sec, bool subtract )
 {
     if( subtract == false )
@@ -675,7 +539,7 @@ static OSStatus compensate_time_error( uint32_t sec, bool subtract )
         /* Adding seconds to time */
         for( sec=sec ; sec > 0; sec--)
         {
-            add_second_to_time(&saved_rtc_time);
+            saved_rtc_time++;
         }
     }
     else
@@ -683,7 +547,7 @@ static OSStatus compensate_time_error( uint32_t sec, bool subtract )
         /* Subtracting seconds from time */
         for( sec=sec ; sec > 0; sec-- )
         {
-            subtract_second_from_time(&saved_rtc_time);
+            saved_rtc_time--;
         }
     }
     return kNoErr;
