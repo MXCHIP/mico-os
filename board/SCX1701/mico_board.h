@@ -96,6 +96,7 @@ enum
 enum
 {
     MICO_UART_1,
+    MICO_UART_2,
     MICO_UART_MAX, /* Denotes the total number of UART port aliases. Not a valid UART alias */
     MICO_UART_NONE,
 };
@@ -129,7 +130,7 @@ enum
 };
 
 #define MICO_STDIO_UART       (MICO_UART_1)
-#define MICO_UART_FOR_APP     (MICO_UART_NONE)
+#define MICO_UART_FOR_APP     (MICO_UART_1)
 #define MICO_MFG_TEST         (MICO_UART_1)
 #define MICO_CLI_UART         (MICO_UART_1)
 

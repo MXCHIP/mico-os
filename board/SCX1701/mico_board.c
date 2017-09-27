@@ -86,10 +86,17 @@ const platform_i2c_t *platform_i2c_peripherals = NULL;
 
 const platform_uart_t platform_uart_peripherals[] =
 {
-    [MICO_STDIO_UART] =
+    [MICO_UART_1] =
     {
         .mbed_tx_pin = STDIO_UART_TX,
         .mbed_rx_pin = STDIO_UART_RX,
+        .mbed_rts_pin = NC,
+        .mbed_cts_pin = NC ,
+    },
+    [MICO_UART_2] =
+    {
+        .mbed_tx_pin = PD_5,
+        .mbed_rx_pin = PD_6,
         .mbed_rts_pin = NC,
         .mbed_cts_pin = NC ,
     }
