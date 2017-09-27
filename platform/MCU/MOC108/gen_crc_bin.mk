@@ -46,13 +46,17 @@ GEN_COMMON_BIN_OUTPUT_FILE_SCRIPT:= $(SCRIPTS_PATH)/gen_common_bin_output_file.p
 
 MICO_ALL_BIN_OUTPUT_FILE :=$(LINK_OUTPUT_FILE:$(LINK_OUTPUT_SUFFIX)=.all$(BIN_OUTPUT_SUFFIX))
 
-gen_standard_images: 
-	$(eval OUT_MSG := $(shell $(ENCRYPT) $(BIN_OUTPUT_FILE) 0 0 0 0; \
-	$(XZ) --lzma2=dict=32KiB --check=crc32 -k $(CRC_BIN_OUTPUT_FILE); \
-	$(CP) $(CRC_XZ_BIN_OUTPUT_FILE) $(OTA_BIN_OUTPUT_FILE); \
-	$(CP) $(CRC_BIN_OUTPUT_FILE) $(BIN_OUTPUT_FILE); \
-	$(RM) $(CRC_BIN_OUTPUT_FILE); \
-	$(RM) $(CRC_XZ_BIN_OUTPUT_FILE);))
+gen_crc_bin: build_done
+	$(eval OUT_MSG := $(shell $(ENCRYPT) $(BIN_OUTPUT_FILE) 0 0 0 0))
+
+gen_xz_bin: gen_crc_bin
+	$(eval OUT_MSG := $(shell $(XZ) --lzma2=dict=32KiB --check=crc32 -k $(CRC_BIN_OUTPUT_FILE)))
+
+gen_standard_images: gen_crc_bin gen_xz_bin
+	$(CP) $(CRC_BIN_OUTPUT_FILE) $(BIN_OUTPUT_FILE)
+	$(RM) $(CRC_BIN_OUTPUT_FILE)
+	$(CP) $(CRC_XZ_BIN_OUTPUT_FILE) $(OTA_BIN_OUTPUT_FILE)
+	$(RM) $(CRC_XZ_BIN_OUTPUT_FILE)
 	$(QUIET)$(RM) $(MICO_ALL_BIN_OUTPUT_FILE)
 	$(PYTHON) $(GEN_COMMON_BIN_OUTPUT_FILE_SCRIPT) -o $(MICO_ALL_BIN_OUTPUT_FILE) -f $(BOOT_OFFSET) $(BOOT_BIN_FILE)              
 	$(PYTHON) $(GEN_COMMON_BIN_OUTPUT_FILE_SCRIPT) -o $(MICO_ALL_BIN_OUTPUT_FILE) -f $(APP_OFFSET)  $(APP_BIN_FILE)
