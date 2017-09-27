@@ -91,7 +91,7 @@ extern "C"
 
 /************************************************************************
  * No EasyLink button */
-#define MICO_CONFIG_EASYLINK_BTN_ENABLE                 0
+#define MICO_CONFIG_EASYLINK_BTN_ENABLE                 1
 
 /******************************************************
 *  EMW1062 Options

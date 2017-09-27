@@ -75,8 +75,8 @@ const platform_gpio_t platform_gpio_pins[] =
   [MICO_SW2]                      = { PE_11 },
   [MICO_SW3]                      = { PE_10 },
 
-  [MICO_FLASH_CS]                      = { PA_4 },   //Flash chip select
-  [MICO_WIFI_CS  ]                     = { SDIO_CMD },
+  [MICO_FLASH_CS]                 = { PA_4 },   //Flash chip select
+  [MICO_WIFI_CS  ]                = { SDIO_CMD },
 };
 
 

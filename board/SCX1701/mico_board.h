@@ -31,8 +31,8 @@
 
 #pragma once
 
-#ifndef __PLATFORM_H_
-#define __PLATFORM_H_
+#ifndef __MICO_BOARD_H_
+#define __MICO_BOARD_H_
 
 /******************************************************
  *                      Macros
@@ -138,6 +138,8 @@ enum
 
 #define MFG_SEL               (MICO_GPIO_NONE)
 #define BOOT_SEL              (MICO_GPIO_NONE)
+
+#define EasyLink_BUTTON       (MICO_SW2)
 
 #define  MICO_SYS_LED         (MICO_GPIO_NONE)
 #define  MICO_RF_LED          (MICO_GPIO_NONE)
