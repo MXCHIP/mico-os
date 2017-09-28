@@ -105,8 +105,6 @@ const platform_gpio_t platform_gpio_pins[] =
   [MICO_GPIO_38]                      = { GPIOA,  4 },
 };
 
-const platform_pwm_t *platform_pwm_peripherals = NULL;
-
 const platform_i2c_t platform_i2c_peripherals[] =
 {
   [MICO_I2C_1] =
@@ -127,8 +125,6 @@ const platform_i2c_t platform_i2c_peripherals[] =
     .gpio_af_sda                  = GPIO_AF_I2C1
   },
 };
-
-platform_i2c_driver_t platform_i2c_drivers[MICO_I2C_MAX];
 
 const platform_uart_t platform_uart_peripherals[] =
 {
@@ -185,7 +181,6 @@ const platform_uart_t platform_uart_peripherals[] =
     },
   },
 };
-platform_uart_driver_t platform_uart_drivers[MICO_UART_MAX];
 
 const platform_spi_t platform_spi_peripherals[] =
 {
@@ -219,9 +214,6 @@ const platform_spi_t platform_spi_peripherals[] =
   }
 };
 
-platform_spi_driver_t platform_spi_drivers[MICO_SPI_MAX];
-
-
 const platform_qspi_t platform_qspi_peripherals[] =
 {
   [MICO_QSPI_1]  =
@@ -254,8 +246,6 @@ const platform_qspi_t platform_qspi_peripherals[] =
   }
 };
 
-//platform_qspi_driver_t platform_qspi_drivers[MICO_QSPI_MAX];
-
 /* Flash memory devices */
 const platform_flash_t platform_flash_peripherals[] =
 {
@@ -272,8 +262,6 @@ const platform_flash_t platform_flash_peripherals[] =
     .flash_length                 = 0x200000,
   },
 };
-
-platform_flash_driver_t platform_flash_drivers[MICO_FLASH_MAX];
 
 /* Logic partition on flash devices */
 const mico_logic_partition_t mico_partitions[] =
