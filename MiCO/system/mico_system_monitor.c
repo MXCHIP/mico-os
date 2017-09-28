@@ -60,6 +60,7 @@ void mico_system_monitor_thread_main( uint32_t arg )
         if ((current_time - system_monitors[a]->last_update) > system_monitors[a]->longest_permitted_delay)
         {
           /* A system monitor update period has been missed */
+          MicoSystemReboot();
           while(1);
         }
       }
