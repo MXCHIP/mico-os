@@ -114,10 +114,13 @@ OSStatus ring_buffer_read( ring_buffer_t* ring_buffer, uint8_t* data, uint32_t d
   uint32_t max_bytes_to_read;
   uint32_t i;
   uint32_t head;
+  uint32_t used_bytes;
   
   head = ring_buffer->head;
+
+  used_bytes = ring_buffer_used_space(ring_buffer);
   
-  max_bytes_to_read = MIN(data_length, ring_buffer_used_space(ring_buffer));
+  max_bytes_to_read = MIN(data_length, used_bytes);
   
   if ( max_bytes_to_read != 0 )
   {
