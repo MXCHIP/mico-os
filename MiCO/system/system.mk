@@ -27,6 +27,7 @@ $(NAME)_SOURCES += config_server/config_server_menu.c \
                    
 $(NAME)_SOURCES += easylink/system_easylink_delegate.c \
                    easylink/system_easylink_wac.c \
+                   easylink/system_easylink_wps.c \
                    easylink/system_easylink.c \
                    easylink/system_easylink_usr.c \
                    easylink/system_easylink_monitor.c \

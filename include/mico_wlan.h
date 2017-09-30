@@ -57,8 +57,6 @@ extern "C" {
 #define micoWlanStopEasyLink      CloseEasylink2
 #define micoWlanStartEasyLinkPlus OpenEasylink
 #define micoWlanStopEasyLinkPlus  CloseEasylink
-#define micoWlanStartWPS          OpenConfigmodeWPS
-#define micoWlanStopWPS           CloseConfigmodeWPS
 #define micoWlanEnablePowerSave   ps_enable
 #define micoWlanDisablePowerSave  ps_disable
 #define micoWlanStartAirkiss      OpenAirkiss
@@ -210,6 +208,55 @@ enum wlan_sec_type_e{
 
 typedef uint8_t wlan_sec_type_t;
 
+
+/** WPS Connection Mode
+ */
+enum mico_wps_mode_e {
+    MICO_WPS_PBC_MODE,  /**< Push button mode */
+    MICO_WPS_PIN_MODE   /**< PIN mode         */
+};
+
+typedef uint8_t wiced_wps_mode_t;
+
+/** WPS Device Category from the WSC2.0 spec
+ */
+enum mico_wps_device_category_e {
+    MICO_WPS_DEVICE_COMPUTER               = 1,     /**< COMPUTER               */
+    MICO_WPS_DEVICE_INPUT                  = 2,     /**< INPUT                  */
+    MICO_WPS_DEVICE_PRINT_SCAN_FAX_COPY    = 3,     /**< PRINT_SCAN_FAX_COPY    */
+    MICO_WPS_DEVICE_CAMERA                 = 4,     /**< CAMERA                 */
+    MICO_WPS_DEVICE_STORAGE                = 5,     /**< STORAGE                */
+    MICO_WPS_DEVICE_NETWORK_INFRASTRUCTURE = 6,     /**< NETWORK_INFRASTRUCTURE */
+    MICO_WPS_DEVICE_DISPLAY                = 7,     /**< DISPLAY                */
+    MICO_WPS_DEVICE_MULTIMEDIA             = 8,     /**< MULTIMEDIA             */
+    MICO_WPS_DEVICE_GAMING                 = 9,     /**< GAMING                 */
+    MICO_WPS_DEVICE_TELEPHONE              = 10,    /**< TELEPHONE              */
+    MICO_WPS_DEVICE_AUDIO                  = 11,    /**< AUDIO                  */
+    MICO_WPS_DEVICE_OTHER                  = 0xFF,  /**< OTHER                  */
+};
+
+typedef uint8_t mico_wps_device_category_t;
+
+/** WPS Configuration Methods from the WSC2.0 spec
+ */
+enum mico_wps_configuration_method_e {
+    WPS_CONFIG_USBA                  = 0x0001,  /**< USBA                 */
+    WPS_CONFIG_ETHERNET              = 0x0002,  /**< ETHERNET             */
+    WPS_CONFIG_LABEL                 = 0x0004,  /**< LABEL                */
+    WPS_CONFIG_DISPLAY               = 0x0008,  /**< DISPLAY              */
+    WPS_CONFIG_EXTERNAL_NFC_TOKEN    = 0x0010,  /**< EXTERNAL_NFC_TOKEN   */
+    WPS_CONFIG_INTEGRATED_NFC_TOKEN  = 0x0020,  /**< INTEGRATED_NFC_TOKEN */
+    WPS_CONFIG_NFC_INTERFACE         = 0x0040,  /**< NFC_INTERFACE        */
+    WPS_CONFIG_PUSH_BUTTON           = 0x0080,  /**< PUSH_BUTTON          */
+    WPS_CONFIG_KEYPAD                = 0x0100,  /**< KEYPAD               */
+    WPS_CONFIG_VIRTUAL_PUSH_BUTTON   = 0x0280,  /**< VIRTUAL_PUSH_BUTTON  */
+    WPS_CONFIG_PHYSICAL_PUSH_BUTTON  = 0x0480,  /**< PHYSICAL_PUSH_BUTTON */
+    WPS_CONFIG_VIRTUAL_DISPLAY_PIN   = 0x2008,  /**< VIRTUAL_DISPLAY_PIN  */
+    WPS_CONFIG_PHYSICAL_DISPLAY_PIN  = 0x4008   /**< PHYSICAL_DISPLAY_PIN */
+};
+
+typedef uint32_t mico_wps_configuration_method_t;
+
 /** 
  *  @brief  wlan local IP information structure definition.  
  */ 
@@ -342,13 +389,19 @@ typedef struct _linkStatus_t{
 } LinkStatusTypeDef;
 
 
-typedef struct {
-    char bssid[6];
-    char ssid[33];
-    char key[65];
-    int  user_data_len;
-    char user_data[65];
-} easylink_result_t;
+/** WPS Device category holds WSC2.0 device category information
+ */
+typedef struct
+{
+    mico_wps_device_category_t device_category; /**< Device category       */
+    uint16_t sub_category;                       /**< Device sub-category   */
+    char*    device_name;                        /**< Device name           */
+    char*    manufacturer;                       /**< Manufacturer details  */
+    char*    model_name;                         /**< Model name            */
+    char*    model_number;                       /**< Model number          */
+    char*    serial_number;                      /**< Serial number         */
+    uint32_t config_methods;                     /**< Configuration methods */
+} mico_wps_device_detail_t;
     
 #pragma pack(1)
 typedef struct _wifi_mgmt_frame_tx
@@ -598,14 +651,14 @@ OSStatus micoWlanStopEasyLinkPlus(void);
  *  @return   kNoErr        : on success.
  *  @return   kGeneralErr   : if an error occurred
  */
-OSStatus micoWlanStartWPS(int inTimeout);
+OSStatus mico_wlan_start_wps(mico_wps_device_detail_t* wps_config, int inTimeout);
 
 /** @brief  Stop WPS configuration procedure
  *  
  *  @return   kNoErr        : on success.
  *  @return   kGeneralErr   : if an error occurred
  */
-OSStatus micoWlanStopWPS(void);
+OSStatus mico_wlan_stop_wps(void);
 
 
 /**

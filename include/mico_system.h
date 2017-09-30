@@ -188,6 +188,7 @@ typedef enum{
   CONFIG_BY_MONITOR,          /**< Wlan configured by airkiss from wechat Tencent inc. */
   CONFIG_BY_SOFT_AP,          /**< Wlan configured by EasyLink soft ap mode */
   CONFIG_BY_WAC,              /**< Wlan configured by wireless accessory configuration from Apple inc. */
+  CONFIG_BY_WPS,              /**< Wlan configured by Wi-Fi protected setup(WPS). */
   CONFIG_BY_USER,             /**< Wlan configured by user defined functions. */
 } mico_config_source_t;
 
@@ -283,6 +284,13 @@ mico_connect_fail_config_t mico_system_delegate_config_result( mico_config_sourc
   * @retval kNoErr is returned on success, otherwise, kXXXErr is returned.
   */
 OSStatus mico_easylink_wac( mico_Context_t * const inContext, mico_bool_t enable );
+
+/**
+  * @brief  Start wlan configuration mode: WPS, Wi-Fi protected setup
+  * @param  inContext: MiCO system core data, initialized by @ref mico_system_context_init
+  * @retval kNoErr is returned on success, otherwise, kXXXErr is returned.
+  */
+OSStatus mico_easylink_wps( mico_Context_t * const inContext, mico_bool_t enable );
 
 /**
   * @brief  Start wlan configuration mode: EasyLink protocol

@@ -46,7 +46,7 @@ extern "C" {
 #endif
 
 #if !defined SERIAL_NUMBER
-#define SERIAL_NUMBER                           "20140606"
+#define SERIAL_NUMBER                           "20170101"
 #endif
 
 #if !defined PROTOCOL
@@ -117,6 +117,7 @@ extern "C" {
 #define CONFIG_MODE_SOFTAP                      (5)
 #define CONFIG_MODE_MONITOR                     (6)
 #define CONFIG_MODE_MONITOR_EASYLINK            (7)
+#define CONFIG_MODE_WPS                         (8)
 
 /**
  *  MICO_WLAN_CONFIG_MODE: wlan configuration mode, Default: EasyLink
