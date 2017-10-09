@@ -61,6 +61,19 @@ void * __wrap_calloc (size_t a, size_t b)
     return pvReturn;
 }
 
+void * __wrap__calloc_r (void *p, size_t a, size_t b)
+{
+	void *pvReturn;
+
+    pvReturn = pvPortMalloc( a*b );
+    if (pvReturn)
+    {
+        memset(pvReturn, 0, a*b);
+    }
+
+    return pvReturn;
+}
+
 void * __wrap_realloc (void* pv, size_t size)
 {
 	return pvPortRealloc(pv, size);

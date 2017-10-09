@@ -97,8 +97,13 @@ const platform_i2c_t platform_i2c_peripherals[] =
 {
     [MICO_I2C_1] =
     {
-        .pin_scl = &platform_gpio_pins[MICO_GPIO_NONE],
-        .pin_sda = &platform_gpio_pins[MICO_GPIO_NONE],
+        .pin_scl = &platform_gpio_pins[MICO_GPIO_20],
+        .pin_sda = &platform_gpio_pins[MICO_GPIO_21],
+    },
+    [MICO_I2C_2] =
+    {
+        .pin_scl = &platform_gpio_pins[MICO_GPIO_0],
+        .pin_sda = &platform_gpio_pins[MICO_GPIO_1],
     },
 };
 platform_i2c_driver_t platform_i2c_drivers[MICO_I2C_MAX];
