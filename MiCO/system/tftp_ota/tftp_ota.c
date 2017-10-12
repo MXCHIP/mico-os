@@ -20,6 +20,10 @@
 #define UDP_PORT 20000
 #define TCP_PORT 30000
 
+#define FORCE_OTA_SUEECSS 0x00000001
+#define FORCE_OTA_NEED    0xfffffffe
+
+
 #define fota_log(M, ...) custom_log("Force OTA", M, ##__VA_ARGS__)
 #define fota_log_trace() custom_log_trace("Force OTA")
 
@@ -42,6 +46,8 @@ WEAK void mico_ota_finished(int result, uint8_t *reserved)
     switch(result) {
     case OTA_SUCCESS:
         printf("OTA SUCCESS. Rebooting...\r\n");
+		mico_system_context_get( )->micoSystemConfig.reserved |= FORCE_OTA_SUEECSS;
+        mico_system_context_update(mico_system_context_get( ));
         MicoSystemReboot();
         break;
     case OTA_NO_AP:
@@ -210,5 +216,73 @@ void tftp_ota(void)
     while(1)
         mico_rtos_thread_sleep(100);
 }
+
+/******************************************************
+ *              MICO_FORCE_OTA
+ *****************************************************/
+mico_semaphore_t force_ota_sem;
+
+static void force_thread(mico_thread_arg_t arg){
+    extern void tftp_ota();
+    tftp_ota();
+}
+
+OSStatus start_force_ota()
+{
+   OSStatus err;
+
+   err =  mico_rtos_create_thread( NULL, MICO_APPLICATION_PRIORITY, "Force OTA", force_thread, 0x1000,0 );
+   require_noerr_action( err, exit, system_log("ERROR: Unable to start the  force ota thread.") );
+
+   exit:
+           return err;
+
+}
+static void micoNotify_ApListCallback(ScanResult *pApList, mico_Context_t * const inContext)
+{
+	system_log("ota notify");
+    (void)inContext;
+
+    if(pApList->ApNum == 0){
+        if(NULL != force_ota_sem)
+        {
+        	system_log("set force_ota_sem");
+            mico_rtos_set_semaphore(&force_ota_sem);
+        }
+    }else{
+    	system_log("num = %d,ssid = %s",pApList->ApNum,pApList->ApList->ssid);
+    	system_log("start_force_ota");
+        start_force_ota();
+    }
+}
+
+OSStatus start_forceota_check()
+{
+	OSStatus err = kNoErr;
+	if((mico_system_context_get( )->micoSystemConfig.reserved & FORCE_OTA_SUEECSS)==0)
+	{
+		#define FORCE_OTA_AP "MICO_OTA_AP"
+		system_log("force ota ssid :%s",FORCE_OTA_AP);
+		/* Register user function when wlan scan is completed */
+		err =  mico_system_notify_register( mico_notify_WIFI_SCAN_COMPLETED, (void *)micoNotify_ApListCallback, NULL );
+		require_noerr( err, exit );
+		system_log("Start scan");
+		mico_rtos_init_semaphore(&force_ota_sem,1);
+		mxchip_active_scan(FORCE_OTA_AP,0);
+		err = mico_rtos_get_semaphore(&force_ota_sem,MICO_WAIT_FOREVER);
+		if(NULL != force_ota_sem)
+		mico_rtos_deinit_semaphore(&force_ota_sem);
+		err = mico_system_notify_remove( mico_notify_WIFI_SCAN_COMPLETED, (void *)micoNotify_ApListCallback);
+		require_noerr( err, exit );
+	}
+	else
+	{
+		mico_system_context_get( )->micoSystemConfig.reserved &= FORCE_OTA_NEED;
+		mico_system_context_update(mico_system_context_get( ));
+	}
+	exit:
+	return err;
+}
+
 
 

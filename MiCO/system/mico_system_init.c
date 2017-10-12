@@ -96,6 +96,12 @@ OSStatus mico_system_init( mico_Context_t* in_context )
   err = system_network_daemen_start( sys_context );
   require_noerr( err, exit ); 
 
+  
+#ifdef MICO_FORCE_OTA_ENABLE
+	err = start_forceota_check();
+	require_noerr( err, exit );
+#endif
+
 #ifdef MICO_WLAN_CONNECTION_ENABLE
 #ifndef  EasyLink_Needs_Reboot
   /* Create a worker thread for user handling wlan auto-conf event, this worker thread only has
