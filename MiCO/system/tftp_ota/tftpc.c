@@ -461,15 +461,14 @@ tget (tftp_file_info_t *fileinfo, uint32_t ipaddr)
           if (count + 1 == rcount) {// received right seq no, save and ack
             MicoFlashWrite(fileinfo->flashtype, &flashaddr, (uint8_t *)bufindex, n - 4);
             totalen += n-4;
+            count = rcount;
           } 
 
           len = 4;
 		  packetbuf[0] = 0x00;
    		  packetbuf[1] = 0x04;
-		  packetbuf[2] = (rcount & 0xFF00) >> 8;	//fill in the count (top number first)
-		  packetbuf[3] = (rcount & 0x00FF);	//fill in the lower part of the count
-		  count = rcount;
-
+		  packetbuf[2] = (count & 0xFF00) >> 8;	//fill in the count (top number first)
+		  packetbuf[3] = (count & 0x00FF);	//fill in the lower part of the count
 
           sendto(sock, packetbuf, len, 0, (struct sockaddr *) &server, sizeof (server));
 		  break;

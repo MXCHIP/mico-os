@@ -109,6 +109,7 @@ void tftp_ota(void)
     micoWlanStopEasyLink();
 	  micoWlanStopEasyLinkPlus();
     micoWlanStopAirkiss();
+    micoWlanSuspendStation();
 	mico_rtos_thread_msleep(10);
 		
     tmpbuf = (uint8_t*)malloc(TMP_BUF_LEN);
