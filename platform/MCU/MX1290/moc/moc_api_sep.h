@@ -74,6 +74,8 @@ typedef struct {
 
 	struct tm* (*localtime)(const time_t * time);
 	char * (*asctime)(const struct tm *tm);
+
+    void (*mico_rtos_resume_thread)(mico_thread_t* thread);
 } os_api_v1_t;
 
 typedef struct {

@@ -322,4 +322,8 @@ int disable_log_uart(void)
     return _kernel_api.uart_apis->disable_log_uart();
 }
 
+void mico_rtos_resume_thread(mico_thread_t* thread)
+{
+    _kernel_api.os_apis->mico_rtos_resume_thread(thread);
+}
 
