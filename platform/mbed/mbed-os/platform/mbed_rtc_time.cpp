@@ -39,6 +39,8 @@ static void (*_rtc_write)(time_t t) = NULL;
 #ifdef __cplusplus
 extern "C" {
 #endif
+
+#if 0
 #if defined (__ICCARM__)
 time_t __time32(time_t *timer)
 #else
@@ -64,6 +66,7 @@ time_t time(time_t *timer)
     _mutex->unlock();
     return t;
 }
+#endif
 
 void set_time(time_t t) {
     _mutex->lock();

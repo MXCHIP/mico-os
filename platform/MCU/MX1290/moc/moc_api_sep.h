@@ -211,8 +211,8 @@ typedef struct {
 
 typedef struct {
 	void (*MicoRtcInitialize)(void);
-	OSStatus (*MicoRtcGetTime)(mico_rtc_time_t *time);
-	OSStatus (*MicoRtcSetTime)(mico_rtc_time_t *time);
+	OSStatus (*MicoRtcGetTime)(time_t *time);
+	OSStatus (*MicoRtcSetTime)(time_t time);
 } rtc_api_t;
 
 typedef struct {

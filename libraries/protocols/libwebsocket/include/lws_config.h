@@ -1,4 +1,5 @@
 /* lws_config.h  Generated from lws_config.h.in  */
+#include "mico_opt.h"
 
 #ifndef NDEBUG
 	#ifndef _DEBUG

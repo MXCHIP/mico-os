@@ -795,30 +795,30 @@ OSStatus MicoFlashDisableSecurity( mico_partition_t partition, uint32_t off_set,
 
 #endif
 
-// uint64_t mico_nanosecond_clock_value( void )
-// {
-//     return platform_get_nanosecond_clock_value( );
-// }
+uint64_t mico_nanosecond_clock_value( void )
+{
+    return platform_get_nanosecond_clock_value( );
+}
 
-// void mico_nanosecond_deinit( void )
-// {
-//     platform_deinit_nanosecond_clock( );
-// }
+void mico_nanosecond_deinit( void )
+{
+    platform_deinit_nanosecond_clock( );
+}
 
-// void mico_nanosecond_reset( void )
-// {
-//     platform_reset_nanosecond_clock( );
-// }
+void mico_nanosecond_reset( void )
+{
+    platform_reset_nanosecond_clock( );
+}
 
-// void mico_nanosecond_init( void )
-// {
-//     platform_init_nanosecond_clock( );
-// }
+void mico_nanosecond_init( void )
+{
+    platform_init_nanosecond_clock( );
+}
 
-// void mico_nanosecond_delay( uint64_t delayns )
-// {
-//   platform_nanosecond_delay( delayns );
-// }
+void mico_nanosecond_delay( uint64_t delayns )
+{
+  platform_nanosecond_delay( delayns );
+}
 
 
 

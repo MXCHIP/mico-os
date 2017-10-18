@@ -301,13 +301,65 @@ LWS_VISIBLE LWS_EXTERN void _lws_logv(int filter, const char *format, va_list vl
 LWS_VISIBLE LWS_EXTERN int
 lwsl_timestamp(int level, char *p, int len);
 
-#define lwsl_err(...) _lws_log(LLL_ERR, __VA_ARGS__)
+#include "mico_debug.h"
 
-#if !defined(LWS_WITH_NO_LOGS)
-/* notice, warn and log are always compiled in */
-#define lwsl_warn(...) _lws_log(LLL_WARN, __VA_ARGS__)
-#define lwsl_notice(...) _lws_log(LLL_NOTICE, __VA_ARGS__)
+#ifdef MICO_PREBUILT_LIBS
+
+#ifdef DEBUG
+#define CONFIG_LWS_DEBUG            MICO_DEBUG_ON
+#define CONFIG_LWS_DEBUG_PARSER     MICO_DEBUG_ON
+#define CONFIG_LWS_DEBUG_HEADER     MICO_DEBUG_ON
+#define CONFIG_LWS_DEBUG_EXT        MICO_DEBUG_ON
+#define CONFIG_LWS_DEBUG_CLIENT     MICO_DEBUG_ON
+#define CONFIG_LWS_DEBUG_LATENCY    MICO_DEBUG_ON
+#else
+#define CONFIG_LWS_DEBUG            MICO_DEBUG_OFF
+#define CONFIG_LWS_DEBUG_PARSER     MICO_DEBUG_OFF
+#define CONFIG_LWS_DEBUG_HEADER     MICO_DEBUG_OFF
+#define CONFIG_LWS_DEBUG_EXT        MICO_DEBUG_OFF
+#define CONFIG_LWS_DEBUG_CLIENT     MICO_DEBUG_OFF
+#define CONFIG_LWS_DEBUG_LATENCY    MICO_DEBUG_OFF
 #endif
+
+#endif
+
+
+#if !defined CONFIG_LWS_DEBUG_PARSER
+#define CONFIG_LWS_DEBUG_PARSER                       MICO_DEBUG_OFF
+#endif
+
+#if !defined CONFIG_LWS_DEBUG_HEADER
+#define CONFIG_LWS_DEBUG_HEADER                       MICO_DEBUG_OFF
+#endif
+
+#if !defined CONFIG_LWS_DEBUG_EXT
+#define CONFIG_LWS_DEBUG_EXT                          MICO_DEBUG_OFF
+#endif
+
+#if !defined CONFIG_LWS_DEBUG_CLIENT
+#define CONFIG_LWS_DEBUG_CLIENT                       MICO_DEBUG_OFF
+#endif
+
+#if !defined CONFIG_LWS_DEBUG_LATENCY
+#define CONFIG_LWS_DEBUG_LATENCY                      MICO_DEBUG_OFF
+#endif
+
+#define lwsl_err(M, ...)    MICO_LOG(CONFIG_LWS_DEBUG|MICO_DEBUG_LEVEL_SEVERE, "LLL_ERROR", M, ##__VA_ARGS__)
+
+/* notice, warn and log are always compiled in */
+#define lwsl_warn(M, ...)      	MICO_LOG(CONFIG_LWS_DEBUG|MICO_DEBUG_LEVEL_WARNING, "LLL_WARN", M, ##__VA_ARGS__)
+#define lwsl_notice(M, ...)    	MICO_LOG(CONFIG_LWS_DEBUG|MICO_DEBUG_LEVEL_ALL, "LLL_NOTICE", M, ##__VA_ARGS__)
+#define lwsl_info(M,...) 		MICO_LOG(CONFIG_LWS_DEBUG|MICO_DEBUG_LEVEL_ALL, "LLL_INFO", M, ##__VA_ARGS__)
+#define lwsl_debug(M,...) 		MICO_LOG(CONFIG_LWS_DEBUG, "LLL_DEBUG", M, ##__VA_ARGS__)
+#define lwsl_parser(M,...) 		MICO_LOG(CONFIG_LWS_DEBUG_PARSER, "LLL_PARSER", M, ##__VA_ARGS__)
+#define lwsl_header(M,...)  	MICO_LOG(CONFIG_LWS_DEBUG_HEADER, "LLL_HEADER", M, ##__VA_ARGS__)
+#define lwsl_ext(M,...)  		MICO_LOG(CONFIG_LWS_DEBUG_EXT, "LLL_EXT", M, ##__VA_ARGS__)
+#define lwsl_client(M,...) 		MICO_LOG(CONFIG_LWS_DEBUG_CLIENT, "LLL_CLIENT", M, ##__VA_ARGS__)
+#define lwsl_latency(M,...) 	MICO_LOG(CONFIG_LWS_DEBUG_LATENCY, "LLL_LATENCY", M, ##__VA_ARGS__)
+
+#define lwsl_hexdump(a, b)
+
+
 /*
  *  weaker logging can be deselected at configure time using --disable-debug
  *  that gets rid of the overhead of checking while keeping _warn and _err
@@ -318,27 +370,22 @@ lwsl_timestamp(int level, char *p, int len);
 #undef _DEBUG
 #endif
 
+#if 0   //Not used in MiCO
 #ifdef _DEBUG
 #if defined(LWS_WITH_NO_LOGS)
 /* notice, warn and log are always compiled in */
-//#define lwsl_err(...) _lws_log(LLL_ERR, __VA_ARGS__)
-#define lwsl_warn(...) _lws_log(LLL_WARN, __VA_ARGS__)
-#define lwsl_notice(...) _lws_log(LLL_NOTICE, __VA_ARGS__)
+  #define lwsl_err(...) _lws_log(LLL_ERR, __VA_ARGS__)
+  #define lwsl_warn(...) _lws_log(LLL_WARN, __VA_ARGS__)
+  #define lwsl_notice(...) _lws_log(LLL_NOTICE, __VA_ARGS__)
 #endif
-#define lwsl_info(...) _lws_log(LLL_INFO, __VA_ARGS__)
-#define lwsl_debug(...) _lws_log(LLL_DEBUG, __VA_ARGS__)
-#define lwsl_parser(...) _lws_log(LLL_PARSER, __VA_ARGS__)
-#define lwsl_header(...)  _lws_log(LLL_HEADER, __VA_ARGS__)
-#define lwsl_ext(...)  _lws_log(LLL_EXT, __VA_ARGS__)
-#define lwsl_client(...) _lws_log(LLL_CLIENT, __VA_ARGS__)
-#define lwsl_latency(...) _lws_log(LLL_LATENCY, __VA_ARGS__)
-/**
- * lwsl_hexdump() - helper to hexdump a buffer (DEBUG builds only)
- *
- * \param buf: buffer start to dump
- * \param len: length of buffer to dump
- */
-LWS_VISIBLE LWS_EXTERN void lwsl_hexdump(void *buf, size_t len);
+  #define lwsl_info(...) _lws_log(LLL_INFO, __VA_ARGS__)
+  #define lwsl_debug(...) _lws_log(LLL_DEBUG, __VA_ARGS__)
+  #define lwsl_parser(...) _lws_log(LLL_PARSER, __VA_ARGS__)
+  #define lwsl_header(...)  _lws_log(LLL_HEADER, __VA_ARGS__)
+  #define lwsl_ext(...)  _lws_log(LLL_EXT, __VA_ARGS__)
+  #define lwsl_client(...) _lws_log(LLL_CLIENT, __VA_ARGS__)
+  #define lwsl_latency(...) _lws_log(LLL_LATENCY, __VA_ARGS__)
+
 
 #else /* no debug */
 #if defined(LWS_WITH_NO_LOGS)
@@ -385,7 +432,7 @@ lwsl_emit_syslog(int level, const char *line);
 
 ///@}
 
-
+#endif
 #include <stddef.h>
 
 #ifndef lws_container_of
@@ -519,6 +566,7 @@ static inline void uv_timer_stop(uv_timer_t *t)
 }
 #elif defined(LWS_USE_MICO)
 /* it's a class lws_conn * */
+#include "mico_socket.h"
 typedef int lws_sockfd_type;
 typedef int lws_filefd_type;
 #define lws_sockfd_valid(sfd) (sfd >= 0)
@@ -534,7 +582,11 @@ typedef int lws_filefd_type;
 #endif
 #endif
 
-#define lws_pollfd pollfd
+struct lws_pollfd {
+    int fd; /**< fd related to */
+    short events; /**< which POLL... events to respond to */
+    short revents; /**< which POLL... events occurred */
+};
 #define LWS_POLLHUP (POLLHUP|POLLERR)
 #define LWS_POLLIN (POLLIN)
 #define LWS_POLLOUT (POLLOUT)

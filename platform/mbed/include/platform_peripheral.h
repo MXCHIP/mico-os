@@ -939,38 +939,38 @@ OSStatus platform_rtc_set_time( time_t t );
 // OSStatus platform_stdio_init ( platform_uart_driver_t* driver, const platform_uart_t* interface, const platform_uart_config_t* config );
 
 
-// /**
-//  * Get current value of nanosecond clock
-//  *
-// */
-// uint64_t platform_get_nanosecond_clock_value( void );
+ /**
+  * Get current value of nanosecond clock
+  *
+ */
+ uint64_t platform_get_nanosecond_clock_value( void );
 
 
-// /**
-//  * Deinitialize nanosecond clock
-//  *
-//  */
-// void platform_deinit_nanosecond_clock( void );
+ /**
+  * Deinitialize nanosecond clock
+  *
+  */
+ void platform_deinit_nanosecond_clock( void );
 
 
-// /**
-//  * Reset nanosecond clock
-//  *
-//  */
-// void platform_reset_nanosecond_clock( void );
+ /**
+  * Reset nanosecond clock
+  *
+  */
+ void platform_reset_nanosecond_clock( void );
 
 
-// /**
-//  * Initialize nanosecond clock
-//  *
-//  */
-// void platform_init_nanosecond_clock( void );
+ /**
+  * Initialize nanosecond clock
+  *
+  */
+ void platform_init_nanosecond_clock( void );
 
-// /**
-//  * Nanosecond delay
-//  *
-//  */
-// void platform_nanosecond_delay( uint64_t delayns );
+ /**
+  * Nanosecond delay
+  *
+  */
+ void platform_nanosecond_delay( uint64_t delayns );
 
 /**
  * Read random numbers

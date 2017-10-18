@@ -19,6 +19,7 @@
 
 #include <string.h>
 #include <stdlib.h>
+#include <stdarg.h>
 #include "mico_common.h"
 #include "lwip/sockets.h"
 #include "lwip/netdb.h"
@@ -123,6 +124,15 @@ int select(int nfds, fd_set *readfds, fd_set *writefds, fd_set *exceptfds, struc
         timeout->tv_usec = 1000;
 
     return lwip_select( nfds, readfds, writefds, exceptfds, timeout );
+}
+
+int ioctl(int s, int cmd, ...)
+{
+    va_list ap;
+    va_start( ap, cmd );
+    void *para = va_arg( ap, void *);
+    va_end( ap );
+    return lwip_ioctl(s, cmd, para);
 }
 
 int poll(struct pollfd *fds, int nfds, int timeout)
@@ -231,7 +241,6 @@ int getaddrinfo(const char *nodename,
        const struct addrinfo *hints,
        struct addrinfo **res)
 {
-	printf("%s, nodename %s, servname %s\r\n", __FUNCTION__, nodename, servname);
 	return lwip_getaddrinfo(nodename,servname,hints,res);
 }
 

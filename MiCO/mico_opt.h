@@ -57,7 +57,7 @@ extern "C" {
  *  MiCO_SDK_VERSION_XXX, should be defined in MakeFile
  */
 #ifndef MiCO_SDK_VERSION_MAJOR
-#define MiCO_SDK_VERSION_MAJOR                  (5)
+#define MiCO_SDK_VERSION_MAJOR                  (4)
 #endif
 
 #ifndef MiCO_SDK_VERSION_MINOR
@@ -251,6 +251,11 @@ extern "C" {
 #if !defined CONFIG_MDNS_DEBUG
 #define CONFIG_MDNS_DEBUG                      MICO_DEBUG_OFF
 #endif
+
+#if !defined CONFIG_LWS_DEBUG
+#define CONFIG_LWS_DEBUG                       MICO_DEBUG_OFF
+#endif
+
 
 #ifdef __cplusplus
 } /*extern "C" */
