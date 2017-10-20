@@ -6,8 +6,8 @@
 /* Time-stamp:   <Wednesday December 25, 10:10:57 2013> */
 /* Mail:         <Xsoda@Live.com> */
 
-#include "common.h"
-#include "debug.h"
+#include "mico_common.h"
+#include "mico_debug.h"
 
 #include "url.h"
 
