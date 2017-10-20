@@ -34,6 +34,8 @@ system_context_t* sys_context = NULL;
 
 #define para_log(M, ...)
 
+static OSStatus try_old_para(system_context_t *inContext);
+
 WEAK void appRestoreDefault_callback(void *user_data, uint32_t size)
 {
 
@@ -115,7 +117,6 @@ static uint16_t para_crc16(mico_partition_t part)
     uint16_t crc_result;
     CRC16_Context crc_context;
     uint32_t offset, len = 1024, end;
-    int err;
     uint8_t *tmp;
     mico_logic_partition_t *partition; 
     
@@ -134,7 +135,7 @@ static uint16_t para_crc16(mico_partition_t part)
     while(offset < end) {
         if (offset + len > end)
             len = end - offset;
-        err = MicoFlashRead( part, &offset, tmp, len);
+        MicoFlashRead( part, &offset, tmp, len);
         CRC16_Update( &crc_context, tmp, len );
     }
     CRC16_Final( &crc_context, &crc_result );
@@ -259,7 +260,8 @@ OSStatus MICOReadConfiguration(system_context_t *inContext)
   mico_logic_partition_t *partition; 
   uint8_t *sys_backup_data = NULL;
   uint8_t *user_backup_data = NULL;
-
+  mico_Context_t *mico_context = mico_system_context_get();
+  
   OSStatus err = kNoErr;
 
   require_action(inContext, exit, err = kNotPreparedErr);
@@ -302,8 +304,8 @@ OSStatus MICOReadConfiguration(system_context_t *inContext)
   if( is_crc_match( crc_result, crc_target ) == false ){
     /* Data collapsed at main partition and backup partition both, restore to default */
     if( is_crc_match( crc_backup_result, crc_backup_target ) == false ){
-      para_log("Config failed on both partition, restore to default settings!");
-      err = mico_system_context_restore( &inContext->flashContentInRam );
+      para_log("Config failed on both partition, try old partition!");
+      err = try_old_para( inContext );
       require_noerr(err, exit);
     }
     /* main collapsed, backup correct, copy data from back up to main */
@@ -371,7 +373,7 @@ OSStatus MICOReadConfiguration(system_context_t *inContext)
 #ifdef MFG_MODE_AUTO
     err = MICORestoreMFG( );
 #else
-    err = mico_system_context_restore( &inContext->flashContentInRam );
+    err = mico_system_context_restore( mico_context );
 #endif
     require_noerr(err, exit);
   }
@@ -471,6 +473,7 @@ exit:
 
 OSStatus mico_ota_switch_to_new_fw( int ota_data_len, uint16_t ota_data_crc )
 {
+    mico_Context_t *mico_context = mico_system_context_get();
 #ifdef MICO_ENABLE_SECONDARY_APPLICATION
     UNUSED_PARAMETER( ota_data_len );
     UNUSED_PARAMETER( ota_data_crc );
@@ -492,12 +495,63 @@ OSStatus mico_ota_switch_to_new_fw( int ota_data_len, uint16_t ota_data_crc )
     sys_context->flashContentInRam.bootTable.upgrade_type = 'U';
     sys_context->flashContentInRam.bootTable.crc = ota_data_crc;
 #endif
-    mico_system_context_update( &sys_context->flashContentInRam );
+    mico_system_context_update( mico_context );
 #endif
     return kNoErr;
 }
 
+static int is_old_part_crc_match(system_context_t *inContext, mico_partition_t part)
+{
+    uint32_t para_offset = 0x0;
+    //uint32_t config_offset = CONFIG_OFFSET;
+    uint32_t crc_offset = mico_context_section_offsets[ PARA_APP_DATA_SECTION ] + inContext->user_config_data_size;;
+    CRC16_Context crc_context;
+    uint16_t crc_result, crc_target;
+    
+    para_offset = 0x0;
+    MicoFlashRead( part, &para_offset, (uint8_t *)&inContext->flashContentInRam, sizeof( system_config_t ) );
+    para_offset = mico_context_section_offsets[ PARA_APP_DATA_SECTION ];
+    MicoFlashRead( part, &para_offset, (uint8_t *)inContext->user_config_data, inContext->user_config_data_size );
 
+    CRC16_Init( &crc_context );
+    CRC16_Update( &crc_context, (uint8_t *)&inContext->flashContentInRam.micoSystemConfig, SYS_CONFIG_SIZE );
+    CRC16_Update( &crc_context, inContext->user_config_data, inContext->user_config_data_size );
+    CRC16_Final( &crc_context, &crc_result );
+    para_log( "crc_result = %d", crc_result);
 
+    crc_offset = mico_context_section_offsets[ PARA_APP_DATA_SECTION ] + inContext->user_config_data_size;;
+    MicoFlashRead( part, &crc_offset, (uint8_t *)&crc_target, CRC_SIZE );
+    para_log( "crc_target = %d", crc_target);
+
+    if( is_crc_match( crc_result, crc_target ) == true ) {
+        return true;
+    } else {
+        return false;
+    }
+}
+
+/* Try to use the OLD mico para save method */
+static OSStatus try_old_para(system_context_t *inContext)
+{
+    OSStatus err = kNoErr;
+    mico_Context_t *mico_context = mico_system_context_get();
+    
+    /* Load data and crc from main partition */
+    if (is_old_part_crc_match(inContext, MICO_PARTITION_PARAMETER_1) == true) {
+        para_log("Main partition CRC correct");
+        mico_system_context_update(mico_context);
+        return kNoErr;
+    }
+    /* Load data and crc from backup partition */
+    if (is_old_part_crc_match(inContext, MICO_PARTITION_PARAMETER_2) == true) {
+        para_log("Backup partition CRC correct");
+        mico_system_context_update(mico_context);
+        return kNoErr;
+    }
+    para_log("Config failed on both partition, restore to default settings!");
+    err = mico_system_context_restore( mico_context );
+    
+    return err;
+} 
 
 
