@@ -367,7 +367,7 @@ OSStatus MicoSpiInitialize( const mico_spi_device_t* spi )
   if( platform_spi_drivers[spi->port].spi_mutex == NULL)
     mico_rtos_init_mutex( &platform_spi_drivers[spi->port].spi_mutex );
   
-  config.chip_select = &platform_gpio_pins[spi->chip_select];
+  config.chip_select = spi->chip_select == MICO_GPIO_NONE ? NULL : &platform_gpio_pins[spi->chip_select];
   config.speed       = spi->speed;
   config.mode        = spi->mode;
   config.bits        = spi->bits;
@@ -422,7 +422,7 @@ OSStatus MicoSpiTransfer( const mico_spi_device_t* spi, const mico_spi_message_s
   if( platform_spi_drivers[spi->port].spi_mutex == NULL)
     mico_rtos_init_mutex( &platform_spi_drivers[spi->port].spi_mutex );
 
-  config.chip_select = &platform_gpio_pins[spi->chip_select];
+  config.chip_select = spi->chip_select == MICO_GPIO_NONE ? NULL : &platform_gpio_pins[spi->chip_select];
   config.speed       = spi->speed;
   config.mode        = spi->mode;
   config.bits        = spi->bits;
