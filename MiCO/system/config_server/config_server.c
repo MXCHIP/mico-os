@@ -318,6 +318,9 @@ static OSStatus onReceivedData(struct _HTTPHeader_t * inHeader, uint32_t inPos, 
       return kUnsupportedErr;
     }
 
+    if(inPos==0 && inLen==0)
+        return err;
+
      if(inPos == 0){
        context->offset = 0x0;
        CRC16_Init( &context->crc16_contex );
