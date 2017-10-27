@@ -13,7 +13,8 @@ GLOBAL_DEFINES += NO_MICO_RTOS
 
 
 GLOBAL_INCLUDES := . \
-                   ..
+                   ..\
+                   portable/GCC/ARM_CM
 
 $(NAME)_SOURCES := rtos.c \
                    ../mico_rtos_common.c

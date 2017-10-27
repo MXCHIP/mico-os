@@ -80,8 +80,8 @@ const platform_gpio_t platform_gpio_pins[] =
           [  RF_DIO3  ]                       = { PA_8      },
 };
 
-platform_gpio_driver_t platform_gpio_drivers[MICO_GPIO_MAX];
-platform_gpio_irq_driver_t platform_gpio_irq_drivers[MICO_GPIO_MAX];
+//platform_gpio_driver_t platform_gpio_drivers[MICO_GPIO_MAX];
+//platform_gpio_irq_driver_t platform_gpio_irq_drivers[MICO_GPIO_MAX];
 
 // const platform_pwm_t *platform_pwm_peripherals = NULL;
 
@@ -100,7 +100,7 @@ const platform_i2c_t platform_i2c_peripherals[] =
         }
 };
 
-platform_i2c_driver_t platform_i2c_drivers[MICO_I2C_MAX];
+//platform_i2c_driver_t platform_i2c_drivers[MICO_I2C_MAX];
 
 const platform_uart_t platform_uart_peripherals[] = 
 {
@@ -110,19 +110,19 @@ const platform_uart_t platform_uart_peripherals[] =
             .mbed_rx_pin = STDIO_UART_RX,
         }
 };
-platform_uart_driver_t platform_uart_drivers[MICO_UART_MAX];
+//platform_uart_driver_t platform_uart_drivers[MICO_UART_MAX];
 
 const platform_spi_t platform_spi_peripherals[] =
 {
         [MICO_SPI_1]  =
         {
-            .mbed_scl_pin  = SPI_SCK,
-            .mbed_mosi_pin = SPI_MOSI,
-            .mbed_miso_pin = SPI_MISO,
+//            .mbed_scl_pin  = SPI_SCK,
+//            .mbed_mosi_pin = SPI_MOSI,
+//            .mbed_miso_pin = SPI_MISO,
         }
 };
 
-platform_spi_driver_t platform_spi_drivers[MICO_SPI_MAX];
+//platform_spi_driver_t platform_spi_drivers[MICO_SPI_MAX];
 
 /* Flash memory devices */
 const platform_flash_t platform_flash_peripherals[] =
@@ -141,7 +141,7 @@ const platform_flash_t platform_flash_peripherals[] =
         }
 };
 
-platform_flash_driver_t platform_flash_drivers[MICO_FLASH_MAX];
+//platform_flash_driver_t platform_flash_drivers[MICO_FLASH_MAX];
 
 /* Logic partition on flash devices */
 const platform_logic_partition_t mico_partitions[] =
