@@ -157,13 +157,17 @@ static void easylink_extra_data_cb( int datalen, char* data, system_context_t * 
     { //Use static ip address
         inContext->flashContentInRam.micoSystemConfig.dhcpEnable = false;
 		memcpy(&ipv4_addr.s_addr, &data[index+4], 4);
-        strcpy( (char *) inContext->micoStatus.localIp, inet_ntoa( ipv4_addr ) );
+		ipv4_addr.s_addr = hton32( ipv4_addr.s_addr );
+        strcpy( (char *) inContext->flashContentInRam.micoSystemConfig.localIp, inet_ntoa( ipv4_addr ) );
 		memcpy(&ipv4_addr.s_addr, &data[index+8], 4);
-        strcpy( (char *) inContext->micoStatus.netMask, inet_ntoa( ipv4_addr ) );
+		ipv4_addr.s_addr = hton32( ipv4_addr.s_addr );
+        strcpy( (char *) inContext->flashContentInRam.micoSystemConfig.netMask, inet_ntoa( ipv4_addr ) );
 		memcpy(&ipv4_addr.s_addr, &data[index+12], 4);
-        strcpy( (char *) inContext->micoStatus.gateWay, inet_ntoa( ipv4_addr ) );
+		ipv4_addr.s_addr = hton32( ipv4_addr.s_addr );
+        strcpy( (char *) inContext->flashContentInRam.micoSystemConfig.gateWay, inet_ntoa( ipv4_addr ) );
 		memcpy(&ipv4_addr.s_addr, &data[index+16], 4);
-        strcpy( (char *) inContext->micoStatus.dnsServer, inet_ntoa( ipv4_addr ) );
+		ipv4_addr.s_addr = hton32( ipv4_addr.s_addr );
+        strcpy( (char *) inContext->flashContentInRam.micoSystemConfig.dnsServer, inet_ntoa( ipv4_addr ) );
 
         system_log("Get auth info: %s, EasyLink identifier: %lx, local IP info:%s %s %s %s ", data, easylinkIndentifier, inContext->flashContentInRam.micoSystemConfig.localIp,
             inContext->flashContentInRam.micoSystemConfig.netMask, inContext->flashContentInRam.micoSystemConfig.gateWay,inContext->flashContentInRam.micoSystemConfig.dnsServer);
