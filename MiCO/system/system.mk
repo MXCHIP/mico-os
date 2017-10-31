@@ -45,5 +45,5 @@ $(NAME)_SOURCES += tftp_ota/tftp_ota.c \
 
 $(NAME)_COMPONENTS := system/qc_test system/easylink/MFi_WAC
 
-
+$(NAME)_COMPONENTS += system/aws
 
