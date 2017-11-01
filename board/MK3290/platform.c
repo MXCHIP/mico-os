@@ -214,6 +214,10 @@ void init_platform( void )
   MicoGpioInitialize((mico_gpio_t)BOOT_SEL, INPUT_PULL_UP);
   MicoGpioInitialize((mico_gpio_t)MFG_SEL, INPUT_PULL_UP);
 
+  /* Keep bluenrg in the RESET state. */
+  MicoGpioInitialize((mico_gpio_t)BLUENRG_SPI_RESET_PIN, OUTPUT_PUSH_PULL);
+  MicoGpioOutputLow((mico_gpio_t)BLUENRG_SPI_RESET_PIN);
+
   init.gpio = EasyLink_BUTTON;
   init.pressed_func = PlatformEasyLinkButtonClickedCallback;
   init.long_pressed_func = PlatformEasyLinkButtonLongPressedCallback;
@@ -231,6 +235,10 @@ void init_platform_bootloader( void )
   
   MicoGpioInitialize((mico_gpio_t)BOOT_SEL, INPUT_PULL_UP);
   MicoGpioInitialize((mico_gpio_t)MFG_SEL, INPUT_PULL_UP);
+
+  /* Keep bluenrg in the RESET state. */
+  MicoGpioInitialize((mico_gpio_t)BLUENRG_SPI_RESET_PIN, OUTPUT_PUSH_PULL);
+  MicoGpioOutputLow((mico_gpio_t)BLUENRG_SPI_RESET_PIN);
 
   return;
 }

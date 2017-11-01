@@ -140,21 +140,21 @@ typedef enum
 } mico_user_partition_t;
 
 #ifdef BOOTLOADER
-#define STDIO_UART       (MICO_UART_1)
+#define STDIO_UART       (MICO_UART_2)
 #define STDIO_UART_BAUDRATE (921600)
 #else
-#define STDIO_UART       (MICO_UART_1)
+#define STDIO_UART       (MICO_UART_2)
 #define STDIO_UART_BAUDRATE (921600) 
 #endif
 
-#define UART_FOR_APP     (MICO_UART_1)
-#define MFG_TEST         (MICO_UART_1)
-#define CLI_UART         (MICO_UART_1)
+#define UART_FOR_APP     (MICO_UART_2)
+#define MFG_TEST         (MICO_UART_2)
+#define CLI_UART         (MICO_UART_2)
 
 /* BlueNRG-1 SPI Interface */
 #define BLUENRG_SPI_PORT        MICO_SPI_1
-#define BLUENRG_SPI_IRQ_PIN     MICO_GPIO_0
-#define BLUENRG_SPI_RESET_PIN   MICO_GPIO_1
+#define BLUENRG_SPI_IRQ_PIN     MICO_GPIO_10
+#define BLUENRG_SPI_RESET_PIN   MICO_GPIO_11
 #define BLUENRG_SPI_CS_PIN      MICO_GPIO_15
 
 /* Components connected to external I/Os*/
