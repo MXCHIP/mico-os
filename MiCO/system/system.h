@@ -31,6 +31,7 @@
 #define CONFIG_MODE_SOFTAP                      (5)
 #define CONFIG_MODE_MONITOR                     (6)
 #define CONFIG_MODE_MONITOR_EASYLINK            (7)
+#define CONFIG_MODE_AWS                         (8) 
 
 
 

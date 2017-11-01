@@ -186,6 +186,7 @@ typedef enum{
   CONFIG_BY_MONITOR,          /**< Wlan configured by airkiss from wechat Tencent inc. */
   CONFIG_BY_SOFT_AP,          /**< Wlan configured by EasyLink soft ap mode */
   CONFIG_BY_WAC,              /**< Wlan configured by wireless accessory configuration from Apple inc. */
+  CONFIG_BY_AWS,
   CONFIG_BY_USER,             /**< Wlan configured by user defined functions. */
 } mico_config_source_t;
 

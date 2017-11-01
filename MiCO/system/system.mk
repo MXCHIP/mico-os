@@ -31,6 +31,7 @@ $(NAME)_SOURCES += easylink/system_easylink_delegate.c \
                    easylink/system_easylink_usr.c \
                    easylink/system_easylink_softap.c \
                    easylink/system_easylink_monitor.c \
+                   easylink/system_aws.c \
                    easylink/internal/easylink_bonjour.c
                    
 $(NAME)_INCLUDES += easylink/internal
@@ -45,5 +46,5 @@ $(NAME)_SOURCES += tftp_ota/tftp_ota.c \
 
 $(NAME)_COMPONENTS := system/qc_test system/easylink/MFi_WAC
 
-$(NAME)_COMPONENTS += system/aws
+$(NAME)_COMPONENTS += system/easylink/aws
 
