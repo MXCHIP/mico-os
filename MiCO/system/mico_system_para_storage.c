@@ -29,7 +29,7 @@ static int32_t seedNum = 0;
 #define CRC_SIZE      ( 2 )
 
 system_context_t* sys_context = NULL;
-
+static mico_mutex_t para_flash_mutex = NULL;
 //#define para_log(M, ...) custom_log("MiCO Settting", M, ##__VA_ARGS__)
 
 #define para_log(M, ...)
@@ -81,6 +81,7 @@ void* mico_system_context_init( uint32_t user_config_data_size )
   para_log( "Init context: len=%d", sizeof(system_context_t));
 
   mico_rtos_init_mutex( &sys_context->flashContentInRam_mutex );
+  mico_rtos_init_mutex( &para_flash_mutex);
   MICOReadConfiguration( sys_context );
 
 exit:
@@ -155,7 +156,7 @@ static OSStatus internal_update_config( system_context_t * const inContext )
   require_action(inContext, exit, err = kNotPreparedErr);
 
   para_log("Flash write!");
-
+  mico_rtos_lock_mutex( &para_flash_mutex);
   partition = MicoFlashGetInfo( MICO_PARTITION_PARAMETER_1 );
   err = MicoFlashErase( MICO_PARTITION_PARAMETER_1, 0x0, partition->partition_length);
   require_noerr(err, exit);
@@ -177,6 +178,7 @@ static OSStatus internal_update_config( system_context_t * const inContext )
   para_offset = partition->partition_length - CRC_SIZE;
   err = MicoFlashRead( MICO_PARTITION_PARAMETER_1, &para_offset, (uint8_t *)&crc_readback, CRC_SIZE );
   if( crc_readback != crc_result) {
+    mico_rtos_unlock_mutex( &para_flash_mutex);
     para_log( "crc_readback = %d, crc_result %d", crc_readback, crc_result);
     return kWriteErr;
   }
@@ -199,6 +201,7 @@ static OSStatus internal_update_config( system_context_t * const inContext )
   require_noerr(err, exit);
 
 exit:
+  mico_rtos_unlock_mutex( &para_flash_mutex);
   return err;
 }
 
