@@ -10,6 +10,15 @@ proc load_image_bin {fname foffset address length } {
     load_image $fname [expr $address - $foffset] bin $address $length
 }
 
+proc flash_boot_check { } {
+    halt
+    set boot [memread32 0x20]
+    if { $boot == 0x2E302E31 } {
+        error "Bootloader version is too low"
+        exit -1;
+    }
+}
+
 proc flash_program { file_name dest_addr } {
 
     soft_reset_halt
