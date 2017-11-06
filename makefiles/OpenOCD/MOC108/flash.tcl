@@ -14,7 +14,7 @@ proc flash_boot_check { } {
     halt
     set boot [memread32 0x20]
     if { $boot == 0x2E302E31 } {
-        error "Bootloader version is too low"
+        error "Bootloader version is too low, v1.1.0 or higher required."
         exit -1;
     }
 }
