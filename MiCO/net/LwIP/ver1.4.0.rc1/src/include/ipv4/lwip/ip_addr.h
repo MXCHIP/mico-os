@@ -236,6 +236,19 @@ u8_t ip4_addr_netmask_valid(u32_t netmask);
 #define ip4_addr3_16(ipaddr) ((u16_t)ip4_addr3(ipaddr))
 #define ip4_addr4_16(ipaddr) ((u16_t)ip4_addr4(ipaddr))
 
+#define IPADDR4_INIT(u32val)                    { u32val }
+#define IPADDR4_INIT_BYTES(a,b,c,d)             IPADDR4_INIT(PP_HTONL(LWIP_MAKEU32(a,b,c,d)))
+#define IP_IS_V4_VAL(ipaddr)                    1
+#define IP_IS_V6_VAL(ipaddr)                    0
+#define IP_IS_V4(ipaddr)                        1
+#define IP_IS_V6(ipaddr)                        0
+#define IP_IS_ANY_TYPE_VAL(ipaddr)              0
+#define IP_SET_TYPE_VAL(ipaddr, iptype)
+#define IP_SET_TYPE(ipaddr, iptype)
+#define IP_GET_TYPE(ipaddr)                     IPADDR_TYPE_V4
+#define ip_2_ip4(ipaddr)                        (ipaddr)
+#define IP_ADDR4(ipaddr,a,b,c,d)                IP4_ADDR(ipaddr,a,b,c,d)
+
 /** For backwards compatibility */
 #define ip_ntoa(ipaddr)  ipaddr_ntoa(ipaddr)
 

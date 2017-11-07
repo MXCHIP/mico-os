@@ -35,6 +35,7 @@ $(NAME)_COMPONENTS += platform/mbed/mbed-os
 TARGETS := $(foreach target, $(MBED_TARGETS), TARGET_$(target))
 $(eval DIRS := $(shell $(PYTHON) $(LIST_SUB_DIRS_SCRIPT) mico-os/platform/mbed/targets))
 $(foreach DIR, $(DIRS), $(if $(filter $(notdir $(DIR)), $(TARGETS)), $(eval $(NAME)_COMPONENTS += $(subst \,/,$(DIR))),))
+$(foreach target, $(TARGETS), $(eval GLOBAL_DEFINES += $(target)))
 
 # Source files
 $(NAME)_SOURCES := mico_platform_common.c \

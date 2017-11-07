@@ -150,6 +150,15 @@ extern "C" {
  ******************************************************************************/
 
 /**
+ *  MICO_CONFIG_IP_VER_PREF: On dual stack configuration how long wait for preferred stack
+ *  4 or 6
+ */
+
+#if !defined MICO_CONFIG_IP_VER_PREF
+#define MICO_CONFIG_IP_VER_PREF                4
+#endif
+
+/**
  *  MICO_CONFIG_IPV6: Enable IPv4 and IPv6 dual stack apis, Default: disabled
  */
 #if !defined MICO_CONFIG_IPV6
@@ -256,6 +265,19 @@ extern "C" {
 #define CONFIG_LWS_DEBUG                       MICO_DEBUG_OFF
 #endif
 
+#if !defined CONFIG_ETH_DEBUG
+#define CONFIG_ETH_DEBUG                       MICO_DEBUG_OFF
+#endif
+
+
+
+/******************************************************************************
+ *                            Platform
+ ******************************************************************************/
+
+#if !defined PLATFORM_ETH_ENABLE
+#define PLATFORM_ETH_ENABLE                    0
+#endif
 
 #ifdef __cplusplus
 } /*extern "C" */

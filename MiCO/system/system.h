@@ -175,15 +175,6 @@ typedef struct
 } system_status_wlan_t;
 
 
-typedef enum {
-  NOTIFY_STATION_UP = 1,
-  NOTIFY_STATION_DOWN,
-
-  NOTIFY_AP_UP,
-  NOTIFY_AP_DOWN,
-} notify_wlan_t; 
-
-
 #ifdef __cplusplus
 } /*extern "C" */
 #endif

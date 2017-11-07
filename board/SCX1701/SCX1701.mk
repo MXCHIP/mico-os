@@ -1,7 +1,7 @@
 ############################################################################### 
 #
 #  The MIT License
-#  Copyright (c) 2016 MXCHIP Inc.
+#  Copyright (c) 2017 MXCHIP Inc.
 #
 #  Permission is hereby granted, free of charge, to any person obtaining a copy 
 #  of this software and associated documentation files (the "Software"), to deal
@@ -51,7 +51,8 @@ $(NAME)_COMPONENTS += drivers/spi_flash
 $(NAME)_COMPONENTS += drivers/keypad/gpio_button
 
 # Source files
-$(NAME)_SOURCES := mico_board.c
+$(NAME)_SOURCES := mico_board.c \
+                   platform_eth.c
 
 ifndef NO_WIFI_FIRMWARE
 WIFI_FIRMWARE := $(MICO_OS_PATH)/resources/wifi_firmware/$(WLAN_CHIP)/$(WLAN_CHIP)$(WLAN_CHIP_REVISION)$(WLAN_CHIP_BIN_TYPE)-$(WLAN_CHIP_FIRMWARE_VER).bin

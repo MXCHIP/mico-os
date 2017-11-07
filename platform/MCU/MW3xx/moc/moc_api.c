@@ -413,19 +413,13 @@ void MicoRtcInitialize(void)
 	lib_api_p->MicoRtcInitialize();
 }
 
-OSStatus MicoRtcGetTime(mico_rtc_time_t* time)
+OSStatus MicoRtcGetTime(time_t* time)
 {
-	int ret =  lib_api_p->MicoRtcGetTime(time);
-
-	time->month += 1;
-	time->year -= 100;
-	return ret;
+	return lib_api_p->MicoRtcGetTime(time);
 }
 
-OSStatus MicoRtcSetTime(mico_rtc_time_t* time)
+OSStatus MicoRtcSetTime(time_t time)
 {
-	time->month -= 1;
-	time->year += 100;
 	return lib_api_p->MicoRtcSetTime(time);
 }
 

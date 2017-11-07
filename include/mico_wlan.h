@@ -35,6 +35,7 @@
 
 #include "mico_opt.h"
 #include "mico_common.h"
+#include "mico_network.h"
 #include "mico_socket.h"
 
 
@@ -160,36 +161,6 @@ extern "C" {
 #define DHCP_Client   (1)   /**< Enable DHCP client which get IP address from DHCP server automatically,  
                                  reset Wi-Fi connection if failed. */
 #define DHCP_Server   (2)   /**< Enable DHCP server, needs assign a static address as local address. */
-
-/** 
- *  @brief  wlan network interface enumeration definition.
- */ 
-typedef enum { 
-  Soft_AP,  /**< Act as an access point, and other station can connect, 4 stations Max*/
-  Station,   /**< Act as a station which can connect to an access point*/
-  INTERFACE_UAP = Soft_AP,
-  INTERFACE_STA = Station,
-  INTERFACE_ETH,
-  INTERFACE_MAX,
-  INTERFACE_NONE = 0xFF,
-} wlanInterfaceTypedef; 
-
-typedef uint8_t wlan_if_t;
-typedef uint8_t netif_t;
-
-/**
- *  @brief  network interface status.
- */
-enum {
-  INTERFACE_STATUS_UP,
-  INTERFACE_STATUS_DOWN,
-};
-
-typedef uint8_t wlan_if_status_t;
-typedef uint8_t netif_status_t;
-
-#define IS_INTERFACE_UP(netif)   ((netif_status[netif] == INTERFACE_STATUS_UP)? 1:0)
-#define IS_INTERFACE_DOWN(netif)   ((netif_status[netif] == INTERFACE_STATUS_DOWN)? 1:0)
 
 
 /** 
@@ -432,14 +403,20 @@ typedef struct _wifi_mgmt_frame_tx
 } wifi_mgmt_frame_tx;
 #pragma pack()
 
-extern netif_status_t netif_status[INTERFACE_MAX];
-
 /** @defgroup MICO_WLAN_GROUP_1 MiCO Basic Wlan Functions
   * @brief Provide Basic APIs for MiCO wlan functions
   * @{
   */
 
 void mico_wlan_get_mac_address( uint8_t *mac );
+
+/** @brief  Set default network interface
+ *
+ *  @param  interface: Interface @ref netif_t
+ *
+ *  @return none
+ */
+void mico_wlan_set_default_interface(netif_t interface);
 
 /** @brief  Connect or establish a Wi-Fi network in normal mode (station or soft ap mode).
  * 

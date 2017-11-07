@@ -53,7 +53,11 @@
 #define MAX_MDNS_LST 5
 
 /* Total number of interface config supported by mdns */
+#if PLATFORM_ETH_ENABLE
+#define MDNS_MAX_SERVICE_CONFIG 3
+#else
 #define MDNS_MAX_SERVICE_CONFIG 2
+#endif
 
 /** MDNS Error Codes */
 #define ERR_MDNS_BASE              -36650   /** Starting error code for all mdns errors. */

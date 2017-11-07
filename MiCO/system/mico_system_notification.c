@@ -93,9 +93,17 @@ void WifiStatusHandler(WiFiEvent status)
         case NOTIFY_AP_DOWN:
             netif_status[INTERFACE_UAP] = INTERFACE_STATUS_DOWN;
             break;
+        case NOTIFY_ETH_UP:
+            netif_status[INTERFACE_ETH] = INTERFACE_STATUS_UP;
+            break;
+        case NOTIFY_ETH_DOWN:
+            netif_status[INTERFACE_ETH] = INTERFACE_STATUS_DOWN;
+            break;
         default:
             break;
     }
+
+    mico_network_switch_interface_auto( );
 
   _Notify_list_t *temp =  Notify_list[mico_notify_WIFI_STATUS_CHANGED];
   if(temp == NULL)

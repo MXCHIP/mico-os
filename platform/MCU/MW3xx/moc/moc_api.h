@@ -394,8 +394,8 @@ typedef struct mico_api_struct
 
     /* RTC */
     void (*MicoRtcInitialize)( void );
-    OSStatus (*MicoRtcGetTime)( mico_rtc_time_t* time );
-    OSStatus (*MicoRtcSetTime)( mico_rtc_time_t* time );
+    OSStatus (*MicoRtcGetTime)(time_t *time);
+    OSStatus (*MicoRtcSetTime)(time_t time);
     struct tm* (*localtime)( const time_t * time );
     char * (*asctime)( const struct tm *tm );
 

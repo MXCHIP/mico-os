@@ -102,6 +102,12 @@ static void net_status_changed_delegate(WiFiEvent event, void *arg)
         mdns_iface_group_state_change(INTERFACE_UAP, JOIN);
         mdns_iface_state_change(INTERFACE_UAP, UP);
         break;
+#if PLATFORM_ETH_ENABLE
+    case NOTIFY_ETH_UP:
+        mdns_iface_group_state_change(INTERFACE_ETH, JOIN);
+        mdns_iface_state_change(INTERFACE_ETH, UP);
+        break;
+#endif
     default:
         break;
     }
@@ -112,6 +118,9 @@ static void system_will_poweroff_delegate(void *arg)
     UNUSED_PARAMETER(arg);
     mdns_iface_state_change(INTERFACE_STA, DOWN);
     mdns_iface_state_change(INTERFACE_UAP, DOWN);
+#if PLATFORM_ETH_ENABLE
+    mdns_iface_state_change(INTERFACE_ETH, DOWN);
+#endif
 }
 
 /**************************Thread and System Functions**************************/

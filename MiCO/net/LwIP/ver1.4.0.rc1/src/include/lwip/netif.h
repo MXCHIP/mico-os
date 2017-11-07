@@ -279,6 +279,16 @@ void netif_set_default(struct netif *netif);
 void netif_set_ipaddr(struct netif *netif, ip_addr_t *ipaddr);
 void netif_set_netmask(struct netif *netif, ip_addr_t *netmask);
 void netif_set_gw(struct netif *netif, ip_addr_t *gw);
+#define netif_ip4_addr(netif)    (&((netif)->ip_addr))
+#define netif_ip4_netmask(netif) (&((netif)->netmask))
+#define netif_ip4_gw(netif)      (&((netif)->gw))
+
+/** @ingroup netif_ip4 */
+#define netif_ip_addr4(netif)    ((const ip_addr_t*)&((netif)->ip_addr))
+/** @ingroup netif_ip4 */
+#define netif_ip_netmask4(netif) ((const ip_addr_t*)&((netif)->netmask))
+/** @ingroup netif_ip4 */
+#define netif_ip_gw4(netif)      ((const ip_addr_t*)&((netif)->gw))
 
 void netif_set_up(struct netif *netif);
 void netif_set_down(struct netif *netif);

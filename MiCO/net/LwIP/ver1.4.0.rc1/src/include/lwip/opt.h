@@ -492,6 +492,14 @@
    ---------- IP options ----------
    --------------------------------
 */
+
+/**
+ * LWIP_IPV4==1: Enable IPv4
+ */
+#ifndef LWIP_IPV4
+#define LWIP_IPV4                       1
+#endif
+
 /**
  * IP_FORWARD==1: Enables the ability to forward IP packets across network
  * interfaces. If you are going to run lwIP on a device with only one network

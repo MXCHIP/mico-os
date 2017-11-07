@@ -52,6 +52,7 @@ extern "C" {
 #define MICO_NETWORKING_WORKER_THREAD      ( (mico_worker_thread_t*)&mico_worker_thread )
 #define MICO_WORKER_THREAD                 ( (mico_worker_thread_t*)&mico_worker_thread )
 
+#define MICO_RTOS_HIGEST_PRIORITY         (0)
 #define MICO_NETWORK_WORKER_PRIORITY      (3)
 #define MICO_DEFAULT_WORKER_PRIORITY      (5)
 #define MICO_DEFAULT_LIBRARY_PRIORITY     (5)

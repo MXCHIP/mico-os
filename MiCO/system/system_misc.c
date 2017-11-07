@@ -88,6 +88,12 @@ static void micoNotify_WifiStatusHandler(WiFiEvent event, system_context_t * con
     system_log("uAP deleted");
     MicoRfLed(false);
     break;
+  case NOTIFY_ETH_UP:
+    system_log("ETH up");
+    break;
+  case NOTIFY_ETH_DOWN:
+    system_log("ETH down");
+    break;
   default:
     break;
   }
@@ -229,11 +235,17 @@ OSStatus system_network_daemen_start( system_context_t * const inContext )
   inContext->micoStatus.rf_version[49] = 0x0;
 
   system_log("Kernel version: %s", MicoGetVer());
-
   mico_sdk_version( &major, &minor, &revision );
   system_log( "MiCO version: %d.%d.%d", major, minor, revision );
 
-  system_log("Wi-Fi driver version %s, mac %s", inContext->micoStatus.rf_version, inContext->micoStatus.mac);
+  system_log("Wi-Fi driver version %s", inContext->micoStatus.rf_version);
+  system_log("Wi-Fi mac address: %s", inContext->micoStatus.mac);
+
+
+#if PLATFORM_ETH_ENABLE
+  mico_eth_bringup(true, NULL, NULL, NULL);
+  system_log("Ethernet mac address %s", mico_eth_get_mac_address());
+#endif
 
   if(inContext->flashContentInRam.micoSystemConfig.rfPowerSaveEnable == true){
     micoWlanEnablePowerSave();

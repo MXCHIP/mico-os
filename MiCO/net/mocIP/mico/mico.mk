@@ -11,4 +11,4 @@ NAME := MiCO_$(NET)_Interface
 
 GLOBAL_INCLUDES += .
 					
-$(NAME)_SOURCES := mico_socket.c
+$(NAME)_SOURCES := mico_socket.c mico_network.c

@@ -1019,6 +1019,16 @@ inline uint32_t platform_irq_entry( platform_irq_handle *irq )
 void platform_irq_deinit( platform_irq_handle *irq );
 
 
+/** This returns a unique 6-byte MAC address, based on the interface UID
+ * If the interface is not present, it returns a default fixed MAC address (00:02:F7:F0:00:00)
+ *
+ * This is a weak function that can be overwritten if you want to provide your own mechanism to
+ * provide a MAC address.
+ *
+ *  @param mac A 6-byte array to write the MAC address
+ */
+void platform_eth_mac_address(char *mac);
+
 
 #ifdef __cplusplus
 } /*"C" */

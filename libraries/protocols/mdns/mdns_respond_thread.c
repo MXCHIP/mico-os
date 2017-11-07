@@ -1366,7 +1366,7 @@ static int check_max_response(struct mdns_message *rx, struct mdns_message *tx,
 	 * has been received
 	 */
 	mr_stats.rx_queries--;
-	if (prepare_response(rx, tx, config_idx) < RS_SEND) {
+	if (prepare_response(rx, tx, config_idx) < RS_NO_SEND) {
 		LOG("Resource records don't fit into response packet.");
 		return -1;
 	}
@@ -1481,7 +1481,7 @@ int mdns_verify_service(struct mdns_service *services[], netif_t iface)
 /* Function registers services as well as interface in config_g */
 int mdns_add_service_iface(struct mdns_service *services[], netif_t iface)
 {
-	int i, config_idx, srv_idx;
+	int i, config_idx = 255, srv_idx;
 
 	if (iface == INTERFACE_NONE || services == NULL)
 		return ERR_MDNS_INVAL;
@@ -1494,6 +1494,8 @@ int mdns_add_service_iface(struct mdns_service *services[], netif_t iface)
 			config_idx = i;
 		}
 	}
+
+	if( config_idx == 255 )  return ERR_MDNS_TOOBIG;
 
 	config_g[config_idx].iface_idx = iface;
 

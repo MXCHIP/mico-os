@@ -59,6 +59,21 @@
 extern "C" {
 #endif
 
+
+#define LWIP_NETIF_HOSTNAME             (1)
+
+/**
+ * LWIP_NETIF_STATUS_CALLBACK==1: Support a callback function whenever an interface
+ * changes its up/down status (i.e., due to DHCP IP acquistion)
+ */
+#define LWIP_NETIF_STATUS_CALLBACK      (1)
+
+/**
+ * LWIP_NETIF_LINK_CALLBACK==1: Support a callback function from an interface
+ * whenever the link changes (i.e., link down)
+ */
+#define LWIP_NETIF_LINK_CALLBACK        (1)
+
 /**
  * MEM_ALIGNMENT: should be set to the alignment of the CPU
  *    4 byte alignment -> #define MEM_ALIGNMENT 4
@@ -235,8 +250,8 @@ extern "C" {
 /**
  * LWIP_PROVIDE_ERRNO: System does not have errno defines - force LwIP to create them
  */
-#define LWIP_PROVIDE_ERRNO             (1)
-#define ERRNO                          (1)
+#define LWIP_PROVIDE_ERRNO             (0)
+#define ERRNO                          (0)
 
 /**
  * MEMP_NUM_SYS_TIMEOUT: the number of simulateously active timeouts.
@@ -256,7 +271,7 @@ extern "C" {
  * LWIP_NETIF_LOOPBACK==1: Support sending packets with a destination IP
  * address equal to the netif IP address, looping them back up the stack.
  */
-#define LWIP_NETIF_LOOPBACK            (0)
+#define LWIP_NETIF_LOOPBACK            (1)
 
 /**
  * MEMP_NUM_NETCONN: the number of struct netconns.
@@ -318,9 +333,6 @@ extern "C" {
 #define LWIP_RANDOM_INITIAL_TCP_PORT
 
 
-/* Enable IP address change notification */
-#define LWIP_NETIF_IP_CHANGE_CALLBACK (1)
-
 /* We are using a a POSIX operating system that uses the same names */
 #define LWIP_COMPAT_SOCKETS            (0)
 
@@ -376,6 +388,7 @@ extern "C" {
 #define LWIP_DBG_TYPES_ON              (LWIP_DBG_OFF)   /* (LWIP_DBG_ON|LWIP_DBG_TRACE|LWIP_DBG_STATE|LWIP_DBG_FRESH|LWIP_DBG_HALT) */
 #endif
 
+#define  LWIP_PREFIX_BYTEORDER_FUNCS
 
 #ifdef __cplusplus
 } /*extern "C" */

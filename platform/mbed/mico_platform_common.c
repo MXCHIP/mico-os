@@ -840,4 +840,12 @@ micoMemInfo_t* mico_memory_info( void )
     return &mico_memory;
 }
 
-
+WEAK void platform_eth_mac_address( char *mac )
+{
+    mac[0] = 0x00;
+    mac[1] = 0x02;
+    mac[2] = 0xF7;
+    mac[3] = 0xF0;
+    mac[4] = 0x00;
+    mac[5] = 0x00;
+}
