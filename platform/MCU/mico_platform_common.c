@@ -731,7 +731,19 @@ exit:
 char *mico_get_bootloader_ver(void)
 {
   #ifdef CONFIG_MX108
-  return (char *)0x00000020;
+  static char boot_ver[64];
+  uint16_t reg_status;
+  uint8_t blocks;
+
+  strncpy(boot_ver, (const char *)0x00000020, sizeof(boot_ver) - 3);
+
+  flash_ctrl(0xe240000 + 6, &reg_status);
+  blocks = (reg_status >> 2) & 0x0F;
+  if(blocks != 1)
+  {
+    strcat(boot_ver, "-x");
+  }
+  return boot_ver;
   #else
   static char ver[33];
   const mico_logic_partition_t* bootloader_partition = &mico_partitions[ MICO_PARTITION_BOOTLOADER ];
