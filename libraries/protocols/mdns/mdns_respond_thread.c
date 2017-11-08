@@ -509,7 +509,7 @@ static int valid_label(const char *name)
  * corresponding index of global mdns service configuration array */
 static int get_config_idx_from_ip(uint32_t incoming_ip)
 {
-	int i;
+	int i, ret = -1;
 	uint32_t interface_ip, interface_mask;
 	IPStatusTypedef interface_ip_info;
 	for (i = 0; i < MDNS_MAX_SERVICE_CONFIG; i++) {
@@ -517,8 +517,10 @@ static int get_config_idx_from_ip(uint32_t incoming_ip)
 	    interface_ip = inet_addr(interface_ip_info.ip);
 	    interface_mask = inet_addr(interface_ip_info.mask);
 
+        if (interface_ip == incoming_ip) // from myself.
+            return -1;
         if ( interface_ip != 0 && (interface_ip & interface_mask) == (incoming_ip & interface_mask))
-			return i;
+			ret = i;
 #ifdef CONFIG_BONJ_CONFORMANCE
 		/* If current interface has link local address or incoming
 		 * packet is from link-local address then
@@ -530,14 +532,14 @@ static int get_config_idx_from_ip(uint32_t incoming_ip)
 		 * out the interface from which the packet has come.
 		 */
 		else if ((interface_ip & 0xff) == 0xa9) {
-			return i;
+			ret = i;
 		} else if ((incoming_ip & 0xff) == 0xa9) {
-			return i;
+			ret = i;
 		}
 #endif /* CONFIG_BONJ_CONFORMANCE */
 
 	}
-	return -1;
+	return ret;
 }
 
 /* Function returns index of global mdns service configuration array,
@@ -750,6 +752,7 @@ static int prepare_probe(struct mdns_message *m, int config_idx,
 		/* Reset service name conflict flag */
 		sn_conflict = false;
 	}
+
 	/* Populate the internal data structures of m to facilitate easy
 	 * comparision of probe to a probe response later. Update the end
 	 * pointer at the end of buffer so that packet can be grown if
@@ -2097,6 +2100,10 @@ int process_inter_probe_rx(int sock, int *state, int *event,
 	config_idx = get_config_idx_from_ip(from_v4->sin_addr.s_addr);
 #endif
 
+    if (config_idx == -1) {
+		mr_stats.rx_errors++;
+		return kGeneralErr;
+    }
 	mr_stats.total_rx++;
 
 	ret = mdns_parse_message(&rx_msg, len);
@@ -2582,7 +2589,10 @@ static void do_responder(void)
 #else
 				config_idx = get_config_idx_from_ip( from_v4->sin_addr.s_addr);
 #endif
-
+            if (config_idx == -1) {
+                
+        		continue;
+            }
 			mr_stats.total_rx++;
 			ret = mdns_parse_message(&rx_msg, len);
 			if (ret != 0) {
