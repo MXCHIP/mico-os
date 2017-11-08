@@ -98,13 +98,13 @@ OSStatus mico_network_switch_interface_auto( void )
         if ( IS_INTERFACE_UP( netif_prioritys[i] ) ) {
             if( netif_prioritys[i] != default_if ) {
                 default_if = netif_prioritys[i];
-                err = mico_rtos_send_asynchronous_event( MICO_NETWORKING_WORKER_THREAD, set_default_interface, NULL );
             }
             break;
         }
     }
 
 exit:
+    err = mico_rtos_send_asynchronous_event( MICO_NETWORKING_WORKER_THREAD, set_default_interface, NULL );
     return err;
 }
 
