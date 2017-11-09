@@ -363,8 +363,8 @@ OSStatus mico_easylink_monitor_with_easylink( mico_Context_t * const in_context,
     }
 
     if ( enable == MICO_TRUE ) {
-        err = mico_rtos_create_thread( &easylink_monitor_thread_handler, MICO_APPLICATION_PRIORITY, "EASYLINK",
-                                       easylink_monitor_thread, 0x1000, (mico_thread_arg_t) in_context );
+        err = mico_rtos_create_thread(&easylink_monitor_thread_handler, MICO_DEFAULT_LIBRARY_PRIORITY, "EASYLINK",
+                                      easylink_monitor_thread, 0x1000, (mico_thread_arg_t)in_context);
         require_noerr_string( err, exit, "ERROR: Unable to start the EasyLink monitor thread." );
 
         /* Make sure easylink is already running, and waiting for sem trigger */
