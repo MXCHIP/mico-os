@@ -1230,7 +1230,7 @@ OSStatus ble_access_auto_conn_parms_handler(const mico_bt_device_address_t devic
     memcpy((void *)&parm->conn_settings,
            (void *)&ble_access_connection_settings,
            sizeof(mico_bt_smart_connection_settings_t));
-    memcpy((void *)&parm->ble_access_security_settings,
+    memcpy((void *)&parm->security_settings,
            (void *)&ble_access_security_settings,
            sizeof(mico_bt_smart_security_settings_t));
 
