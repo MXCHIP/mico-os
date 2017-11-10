@@ -700,8 +700,14 @@ OSStatus mico_wlan_send_mgnt(uint8_t *buffer, uint32_t length)
 	return kNoErr;
 }
 
+/* 3031 MCU power save mode set to PM2 */
 void MicoMcuPowerSaveConfig(int enable)
 {
+    if (enable) {
+        lib_api_p->pm_mcu_cfg(true, PM2, 10);// auto go to sleep mode if sleep time bigger than 10ms.
+    } else {
+        lib_api_p->pm_mcu_cfg(false, PM2, 10);
+    }
 }
 
 /**
