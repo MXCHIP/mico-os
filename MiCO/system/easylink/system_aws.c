@@ -307,10 +307,18 @@ char* aws_notify_msg_create(system_context_t *context)
     memset(aws_notify_msg, 0, AWS_NOTIFY_MSG_LEN);
 #if 1
     snprintf(aws_notify_msg, AWS_NOTIFY_MSG_LEN,
-             "{\"FW\":\"%s\",\"HD\":\"%s\",\"PO\":\"%s\",\"RF\":\"%s\",\"MAC\":\"%s\",\"OS\":\"%s\",\"MD\":\"%s\",\"MF\":\"%s\"}",
+             "{\"FW\":\"%s\",\"HD\":\"%s\",\"PO\":\"%s\",\"RF\":\"%s\",\"MAC\":\"%s\",\"OS\":\"%s\",\"MD\":\"%s\",\"MF\":\"%s\"",
              FIRMWARE_REVISION, HARDWARE_REVISION, PROTOCOL,
              context->micoStatus.rf_version, context->micoStatus.mac,
              MicoGetVer( ), MODEL, MANUFACTURER );
+
+    sprintf(aws_notify_msg, "%s,\"wlan unconfigured\":\"F\"", aws_notify_msg);
+
+#ifdef MICO_CONFIG_SERVER_ENABLE
+    sprintf(aws_notify_msg, "%s,\"FTC\":\"T\",\"PORT\":%d}", aws_notify_msg,MICO_CONFIG_SERVER_PORT);
+#else
+    sprintf(aws_notify_msg, "%s,\"FTC\":\"F\"}", aws_notify_msg);
+#endif
 #else
     sprintf(aws_notify_msg, "{\"version\":\"1.6\",\"model\":\"%s\",\"sn\":\"%s\"}",
         "ALINKTEST_LIVING_LIGHT_ALINK_TEST", sn);
