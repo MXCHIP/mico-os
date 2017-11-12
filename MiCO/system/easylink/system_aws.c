@@ -135,7 +135,7 @@ static int aws_broadcast_notification(char *msg, int msg_num)
         if (aws_thread_force_exit == true) {
             break;
         }
-        ret = sendto((void *)fd, msg, strlen(msg), 0, (struct sockaddr *)&s_addr, sizeof(s_addr));
+        ret = sendto(fd, msg, strlen(msg), 0, (struct sockaddr *)&s_addr, sizeof(s_addr));
         if (ret < 0) {
             system_log("awss send notify msg ERROR!\r\n");
         } else {

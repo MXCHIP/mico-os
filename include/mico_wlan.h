@@ -513,6 +513,8 @@ OSStatus micoWlanStartEasyLink(int inTimeout);
  */
 
 OSStatus micoWlanStartEasyLinkPlus(int inTimeout);
+OSStatus micoWlanStartAws(int inTimeout);
+
 
 /** @brief  Start EasyLink plus configuration with UAP coexistence
  *
@@ -535,6 +537,7 @@ OSStatus mico_wlan_easylink_uap_start(int timeout, char *ssid, char*key, int cha
  */
 OSStatus micoWlanStopEasyLink(void);
 OSStatus micoWlanStopEasyLinkPlus(void);
+OSStatus micoWlanStopAws(void);
 
 /**
   * @}

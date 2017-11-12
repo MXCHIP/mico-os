@@ -292,6 +292,14 @@ OSStatus mico_easylink_wac( mico_Context_t * const inContext, mico_bool_t enable
 OSStatus mico_easylink( mico_Context_t * const in_context, mico_bool_t enable );
 
 /**
+  * @brief  Start wlan configuration mode: EasyLink AWS protocol
+  * @param  inContext: MiCO system core data, initialized by @ref mico_system_context_init
+  * @param  enable: MICO_TRUE to start and MICO_FALSE to stop
+  * @retval kNoErr is returned on success, otherwise, kXXXErr is returned.
+  */
+OSStatus mico_easylink_aws( mico_Context_t * const in_context, mico_bool_t enable );
+
+/**
   * @brief  Start wlan configuration mode: User mode, setup a routine that monitor wlan
   *         connection, once wlan is connected, save inContext content to flash. Developer
   *         only need to find a way to get ssid and password, and tell easylink user routine

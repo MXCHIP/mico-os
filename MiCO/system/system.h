@@ -57,7 +57,7 @@ extern "C" {
 #define MiCO_SDK_VERSION_REVISION   (1)
 #endif
 
-#if MICO_WLAN_CONFIG_MODE == CONFIG_MODE_WAC || MICO_WLAN_CONFIG_MODE == CONFIG_MODE_AWS
+#if MICO_WLAN_CONFIG_MODE == CONFIG_MODE_WAC
 #define EasyLink_Needs_Reboot
 #endif
 
