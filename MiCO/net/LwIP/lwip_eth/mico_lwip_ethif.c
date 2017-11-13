@@ -178,19 +178,23 @@ OSStatus mico_eth_bringup(bool dhcp, const char *ip, const char *netmask, const 
     u32_t ret;
 
 #if LWIP_IPV4
+    ip_addr_t ip_addr;
+    ip_addr_t netmask_addr;
+    ip_addr_t gw_addr;
+    
     if (!dhcp) {
-        ip_addr_t ip_addr;
-        ip_addr_t netmask_addr;
-        ip_addr_t gw_addr;
-
         if (!inet_aton(ip, &ip_addr) ||
             !inet_aton(netmask, &netmask_addr) ||
             !inet_aton(gw, &gw_addr)) {
             return kParamErr;
         }
-
-        netif_set_addr(&lwip_netif, &ip_addr, &netmask_addr, &gw_addr);
+    } else {
+        ip_addr_set_zero(&ip_addr);
+        ip_addr_set_zero(&netmask_addr);
+        ip_addr_set_zero(&gw_addr);
     }
+
+    netif_set_addr(&lwip_netif, &ip_addr, &netmask_addr, &gw_addr);
 #endif
 
 
@@ -350,11 +354,18 @@ static void mico_lwip_netif_link_irq(struct netif *lwip_netif)
     if (netif_is_link_up(lwip_netif)) {
         eth_log("Ethernet link up");
         if (lwip_dhcp) {
+            ip_addr_t ip_addr;
+
+            ip_addr_set_zero(&ip_addr);
+            netif_set_addr(lwip_netif, &ip_addr, &ip_addr, &ip_addr);
             dhcp_start(lwip_netif);
-           }
+        }
     } else {
         eth_log("Ethernet link down");
         netif_set_down(lwip_netif);
+        if (lwip_dhcp) {
+            dhcp_stop(lwip_netif);
+        }
     }
 }
 
