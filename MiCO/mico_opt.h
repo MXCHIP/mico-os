@@ -124,7 +124,7 @@ extern "C" {
  *  MICO_WLAN_CONFIG_MODE: wlan configuration mode, Default: EasyLink
  */
 #if !defined MICO_WLAN_CONFIG_MODE
-#define MICO_WLAN_CONFIG_MODE                   CONFIG_MODE_EASYLINK
+#define MICO_WLAN_CONFIG_MODE                   CONFIG_MODE_AWS
 #endif
 
 #if MICO_WLAN_CONFIG_MODE == CONFIG_MODE_WAC
