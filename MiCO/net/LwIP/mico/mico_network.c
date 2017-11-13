@@ -66,6 +66,16 @@ netif_t netif_prioritys[INTERFACE_MAX] = { INTERFACE_ETH, INTERFACE_STA, INTERFA
 static netif_t default_if = INTERFACE_NONE;
 static mico_bool_t auto_switch = MICO_TRUE;
 
+MICO_WEAK void mico_eth_set_default_interface(void)
+{
+
+}
+
+MICO_WEAK void mico_wlan_set_default_interface(uint8_t interface)
+{
+
+}
+
 static OSStatus set_default_interface( void* arg)
 {
     if ( default_if == INTERFACE_ETH ) {

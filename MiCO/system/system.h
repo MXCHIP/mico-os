@@ -23,6 +23,7 @@
 #include "mico_rtos.h"
 #include "mico_wlan.h"
 
+
 #ifndef MICO_PREBUILT_LIBS
 #include "mico_config.h"
 #include "mico_board_conf.h"
@@ -68,6 +69,12 @@ typedef uint8_t config_state_type_t;
 
 /* OTA should save this table to flash */
 typedef struct  _boot_table_t {
+#ifdef CONFIG_MX108
+  uint32_t dst_adr;
+  uint32_t src_adr;
+  uint32_t siz;
+  uint16_t crc;
+#else
   uint32_t start_address; // the address of the bin saved on flash.
   uint32_t length; // file real length
   uint8_t version[8];
@@ -75,6 +82,7 @@ typedef struct  _boot_table_t {
   uint8_t upgrade_type; //u:upgrade, 
   uint16_t crc;
   uint8_t reserved[4];
+#endif
 }boot_table_t;
 
 typedef struct _mico_sys_config_t

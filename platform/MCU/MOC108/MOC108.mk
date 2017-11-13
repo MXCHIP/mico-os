@@ -40,7 +40,7 @@ GLOBAL_DEFINES += configUSE_TICKLESS_IDLE=0
 GLOBAL_DEFINES += CONFIG_USE_LINKER_HEAP=1
 
 ifeq ($(filter $(RTOS),NoRTOS),)
-GLOBAL_LDFLAGS += -Wl,-wrap,_malloc_r -Wl,-wrap,free -Wl,-wrap,realloc -Wl,-wrap,malloc -Wl,-wrap,calloc -Wl,-wrap,_free_r -Wl,-wrap,_realloc_r #-Wl,-wrap,printf -Wl,-wrap,sprintf
+GLOBAL_LDFLAGS += -Wl,-wrap,_malloc_r -Wl,-wrap,free -Wl,-wrap,realloc -Wl,-wrap,malloc -Wl,-wrap,calloc -Wl,-wrap,_free_r -Wl,-wrap,_realloc_r -Wl,-wrap,_calloc_r#-Wl,-wrap,printf -Wl,-wrap,sprintf
 endif
 
 GLOBAL_LDFLAGS += -Wl,-wrap,printf -Wl,-wrap,main

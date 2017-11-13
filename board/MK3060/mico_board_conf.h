@@ -84,6 +84,10 @@ extern "C"
  * MICO_ENABLE_STDIO_TO_BOOT = 1 */
 #define MICO_ENABLE_STDIO_TO_BOOT 1
 
+/************************************************************************
+ * No EasyLink button */
+#define MICO_CONFIG_EASYLINK_BTN_ENABLE                 1
+
 #ifdef __cplusplus
 } /*extern "C" */
 #endif

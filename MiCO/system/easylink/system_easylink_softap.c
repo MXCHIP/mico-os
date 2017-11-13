@@ -59,80 +59,12 @@ static void easylink_wifi_status_cb( WiFiEvent event, system_context_t * const i
     }
 }
 
-OSStatus ConfigIncommingJsonMessageUAP( int fd, const uint8_t *input, size_t size, system_context_t * const inContext )
+void easylink_uap_configured_cd(uint32_t id)
 {
-    OSStatus err = kNoErr;
-    json_object *new_obj;
-    char *input_str = NULL;
-    uint8_t *httpResponse = NULL;
-    size_t httpResponseLen = 0;
-
-    inContext->flashContentInRam.micoSystemConfig.easyLinkByPass = EASYLINK_BYPASS_NO;
-
-    input_str = calloc( size + 1, sizeof(char) );
-    require_action( input_str, exit, err = kNoMemoryErr );
-
-    memcpy( input_str, input, size );
-    system_log("Recv config object=%s", input_str);
-    new_obj = json_tokener_parse( input_str );
-    require_action( new_obj, exit, err = kUnknownErr );
-
-    json_object_object_foreach( new_obj, key, val )
-    {
-        if ( !strcmp( key, "SSID" ) ) {
-            strncpy( inContext->flashContentInRam.micoSystemConfig.ssid, json_object_get_string( val ), maxSsidLen );
-            inContext->flashContentInRam.micoSystemConfig.channel = 0;
-            memset( inContext->flashContentInRam.micoSystemConfig.bssid, 0x0, 6 );
-            inContext->flashContentInRam.micoSystemConfig.security = SECURITY_TYPE_AUTO;
-            memcpy( inContext->flashContentInRam.micoSystemConfig.key,  inContext->flashContentInRam.micoSystemConfig.user_key, maxKeyLen );
-            inContext->flashContentInRam.micoSystemConfig.keyLength = inContext->flashContentInRam.micoSystemConfig.user_keyLength;
-        }
-        else if ( !strcmp( key, "PASSWORD" ) ) {
-            inContext->flashContentInRam.micoSystemConfig.security = SECURITY_TYPE_AUTO;
-            strncpy( inContext->flashContentInRam.micoSystemConfig.key, json_object_get_string( val ), maxKeyLen );
-            strncpy( inContext->flashContentInRam.micoSystemConfig.user_key, json_object_get_string( val ), maxKeyLen );
-            inContext->flashContentInRam.micoSystemConfig.keyLength = strlen( inContext->flashContentInRam.micoSystemConfig.key );
-            inContext->flashContentInRam.micoSystemConfig.user_keyLength = strlen( inContext->flashContentInRam.micoSystemConfig.key );
-            memcpy( inContext->flashContentInRam.micoSystemConfig.key, inContext->flashContentInRam.micoSystemConfig.user_key, maxKeyLen );
-            inContext->flashContentInRam.micoSystemConfig.keyLength = inContext->flashContentInRam.micoSystemConfig.user_keyLength;
-        }
-        else if ( !strcmp( key, "DHCP" ) ) {
-            inContext->flashContentInRam.micoSystemConfig.dhcpEnable = json_object_get_boolean( val );
-        }
-        else if ( !strcmp( key, "IDENTIFIER" ) ) {
-            easylinkIndentifier = (uint32_t) json_object_get_int( val );
-        }
-        else if ( !strcmp( key, "IP" ) ) {
-            strncpy( inContext->flashContentInRam.micoSystemConfig.localIp, json_object_get_string( val ), maxIpLen );
-        }
-        else if ( !strcmp( key, "NETMASK" ) ) {
-            strncpy( inContext->flashContentInRam.micoSystemConfig.netMask, json_object_get_string( val ), maxIpLen );
-        }
-        else if ( !strcmp( key, "GATEWAY" ) ) {
-            strncpy( inContext->flashContentInRam.micoSystemConfig.gateWay, json_object_get_string( val ), maxIpLen );
-        }
-        else if ( !strcmp( key, "DNS1" ) ) {
-            strncpy( inContext->flashContentInRam.micoSystemConfig.dnsServer, json_object_get_string( val ), maxIpLen );
-        }
-    }
-    json_object_put( new_obj );
-
-    err =  CreateSimpleHTTPOKMessage( &httpResponse, &httpResponseLen );
-    require_noerr( err, exit );
-
-    err = SocketSend( fd, httpResponse, httpResponseLen );
-    require_noerr( err, exit );
-
-    mico_rtos_delay_milliseconds( 1000 );
-
+    easylinkIndentifier = id;
     easylink_success = true;
-    if( easylink_sem ) mico_rtos_set_semaphore( &easylink_sem );
-
-exit:
-    if ( input_str ) free( input_str );
-
-    if(httpResponse) free(httpResponse);
-    return err;
+    micoWlanSuspendSoftAP();
+    mico_rtos_set_semaphore( &easylink_sem );
 }
 
 static void easylink_remove_bonjour_from_uap(void)
@@ -280,6 +212,8 @@ OSStatus mico_easylink_softap( mico_Context_t * const in_context, mico_bool_t en
         /* Start config server */
         err = config_server_start( );
         require_noerr( err, exit );
+
+        config_server_set_uap_cb( easylink_uap_configured_cd );
 
         err = mico_rtos_create_thread( &easylink_softap_thread_handler, MICO_APPLICATION_PRIORITY, "EASYLINK AP",
                                        easylink_softap_thread, 0x1000, (mico_thread_arg_t) in_context );

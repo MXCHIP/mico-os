@@ -74,6 +74,8 @@ typedef struct {
 
 	struct tm* (*localtime)(const time_t * time);
 	char * (*asctime)(const struct tm *tm);
+
+    void (*mico_rtos_resume_thread)(mico_thread_t* thread);
 } os_api_v1_t;
 
 typedef struct {
@@ -140,7 +142,7 @@ typedef struct {
 	int (*mico_wlan_monitor_rx_type)(int type);
 	int (*mico_wlan_start_monitor)(void);
 	int (*mico_wlan_stop_monitor)(void);
-	int (*mico_wlan_set_channel)(int channel);
+	int (*mico_wlan_monitor_set_channel)(int channel);
 	void (*mico_wlan_register_monitor_cb)(monitor_cb_t fn);
 	void (*wlan_set_channel)(int channel);
 	int (*mxchip_active_scan)(char*ssid, int is_adv);
@@ -155,6 +157,7 @@ typedef struct {
 	void (*autoconfig_start)(int seconds, int mode);
     void (*wlan_set_softap_tdma)(int value);
     int (*wifi_off_fastly)(void);
+    int (*OpenEasylink_softap)(int timeout, char *ssid, char*key, int channel);
 } wifi_api_v1_t;
 
 typedef struct {

@@ -185,7 +185,7 @@ mico_api_t *moc_adapter(new_mico_api_t *new_mico_api)
   mico_api.mico_wlan_monitor_rx_type = _kernel_api.wifi_apis->mico_wlan_monitor_rx_type;
   mico_api.mico_wlan_start_monitor = _kernel_api.wifi_apis->mico_wlan_start_monitor;
   mico_api.mico_wlan_stop_monitor = _kernel_api.wifi_apis->mico_wlan_stop_monitor;
-  mico_api.mico_wlan_set_channel = _kernel_api.wifi_apis->mico_wlan_set_channel;
+  mico_api.mico_wlan_monitor_set_channel = _kernel_api.wifi_apis->mico_wlan_monitor_set_channel;
   mico_api.mico_wlan_register_monitor_cb = _kernel_api.wifi_apis->mico_wlan_register_monitor_cb;
   mico_api.wlan_set_channel = _kernel_api.wifi_apis->wlan_set_channel;
   mico_api.mxchip_active_scan = _kernel_api.wifi_apis->mxchip_active_scan;
@@ -305,6 +305,11 @@ int wifi_off_fastly(void)
     return _kernel_api.wifi_apis->wifi_off_fastly();
 }
 
+int mico_wlan_easylink_uap_start(int timeout, char *ssid, char*key, int channel)
+{
+    return _kernel_api.wifi_apis->OpenEasylink_softap(timeout, ssid, key, channel);
+}
+
 void ssl_set_ecc(int enable)
 {
     _kernel_api.ssl_crypto_apis->ssl_set_ecc(enable);
@@ -316,4 +321,8 @@ int disable_log_uart(void)
     return _kernel_api.uart_apis->disable_log_uart();
 }
 
+void mico_rtos_resume_thread(mico_thread_t* thread)
+{
+    _kernel_api.os_apis->mico_rtos_resume_thread(thread);
+}
 

@@ -31,9 +31,9 @@ $(NAME)_SOURCES += easylink/system_easylink_delegate.c \
                    easylink/system_easylink.c \
                    easylink/system_easylink_usr.c \
                    easylink/system_easylink_monitor.c \
-                   easylink/internal/easylink_bonjour.c \
-                   easylink/system_easylink_softap.c
-                   
+                   easylink/system_easylink_softap.c \
+                   easylink/system_aws.c \
+                   easylink/internal/easylink_bonjour.c
                    
 $(NAME)_INCLUDES += easylink/internal
 
@@ -47,5 +47,5 @@ $(NAME)_COMPONENTS := protocols/mdns \
                       system/qc_test \
                       system/easylink/MFi_WAC
 
-
+$(NAME)_COMPONENTS += system/easylink/aws
 

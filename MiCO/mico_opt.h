@@ -118,6 +118,7 @@ extern "C" {
 #define CONFIG_MODE_MONITOR                     (6)
 #define CONFIG_MODE_MONITOR_EASYLINK            (7)
 #define CONFIG_MODE_WPS                         (8)
+#define CONFIG_MODE_AWS                         (9)
 
 /**
  *  MICO_WLAN_CONFIG_MODE: wlan configuration mode, Default: EasyLink
@@ -129,6 +130,11 @@ extern "C" {
 #if MICO_WLAN_CONFIG_MODE == CONFIG_MODE_WAC
 #define EasyLink_Needs_Reboot
 #endif
+
+#if !defined MICO_WLAN_FORCE_OTA_ENABLE
+#define MICO_WLAN_FORCE_OTA_ENABLE               1
+#endif
+
 
 /**
  *  EasyLink_TimeOut: Easylink configuration timeout, Default: 60 secs
@@ -276,7 +282,11 @@ extern "C" {
  ******************************************************************************/
 
 #if !defined PLATFORM_ETH_ENABLE
-#define PLATFORM_ETH_ENABLE                    0
+#define PLATFORM_ETH_ENABLE                                0
+#endif
+
+#if !defined PLATFORM_CONFIG_EASYLINK_SOFTAP_COEXISTENCE
+#define PLATFORM_CONFIG_EASYLINK_SOFTAP_COEXISTENCE        0
 #endif
 
 #ifdef __cplusplus

@@ -126,6 +126,7 @@ int select(int nfds, fd_set *readfds, fd_set *writefds, fd_set *exceptfds, struc
     return lwip_select( nfds, readfds, writefds, exceptfds, timeout );
 }
 
+#ifndef CONFIG_MX108
 int ioctl(int s, int cmd, ...)
 {
     va_list ap;
@@ -134,6 +135,7 @@ int ioctl(int s, int cmd, ...)
     va_end( ap );
     return lwip_ioctl(s, cmd, para);
 }
+#endif
 
 int poll(struct pollfd *fds, int nfds, int timeout)
 {

@@ -509,6 +509,16 @@ void micoWlanStartScan(void);
  */
 void micoWlanStartScanAdv(void);
 
+/** @brief  Start a wlan scanning specified SSID in 2.4GHz in MICO backfround.
+ *
+ *  @detail Once the scan is completed, MICO sends a notify:
+ *          mico_notify_WIFI_SCAN_ADV_COMPLETED, with callback function:
+ *          void (*function)(ScanResultAdv *pApList, mico_Context_t * const inContext)
+ *          Register callback function using @ref mico_add_notification() before scan.
+ */
+int mxchip_active_scan(char*ssid, int is_adv);
+
+
 /** @brief  Close the RF chip's power supply, all network connection is lost.
  * 
  *  @return   kNoErr        : on success.
@@ -584,10 +594,10 @@ OSStatus micoWlanSuspendSoftAP(void);
 OSStatus micoWlanStartEasyLink(int inTimeout);
 
 /** @brief  Start EasyLink plus configuration with user extra data
- * 
- *  @detail This function has the same function as OpenEasylink2(), but it can 
+ *
+ *  @detail This function has the same function as OpenEasylink2(), but it can
  *          read more data besides SSID and password, these data is sent from
- *          Easylink APP.  
+ *          Easylink APP.
  *          MICO sends a callback: mico_notify_EASYLINK_GET_EXTRA_DATA
  *          with function:
  *          void (*function)(int datalen, char*data, mico_Context_t * const inContext);
@@ -601,6 +611,22 @@ OSStatus micoWlanStartEasyLink(int inTimeout);
  */
 
 OSStatus micoWlanStartEasyLinkPlus(int inTimeout);
+OSStatus micoWlanStartAws(int inTimeout);
+
+
+/** @brief  Start EasyLink plus configuration with UAP coexistence
+ *
+ *  @param  inTimeout: If easylink is executed longer than this parameter in backgound.
+ *          MICO stops EasyLink and sends a callback where nwkpara is NULL
+ *  @param  ssid: SSID of UAP
+ *  @param  key: Password of UAP
+ *  @param  channel: Wi-Fi channel of UAP
+ *
+ *  @return   kNoErr        : on success.
+ *  @return   kGeneralErr   : if an error occurred
+ */
+OSStatus mico_wlan_easylink_uap_start(int timeout, char *ssid, char*key, int channel);
+
 
 /** @brief  Stop EasyLink configuration procedure
  *  
@@ -609,6 +635,7 @@ OSStatus micoWlanStartEasyLinkPlus(int inTimeout);
  */
 OSStatus micoWlanStopEasyLink(void);
 OSStatus micoWlanStopEasyLinkPlus(void);
+OSStatus micoWlanStopAws(void);
 
 /**
   * @}

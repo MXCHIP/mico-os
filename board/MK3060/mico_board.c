@@ -35,7 +35,7 @@
 #include "mico_board_conf.h"
 #include "platform_peripheral.h"
 #include "platform_logging.h"
-
+#include "CheckSumUtils.h"
 
 /******************************************************
 *                      Macros
@@ -67,19 +67,19 @@
 
 const platform_gpio_t platform_gpio_pins[] =
 {
-    [MICO_GPIO_4] =  {  4 },
-    [MICO_GPIO_5] =  { 22 },
-    [MICO_GPIO_6] =  { 23 },
-    [MICO_GPIO_7] =  { 20 },
-    [MICO_GPIO_8] =  { 21 },
-    [MICO_GPIO_9] =  {  0 },
-    [MICO_GPIO_10] = {  1 },
-    [MICO_GPIO_12] = { 15 },
-    [MICO_GPIO_13] = { 17 },
-    [MICO_GPIO_14] = { 16 },
-    [MICO_GPIO_15] = { 14 },
-    [MICO_GPIO_20] = { 30 },
-    [MICO_GPIO_23] = { 29 },
+    [MICO_GPIO_4]  = { 4},
+    [MICO_GPIO_22] = {22},
+    [MICO_GPIO_23] = {23},
+    [MICO_GPIO_20] = {20},
+    [MICO_GPIO_21] = {21},
+    [MICO_GPIO_0]  = { 0},
+    [MICO_GPIO_1]  = { 1}, 
+    [MICO_GPIO_15] = {15},
+    [MICO_GPIO_17] = {17},
+    [MICO_GPIO_16] = {16},
+    [MICO_GPIO_14] = {14},
+    [MICO_GPIO_30] = {30},
+    [MICO_GPIO_29] = {29},
 };
 
 const platform_pwm_t *platform_pwm_peripherals = NULL;
@@ -88,8 +88,13 @@ const platform_i2c_t platform_i2c_peripherals[] =
 {
     [MICO_I2C_1] =
     {
-        .pin_scl = &platform_gpio_pins[MICO_GPIO_NONE],
-        .pin_sda = &platform_gpio_pins[MICO_GPIO_NONE],
+        .pin_scl = &platform_gpio_pins[MICO_GPIO_20],
+        .pin_sda = &platform_gpio_pins[MICO_GPIO_21],
+    },
+    [MICO_I2C_2] =
+    {
+        .pin_scl = &platform_gpio_pins[MICO_GPIO_0],
+        .pin_sda = &platform_gpio_pins[MICO_GPIO_1],
     },
 };
 platform_i2c_driver_t platform_i2c_drivers[MICO_I2C_MAX];
@@ -142,24 +147,32 @@ const mico_logic_partition_t mico_partitions[] =
 	{
 	    .partition_owner            = MICO_FLASH_EMBEDDED,
 	    .partition_description      = "Application",
-	    .partition_start_addr       = 0x12000,
-	    .partition_length           = 0xF6000,   //984k bytes
+	    .partition_start_addr       = 0x13000,
+	    .partition_length           = 0xED000, //948k bytes
 	    .partition_options          = PAR_OPT_READ_EN | PAR_OPT_WRITE_EN,
 	},
     [MICO_PARTITION_OTA_TEMP] =
     {
         .partition_owner           = MICO_FLASH_EMBEDDED,
         .partition_description     = "OTA Storage",
-        .partition_start_addr      = 0x108000,
-        .partition_length          = 0xF5000, //980k bytes
+        .partition_start_addr      = 0x100000,
+        .partition_length          = 0xA5E66, //664k bytes
         .partition_options         = PAR_OPT_READ_EN | PAR_OPT_WRITE_EN,
     },
-    [MICO_PARTITION_USER] =
+    [MICO_PARTITION_PARAMETER_3] =
     {
         .partition_owner            = MICO_FLASH_EMBEDDED,
-        .partition_description      = "USER",
-        .partition_start_addr       = 0x1FD000,
-        .partition_length           = 0x3000, //12k bytes
+        .partition_description      = "PARAMETER3",
+        .partition_start_addr       = 0x12000,
+        .partition_length           = 0x1000, //4k bytes
+        .partition_options          = PAR_OPT_READ_EN | PAR_OPT_WRITE_EN,
+    },
+    [MICO_PARTITION_PARAMETER_4] =
+    {
+        .partition_owner            = MICO_FLASH_EMBEDDED,
+        .partition_description      = "PARAMETER4",
+        .partition_start_addr       = 0xD000,
+        .partition_length           = 0x1000, //4k bytes
         .partition_options          = PAR_OPT_READ_EN | PAR_OPT_WRITE_EN,
     },
     [MICO_PARTITION_SYSTEM_DATA] = 
@@ -220,13 +233,15 @@ bool MicoExtShouldEnterTestMode(void)
 }
 #endif
 
+#define BOOT_MODE_REG (*(uint32_t *)0x40001C)
+
+#define BOOT_MODE_APP   0
+#define BOOT_MODE_ATE   1
+#define BOOT_MODE_QC    2
+
 bool MicoShouldEnterMFGMode(void)
 {
-    return false;
-  if(MicoGpioInputGet((mico_gpio_t)BOOT_SEL)==false && MicoGpioInputGet((mico_gpio_t)MFG_SEL)==false)
-    return true;
-  else
-    return false;
+    return BOOT_MODE_REG == BOOT_MODE_QC ? true : false;
 }
 
 bool MicoShouldEnterBootloader(void)

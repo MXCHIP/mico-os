@@ -54,6 +54,7 @@ typedef struct
   uint32_t            ttl;
   uint16_t            port;
   uint8_t             count_down;
+  uint8_t             count_down_max;
   mdns_record_state_t state;
 } dns_sd_service_record_t;
 
@@ -443,9 +444,7 @@ static void dns_write_record( dns_message_iterator_t* iter, const char* name, ui
 
 static void mdns_send_message(int fd, dns_message_iterator_t* message )
 {
-//  printf("enter send message\r\n");
   sendto(fd, message->header, message->iter - (uint8_t*)message->header, 0, (struct sockaddr *)&dns_mquery_v4group, sizeof(dns_mquery_v4group));
-  sendto(fd, message->header, message->iter - (uint8_t*)message->header, 0, (struct sockaddr *)&dns_mquery_v4broadcast, sizeof(dns_mquery_v4broadcast));
 #if MICO_CONFIG_IPV6
   sendto(fd, message->header, message->iter - (uint8_t*)message->header, 0, (struct sockaddr *)&dns_mquery_v6group, sizeof(dns_mquery_v6group));
 #endif
@@ -639,7 +638,12 @@ OSStatus mdns_add_record( mdns_init_t init, WiFi_Interface interface, uint32_t t
 
   available_services[insert_index].port = init.service_port;
   available_services[insert_index].state = RECORD_UPDATE;
-  available_services[insert_index].count_down = 5;
+  if ( strcmp( available_services[insert_index].service_name, "_easylink_config._tcp.local." ) == 0 && interface == Station) {
+      available_services[insert_index].count_down_max = 50;
+  } else {
+      available_services[insert_index].count_down_max = 10;
+  }
+  available_services[insert_index].count_down = available_services[insert_index].count_down_max;
   available_services[insert_index].ttl = time_to_live;
   
   if( _bonjour_announce_handler == NULL)
@@ -666,7 +670,7 @@ void mdns_update_txt_record( char *service_name, WiFi_Interface interface, char 
   if(available_services[insert_index].txt_att)  free(available_services[insert_index].txt_att);
   available_services[insert_index].txt_att = (char*)__strdup(txt_record);
   available_services[insert_index].state = RECORD_UPDATE;
-  available_services[insert_index].count_down = 5;
+  available_services[insert_index].count_down = available_services[insert_index].count_down_max;
 
   if( _bonjour_announce_handler == NULL)
     mico_rtos_create_thread( &_bonjour_announce_handler, MICO_APPLICATION_PRIORITY, "Bonjour Announce", _bonjour_send_anounce_thread, 0x400, 0 );
@@ -698,7 +702,7 @@ void mdns_suspend_record( char *service_name, WiFi_Interface interface, bool wil
         available_services[i].state = RECORD_SUSPEND;
     }
   
-    available_services[i].count_down = 5; 
+    available_services[i].count_down = available_services[i].count_down_max;
     insert_index = i;
   }
 
@@ -724,7 +728,7 @@ void mdns_resume_record( char *service_name, WiFi_Interface interface )
 
   for ( i = 0; i < MAX_RECORD_COUNT && is_service_match( &available_services[i], service_name, interface ); i++ ){
     available_services[i].state = RECORD_UPDATE;
-    available_services[i].count_down = 5; 
+    available_services[i].count_down = available_services[i].count_down_max;
     insert_index = i;
   }
 

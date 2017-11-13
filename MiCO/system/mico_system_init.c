@@ -53,6 +53,8 @@ static OSStatus system_config_mode_worker( void *arg )
     err = mico_easylink_wac( in_context, MICO_TRUE );
 #elif ( MICO_WLAN_CONFIG_MODE == CONFIG_MODE_WPS)
     err = mico_easylink_wps( in_context, MICO_TRUE );
+#elif ( MICO_WLAN_CONFIG_MODE == CONFIG_MODE_AWS)
+    err = mico_easylink_aws( in_context, MICO_TRUE );
 #elif ( MICO_WLAN_CONFIG_MODE == CONFIG_MODE_NONE)
 #else
     #error "Wi-Fi configuration mode is not defined"
@@ -104,6 +106,12 @@ OSStatus mico_system_init( mico_Context_t* in_context )
   require_noerr( err, exit ); 
 
 #if MICO_WLAN_CONNECTION_ENABLE
+
+#if MICO_WLAN_FORCE_OTA_ENABLE
+	err = start_forceota_check();
+	require_noerr( err, exit );
+#endif
+
 #ifndef  EasyLink_Needs_Reboot
   /* Create a worker thread for user handling wlan auto-conf event, this worker thread only has
      one event on queue, avoid some unwanted operation */

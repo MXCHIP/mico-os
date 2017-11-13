@@ -97,6 +97,16 @@ static void easylink_complete_cb( network_InitTypeDef_st *nwkpara, system_contex
     return;
 }
 
+#if PLATFORM_CONFIG_EASYLINK_SOFTAP_COEXISTENCE
+static void easylink_uap_configured_cd(uint32_t id)
+{
+    easylinkIndentifier = id;
+    easylink_success = true;
+    micoWlanSuspendSoftAP();
+    mico_rtos_set_semaphore( &easylink_sem );
+}
+#endif
+
 /* MiCO callback when EasyLink is finished step 2, return extra data 
  data format: [AuthData#Identifier]<localIp/netMask/gateWay/dnsServer>
  Auth data: Provide to application, application will decide if this is a proter configuration for currnet device
@@ -144,13 +154,17 @@ static void easylink_extra_data_cb( int datalen, char* data, system_context_t * 
     { //Use static ip address
         inContext->flashContentInRam.micoSystemConfig.dhcpEnable = false;
 		memcpy(&ipv4_addr.s_addr, &data[index+4], 4);
-        strcpy( (char *) inContext->micoStatus.localIp, inet_ntoa( ipv4_addr ) );
+		ipv4_addr.s_addr = hton32( ipv4_addr.s_addr );
+        strcpy( (char *) inContext->flashContentInRam.micoSystemConfig.localIp, inet_ntoa( ipv4_addr ) );
 		memcpy(&ipv4_addr.s_addr, &data[index+8], 4);
-        strcpy( (char *) inContext->micoStatus.netMask, inet_ntoa( ipv4_addr ) );
+		ipv4_addr.s_addr = hton32( ipv4_addr.s_addr );
+        strcpy( (char *) inContext->flashContentInRam.micoSystemConfig.netMask, inet_ntoa( ipv4_addr ) );
 		memcpy(&ipv4_addr.s_addr, &data[index+12], 4);
-        strcpy( (char *) inContext->micoStatus.gateWay, inet_ntoa( ipv4_addr ) );
+		ipv4_addr.s_addr = hton32( ipv4_addr.s_addr );
+        strcpy( (char *) inContext->flashContentInRam.micoSystemConfig.gateWay, inet_ntoa( ipv4_addr ) );
 		memcpy(&ipv4_addr.s_addr, &data[index+16], 4);
-        strcpy( (char *) inContext->micoStatus.dnsServer, inet_ntoa( ipv4_addr ) );
+		ipv4_addr.s_addr = hton32( ipv4_addr.s_addr );
+        strcpy( (char *) inContext->flashContentInRam.micoSystemConfig.dnsServer, inet_ntoa( ipv4_addr ) );
 
         system_log("Get auth info: %s, EasyLink identifier: %lx, local IP info:%s %s %s %s ", data, easylinkIndentifier, inContext->flashContentInRam.micoSystemConfig.localIp,
             inContext->flashContentInRam.micoSystemConfig.netMask, inContext->flashContentInRam.micoSystemConfig.gateWay,inContext->flashContentInRam.micoSystemConfig.dnsServer);
@@ -197,9 +211,27 @@ static void easylink_thread( uint32_t arg )
 restart:
     mico_system_delegate_config_will_start( );
     system_log("Start easylink combo mode");
+#if PLATFORM_CONFIG_EASYLINK_SOFTAP_COEXISTENCE
+    char wifi_ssid[32];
+    sprintf( wifi_ssid, "EasyLink_%c%c%c%c%c%c",
+        context->micoStatus.mac[9], context->micoStatus.mac[10], context->micoStatus.mac[12],
+        context->micoStatus.mac[13], context->micoStatus.mac[15], context->micoStatus.mac[16]);
+
+    system_log("Enable softap %s in easylink", wifi_ssid);
+    mico_wlan_easylink_uap_start( EasyLink_TimeOut / 1000, wifi_ssid, NULL, 6 );
+    /* Start config server */
+    config_server_start( );
+    config_server_set_uap_cb( easylink_uap_configured_cd );
+    easylink_bonjour_start( Soft_AP, 0, context );
+    while( mico_rtos_get_semaphore( &easylink_sem, 0 ) == kNoErr );
+    err = mico_rtos_get_semaphore( &easylink_sem, EasyLink_TimeOut );
+#else
     micoWlanStartEasyLinkPlus( EasyLink_TimeOut / 1000 );
     while( mico_rtos_get_semaphore( &easylink_sem, 0 ) == kNoErr );
     err = mico_rtos_get_semaphore( &easylink_sem, MICO_WAIT_FOREVER );
+#endif
+
+
 
     /* Easylink force exit by user, clean and exit */
     if( err != kNoErr && easylink_thread_force_exit )
@@ -292,7 +324,7 @@ OSStatus mico_easylink( mico_Context_t * const in_context, mico_bool_t enable )
         require_noerr_string( err, exit, "ERROR: Unable to start the EasyLink thread." );
 
         /* Make sure easylink is already running, and waiting for sem trigger */
-        mico_rtos_delay_milliseconds( 100 );
+        mico_rtos_delay_milliseconds( 1000 );
     }
 
     exit:

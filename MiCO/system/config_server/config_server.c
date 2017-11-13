@@ -48,6 +48,7 @@ static void localConfig_thread(uint32_t inFd);
 static OSStatus _LocalConfigRespondInComingMessage(int fd, HTTPHeader_t* inHeader, system_context_t * const inContext);
 static OSStatus onReceivedData(struct _HTTPHeader_t * httpHeader, uint32_t pos, uint8_t * data, size_t len, void * userContext );
 static void onClearHTTPHeader(struct _HTTPHeader_t * httpHeader, void * userContext );
+static config_server_uap_configured_cb _uap_configured_cb = NULL;
 
 bool is_config_server_established = false;
 
@@ -71,6 +72,11 @@ WEAK void config_server_delegate_recv( const char *key, json_object *value, bool
   UNUSED_PARAMETER(need_reboot);
   UNUSED_PARAMETER(in_context);
   return;  
+}
+
+void config_server_set_uap_cb( config_server_uap_configured_cb callback )
+{
+    _uap_configured_cb = callback;
 }
 
 OSStatus config_server_start ( void )
@@ -314,6 +320,9 @@ static OSStatus onReceivedData(struct _HTTPHeader_t * inHeader, uint32_t inPos, 
       return kUnsupportedErr;
     }
 
+    if(inPos==0 && inLen==0)
+        return err;
+
      if(inPos == 0){
        context->offset = 0x0;
        CRC16_Init( &context->crc16_contex );
@@ -530,23 +539,89 @@ OSStatus _LocalConfigRespondInComingMessage(int fd, HTTPHeader_t* inHeader, syst
     goto exit;
   }
   else if(HTTPHeaderMatchURL( inHeader, kCONFIGURLWriteByUAP ) == kNoErr){
-    if(inHeader->contentLength > 0){
+      uint32_t easylinkIndentifier = 0;
+
+      require( inHeader->contentLength > 0, exit );
+
       system_log( "Recv new configuration from uAP, apply and connect to AP" );
-      err = ConfigIncommingJsonMessageUAP( fd, (uint8_t *)inHeader->extraDataPtr, inHeader->extraDataLen, inContext );
+
+      inContext->flashContentInRam.micoSystemConfig.easyLinkByPass = EASYLINK_BYPASS_NO;
+
+      config = json_tokener_parse(inHeader->extraDataPtr);
+      require_action(config, exit, err = kUnknownErr);
+      system_log("Recv config object from uap =%s", json_object_to_json_string(config));
+      mico_rtos_lock_mutex(&inContext->flashContentInRam_mutex);
+
+      json_object_object_foreach( config, key, val ) {
+          if ( !strcmp( key, "SSID" ) ) {
+              strncpy( inContext->flashContentInRam.micoSystemConfig.ssid, json_object_get_string( val ), maxSsidLen );
+              inContext->flashContentInRam.micoSystemConfig.channel = 0;
+              memset( inContext->flashContentInRam.micoSystemConfig.bssid, 0x0, 6 );
+              inContext->flashContentInRam.micoSystemConfig.security = SECURITY_TYPE_AUTO;
+              memcpy( inContext->flashContentInRam.micoSystemConfig.key,
+                      inContext->flashContentInRam.micoSystemConfig.user_key, maxKeyLen );
+              inContext->flashContentInRam.micoSystemConfig.keyLength = inContext->flashContentInRam.micoSystemConfig.user_keyLength;
+          }
+          else if ( !strcmp( key, "PASSWORD" ) ) {
+              inContext->flashContentInRam.micoSystemConfig.security = SECURITY_TYPE_AUTO;
+              strncpy( inContext->flashContentInRam.micoSystemConfig.key, json_object_get_string( val ), maxKeyLen );
+              strncpy( inContext->flashContentInRam.micoSystemConfig.user_key, json_object_get_string( val ), maxKeyLen );
+              inContext->flashContentInRam.micoSystemConfig.keyLength = strlen( inContext->flashContentInRam.micoSystemConfig.key );
+              inContext->flashContentInRam.micoSystemConfig.user_keyLength = strlen( inContext->flashContentInRam.micoSystemConfig.key );
+              memcpy( inContext->flashContentInRam.micoSystemConfig.key,
+                      inContext->flashContentInRam.micoSystemConfig.user_key, maxKeyLen );
+              inContext->flashContentInRam.micoSystemConfig.keyLength = inContext->flashContentInRam.micoSystemConfig.user_keyLength;
+          }
+          else if ( !strcmp( key, "DHCP" ) ) {
+              inContext->flashContentInRam.micoSystemConfig.dhcpEnable = json_object_get_boolean( val );
+          }
+          else if ( !strcmp( key, "IDENTIFIER" ) ) {
+              easylinkIndentifier = (uint32_t) json_object_get_int( val );
+          }
+          else if ( !strcmp( key, "IP" ) ) {
+              strncpy( inContext->flashContentInRam.micoSystemConfig.localIp, json_object_get_string( val ), maxIpLen );
+          }
+          else if ( !strcmp( key, "NETMASK" ) ) {
+              strncpy( inContext->flashContentInRam.micoSystemConfig.netMask, json_object_get_string( val ), maxIpLen );
+          }
+          else if ( !strcmp( key, "GATEWAY" ) ) {
+              strncpy( inContext->flashContentInRam.micoSystemConfig.gateWay, json_object_get_string( val ), maxIpLen );
+          }
+          else if ( !strcmp( key, "DNS1" ) ) {
+              strncpy( inContext->flashContentInRam.micoSystemConfig.dnsServer, json_object_get_string( val ), maxIpLen );
+          }
+      }
+      mico_rtos_unlock_mutex(&inContext->flashContentInRam_mutex);
+      json_object_put( config );
+
+      err = CreateSimpleHTTPOKMessage( &httpResponse, &httpResponseLen );
       require_noerr( err, exit );
-    }
-    goto exit;
+
+      err = SocketSend( fd, httpResponse, httpResponseLen );
+      require_noerr( err, exit );
+
+      if ( _uap_configured_cb ) {
+          mico_rtos_delay_milliseconds( 1000 );
+          _uap_configured_cb( easylinkIndentifier );
+      }
   }
   else if(HTTPHeaderMatchURL( inHeader, kCONFIGURLOTA ) == kNoErr && ota_partition->partition_owner != MICO_FLASH_NONE){
     if(inHeader->contentLength > 0){
       system_log("Receive OTA data!");
       CRC16_Final( &http_context->crc16_contex, &crc);
       memset(&inContext->flashContentInRam.bootTable, 0, sizeof(boot_table_t));
+#ifdef CONFIG_MX108
+      inContext->flashContentInRam.bootTable.dst_adr = 0x13200;
+      inContext->flashContentInRam.bootTable.src_adr = ota_partition->partition_start_addr;
+      inContext->flashContentInRam.bootTable.siz = inHeader->contentLength;
+      inContext->flashContentInRam.bootTable.crc = crc;
+#else
       inContext->flashContentInRam.bootTable.length = inHeader->contentLength;
       inContext->flashContentInRam.bootTable.start_address = ota_partition->partition_start_addr;
       inContext->flashContentInRam.bootTable.type = 'A';
       inContext->flashContentInRam.bootTable.upgrade_type = 'U';
       inContext->flashContentInRam.bootTable.crc = crc;
+#endif
       mico_system_context_update( &inContext->flashContentInRam );
       SocketClose( &fd );
       mico_system_power_perform( &inContext->flashContentInRam, eState_Software_Reset );

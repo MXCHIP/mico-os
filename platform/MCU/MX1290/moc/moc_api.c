@@ -104,9 +104,9 @@ int mico_wlan_stop_monitor(void)
 {
 	return lib_api_p->mico_wlan_stop_monitor();
 }
-int mico_wlan_set_channel(uint8_t channel)
+int mico_wlan_monitor_set_channel(uint8_t channel)
 {
-	return lib_api_p->mico_wlan_set_channel((int)channel);
+	return lib_api_p->mico_wlan_monitor_set_channel((int)channel);
 }
 void mico_wlan_register_monitor_cb(monitor_cb_t fn)
 {
@@ -211,11 +211,7 @@ OSStatus MicoUartFinalize( mico_uart_t uart )
 }
 OSStatus MicoUartSend( mico_uart_t uart, const void* data, uint32_t size )
 {
-	OSStatus err;
-	MicoMcuPowerSaveConfig(0);
-	err = lib_api_p->MicoUartSend(uart, data, size );
-	MicoMcuPowerSaveConfig(1);
-	return err;
+	return lib_api_p->MicoUartSend(uart, data, size );
 }
 OSStatus MicoUartRecv( mico_uart_t uart, void* data, uint32_t size, uint32_t timeout )
 {
@@ -707,23 +703,7 @@ OSStatus mico_wlan_send_mgnt(uint8_t *buffer, uint32_t length)
 
 void MicoMcuPowerSaveConfig(int enable)
 {
-	static int ps_cnt = 1;
-
-	if(enable == 0)
-	{
-		if(ps_cnt++ == 0)
-		{
-			lib_api_p->MicoMcuPowerSaveConfig(0);
-		}
-	}
-	else
-	{
-		if(--ps_cnt== 0)
-		{
-			lib_api_p->MicoMcuPowerSaveConfig(1);
-		}		
-	}
-
+	lib_api_p->MicoMcuPowerSaveConfig(enable);	
 }
 
 /**

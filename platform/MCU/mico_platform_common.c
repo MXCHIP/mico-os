@@ -372,7 +372,7 @@ OSStatus MicoSpiInitialize( const mico_spi_device_t* spi )
   if( platform_spi_drivers[spi->port].spi_mutex == NULL)
     mico_rtos_init_mutex( &platform_spi_drivers[spi->port].spi_mutex );
   
-  config.chip_select = &platform_gpio_pins[spi->chip_select];
+  config.chip_select = spi->chip_select == MICO_GPIO_NONE ? NULL : &platform_gpio_pins[spi->chip_select];
   config.speed       = spi->speed;
   config.mode        = spi->mode;
   config.bits        = spi->bits;
@@ -427,7 +427,7 @@ OSStatus MicoSpiTransfer( const mico_spi_device_t* spi, const mico_spi_message_s
   if( platform_spi_drivers[spi->port].spi_mutex == NULL)
     mico_rtos_init_mutex( &platform_spi_drivers[spi->port].spi_mutex );
 
-  config.chip_select = &platform_gpio_pins[spi->chip_select];
+  config.chip_select = spi->chip_select == MICO_GPIO_NONE ? NULL : &platform_gpio_pins[spi->chip_select];
   config.speed       = spi->speed;
   config.mode        = spi->mode;
   config.bits        = spi->bits;
@@ -743,13 +743,29 @@ exit:
 
 char *mico_get_bootloader_ver(void)
 {
-    static char ver[33];
-    const mico_logic_partition_t* bootloader_partition = &mico_partitions[ MICO_PARTITION_BOOTLOADER ];
-    uint32_t version_offset = bootloader_partition->partition_length - 0x20;
+  #ifdef CONFIG_MX108
+  static char boot_ver[64];
+  uint16_t reg_status;
+  uint8_t blocks;
 
-    memset(ver, 0, sizeof(ver));
-    MicoFlashRead( MICO_PARTITION_BOOTLOADER, &version_offset, (uint8_t *)ver , 32);
-    return ver;
+  strncpy(boot_ver, (const char *)0x00000020, sizeof(boot_ver) - 3);
+
+  flash_ctrl(0xe240000 + 6, &reg_status);
+  blocks = (reg_status >> 2) & 0x0F;
+  if(blocks != 1)
+  {
+    strcat(boot_ver, "-x");
+  }
+  return boot_ver;
+  #else
+  static char ver[33];
+  const mico_logic_partition_t* bootloader_partition = &mico_partitions[ MICO_PARTITION_BOOTLOADER ];
+  uint32_t version_offset = bootloader_partition->partition_length - 0x20;
+
+  memset(ver, 0, sizeof(ver));
+  MicoFlashRead( MICO_PARTITION_BOOTLOADER, &version_offset, (uint8_t *)ver , 32);
+  return ver;
+  #endif
 }
 
 #ifdef BOOTLOADER 

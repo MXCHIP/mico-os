@@ -62,6 +62,8 @@ typedef struct _mico_Context_t
   system_status_wlan_t      micoStatus;
 } system_context_t;
 
+typedef void (*config_server_uap_configured_cb) (uint32_t id);
+
 OSStatus system_notification_init( system_context_t * const inContext);
 
 OSStatus system_network_daemen_start( system_context_t * const inContext );
@@ -79,6 +81,8 @@ OSStatus MICORestoreMFG                 ( void );
 OSStatus MICOReadConfiguration          ( system_context_t * const inContext );
 
 system_context_t *system_context( void );
+void config_server_set_uap_cb( config_server_uap_configured_cb callback );
+
 
 #ifdef __cplusplus
 } /*extern "C" */
