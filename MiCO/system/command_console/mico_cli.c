@@ -536,6 +536,8 @@ static void cli_exit_handler(char *pcWriteBuffer, int xWriteBufferLen,int argc, 
   // exit command not executed
 }
 
+#ifdef CONFIG_MICO_AWS
+void aws_log_set(int enable);
 static void aws_handler(char *pcWriteBuffer, int xWriteBufferLen,int argc, char **argv)
 {
     if (argc == 1) {
@@ -551,6 +553,7 @@ static void aws_handler(char *pcWriteBuffer, int xWriteBufferLen,int argc, char 
         aws_log_set(0);
     }
 }
+#endif
 
 static const struct cli_command built_ins[] = {
   {"help", NULL, help_command},
@@ -561,9 +564,11 @@ static const struct cli_command built_ins[] = {
   /// WIFI
   {"scan", "scan ap", wifiscan_Command}, 
   {"wifistate", "Show wifi state", wifistate_Command}, 
-  {"wifidebug", "wifidebug on/off", wifidebug_Command}, 
+  {"wifidebug", "wifidebug on/off", wifidebug_Command},
+#ifdef CONFIG_MICO_AWS  
   {"awsdebug", "enable aws debug info", aws_handler}, 
-  
+#endif
+
   // network
   {"ifconfig", "Show IP address", ifconfig_Command}, 
   {"arp", "arp show/clean", arp_Command}, 
