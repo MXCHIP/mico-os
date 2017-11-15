@@ -110,6 +110,24 @@ SECTIONS
         _edata = .;
 
     } > RAM
+    
+    _siccmram = _sidata + SIZEOF(.data);
+
+    /* CCM-RAM section 
+     * 
+     * IMPORTANT NOTE! 
+     * If initialized variables will be placed in this section, 
+     * the startup code needs to be modified to copy the init-values.  
+     */
+    .ccmram : AT (_siccmram)
+    {
+      . = ALIGN(4);
+      _sccmram = .;       /* create a global symbol at ccmram start */
+      *(.ccmram*)
+      . = ALIGN(4);
+      _eccmram = .;       /* create a global symbol at ccmram end */
+    } >CCM
+
 
     .bss :
     {
