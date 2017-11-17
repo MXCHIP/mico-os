@@ -96,6 +96,7 @@ int mico_station_status_monitor(char *ssid, char*key, int trigger_seconds)
     int err = kNoErr;
     
     mico_rtos_init_semaphore(&sem, 1);
+    mico_rtos_set_semaphore(&sem);
     /* Register user function when wlan connection status is changed */
     err = mico_system_notify_register( mico_notify_WIFI_STATUS_CHANGED, (void *)micoNotify_WifiStatusHandler, NULL );
     require_noerr( err, exit );
