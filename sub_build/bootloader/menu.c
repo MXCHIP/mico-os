@@ -42,6 +42,14 @@
 #include "bootloader.h"
 #include <ctype.h>                    
 
+#define OTP_MAC_OFFSET 0
+#define OTP_SSID_OFFSET 32
+#define OTP_PWD_OFFSET 64
+OSStatus iflash_otp_write(volatile uint32_t FlashAddress, uint8_t* Data ,uint32_t DataLength);
+OSStatus iflash_otp_read(volatile uint32_t FlashAddress, uint8_t* Data ,uint32_t DataLength);
+OSStatus iflash_otp_lock(volatile uint32_t FlashAddress, uint32_t DataLength);
+
+
 /* Private typedef -----------------------------------------------------------*/
 /* Private define ------------------------------------------------------------*/
 #define CMD_STRING_SIZE       128
@@ -195,6 +203,8 @@ void Main_Menu(void)
   char cmdbuf [CMD_STRING_SIZE] = {0}, cmdname[15] = {0};     /* command input buffer        */
   int i, j;                                       /* index for command buffer    */
   char idStr[4], startAddressStr[10], endAddressStr[10], flash_dev_str[4];
+  char tmp[64];
+  uint8_t mac[6];
   int32_t id, startAddress, endAddress;
   bool inputFlashArea = false;
   mico_logic_partition_t *partition;
@@ -208,14 +218,9 @@ void Main_Menu(void)
 #endif
     getline (&cmdbuf[0], sizeof (cmdbuf));        /* input command line          */
     
-    for (i = 0; cmdbuf[i] == ' '; i++);           /* skip blanks on head         */
-    for (; cmdbuf[i] != 0; i++)  {                /* convert to upper characters */
-      cmdbuf[i] = toupper(cmdbuf[i]);
-    }
-    
     for (i = 0; cmdbuf[i] == ' '; i++);        /* skip blanks on head         */
     for(j=0; cmdbuf[i] != ' '&&cmdbuf[i] != 0; i++,j++)  {         /* find command name       */
-      cmdname[j] = cmdbuf[i];
+      cmdname[j] = toupper(cmdbuf[i]);
     }
     cmdname[j] = '\0';
 #if 0
@@ -390,6 +395,48 @@ void Main_Menu(void)
     else if(strcmp(cmdname, "REBOOT") == 0 || strcmp(cmdname, "7") == 0)  {
       printf ("\n\rReBooting.......\n\r");
       MicoSystemReboot();
+      break;                              
+    }
+    /* CMD for Aoyagi */
+    else if(strcmp(cmdname, "MAC") == 0)  {
+      if (findCommandPara(cmdbuf, "w", tmp, 64) == 12){
+        if (6 == str2hex(tmp, mac, 6)) {
+            printf ("\n\rSet MAC: %02x-%02x-%02x-%02x-%02x-%02x\n\r", 
+                mac[0],mac[1],mac[2],mac[3],mac[4],mac[5]);
+            iflash_otp_write(OTP_MAC_OFFSET, mac,6);
+            iflash_otp_lock(OTP_MAC_OFFSET, 6);
+        }
+      } else {
+        iflash_otp_read(OTP_MAC_OFFSET, mac,6);
+        printf ("\n\rMAC: %02x-%02x-%02x-%02x-%02x-%02x\n\r", 
+            mac[0],mac[1],mac[2],mac[3],mac[4],mac[5]);
+      }
+      break;                              
+    }
+    else if(strcmp(cmdname, "SSID") == 0 )  {
+      i = findCommandPara(cmdbuf, "w", tmp, 64);
+      if (i>0 && i<33){
+          printf ("\n\rSet SSID: %s\n\r", tmp);
+          tmp[i] = 0;
+          iflash_otp_write(OTP_SSID_OFFSET, tmp, 32);
+          iflash_otp_lock(OTP_SSID_OFFSET, i);
+      } else {
+          iflash_otp_read(OTP_SSID_OFFSET, tmp, 32);
+          printf ("\n\rSSID: %s\n\r", tmp);
+      }
+      break;                              
+    }
+    else if(strcmp(cmdname, "PWD") == 0 )  {
+      i = findCommandPara(cmdbuf, "w", tmp, 64);
+      if (i>0 && i<64){
+          printf ("\n\rset PWD: %s\n\r", tmp);
+          tmp[i] = 0;
+          iflash_otp_write(OTP_PWD_OFFSET, tmp, 64);
+          iflash_otp_lock(OTP_PWD_OFFSET, i);
+      } else {
+          iflash_otp_read(OTP_PWD_OFFSET, tmp, 64);
+          printf ("\n\rPWD: %s\n\r", tmp);
+      }
       break;                              
     }
     

@@ -138,7 +138,7 @@ enum
 
 
 #define MFG_SEL               (MICO_GPIO_NONE)
-#define BOOT_SEL              (MICO_GPIO_NONE)
+#define BOOT_SEL              (MICO_SW3)
 
 #define EasyLink_BUTTON       (MICO_SW2)
 

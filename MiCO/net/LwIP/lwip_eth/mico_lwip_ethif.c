@@ -205,6 +205,7 @@ OSStatus mico_eth_bringup(bool dhcp, const char *ip, const char *netmask, const 
     if (netif_is_link_up(&lwip_netif) && lwip_dhcp) {
         eth_log("Start DHCP...");
         dhcp_start(&lwip_netif);
+        autoip_start(&lwip_netif);
     }
 
 #endif
@@ -228,13 +229,14 @@ OSStatus mico_eth_bringdown(void)
     if (!lwip_connected) {
         return kNotInUseErr;
     }
-
+    eth_log("bring down");
 #if LWIP_IPV4
     // Disconnect from the network
     if (lwip_dhcp) {
         dhcp_release(&lwip_netif);
         dhcp_stop(&lwip_netif);
         lwip_dhcp = false;
+        autoip_stop(&lwip_netif);
     }
 #endif
 
@@ -359,6 +361,7 @@ static void mico_lwip_netif_link_irq(struct netif *lwip_netif)
             ip_addr_set_zero(&ip_addr);
             netif_set_addr(lwip_netif, &ip_addr, &ip_addr, &ip_addr);
             dhcp_start(lwip_netif);
+            autoip_start(lwip_netif);
         }
     } else {
         eth_log("Ethernet link down");
@@ -391,6 +394,7 @@ static void mico_lwip_netif_status_irq(struct netif *lwip_netif)
             any_addr = false;
             mico_eth_add_dns_addr();
             mico_rtos_send_asynchronous_event( MICO_NETWORKING_WORKER_THREAD, notify_app_ethif_status_changed, (void *)NOTIFY_ETH_UP );
+
             return;
         }
 

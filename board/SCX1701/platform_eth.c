@@ -36,6 +36,9 @@
 /******************************************************
 *                      Macros
 ******************************************************/
+#define OTP_MAC_OFFSET 0
+#define OTP_SSID_OFFSET 32
+#define OTP_PWD_OFFSET 64
 
 /******************************************************
 *                    Constants
@@ -56,6 +59,9 @@
 /******************************************************
 *               Function Declarations
 ******************************************************/
+OSStatus iflash_otp_write(volatile uint32_t FlashAddress, uint8_t* Data ,uint32_t DataLength);
+OSStatus iflash_otp_read(volatile uint32_t FlashAddress, uint8_t* Data ,uint32_t DataLength);
+OSStatus iflash_otp_lock(volatile uint32_t FlashAddress, uint32_t DataLength);
 
 /******************************************************
 *               Variables Definitions
@@ -66,10 +72,35 @@
 *               Function Definitions
 ******************************************************/
 /* Return 0, use mbed default mac address */
-uint8_t mbed_otp_mac_address(char *mac) {
-    return 0;
+uint8_t mbed_otp_mac_address(uint8_t *mac) 
+{
+    int i;
+    
+    iflash_otp_read(OTP_MAC_OFFSET, mac, 6);
+    for(i=0; i<6; i++) {
+        if (mac[i] != 0xFF)
+            break;
+    }
+
+    if (i == 6)
+        return 0;
+    else
+        return 1;
 }
 
+uint8_t mbed_otp_softap_info(char *ssid, char *pwd) 
+{
+    int i;
+    uint8_t tmp[64];
+    
+    iflash_otp_read(OTP_SSID_OFFSET, tmp, 32);
+    strncpy(ssid, (char*)tmp, 33);
+    
+    iflash_otp_read(OTP_PWD_OFFSET, tmp, 64);
+    strncpy(pwd, (char*)tmp, 64);
+
+    return 0;
+}
 
 void mico_eth_power_up(void)
 {

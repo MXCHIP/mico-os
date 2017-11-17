@@ -80,6 +80,8 @@ OSStatus MICOReadConfiguration          ( system_context_t * const inContext );
 
 system_context_t *system_context( void );
 
+int mico_station_status_monitor(char *ssid, char*key, int trigger_seconds);
+
 #ifdef __cplusplus
 } /*extern "C" */
 #endif
