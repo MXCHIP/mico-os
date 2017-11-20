@@ -233,17 +233,7 @@ restart:
     }
     else /* EasyLink failed */
     {
-        /* so roll back to previous settings  (if it has) and connect */
-        if ( context->flashContentInRam.micoSystemConfig.configured != unConfigured ) {
-            system_log("Roll back to previous settings");
-            MICOReadConfiguration( context );
-            system_connect_wifi_normal( context );
-        }
-        else {
-            /*module should power down in default setting*/
-            system_log("Wi-Fi power off");
-            micoWlanPowerOff();
-        }
+        mico_system_delegate_easylink_timeout();
     }
 
 exit:
