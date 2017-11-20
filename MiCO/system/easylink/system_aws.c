@@ -233,7 +233,7 @@ restart:
     }
     else /* EasyLink failed */
     {
-        mico_system_delegate_easylink_timeout();
+        mico_system_delegate_easylink_timeout(context);
     }
 
 exit:
