@@ -119,16 +119,18 @@ static void micoNotify_WiFIParaChangedHandler(apinfo_adv_t *ap_info, char *key, 
     _needsUpdate = true;
   }
 
-  if(memcmp(inContext->flashContentInRam.micoSystemConfig.key, key, maxKeyLen)!=0){
-    memcpy(inContext->flashContentInRam.micoSystemConfig.key, key, maxKeyLen);
-    _needsUpdate = true;
+  if (key_len == maxKeyLen) {//  maxKeyLen is the PSK. using PSK replace passphrase. 
+    if(memcmp(inContext->flashContentInRam.micoSystemConfig.key, key, maxKeyLen)!=0){
+      memcpy(inContext->flashContentInRam.micoSystemConfig.key, key, maxKeyLen);
+      _needsUpdate = true;
+    }
+  
+    if(inContext->flashContentInRam.micoSystemConfig.keyLength != key_len){
+      inContext->flashContentInRam.micoSystemConfig.keyLength = key_len;
+      _needsUpdate = true;
+    }
   }
-
-  if(inContext->flashContentInRam.micoSystemConfig.keyLength != key_len){
-    inContext->flashContentInRam.micoSystemConfig.keyLength = key_len;
-    _needsUpdate = true;
-  }
-
+  
   if(_needsUpdate== true)  
     mico_system_context_update( &inContext->flashContentInRam );
   mico_rtos_unlock_mutex(&inContext->flashContentInRam_mutex);
