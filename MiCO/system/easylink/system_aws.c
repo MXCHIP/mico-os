@@ -138,9 +138,7 @@ static int aws_broadcast_notification(char *msg, int msg_num)
         ret = sendto(fd, msg, strlen(msg), 0, (struct sockaddr *)&s_addr, sizeof(s_addr));
         if (ret < 0) {
             system_log("awss send notify msg ERROR!\r\n");
-        } else {
-            system_log("awss notify %d times, %s\r\n", i, msg);
-        }
+        } 
 
         FD_ZERO(&readfds);
         t.tv_sec = 0;
@@ -162,7 +160,9 @@ static int aws_broadcast_notification(char *msg, int msg_num)
 
     free(buf);
     close(fd);
-
+    if (result == 0) {
+        system_log("awss notify %d times, no response\r\n", msg_num);
+    }
     return result;
 }
 
@@ -226,9 +226,11 @@ restart:
         require_noerr_action_string( err, restart, micoWlanSuspend(), "Re-start AWS mode" );
         mico_system_delegate_config_success( CONFIG_BY_AWS );
 
+/* mico_config.h can define MICO_AWS_NOTIFY_DISABLE to disable send aws notification */
+#ifndef MICO_AWS_NOTIFY_DISABLE
         /* Start AWS udp notify */
         aws_broadcast_notification(aws_msg, 50);
-
+#endif
         goto exit;
     }
     else /* EasyLink failed */
