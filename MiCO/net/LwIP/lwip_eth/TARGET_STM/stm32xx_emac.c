@@ -92,12 +92,12 @@ __ALIGN_BEGIN ETH_DMADescTypeDef DMATxDscrTab[ETH_TXBUFNB] __ALIGN_END; /* Ether
 #if defined (__ICCARM__)   /*!< IAR Compiler */
   #pragma data_alignment=4
 #endif
-__ALIGN_BEGIN uint8_t Rx_Buff[ETH_RXBUFNB][ETH_RX_BUF_SIZE] __ALIGN_END __attribute__ ((__section__(".ccmram"))); /* Ethernet Receive Buffer */
+__ALIGN_BEGIN uint8_t Rx_Buff[ETH_RXBUFNB][ETH_RX_BUF_SIZE] __ALIGN_END; /* Ethernet Receive Buffer */
 
 #if defined (__ICCARM__)   /*!< IAR Compiler */
   #pragma data_alignment=4
 #endif
-__ALIGN_BEGIN uint8_t Tx_Buff[ETH_TXBUFNB][ETH_TX_BUF_SIZE] __ALIGN_END __attribute__ ((__section__(".ccmram"))); /* Ethernet Transmit Buffer */
+__ALIGN_BEGIN uint8_t Tx_Buff[ETH_TXBUFNB][ETH_TX_BUF_SIZE] __ALIGN_END; /* Ethernet Transmit Buffer */
 
 static sys_sem_t rx_ready_sem;    /* receive ready semaphore */
 static sys_mutex_t tx_lock_mutex;
