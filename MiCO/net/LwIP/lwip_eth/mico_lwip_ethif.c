@@ -57,6 +57,7 @@
 #error "Either IPv4 or IPv6 must be preferred."
 #endif
 
+#define DHCP_TIMEOUT_CHECK_TIME (30*1000)
 
 /******************************************************
  *                    Constants
@@ -140,6 +141,16 @@ OSStatus mico_eth_init( void )
 
 static bool lwip_connected = false;
 
+/* If ethernet interface can't get IP address for 30 seconds, start autoip. */
+static void dhcp_timeout_check(struct netif *netif)
+{
+    if ( netif->dhcp->state == DHCP_BOUND ) {
+        return;
+    }
+    dhcp_stop(netif);
+    autoip_start(netif);
+}
+
 OSStatus mico_eth_bringup(bool dhcp, const char *ip, const char *netmask, const char *gw)
 {
     // Check if we've already connected
@@ -204,8 +215,10 @@ OSStatus mico_eth_bringup(bool dhcp, const char *ip, const char *netmask, const 
 
     if (netif_is_link_up(&lwip_netif) && lwip_dhcp) {
         eth_log("Start DHCP...");
+        autoip_stop(&lwip_netif);
         dhcp_start(&lwip_netif);
-        autoip_start(&lwip_netif);
+        tcpip_untimeout(dhcp_timeout_check, &lwip_netif);
+        tcpip_timeout(DHCP_TIMEOUT_CHECK_TIME, dhcp_timeout_check, &lwip_netif);
     }
 
 #endif
