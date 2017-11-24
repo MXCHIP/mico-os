@@ -148,7 +148,7 @@ typedef struct Hmac {
  * @param keysz    length of key
  * @retval         None
  */
-void HmacSetKey(Hmac* hmac, int type, const byte* key, word32 keySz);
+int HmacSetKey(Hmac* hmac, int type, const byte* key, word32 keySz);
   
 
   /**
@@ -160,7 +160,7 @@ void HmacSetKey(Hmac* hmac, int type, const byte* key, word32 keySz);
  *                 Note: The length is arbitrary.
  * @retval         None
  */
-void HmacUpdate(Hmac* hmac, const byte* input, word32 inLen);
+int HmacUpdate(Hmac* hmac, const byte* input, word32 inLen);
   
 
 /**
@@ -170,7 +170,7 @@ void HmacUpdate(Hmac* hmac, const byte* input, word32 inLen);
  * @param output    buffer holding the output data
  * @retval         None
  */   
-void HmacFinal(Hmac* hmac, byte* output);
+int HmacFinal(Hmac* hmac, byte* output);
 
 /**
   * @}
@@ -600,6 +600,22 @@ typedef struct Sha256 {
     word32  buffer[SHA256_BLOCK_SIZE  / sizeof(word32)];
 } Sha256;
 
+enum {
+    SHA              =  1,    /* hash type unique */
+    SHA_BLOCK_SIZE   = 64,
+    SHA_DIGEST_SIZE  = 20,
+    SHA_PAD_SIZE     = 56
+};
+
+/* Sha digest */
+typedef struct Sha {
+    word32  buffLen;   /* in bytes          */
+    word32  loLen;     /* length in bytes   */
+    word32  hiLen;     /* length in bytes   */
+    word32  buffer[SHA_BLOCK_SIZE  / sizeof(word32)];
+    word32  digest[SHA_DIGEST_SIZE / sizeof(word32)];
+} Sha;
+
 /** 
  *  @brief  RNG definition used for RSA
  */
@@ -621,7 +637,7 @@ typedef struct CyaSSL_RNG {
  *
  * @retval         None
  */
-void InitRsaKey(RsaKey* key, void*);
+int InitRsaKey(RsaKey* key, void*);
 
 
 /**
@@ -631,7 +647,7 @@ void InitRsaKey(RsaKey* key, void*);
  *
  * @retval         None
  */
-void FreeRsaKey(RsaKey* key);
+int FreeRsaKey(RsaKey* key);
 
 
 /**

@@ -1,3 +1,5 @@
+#include "mico_security.h"
+
 enum {
 	API_VERSION_V1 = 1,
 	API_VERSION_MAX,
@@ -5,14 +7,37 @@ enum {
 
 typedef void* mico_event;
 typedef void (*ssl_log_cb)(const int logLevel, const char *const logMessage);
-typedef struct Md5 {
-    uint32_t  buffLen;   /* length in bytes          */
-    uint32_t  loLen;     /* length in bytes   */
-    uint32_t  hiLen;     /* length in bytes   */
-    uint32_t  buffer[MD5_BLOCK_SIZE  / sizeof(uint32_t)];
-    uint32_t  digest[MD5_DIGEST_SIZE / sizeof(uint32_t)];
-} Md5;
 
+#define EXTRA_CRYPTO_FLAG 0xEC000001
+
+typedef struct {
+    int  (*InitRng)(CyaSSL_RNG*);
+    int  (*RNG_GenerateBlock)(CyaSSL_RNG*, byte*, word32 sz);
+    int  (*RNG_GenerateByte)(CyaSSL_RNG*, byte*);
+    int  (*FreeRng)(CyaSSL_RNG*);
+
+    int  (*RsaPublicKeyDecode)(const byte* input, word32* inOutIdx, RsaKey*, word32);
+    int  (*InitRsaKey)(RsaKey* key, void*);
+    int  (*FreeRsaKey)(RsaKey* key);
+    int  (*RsaPublicEncrypt)(const byte* in, word32 inLen, byte* out,
+                             word32 outLen, RsaKey* key, CyaSSL_RNG* rng);
+    int  (*RsaSSL_Verify)(const byte* in, word32 inLen, byte* out,
+                          word32 outLen, RsaKey* key);
+    int  (*RsaEncryptSize)(RsaKey* key);
+
+    int (*InitSha256)(Sha256*);
+    int (*Sha256Update)(Sha256*, const byte*, word32);
+    int (*Sha256Final)(Sha256*, byte*);
+
+    int (*InitSha)(Sha*);
+    int (*ShaUpdate)(Sha*, const byte*, word32);
+    int (*ShaFinal)(Sha*, byte*);
+
+    int (*HmacSetKey)(Hmac*, int type, const byte* key, word32 keySz);
+    int (*HmacUpdate)(Hmac*, const byte*, word32);
+    int (*HmacFinal)(Hmac*, byte*);
+
+}extra_crypto_api_t;
 
 typedef void (*mgnt_handler_t)(char *buf, int buf_len);
 
@@ -95,9 +120,9 @@ typedef struct {
 	int (*ssl_loggingcb)(ssl_log_cb f);
 	
 	/*crypto*/
-	void (*InitMd5)(Md5*md5);
-	void (*Md5Update)(Md5* md5, const uint8_t* data, uint32_t len);
-	void (*Md5Final)(Md5* md5, uint8_t* hash);
+	void (*InitMd5)(md5_context*md5);
+	void (*Md5Update)(md5_context* md5, const uint8_t* data, uint32_t len);
+	void (*Md5Final)(md5_context* md5, uint8_t* hash);
 	int (*Md5Hash)(const uint8_t* data, uint32_t len, uint8_t* hash);
 	void (*AesEncryptDirect)(Aes* aes, uint8_t* out, const uint8_t* in);
 	void (*AesDecryptDirect)(Aes* aes, uint8_t* out, const uint8_t* in);
@@ -116,6 +141,9 @@ typedef struct {
 	void (*ssl_set_client_cert)(const char *_cert_pem, const char *private_key_pem);
 	void* (*ssl_connect_sni)(int fd, int calen, char*ca, char *sni_servername, int *errno);
     void (*ssl_set_ecc)(int enable);
+
+    uint32_t extra_crypto_flag;
+    extra_crypto_api_t *extra_crypto_apis; 
 } ssl_crypto_api_v1_t;
 
 typedef struct {

@@ -327,3 +327,111 @@ void mico_rtos_resume_thread(mico_thread_t* thread)
     _kernel_api.os_apis->mico_rtos_resume_thread(thread);
 }
 
+#define extra_apis _kernel_api.ssl_crypto_apis->extra_crypto_apis
+
+#define EXTRA_CRYPTO_CHECK() if (EXTRA_CRYPTO_FLAG == _kernel_api.ssl_crypto_apis->extra_crypto_flag) return -1;
+        
+int  InitRng(CyaSSL_RNG* rng)
+{
+    EXTRA_CRYPTO_CHECK();
+    return extra_apis->InitRng(rng);
+}
+int  RNG_GenerateBlock(CyaSSL_RNG* rng, byte* b, word32 sz)
+{
+    EXTRA_CRYPTO_CHECK();
+    return extra_apis->RNG_GenerateBlock(rng, b, sz);
+}
+int  RNG_GenerateByte(CyaSSL_RNG* rng, byte* b)
+{
+    EXTRA_CRYPTO_CHECK();
+    return extra_apis->RNG_GenerateByte(rng, b);
+}
+int FreeRng(CyaSSL_RNG* rng)
+{
+    EXTRA_CRYPTO_CHECK();
+    return extra_apis->FreeRng(rng);
+}
+
+
+int  RsaPublicKeyDecode(const byte* input, word32* inOutIdx, RsaKey* key, word32 inSz)
+{
+    EXTRA_CRYPTO_CHECK();
+    return extra_apis->RsaPublicKeyDecode(input, inOutIdx, key, inSz);
+}
+int  InitRsaKey(RsaKey* key, void* ptr)
+{
+    EXTRA_CRYPTO_CHECK();
+    return extra_apis->InitRsaKey(key, ptr);
+}
+int  FreeRsaKey(RsaKey* key)
+{
+    EXTRA_CRYPTO_CHECK();
+    return extra_apis->FreeRsaKey(key);
+}
+int  RsaPublicEncrypt(const byte* in, word32 inLen, byte* out,
+                         word32 outLen, RsaKey* key, CyaSSL_RNG* rng)
+{
+    EXTRA_CRYPTO_CHECK();
+    return extra_apis->RsaPublicEncrypt(in, inLen, out,
+                         outLen, key, rng);
+}
+int  RsaSSL_Verify(const byte* in, word32 inLen, byte* out,
+                      word32 outLen, RsaKey* key)
+{
+    EXTRA_CRYPTO_CHECK();
+    return extra_apis->RsaSSL_Verify(in, inLen, out, outLen, key);
+}
+int  RsaEncryptSize(RsaKey* key)
+{
+    EXTRA_CRYPTO_CHECK();
+    return extra_apis->RsaEncryptSize(key);
+}
+
+int InitSha256(Sha256* sha)
+{
+    EXTRA_CRYPTO_CHECK();
+    return extra_apis->InitSha256(sha);
+}
+int Sha256Update(Sha256* sha, const byte* data, word32 len)
+{
+    EXTRA_CRYPTO_CHECK();
+    return extra_apis->Sha256Update(sha, data, len);
+}
+int Sha256Final(Sha256* sha, byte* out)
+{
+    EXTRA_CRYPTO_CHECK();
+    return extra_apis->Sha256Final(sha, out);
+}
+
+int InitSha(Sha* sha)
+{
+    EXTRA_CRYPTO_CHECK();
+    return extra_apis->InitSha(sha);
+}
+int ShaUpdate(Sha* sha, const byte* data, word32 len)
+{
+    EXTRA_CRYPTO_CHECK();
+    return extra_apis->ShaUpdate(sha, data, len);
+}
+int ShaFinal(Sha* sha, byte* out)
+{
+    EXTRA_CRYPTO_CHECK();
+    return extra_apis->ShaFinal(sha, out);
+}
+
+int HmacSetKey(Hmac* hmac, int type, const byte* key, word32 keySz)
+{
+    EXTRA_CRYPTO_CHECK();
+    return extra_apis->HmacSetKey(hmac, type, key, keySz);
+}
+int HmacUpdate(Hmac* hmac, const byte* in, word32 sz)
+{
+    EXTRA_CRYPTO_CHECK();
+    return extra_apis->HmacUpdate(hmac, in, sz);
+}
+int HmacFinal(Hmac* hmac, byte* out)
+{
+    EXTRA_CRYPTO_CHECK();
+    return extra_apis->HmacFinal(hmac, out);
+}
+
