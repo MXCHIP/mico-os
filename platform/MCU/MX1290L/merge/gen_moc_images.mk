@@ -25,7 +25,7 @@ EXTRA_POST_BUILD_TARGETS += gen_moc_images
 
 #############################Generate MOC_KERNEL_APP_BIN_OUTPUT_FILE ################
 #moc kernel
-MOC_KERNEL_BIN_FILE := $(MICO_OS_PATH)/resources/moc_kernel/MX1280/kernel.bin
+MOC_KERNEL_BIN_FILE := $(MICO_OS_PATH)/resources/moc_kernel/MX1290L/kernel.bin
 
 #moc user application
 MOC_APP_BIN_OUTPUT_FILE :=$(LINK_OUTPUT_FILE:$(LINK_OUTPUT_SUFFIX)=.usr$(BIN_OUTPUT_SUFFIX))
@@ -34,7 +34,7 @@ MOC_APP_OFFSET      := 0x75000
 
 
 #MOC bootloader
-MOC_BOOT_BIN_FILE    := $(MICO_OS_PATH)/resources/moc_kernel/MX1280/boot.bin
+MOC_BOOT_BIN_FILE    := $(MICO_OS_PATH)/resources/moc_kernel/MX1290L/boot.bin
 MOC_BOOT_OFFSET      := 0x0
 
 #moc kernel + user application
@@ -42,7 +42,7 @@ MOC_KERNEL_APP_BIN_OUTPUT_FILE :=$(LINK_OUTPUT_FILE:$(LINK_OUTPUT_SUFFIX)=.ota$(
 MOC_KERNEL_APP_OFFSET:= 0x13000
 
 #ATE 
-MOC_ATE_BIN_OUTPUT_FILE := $(MICO_OS_PATH)/platform/MCU/MX1280/merge/ate.bin
+MOC_ATE_BIN_OUTPUT_FILE := $(MICO_OS_PATH)/platform/MCU/MX1290L/merge/ate.bin
 MOC_ATE_OFFSET       := 0xD0000
 
 #wifi firmware

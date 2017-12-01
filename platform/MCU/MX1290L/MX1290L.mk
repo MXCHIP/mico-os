@@ -8,13 +8,13 @@
 #
 
 
-NAME = MX1280
+NAME = MX1290L
 
 # Host architecture is ARM Cortex M4
 HOST_ARCH := Cortex-M4F
 HOST_ARCH_M4 = Cortex-M4
 # Host MCU alias for OpenOCD
-# MX1280 use the same openocd as MX1290
+# MX1290L use the same openocd as MX1290
 HOST_OPENOCD := MX1290
 
 GLOBAL_DEFINES += __FPU_PRESENT CONFIG_CPU_MX1290
