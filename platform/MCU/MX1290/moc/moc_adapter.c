@@ -286,6 +286,11 @@ int mico_wlan_monitor_no_easylink(void)
 	return _kernel_api.wifi_apis->mico_wlan_monitor_no_easylink();
 }
 
+int mico_wlan_monitor_with_easylink(void)
+{
+	return _kernel_api.wifi_apis->mico_wlan_monitor_with_easylink();
+}
+
 int wlan_rx_mgnt_set(int enable, mgnt_handler_t cb)
 {
 	return _kernel_api.wifi_apis->wlan_rx_mgnt_set(enable, cb);
