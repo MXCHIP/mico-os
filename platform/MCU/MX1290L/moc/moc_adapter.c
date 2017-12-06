@@ -1,5 +1,5 @@
-#include "mico_debug.h"
-#include "mico_common.h"
+#include "debug.h"
+#include "common.h"
 #include "moc_api.h"
 #include "moc_api_sep.h"
 
@@ -27,7 +27,7 @@ static void _system_config_set( mico_system_config_t *cfg )
 
 static const platform_uart_config_t stdio_uart_config =
 {
-    .baud_rate = MICO_STDIO_UART_BAUDRATE,
+    .baud_rate = STDIO_UART_BAUDRATE,
     .data_width = DATA_WIDTH_8BIT,
     .parity = NO_PARITY,
     .stop_bits = STOP_BITS_1,
@@ -41,7 +41,8 @@ static volatile uint8_t stdio_rx_data[STDIO_BUFFER_SIZE];
 void init_debug_uart(void)
 {
 	ring_buffer_init( (ring_buffer_t*) &stdio_rx_buffer, (uint8_t*) stdio_rx_data, STDIO_BUFFER_SIZE );
-	mico_stdio_uart_init( &stdio_uart_config, (ring_buffer_t*) &stdio_rx_buffer );
+	MicoUartInitialize(STDIO_UART, &stdio_uart_config,
+                        (ring_buffer_t*) &stdio_rx_buffer );
 }
 #else
 void init_debug_uart(void)
@@ -285,11 +286,6 @@ int mico_wlan_monitor_no_easylink(void)
 	return _kernel_api.wifi_apis->mico_wlan_monitor_no_easylink();
 }
 
-int mico_wlan_monitor_with_easylink(void)
-{
-	return _kernel_api.wifi_apis->mico_wlan_monitor_with_easylink();
-}
-
 int wlan_rx_mgnt_set(int enable, mgnt_handler_t cb)
 {
 	return _kernel_api.wifi_apis->wlan_rx_mgnt_set(enable, cb);
@@ -329,113 +325,5 @@ int disable_log_uart(void)
 void mico_rtos_resume_thread(mico_thread_t* thread)
 {
     _kernel_api.os_apis->mico_rtos_resume_thread(thread);
-}
-
-#define extra_apis _kernel_api.ssl_crypto_apis->extra_crypto_apis
-
-#define EXTRA_CRYPTO_CHECK() if (EXTRA_CRYPTO_FLAG == _kernel_api.ssl_crypto_apis->extra_crypto_flag) return -1;
-        
-int  InitRng(CyaSSL_RNG* rng)
-{
-    EXTRA_CRYPTO_CHECK();
-    return extra_apis->InitRng(rng);
-}
-int  RNG_GenerateBlock(CyaSSL_RNG* rng, byte* b, word32 sz)
-{
-    EXTRA_CRYPTO_CHECK();
-    return extra_apis->RNG_GenerateBlock(rng, b, sz);
-}
-int  RNG_GenerateByte(CyaSSL_RNG* rng, byte* b)
-{
-    EXTRA_CRYPTO_CHECK();
-    return extra_apis->RNG_GenerateByte(rng, b);
-}
-int FreeRng(CyaSSL_RNG* rng)
-{
-    EXTRA_CRYPTO_CHECK();
-    return extra_apis->FreeRng(rng);
-}
-
-
-int  RsaPublicKeyDecode(const byte* input, word32* inOutIdx, RsaKey* key, word32 inSz)
-{
-    EXTRA_CRYPTO_CHECK();
-    return extra_apis->RsaPublicKeyDecode(input, inOutIdx, key, inSz);
-}
-int  InitRsaKey(RsaKey* key, void* ptr)
-{
-    EXTRA_CRYPTO_CHECK();
-    return extra_apis->InitRsaKey(key, ptr);
-}
-int  FreeRsaKey(RsaKey* key)
-{
-    EXTRA_CRYPTO_CHECK();
-    return extra_apis->FreeRsaKey(key);
-}
-int  RsaPublicEncrypt(const byte* in, word32 inLen, byte* out,
-                         word32 outLen, RsaKey* key, CyaSSL_RNG* rng)
-{
-    EXTRA_CRYPTO_CHECK();
-    return extra_apis->RsaPublicEncrypt(in, inLen, out,
-                         outLen, key, rng);
-}
-int  RsaSSL_Verify(const byte* in, word32 inLen, byte* out,
-                      word32 outLen, RsaKey* key)
-{
-    EXTRA_CRYPTO_CHECK();
-    return extra_apis->RsaSSL_Verify(in, inLen, out, outLen, key);
-}
-int  RsaEncryptSize(RsaKey* key)
-{
-    EXTRA_CRYPTO_CHECK();
-    return extra_apis->RsaEncryptSize(key);
-}
-
-int InitSha256(Sha256* sha)
-{
-    EXTRA_CRYPTO_CHECK();
-    return extra_apis->InitSha256(sha);
-}
-int Sha256Update(Sha256* sha, const byte* data, word32 len)
-{
-    EXTRA_CRYPTO_CHECK();
-    return extra_apis->Sha256Update(sha, data, len);
-}
-int Sha256Final(Sha256* sha, byte* out)
-{
-    EXTRA_CRYPTO_CHECK();
-    return extra_apis->Sha256Final(sha, out);
-}
-
-int InitSha(Sha* sha)
-{
-    EXTRA_CRYPTO_CHECK();
-    return extra_apis->InitSha(sha);
-}
-int ShaUpdate(Sha* sha, const byte* data, word32 len)
-{
-    EXTRA_CRYPTO_CHECK();
-    return extra_apis->ShaUpdate(sha, data, len);
-}
-int ShaFinal(Sha* sha, byte* out)
-{
-    EXTRA_CRYPTO_CHECK();
-    return extra_apis->ShaFinal(sha, out);
-}
-
-int HmacSetKey(Hmac* hmac, int type, const byte* key, word32 keySz)
-{
-    EXTRA_CRYPTO_CHECK();
-    return extra_apis->HmacSetKey(hmac, type, key, keySz);
-}
-int HmacUpdate(Hmac* hmac, const byte* in, word32 sz)
-{
-    EXTRA_CRYPTO_CHECK();
-    return extra_apis->HmacUpdate(hmac, in, sz);
-}
-int HmacFinal(Hmac* hmac, byte* out)
-{
-    EXTRA_CRYPTO_CHECK();
-    return extra_apis->HmacFinal(hmac, out);
 }
 

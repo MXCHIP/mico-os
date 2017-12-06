@@ -24,6 +24,8 @@
 
 #include "StringUtils.h"
 
+#define AWS_NOTIFY_INTERVAL (20*1000)
+#define AWS_NOTIFY_TIMES    500
 //#if (MICO_WLAN_CONFIG_MODE == CONFIG_MODE_EASYLINK) || (MICO_WLAN_CONFIG_MODE == CONFIG_MODE_EASYLINK_WITH_SOFTAP)
 
 /******************************************************
@@ -138,13 +140,11 @@ static int aws_broadcast_notification(char *msg, int msg_num)
         ret = sendto(fd, msg, strlen(msg), 0, (struct sockaddr *)&s_addr, sizeof(s_addr));
         if (ret < 0) {
             system_log("awss send notify msg ERROR!\r\n");
-        } else {
-            system_log("awss notify %d times, %s\r\n", i, msg);
-        }
+        } 
 
         FD_ZERO(&readfds);
         t.tv_sec = 0;
-        t.tv_usec = 200*1000;
+        t.tv_usec = AWS_NOTIFY_INTERVAL;
         FD_SET(fd, &readfds);
         ret = select(fd+1, &readfds, NULL, NULL, &t);
         if (ret > 0) {
@@ -162,7 +162,9 @@ static int aws_broadcast_notification(char *msg, int msg_num)
 
     free(buf);
     close(fd);
-
+    if (result == 0) {
+        system_log("awss notify %d times, no response\r\n", msg_num);
+    }
     return result;
 }
 
@@ -226,24 +228,16 @@ restart:
         require_noerr_action_string( err, restart, micoWlanSuspend(), "Re-start AWS mode" );
         mico_system_delegate_config_success( CONFIG_BY_AWS );
 
+/* mico_config.h can define MICO_AWS_NOTIFY_DISABLE to disable send aws notification */
+#ifndef MICO_AWS_NOTIFY_DISABLE
         /* Start AWS udp notify */
-        aws_broadcast_notification(aws_msg, 50);
-
+        aws_broadcast_notification(aws_msg, AWS_NOTIFY_TIMES);
+#endif
         goto exit;
     }
     else /* EasyLink failed */
     {
-        /* so roll back to previous settings  (if it has) and connect */
-        if ( context->flashContentInRam.micoSystemConfig.configured != unConfigured ) {
-            system_log("Roll back to previous settings");
-            MICOReadConfiguration( context );
-            system_connect_wifi_normal( context );
-        }
-        else {
-            /*module should power down in default setting*/
-            system_log("Wi-Fi power off");
-            micoWlanPowerOff();
-        }
+        mico_system_delegate_easylink_timeout(context);
     }
 
 exit:

@@ -146,7 +146,7 @@ static int handle_input(char *inbuf)
   
   memset((void *)&argv, 0, sizeof(argv));
   memset(&stat, 0, sizeof(stat));
-  
+
   do {
     switch (inbuf[i]) {
     case '\0':
@@ -537,6 +537,25 @@ static void cli_exit_handler(char *pcWriteBuffer, int xWriteBufferLen,int argc, 
   // exit command not executed
 }
 
+#ifdef CONFIG_MICO_AWS
+void aws_log_set(int enable);
+static void aws_handler(char *pcWriteBuffer, int xWriteBufferLen,int argc, char **argv)
+{
+    if (argc == 1) {
+        cmd_printf("Usage: awsdebug on/off. \r\n");
+        return;
+    }
+
+    if (!strcasecmp(argv[1], "on")) {
+        cmd_printf("Enable AWS debug\r\n");
+        aws_log_set(1);
+    } else if (!strcasecmp(argv[1], "off")) {
+        cmd_printf("Disable AWS debug\r\n");
+        aws_log_set(0);
+    }
+}
+#endif
+
 static const struct cli_command built_ins[] = {
   {"help", NULL, help_command},
   {"version", NULL, get_version},
@@ -546,8 +565,11 @@ static const struct cli_command built_ins[] = {
   /// WIFI
   {"scan", "scan ap", wifiscan_Command}, 
   {"wifistate", "Show wifi state", wifistate_Command}, 
-  {"wifidebug", "wifidebug on/off", wifidebug_Command}, 
-  
+  {"wifidebug", "wifidebug on/off", wifidebug_Command},
+#ifdef CONFIG_MICO_AWS  
+  {"awsdebug", "enable aws debug info", aws_handler}, 
+#endif
+
   // network
   {"ifconfig", "Show IP address", ifconfig_Command}, 
   {"arp", "arp show/clean", arp_Command}, 
@@ -754,7 +776,7 @@ int cli_init(void)
 int cli_init(void)
 {
   int ret;
-  
+
   pCli = (struct cli_st*)malloc(sizeof(struct cli_st));
   if (pCli == NULL)
     return kNoMemoryErr;
@@ -783,7 +805,7 @@ int cli_init(void)
   cli_register_commands(user_clis, 1);
 #endif
   
-  ret = mico_rtos_create_thread(NULL, MICO_DEFAULT_WORKER_PRIORITY, "cli", cli_main, 1500, 0);
+  ret = mico_rtos_create_thread(NULL, MICO_DEFAULT_WORKER_PRIORITY, "cli", cli_main, 4096, 0);
   if (ret != kNoErr) {
     cli_printf("Error: Failed to create cli thread: %d\r\n",
                ret);
