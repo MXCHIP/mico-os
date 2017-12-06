@@ -475,3 +475,14 @@ bool MicoShouldEnterBootloader(void)
     return false;
 }
 
+void mico_eth_set_default_interface(void)
+{
+    
+}
+
+void platform_eth_mac_address(char *mac) {
+}
+void *mico_eth_get_if_handle(void)
+{
+    return NULL;
+}

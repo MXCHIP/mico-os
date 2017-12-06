@@ -756,6 +756,10 @@ extern "C" void __iar_argc_argv() {
 // Linker defined symbol used by _sbrk to indicate where heap should start.
 extern "C" int __end__;
 
+extern "C" int _eccmram;
+extern "C" int _ccmram_end;
+
+
 #if defined(TARGET_CORTEX_A)
 extern "C" uint32_t  __HeapLimit;
 #endif

@@ -397,6 +397,7 @@ void Main_Menu(void)
       MicoSystemReboot();
       break;                              
     }
+#if 0    
     /* CMD for Aoyagi */
     else if(strcmp(cmdname, "MAC") == 0)  {
       if (findCommandPara(cmdbuf, "w", tmp, 64) == 12){
@@ -439,7 +440,7 @@ void Main_Menu(void)
       }
       break;                              
     }
-    
+#endif
     else if(strcmp(cmdname, "HELP") == 0 || strcmp(cmdname, "?") == 0)	{
         printf ( menu, MODEL, Bootloader_REVISION, HARDWARE_REVISION );  /* display command menu        */
       break;
