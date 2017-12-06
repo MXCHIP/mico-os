@@ -357,7 +357,6 @@ lwsl_timestamp(int level, char *p, int len);
 #define lwsl_client(M,...) 		MICO_LOG(CONFIG_LWS_DEBUG_CLIENT, "LLL_CLIENT", M, ##__VA_ARGS__)
 #define lwsl_latency(M,...) 	MICO_LOG(CONFIG_LWS_DEBUG_LATENCY, "LLL_LATENCY", M, ##__VA_ARGS__)
 
-#define lwsl_hexdump(a, b)
 
 
 /*
