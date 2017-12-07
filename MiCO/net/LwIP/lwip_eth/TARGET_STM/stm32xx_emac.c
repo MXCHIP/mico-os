@@ -99,7 +99,7 @@ __ALIGN_BEGIN uint8_t Rx_Buff[ETH_RXBUFNB][ETH_RX_BUF_SIZE] __ALIGN_END; /* Ethe
 #endif
 __ALIGN_BEGIN uint8_t Tx_Buff[ETH_TXBUFNB][ETH_TX_BUF_SIZE] __ALIGN_END; /* Ethernet Transmit Buffer */
 
-static sys_sem_t rx_ready_sem;    /* receive ready semaphore */
+static mico_semaphore_t rx_ready_sem;    /* receive ready semaphore */
 static sys_mutex_t tx_lock_mutex;
 
 /******************************************************
@@ -114,7 +114,7 @@ static sys_mutex_t tx_lock_mutex;
  */
 void HAL_ETH_RxCpltCallback(ETH_HandleTypeDef *heth)
 {
-    sys_sem_signal(&rx_ready_sem);
+    mico_rtos_set_semaphore(&rx_ready_sem);
 }
 
 
@@ -446,14 +446,15 @@ static void _eth_arch_rx_task(mico_thread_arg_t arg)
     struct pbuf    *p;
 
     while (1) {
-        sys_arch_sem_wait(&rx_ready_sem, 0);
-        p = _eth_arch_low_level_input(netif);
-        if (p != NULL) {
-            if (netif->input(p, netif) != ERR_OK) {
-                pbuf_free(p);
-                p = NULL;
+        mico_rtos_get_semaphore(&rx_ready_sem, 100);
+        do {
+            p = _eth_arch_low_level_input(netif);
+            if (p != NULL) {
+                if (netif->input(p, netif) != ERR_OK) {
+                    pbuf_free(p);
+                }
             }
-        }
+        } while(p != NULL);
     }
 }
 
@@ -579,12 +580,9 @@ err_t eth_arch_enetif_init(struct netif *netif)
     netif->linkoutput = _eth_arch_low_level_output;
 
     /* semaphore */
-    sys_sem_new(&rx_ready_sem, 0);
+    mico_rtos_init_semaphore(&rx_ready_sem, 16);
 
     sys_mutex_new(&tx_lock_mutex);
-
-    /* Ethernet rx task */
-    mico_rtos_create_thread(NULL, MICO_RTOS_HIGEST_PRIORITY, "_eth_arch_rx_task", _eth_arch_rx_task, 0x1000, (mico_thread_arg_t)netif);
 
     /* initialize the hardware */
     _eth_arch_low_level_init(netif);
@@ -593,6 +591,9 @@ err_t eth_arch_enetif_init(struct netif *netif)
     mico_rtos_create_thread(NULL, MICO_APPLICATION_PRIORITY, "_eth_arch_phy_task", _eth_arch_phy_task, 0x500, (mico_thread_arg_t)netif);
 
     eth_log( "eth_arch_enetif_init done");
+    
+    /* Ethernet rx task */
+    mico_rtos_create_thread(NULL, MICO_RTOS_HIGEST_PRIORITY, "_eth_arch_rx_task", _eth_arch_rx_task, 0x1000, (mico_thread_arg_t)netif);
     return ERR_OK;
 }
 

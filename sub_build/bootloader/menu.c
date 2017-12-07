@@ -223,7 +223,7 @@ void Main_Menu(void)
       cmdname[j] = toupper(cmdbuf[i]);
     }
     cmdname[j] = '\0';
-#if 0
+#if 1
     /***************** Command "0" or "BOOTUPDATE": Update the application  *************************/
     if(strcmp(cmdname, "BOOTUPDATE") == 0 || strcmp(cmdname, "0") == 0) {
       partition = MicoFlashGetInfo( MICO_PARTITION_BOOTLOADER );
@@ -254,7 +254,7 @@ void Main_Menu(void)
       require_noerr( err, exit);
       SerialDownload( partition->partition_owner, partition->partition_start_addr, partition->partition_length ); 							   	
     }
-#if 0
+#if 1
     /***************** Command "2" or "DRIVERUPDATE": Update the RF driver  *************************/
     else if(strcmp(cmdname, "DRIVERUPDATE") == 0 || strcmp(cmdname, "2") == 0) {
       partition = MicoFlashGetInfo( MICO_PARTITION_RF_FIRMWARE );
@@ -305,6 +305,7 @@ void Main_Menu(void)
       require_noerr( err, exit);
       SerialDownload( partition->partition_owner, partition->partition_start_addr, partition->partition_length );                        
     }
+#if 0
     /***************** Command "4" or "FLASHUPDATE": : Update the Flash  *************************/
     else if(strcmp(cmdname, "FLASHUPDATE") == 0 || strcmp(cmdname, "4") == 0) {
       if (findCommandPara(cmdbuf, "dev", flash_dev_str, 1) == -1  ){
@@ -372,7 +373,7 @@ void Main_Menu(void)
       SerialDownload(flash_dev, startAddress, endAddress-startAddress+1);                           
     }
     
-    
+#endif    
     /***************** Command: MEMORYMAP *************************/
     else if(strcmp(cmdname, "MEMORYMAP") == 0 || strcmp(cmdname, "5") == 0)  {
       printf("\r");
@@ -397,7 +398,7 @@ void Main_Menu(void)
       MicoSystemReboot();
       break;                              
     }
-#if 0    
+#if 1   
     /* CMD for Aoyagi */
     else if(strcmp(cmdname, "MAC") == 0)  {
       if (findCommandPara(cmdbuf, "w", tmp, 64) == 12){

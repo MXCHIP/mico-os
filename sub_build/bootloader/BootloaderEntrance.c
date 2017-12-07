@@ -37,9 +37,6 @@
 //#include "platform_internal.h"
 #include "bootloader.h"
 
-#define boot_log(M, ...) custom_log("BOOT", M, ##__VA_ARGS__)
-#define boot_log_trace() custom_log_trace("BOOT")
-
 extern void Main_Menu(void);
 extern OSStatus update(void);
 
@@ -56,41 +53,23 @@ char menu[] =
 "6:BOOT,"
 "7:REBOOT";
 #else
-char menu[] =
+const char menu[] =
 "\r\n"
 "MICO bootloader for %s, %s, HARDWARE_REVISION: %s\r\n"
 "+ command -------------------------+ function ------------+\r\n"
 "| 1:FWUPDATE      <-r>             | Update application   |\r\n"
 "| 3:PARUPDATE     <-id n><-r><-e>  | Update MICO partition|\r\n"
-"| 4:FLASHUPDATE   <-dev device>    |                      |\r\n"
-"|  <-e><-r><-start addr><-end addr>| Update flash content |\r\n"
 "| 5:MEMORYMAP                      | List flash memory map|\r\n"
 "| 6:BOOT                           | Excute application   |\r\n"
 "| 7:REBOOT                         | Reboot               |\r\n"
 "+----------------------------------+----------------------+\r\n"
-"|    (C) COPYRIGHT 2015 MXCHIP Corporation  By William Xu |\r\n"
-" Notes:\r\n"
-" -e Erase only  -r Read from flash -dev flash device number\r\n"
-"  -start flash start address -end flash start address\r\n"
-" Example: Input \"4 -dev 0 -start 0x400 -end 0x800\": Update \r\n"
-"          flash device 0 from 0x400 to 0x800\r\n";
+"|    (C) COPYRIGHT 2015 MXCHIP Corporation  By William Xu |\r\n";
 #endif
 
 #ifdef MICO_ENABLE_STDIO_TO_BOOT
 extern int stdio_break_in(void);
 #endif
 
-static void enable_protection( void )
-{
-  mico_partition_t i;
-  mico_logic_partition_t *partition;
-
-  for( i = MICO_PARTITION_BOOTLOADER; i < MICO_PARTITION_MAX; i++ ){
-    partition = MicoFlashGetInfo( i );
-    if( PAR_OPT_WRITE_DIS == ( partition->partition_options & PAR_OPT_WRITE_MASK )  )
-      MicoFlashEnableSecurity( i, 0x0, MicoFlashGetInfo(i)->partition_length );
-  }
-}
 
 WEAK bool MicoShouldEnterBootloader( void )
 {
@@ -109,7 +88,6 @@ WEAK bool MicoShouldEnterATEMode( void )
 
 void bootloader_start_app( uint32_t app_addr )
 {
-  enable_protection( );
   mico_start_application( app_addr );
 }
 
@@ -121,8 +99,6 @@ int main(void)
     mico_set_bootload_ver();
 
     update();
-
-    enable_protection();
 
 #ifdef MICO_ENABLE_STDIO_TO_BOOT
     if (stdio_break_in() == 1)

@@ -373,8 +373,10 @@ static void mico_lwip_netif_link_irq(struct netif *lwip_netif)
 
             ip_addr_set_zero(&ip_addr);
             netif_set_addr(lwip_netif, &ip_addr, &ip_addr, &ip_addr);
+            autoip_stop(lwip_netif);
             dhcp_start(lwip_netif);
-            autoip_start(lwip_netif);
+            tcpip_untimeout(dhcp_timeout_check, lwip_netif);
+            tcpip_timeout(DHCP_TIMEOUT_CHECK_TIME, dhcp_timeout_check, lwip_netif);
         }
     } else {
         eth_log("Ethernet link down");

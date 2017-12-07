@@ -63,7 +63,7 @@ extern "C"
 
 /************************************************************************
  * Enable press space go to boot */
-#define MICO_ENABLE_STDIO_TO_BOOT
+//#define MICO_ENABLE_STDIO_TO_BOOT
 
 /************************************************************************
  * Uncomment to disable MCU powersave API functions */

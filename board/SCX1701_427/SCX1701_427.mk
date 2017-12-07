@@ -76,6 +76,7 @@ GLOBAL_DEFINES += TRANSACTION_QUEUE_SIZE_SPI=2 USB_STM_HAL MXCHIP_LIBRARY HSE_VA
 # Source files
 $(NAME)_SOURCES += mbed/PeripheralPins.c \
                    mbed/system_stm32f4xx.c
-                   
+
+$(NAME)_SOURCES += ../../platform/Cortex-M4F/hardfault_handler.c
 # Global includes
 GLOBAL_INCLUDES  += mbed

@@ -8,7 +8,7 @@
  *
  */
 
-#include <common.h>
+//#include <common.h>
 #include "platform_cmsis.h"
 //#include "platform_constants.h"
 #include "platform_isr.h"
@@ -91,7 +91,12 @@ void HardFaultException_handler( uint32_t MSP, uint32_t PSP, uint32_t LR );
 /******************************************************
  *               Function Definitions
  ******************************************************/
-OSStatus stdio_hardfault( char* data, uint32_t size );
+int stdio_hardfault( char* data, uint32_t size );
+int stdio_hardfault( char* data, uint32_t size )
+{
+    printf("%s", data);
+  return 0;
+}
 
 #ifdef DEBUG_HARDFAULT
 
