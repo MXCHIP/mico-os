@@ -135,19 +135,32 @@ int httpd_send_chunk(int conn, const char *buf, int len)
 int httpd_send(int conn, const char *buf, int len)
 {
 	int num;
+    struct timeval t;
+    fd_set writefds;
+
+    t.tv_sec = 0;
+    t.tv_usec = 200*1000;
+
 	do {
 #ifdef CONFIG_ENABLE_HTTPS
 		if (httpd_is_https_active())
 			num = tls_send(httpd_tls_handle, buf, len);
 		else
 #endif /* ENABLE_HTTPS */
-			num = send(conn, buf, len, 0);
-		if (num < 0) {
-			httpd_d("send() failed: %d" ,conn);
-			return -kInProgressErr;
-		}
-		len -= num;
-		buf += num;
+		   FD_ZERO( &writefds );
+		   FD_SET( conn, &writefds );
+
+           select( conn + 1, NULL, &writefds, NULL, &t );
+           if( FD_ISSET( conn, &writefds) )
+           {
+               num = send(conn, buf, len, 0);
+               if (num < 0) {
+                   httpd_d("send() failed: %d" ,conn);
+                   return -kInProgressErr;
+               }
+               len -= num;
+               buf += num;
+           }
 	} while (len > 0);
 
 
@@ -156,12 +169,29 @@ int httpd_send(int conn, const char *buf, int len)
 
 int httpd_recv(int fd, void *buf, size_t n, int flags)
 {
+    int len = 0;
+    struct timeval t;
+    fd_set readfds;
+
+    FD_ZERO( &readfds );
+    FD_SET( fd, &readfds );
+
+    t.tv_sec = 0;
+    t.tv_usec = 200*1000;
+
 #ifdef CONFIG_ENABLE_HTTPS
 	if (httpd_is_https_active())
 		return tls_recv(httpd_tls_handle, buf, n);
 	else
 #endif /* ENABLE_HTTPS */
 		return recv(fd, buf, n, flags);
+    select( fd + 1, &readfds, NULL, NULL, &t );
+
+    if( FD_ISSET( fd, &readfds) )
+    {
+        len =  recv( fd, buf, n, flags );
+    }
+    return len;
 }
 
 int httpd_send_hdr_from_code(int sock, int stat_code,
