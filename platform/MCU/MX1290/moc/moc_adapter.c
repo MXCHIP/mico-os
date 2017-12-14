@@ -334,7 +334,7 @@ void mico_rtos_resume_thread(mico_thread_t* thread)
 
 #define extra_apis _kernel_api.ssl_crypto_apis->extra_crypto_apis
 
-#define EXTRA_CRYPTO_CHECK() if (EXTRA_CRYPTO_FLAG == _kernel_api.ssl_crypto_apis->extra_crypto_flag) return -1;
+#define EXTRA_CRYPTO_CHECK() if (EXTRA_CRYPTO_FLAG != _kernel_api.ssl_crypto_apis->extra_crypto_flag) return -1;
         
 int  InitRng(CyaSSL_RNG* rng)
 {
