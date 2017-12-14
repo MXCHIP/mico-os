@@ -206,22 +206,22 @@ OSStatus mico_eth_bringup(bool dhcp, const char *ip, const char *netmask, const 
     }
 
     netif_set_addr(&lwip_netif, &ip_addr, &netmask_addr, &gw_addr);
-    if (!dhcp) { // static IP set netif up.
-        netif_set_up(&lwip_netif);
-    }
 #endif
-
 
 #if LWIP_IPV4
     // Connect to the network
     lwip_dhcp = dhcp;
 
-    if (netif_is_link_up(&lwip_netif) && lwip_dhcp) {
-        eth_log("Start DHCP...");
-        autoip_stop(&lwip_netif);
-        dhcp_start(&lwip_netif);
-        tcpip_untimeout(dhcp_timeout_check, &lwip_netif);
-        tcpip_timeout(DHCP_TIMEOUT_CHECK_TIME, dhcp_timeout_check, &lwip_netif);
+    if (netif_is_link_up(&lwip_netif)) {
+        if (lwip_dhcp) {
+            eth_log("Start DHCP...");
+            autoip_stop(&lwip_netif);
+            dhcp_start(&lwip_netif);
+            tcpip_untimeout(dhcp_timeout_check, &lwip_netif);
+            tcpip_timeout(DHCP_TIMEOUT_CHECK_TIME, dhcp_timeout_check, &lwip_netif);
+        } else {
+            netif_set_up(&lwip_netif);
+        }
     }
 
 #endif
@@ -380,6 +380,8 @@ static void mico_lwip_netif_link_irq(struct netif *lwip_netif)
             dhcp_start(lwip_netif);
             tcpip_untimeout(dhcp_timeout_check, lwip_netif);
             tcpip_timeout(DHCP_TIMEOUT_CHECK_TIME, dhcp_timeout_check, lwip_netif);
+        } else {
+            netif_set_up(lwip_netif);
         }
     } else {
         eth_log("Ethernet link down");

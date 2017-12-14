@@ -373,7 +373,9 @@ static struct pbuf * _eth_arch_low_level_input(struct netif *netif)
     uint32_t byteslefttocopy = 0;
     uint32_t i = 0;
 
-
+    if ((netif->flags & NETIF_FLAG_LINK_UP) == NULL)// interface not link up yet
+        return NULL;
+    
     /* get received frame */
     if (HAL_ETH_GetReceivedFrame(&EthHandle) != HAL_OK)
         return NULL;
