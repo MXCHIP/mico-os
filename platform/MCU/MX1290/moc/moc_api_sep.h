@@ -144,6 +144,8 @@ typedef struct {
 
     uint32_t extra_crypto_flag;
     extra_crypto_api_t *extra_crypto_apis; 
+
+    void* (*ssl_connect_dtls)(int fd, int calen, char*ca, int *errno);
 } ssl_crypto_api_v1_t;
 
 typedef struct {

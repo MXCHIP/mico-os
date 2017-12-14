@@ -440,3 +440,8 @@ int HmacFinal(Hmac* hmac, byte* out)
     return extra_apis->HmacFinal(hmac, out);
 }
 
+void* ssl_connect_dtls(int fd, int calen, char*ca, int *errno)
+{
+    return _kernel_api.ssl_crypto_apis->ssl_connect_dtls(fd, calen, ca, errno);
+}
+
