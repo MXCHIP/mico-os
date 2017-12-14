@@ -206,6 +206,9 @@ OSStatus mico_eth_bringup(bool dhcp, const char *ip, const char *netmask, const 
     }
 
     netif_set_addr(&lwip_netif, &ip_addr, &netmask_addr, &gw_addr);
+    if (!dhcp) { // static IP set netif up.
+        netif_set_up(&lwip_netif);
+    }
 #endif
 
 
