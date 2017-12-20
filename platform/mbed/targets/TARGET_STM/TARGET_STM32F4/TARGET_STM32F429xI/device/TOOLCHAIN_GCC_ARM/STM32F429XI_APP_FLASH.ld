@@ -126,7 +126,7 @@ SECTIONS
       *(.ccmram*)
       . = ALIGN(4);
       _eccmram = .;       /* create a global symbol at ccmram end */
-  } >CCM
+  } > CCM
 
     .bss :
     {
