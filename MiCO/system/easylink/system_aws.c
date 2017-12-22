@@ -154,6 +154,9 @@ static int aws_broadcast_notification(char *msg, int msg_num)
             if (ret > 0) {
                 //buf[ret] = '\0';
                 system_log("rx: %s\n", buf);
+                buf[strlen(buf)-1] = '\0';
+                sprintf(buf, "%s,\"IP\":\"%s\",\"PORT\":%d}", buf, (char *)inet_ntoa(s_addr.sin_addr), hton16(s_addr.sin_port));
+                mico_easylink_aws_delegate_recv_notify_msg(buf);
                 result = 1;
                 break;
             }
@@ -309,14 +312,15 @@ char* aws_notify_msg_create(system_context_t *context)
     sprintf(aws_notify_msg, "%s,\"wlan unconfigured\":\"F\"", aws_notify_msg);
 
 #ifdef MICO_CONFIG_SERVER_ENABLE
-    sprintf(aws_notify_msg, "%s,\"FTC\":\"T\",\"PORT\":%d}", aws_notify_msg,MICO_CONFIG_SERVER_PORT);
+    sprintf(aws_notify_msg, "%s,\"FTC\":\"T\",\"PORT\":%d", aws_notify_msg,MICO_CONFIG_SERVER_PORT);
 #else
-    sprintf(aws_notify_msg, "%s,\"FTC\":\"F\"}", aws_notify_msg);
+    sprintf(aws_notify_msg, "%s,\"FTC\":\"F\"", aws_notify_msg);
 #endif
 #else
     sprintf(aws_notify_msg, "{\"version\":\"1.6\",\"model\":\"%s\",\"sn\":\"%s\"}",
         "ALINKTEST_LIVING_LIGHT_ALINK_TEST", sn);
 #endif
+    mico_easylink_aws_delegate_send_notify_msg(aws_notify_msg);
 exit:
     return aws_notify_msg;
 }
