@@ -19,7 +19,7 @@ typedef struct Arc4 {
 void Arc4Process(Arc4*, uint8_t*, const uint8_t*, uint32_t);
 void Arc4SetKey(Arc4*, const uint8_t*, uint32_t);
 
-
+#if 0
 void Arc4SetKey(Arc4* arc4, const uint8_t* key, uint32_t length)
 {
     uint32_t i;
@@ -43,7 +43,7 @@ void Arc4SetKey(Arc4* arc4, const uint8_t* key, uint32_t length)
             keyIndex = 0;
     }
 }
-
+#endif
 
 static uint8_t MakeByte(uint32_t* x, uint32_t* y, uint8_t* s)
 {
@@ -58,7 +58,7 @@ static uint8_t MakeByte(uint32_t* x, uint32_t* y, uint8_t* s)
     return s[(a+b) & 0xff];
 }
 
-
+#if 0
 void Arc4Process(Arc4* arc4, uint8_t* out, const uint8_t* in, uint32_t length)
 {
     uint32_t x;
@@ -74,6 +74,7 @@ void Arc4Process(Arc4* arc4, uint8_t* out, const uint8_t* in, uint32_t length)
     arc4->x = (uint8_t)x;
     arc4->y = (uint8_t)y;
 }
+#endif
 
 void encrypt_arc4(uint8_t *in, uint8_t *out, int len)
 {

@@ -62,6 +62,9 @@ typedef struct _button_context_t {
   /* Use by driver, do not initialze */
   mico_timer_t _user_button_timer;
   uint32_t start_time;
+#ifdef CONFIG_MX108
+  uint32_t ignore;
+#endif
 } button_context_t;
 
 //------------------------------ user interfaces -------------------------------

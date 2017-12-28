@@ -99,9 +99,6 @@
 	#define abs(x) ((x)>0 ? (x) : -(x))
 #endif
 
-extern void fclk_init(void);
-extern void bk_printf(const char *fmt, ...);
-
 /*-----------------------------------------------------------*/
 
 /* Setup the watchdog to generate the tick interrupts. */
@@ -116,11 +113,6 @@ void * volatile pxNestChangedCurrentTCB = NULL;
 /* Tick interrupt routines for cooperative and preemptive operation
 respectively.  The preemptive version is not defined as __irq as it is called
 from an asm wrapper function. */
-void WDG_IRQHandler( void );
-
-/* VIC interrupt default handler. */
-void prvDefaultHandler( void );
-
 #if configUSE_WATCHDOG_TICK == 0
 	/* Used to update the OCR timer register */
 	static uint16_t s_nPulseLength;
@@ -129,12 +121,22 @@ void prvDefaultHandler( void );
 /*-----------------------------------------------------------*/
 void vApplicationIdleHook( void )
 {
-#if 0//(NX_POWERSAVE)
-        GLOBAL_INT_DECLARATION();
+#if (NX_POWERSAVE)
+	#if CFG_USE_STA_PS
+    #if PS_WAKEUP_MOTHOD_RW
 
-        GLOBAL_INT_DISABLE();
+        if(PS_STA_DTIM_CAN_SLEEP)
+        {
+        GLOBAL_INT_DECLARATION();
+            GLOBAL_INT_DISABLE();
+            PS_DEBUG_PWM_TRIGER ;
+
         ps_sleep_check();
         GLOBAL_INT_RESTORE();
+        }        
+
+    #endif
+	#endif
 #endif //(NX_POWERSAVE)
 }
 

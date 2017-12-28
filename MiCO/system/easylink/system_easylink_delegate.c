@@ -150,3 +150,13 @@ WEAK void mico_easylink_monitor_delegate_package_recved( uint8_t * frame, int le
     UNUSED_PARAMETER( frame );
     UNUSED_PARAMETER( len );
 }
+
+WEAK void mico_easylink_aws_delegate_send_notify_msg(char *aws_notify_msg)
+{
+    sprintf(aws_notify_msg, "%s}", aws_notify_msg);
+}
+
+WEAK void mico_easylink_aws_delegate_recv_notify_msg(char *aws_notify_msg)
+{
+    
+}

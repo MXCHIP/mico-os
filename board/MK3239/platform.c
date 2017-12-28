@@ -344,15 +344,15 @@ const mico_logic_partition_t mico_partitions[] =
     .partition_owner           = MICO_FLASH_QSPI,
     .partition_description     = "OTA Storage",
     .partition_start_addr      = 0x70000,
-    .partition_length          = 0x98000, //608k bytes
+    .partition_length          = 0xF8000, //992k bytes
     .partition_options         = PAR_OPT_READ_EN | PAR_OPT_WRITE_EN,
   },
   [MICO_PARTITION_FILESYS] =
   {
     .partition_owner           = MICO_FLASH_QSPI,
     .partition_description     = "FILESYS",
-    .partition_start_addr      = 0x118000,
-    .partition_length          = 0x0E0000, //896k bytes
+    .partition_start_addr      = 0x168000,
+    .partition_length          = 0x090000, //576k bytes
     .partition_options         = PAR_OPT_READ_EN | PAR_OPT_WRITE_EN,
   },
   [MICO_PARTITION_PARAMETER_1] =
