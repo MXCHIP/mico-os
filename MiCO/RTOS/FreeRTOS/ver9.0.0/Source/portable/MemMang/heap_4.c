@@ -547,85 +547,37 @@ uint8_t *puc;
 	}
 }
 
-/*yhb added 2015-08-13*/
 void *pvPortRealloc( void *pv, size_t xWantedSize )
 {
 	uint8_t *puc = ( uint8_t * ) pv;
 	BlockLink_t *pxLink;
-	int presize, datasize;
+	int datasize;
 	void *pvReturn = NULL;
-	BlockLink_t *pxIterator, *pxPreviousBlock, *tmp;
-	
+
+    if (xWantedSize == 0) {
+        vPortFree(pv);
+        return NULL;
+    }
+    
 	if (pv == NULL)
 		return pvPortMalloc(xWantedSize);
 	
 	/* The memory being freed will have an BlockLink_t structure immediately
 	before it. */
 	puc -= xHeapStructSize;
-	/* This casting is to keep the compiler from issuing warnings. */
-	pxLink = ( void * ) puc;
-
-	presize = (pxLink->xBlockSize & ~xBlockAllocatedBit);
-	datasize = presize - xHeapStructSize;
+	pxLink = ( BlockLink_t * ) puc;
+	datasize = (pxLink->xBlockSize & ~xBlockAllocatedBit) - xHeapStructSize;
 	if (datasize >= xWantedSize) // have enough memory don't need realloc
 		return pv;
 
-	pxLink->xBlockSize &= ~xBlockAllocatedBit;
-	vTaskSuspendAll();
-	/* Add this block to the list of free blocks. */
-	xFreeBytesRemaining += pxLink->xBlockSize;
-	prvInsertBlockIntoFreeList( ( ( BlockLink_t * ) pxLink ) );
-	pvReturn = malloc_without_lock(xWantedSize);
-	if (pvReturn != NULL) {
-		if (pvReturn != pv)
-			memcpy(pvReturn, pv, datasize);
-	} else { // if can't realloc such big memory, we should NOT put pv in free list. 
-		//ll_printf("realloc FIX!!\r\n");
-		pxPreviousBlock = &xStart;
-		pxIterator = xStart.pxNextFreeBlock;
-		while( pxIterator != NULL )
-		{
-			if (pxIterator > pxLink) {
-				break;
-			}
-			if (pxIterator == pxLink) {// find pxLink at the begin
-				if (pxIterator->xBlockSize > presize) {
-					tmp = (BlockLink_t *)((uint8_t*)pxLink + presize);
-					tmp->xBlockSize = (pxIterator->xBlockSize - presize);
-					tmp->pxNextFreeBlock = pxIterator->pxNextFreeBlock;
-					pxPreviousBlock->pxNextFreeBlock = tmp;
-				} else {
-					pxPreviousBlock->pxNextFreeBlock = pxIterator->pxNextFreeBlock;
-				}
-				goto INSERTED;
-			}
-			if ((uint8_t*)pxIterator+pxIterator->xBlockSize == (uint8_t*)pxLink + presize) { // find pxLink at the end
-				pxIterator->xBlockSize -= presize;
-				goto INSERTED;
-			}
-			if ((uint8_t*)pxIterator+pxIterator->xBlockSize > (uint8_t*)pxLink + presize) { // find pxLink in the middle
-				pxPreviousBlock = pxIterator;
-				pxIterator = (BlockLink_t *)((uint8_t*)pxLink + presize);
-				pxIterator->xBlockSize = ((uint8_t*)pxPreviousBlock+pxPreviousBlock->xBlockSize)-
-					((uint8_t*)pxLink + presize);
-				tmp = pxPreviousBlock->pxNextFreeBlock;
-				pxPreviousBlock->pxNextFreeBlock = pxIterator;
-				pxPreviousBlock->xBlockSize = (uint8_t*)pxLink - (uint8_t*)pxPreviousBlock;
-				pxIterator->pxNextFreeBlock = tmp;
-				goto INSERTED;
-			}
-			pxPreviousBlock = pxIterator;
-			pxIterator = pxIterator->pxNextFreeBlock;
-		}
- 
-INSERTED:		
-		pxLink->xBlockSize = presize|xBlockAllocatedBit;;
-		pxLink->pxNextFreeBlock = NULL;
-		xFreeBytesRemaining -= presize;
-	}
-	( void ) xTaskResumeAll();
-
-	return pvReturn;
+    pvReturn = pvPortMalloc(xWantedSize);
+    if (pvReturn == NULL) // malloc fail, return NULL, don't free pv.
+        return NULL;
+    
+    memcpy(pvReturn, pv, xWantedSize);
+    vPortFree(pv);// realloc success, copy and free pv.
+    
+    return pvReturn;
 }
 
 #if CONFIG_USE_LINKER_HEAP
