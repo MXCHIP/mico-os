@@ -756,6 +756,10 @@ extern "C" void __iar_argc_argv() {
 // Linker defined symbol used by _sbrk to indicate where heap should start.
 extern "C" int __end__;
 
+extern "C" int _eccmram;
+extern "C" int _ccmram_end;
+
+
 #if defined(TARGET_CORTEX_A)
 extern "C" uint32_t  __HeapLimit;
 #endif
@@ -778,14 +782,11 @@ extern "C" caddr_t _sbrk(int incr) {
     return (caddr_t) __wrap__sbrk(incr);
 }
 #else
-volatile int malloc_log[1024];
-static int i = 0;
 extern "C" caddr_t _sbrk(int incr) {
     static unsigned char* heap = (unsigned char*)&__end__;
     unsigned char*        prev_heap = heap;
     unsigned char*        new_heap = heap + incr;
 
-    malloc_log[i++] = incr;
 
 #if defined(TARGET_ARM7)
     if (new_heap >= stack_ptr) {

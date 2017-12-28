@@ -142,6 +142,7 @@ OSStatus mico_system_init( mico_Context_t* in_context )
   else{
     system_log("Available configuration. Starting Wi-Fi connection...");
     system_connect_wifi_fast( sys_context );
+    mico_station_status_monitor("testsoftap", "", 30);
   }
 #endif
   

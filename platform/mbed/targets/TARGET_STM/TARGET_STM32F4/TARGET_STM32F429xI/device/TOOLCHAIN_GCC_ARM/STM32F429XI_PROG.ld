@@ -120,8 +120,8 @@ SECTIONS
         _edata = .;
 
     } > RAM_PROG
-
-	_siccmram = _sidata + SIZEOF(.data);
+    
+    _siccmram = _sidata + SIZEOF(.data);
 
     /* CCM-RAM section 
      * 
@@ -137,7 +137,6 @@ SECTIONS
       . = ALIGN(4);
       _eccmram = .;       /* create a global symbol at ccmram end */
     } >CCM
-    
     .bss :
     {
         . = ALIGN(4);

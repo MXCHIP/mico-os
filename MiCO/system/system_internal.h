@@ -84,6 +84,8 @@ system_context_t *system_context( void );
 void config_server_set_uap_cb( config_server_uap_configured_cb callback );
 
 
+int mico_station_status_monitor(char *ssid, char*key, int trigger_seconds);
+
 #ifdef __cplusplus
 } /*extern "C" */
 #endif

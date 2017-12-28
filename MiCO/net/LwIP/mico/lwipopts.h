@@ -246,6 +246,7 @@ extern "C" {
  * LWIP_DHCP==1: Enable DHCP module.
  */
 #define LWIP_DHCP                      (1)
+#define LWIP_AUTOIP                      (1)
 
 /**
  * LWIP_PROVIDE_ERRNO: System does not have errno defines - force LwIP to create them

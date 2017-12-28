@@ -21,8 +21,8 @@
      Internal SRAM. */
 /* note: if uVisor is present the definition must go in system_init_pre.c */
 /* #define VECT_TAB_SRAM */
-#define VECT_TAB_OFFSET  0x00 /*!< Vector Table base offset field.
-                                   This value must be a multiple of 0x200. */
+//#define VECT_TAB_OFFSET  0x00 /*!< Vector Table base offset field.
+//                                   This value must be a multiple of 0x200. */
 
 /* this function is needed to peform hardware initialization that must happen
  * before the uVisor; the whole SystemInit function for the STM32F4 cannot be

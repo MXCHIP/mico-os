@@ -195,3 +195,80 @@ static uint32_t _GetSector(uint32_t Address)
   }
   return sector;
 }
+
+
+/* OTP total length 512bytes. */
+#define FLASH_OTP_LEN 512
+#define FLASH_OTP_START_ADDR 0x1FFF7800
+
+OSStatus iflash_otp_write(volatile uint32_t FlashAddress, uint8_t* Data ,uint32_t DataLength)
+{
+    int i;
+    uint32_t otp_address = FLASH_OTP_START_ADDR;
+    
+    if (DataLength == 0)
+        return 0;
+    
+    if (FlashAddress + DataLength > FLASH_OTP_LEN)
+        return kParamErr;
+
+    otp_address += FlashAddress;
+
+    
+    HAL_FLASH_Unlock();
+
+    for(i=0; i<DataLength; i++) {
+        HAL_FLASH_Program( FLASH_TYPEPROGRAM_BYTE, otp_address+i, *(Data + i) );
+    }
+    HAL_FLASH_Lock();
+
+    return 0;
+}
+
+OSStatus iflash_otp_read(volatile uint32_t FlashAddress, uint8_t* Data ,uint32_t DataLength)
+{
+    int i;
+    uint8_t *otp = (uint8_t*)FLASH_OTP_START_ADDR;
+    
+    if (DataLength == 0)
+        return 0;
+    
+    if (FlashAddress + DataLength > FLASH_OTP_LEN)
+        return kParamErr;
+
+    otp += FlashAddress;
+
+    for(i=0; i<DataLength; i++) {
+        Data[i] = otp[i];
+    }
+
+    return 0;
+}
+
+
+OSStatus iflash_otp_lock(volatile uint32_t FlashAddress, uint32_t DataLength)
+{
+    int i;
+    uint32_t lock_address = FLASH_OTP_START_ADDR+FLASH_OTP_LEN;
+    uint32_t start_block, end_block;
+    
+    if (DataLength == 0)
+        return 0;
+    
+    if (FlashAddress + DataLength > FLASH_OTP_LEN)
+        return kParamErr;
+    
+    start_block = FlashAddress/32;
+    end_block = (FlashAddress+DataLength+31)/32;
+
+    
+    HAL_FLASH_Unlock();
+
+    for(i=start_block; i<end_block; i++) {
+        HAL_FLASH_Program( FLASH_TYPEPROGRAM_BYTE, lock_address+i, 0 );
+    }
+    HAL_FLASH_Lock();
+
+    return 0;
+}
+
