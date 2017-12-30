@@ -280,6 +280,22 @@ void mico_system_delegate_config_success( mico_config_source_t source );
 mico_connect_fail_config_t mico_system_delegate_config_result( mico_config_source_t source, uint8_t result  );
 
 /**
+  * @brief  AWS configuration device discovery message from device to controller
+  * @note   This a delegate function, can be completed by developer.
+  * @param  aws_notify_msg: message string send to controller
+  * @retval none
+  */
+void mico_easylink_aws_delegate_send_notify_msg(char *aws_notify_msg);
+
+/**
+  * @brief  AWS configuration device discovery message from device to controller
+  * @note   This a delegate function, can be completed by developer.
+  * @param  aws_notify_msg: message string from controller
+  * @retval none
+  */
+void mico_easylink_aws_delegate_recv_notify_msg(char *aws_notify_msg);
+
+/**
   * @brief  Start wlan configuration mode: Apple MFi WAC protocol
   * @param  inContext: MiCO system core data, initialized by @ref mico_system_context_init
   * @retval kNoErr is returned on success, otherwise, kXXXErr is returned.

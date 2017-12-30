@@ -43,6 +43,7 @@ $(NAME)_SOURCES += mdns/system_discovery.c
                                
 $(NAME)_SOURCES += tftp_ota/tftp_ota.c \
                    tftp_ota/tftpc.c
+$(NAME)_INCLUDES += tftp_ota
                    
 $(NAME)_COMPONENTS := protocols/mdns \
                       system/qc_test \

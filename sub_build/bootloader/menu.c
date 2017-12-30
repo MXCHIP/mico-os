@@ -398,7 +398,7 @@ void Main_Menu(void)
       MicoSystemReboot();
       break;                              
     }
-#if 1   
+#if 0
     /* CMD for Aoyagi */
     else if(strcmp(cmdname, "MAC") == 0)  {
       if (findCommandPara(cmdbuf, "w", tmp, 64) == 12){

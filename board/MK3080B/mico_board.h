@@ -231,10 +231,10 @@ typedef struct {
 #define Arduino_D4          (MICO_GPIO_NONE) 
 #define Arduino_D5          (MICO_GPIO_NONE)  
 #define Arduino_D6          (MICO_GPIO_NONE) 
-#define Arduino_D7          (MICO_GPIO_NONE)
+#define Arduino_D7          (MICO_GPIO_14)
 
-#define Arduino_D8          (MICO_GPIO_NONE)
-#define Arduino_D9          (MICO_GPIO_NONE)
+#define Arduino_D8          (MICO_GPIO_13)
+#define Arduino_D9          (MICO_GPIO_12)
 #define Arduino_CS          (MICO_GPIO_8)
 #define Arduino_SI          (MICO_GPIO_9)
 #define Arduino_SO          (MICO_GPIO_7)
@@ -249,7 +249,7 @@ typedef struct {
 #define Arduino_A4          (MICO_ADC_NONE)
 #define Arduino_A5          (MICO_ADC_NONE)
 
-#define Arduino_I2C         (MICO_I2C_1)
+#define Arduino_I2C         (MICO_I2C_2)
 #define Arduino_SPI         (MICO_SPI_1)
 #define Arduino_UART        (MICO_UART_1)
 

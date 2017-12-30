@@ -22,6 +22,10 @@
 
 #include "system_internal.h"
 
+#if MICO_WLAN_FORCE_OTA_ENABLE
+#include "tftp_ota.h"
+#endif
+
 extern system_context_t* sys_context;
 #ifndef  EasyLink_Needs_Reboot
 static mico_worker_thread_t wlan_autoconf_worker_thread;
