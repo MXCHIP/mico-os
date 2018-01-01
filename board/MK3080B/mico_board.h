@@ -249,7 +249,7 @@ typedef struct {
 #define Arduino_A4          (MICO_ADC_NONE)
 #define Arduino_A5          (MICO_ADC_NONE)
 
-#define Arduino_I2C         (MICO_I2C_2)
+#define Arduino_I2C         (MICO_I2C_1)
 #define Arduino_SPI         (MICO_SPI_1)
 #define Arduino_UART        (MICO_UART_1)
 
