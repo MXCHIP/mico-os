@@ -48,10 +48,10 @@ GLOBAL_DEFINES += $$(if $$(NO_CRLF_STDIO_REPLACEMENT),,CRLF_STDIO_REPLACEMENT)
 GLOBAL_LDFLAGS += -L $(MICO_OS_PATH)/board/MK$(MODULE)
 
 # Components
-$(NAME)_COMPONENTS += drivers/MiCOKit_EXT2
+$(NAME)_COMPONENTS += drivers/keypad/gpio_button
 
 # Source files
-$(NAME)_SOURCES := platform.c
+$(NAME)_SOURCES := mico_board.c
 
 # MOC configuration
 VALID_OSNS_COMBOS   := mocOS@mocIP

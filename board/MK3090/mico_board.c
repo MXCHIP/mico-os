@@ -30,16 +30,12 @@
 ******************************************************************************
 */
 
-#include "common.h"
+#include "mico_common.h"
 #include "mico_platform.h"
 
-#include "platform.h"
+#include "mico_board.h"
 #include "button.h"
 #include "moc_api.h"
-
-#ifdef USE_MiCOKit_EXT
-#include "MiCOKit_EXT/micokit_ext.h"
-#endif
 
 /******************************************************
 *                      Macros
@@ -64,8 +60,6 @@
 /******************************************************
 *               Function Declarations
 ******************************************************/
-extern WEAK void PlatformEasyLinkButtonClickedCallback(void);
-extern WEAK void PlatformEasyLinkButtonLongPressedCallback(void);
 
 /******************************************************
 *               Variables Definitions
@@ -141,10 +135,9 @@ const platform_peripherals_pinmap_t peripherals_pinmap =
 /******************************************************
 *               Function Definitions
 ******************************************************/
-void init_platform( void )
+void mico_board_init( void )
 {
 #if defined (MOC) && (MOC == 1)
-    button_init_t init;
     extern int get_last_reset_reason(void);
 
     if ( get_last_reset_reason() & LAST_RST_CAUSE_WDT )
@@ -157,14 +150,6 @@ void init_platform( void )
 
     MicoGpioInitialize( (mico_gpio_t)MICO_RF_LED, OUTPUT_PUSH_PULL );
     MicoGpioOutputHigh( (mico_gpio_t)MICO_RF_LED );
-
-    //	Initialise EasyLink buttons
-    init.gpio = EasyLink_BUTTON;
-    init.pressed_func = PlatformEasyLinkButtonClickedCallback;
-    init.long_pressed_func = PlatformEasyLinkButtonLongPressedCallback;
-    init.long_pressed_timeout = RestoreDefault_TimeOut;
-
-    button_init( IOBUTTON_EASYLINK, init );
 #endif
 }
 
@@ -185,19 +170,5 @@ void MicoRfLed(bool onoff)
     MicoGpioOutputHigh( (mico_gpio_t)MICO_RF_LED );
   }
 }
-
-
-#ifdef USE_MiCOKit_EXT
-// add test mode for MiCOKit-EXT board,check Arduino_D5 pin when system startup
-bool MicoExtShouldEnterTestMode(void)
-{
-  if( MicoGpioInputGet((mico_gpio_t)Arduino_D5)==false ){
-    return true;
-  }
-  else{
-    return false;
-  }
-}
-#endif
 
 

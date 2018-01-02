@@ -29,10 +29,9 @@
 ******************************************************************************
 */ 
 
-#pragma once
 
-#ifndef __PLATFORM_COMMON_CONFIG_H__
-#define __PLATFORM_COMMON_CONFIG_H__
+#ifndef __MICO_BOARD_CONF_H__
+#define __MICO_BOARD_CONF_H__
 
 
 /******************************************************
