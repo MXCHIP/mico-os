@@ -399,6 +399,22 @@ void mico_easylink_monitor_delegate_package_recved( uint8_t * frame, int len );
   */
 void mico_easylink_monitor_delegate_connect_success( mico_config_source_t source );
 
+/**
+  * @brief  Execute when aws msg is sent
+  * @note   This a delegate function, can be completed by developer.
+  * @note   aws_notify_msg: aws notify msg for discovery
+  * @retval none
+  */
+void mico_easylink_aws_delegate_send_notify_msg(char *aws_notify_msg);
+
+/**
+  * @brief  Execute when module recv udp nofity msg
+  * @note   This a delegate function, can be completed by developer.
+  * @note   aws_notify_msg: msg aws nofity received
+  * @retval none
+  */
+void mico_easylink_aws_delegate_recv_notify_msg(char *aws_notify_msg);
+
 /** @} */
 
 
