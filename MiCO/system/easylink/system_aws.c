@@ -320,7 +320,11 @@ char* aws_notify_msg_create(system_context_t *context)
     sprintf(aws_notify_msg, "{\"version\":\"1.6\",\"model\":\"%s\",\"sn\":\"%s\"}",
         "ALINKTEST_LIVING_LIGHT_ALINK_TEST", sn);
 #endif
+    sprintf(aws_notify_msg, "%s,\"ExtraData\":\"", aws_notify_msg);
+
     mico_easylink_aws_delegate_send_notify_msg(aws_notify_msg);
+
+     sprintf(aws_notify_msg, "%s\"}", aws_notify_msg);
 exit:
     return aws_notify_msg;
 }
