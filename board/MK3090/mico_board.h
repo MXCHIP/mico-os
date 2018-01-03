@@ -229,9 +229,9 @@ typedef struct {
 #define Arduino_D2          (MICO_GPIO_NONE)
 #define Arduino_D3          (MICO_GPIO_NONE)
 #define Arduino_D4          (MICO_GPIO_NONE) 
-#define Arduino_D5          (MICO_GPIO_NONE)  
+#define Arduino_D5          (MICO_GPIO_14)
 #define Arduino_D6          (MICO_GPIO_NONE) 
-#define Arduino_D7          (MICO_GPIO_14)
+#define Arduino_D7          (MICO_GPIO_NONE)
 
 #define Arduino_D8          (MICO_GPIO_13)
 #define Arduino_D9          (MICO_GPIO_12)

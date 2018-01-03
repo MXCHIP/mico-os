@@ -75,7 +75,7 @@ void button_init( button_context_t *btn_context )
 
 #ifdef CONFIG_MX108
     /*For MOC108 only. MOC108 will trigger an IRQ if IO is in low state when enable falling IRQ*/
-    if (MicoGpioInputGet(init.gpio) == 0)
+    if (MicoGpioInputGet(btn_context->gpio) == 0)
         btn_context->ignore = 1;
     else
         btn_context->ignore = 0;

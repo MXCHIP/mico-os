@@ -29,10 +29,9 @@
  ******************************************************************************
  */
 
-#pragma once
 
-#ifndef __PLATFORM_H_
-#define __PLATFORM_H_
+#ifndef __MICO_BOARD_H__
+#define __MICO_BOARD_H__
 
 #ifdef __cplusplus
 extern "C"
@@ -161,7 +160,37 @@ enum
 /* Components connected to external I/Os*/
 #define USE_MICO_SPI_FLASH
 
-#define MICO_I2C_CP                 (MICO_I2C_NONE)
+/* Arduino extention connector */
+#define Arduino_RXD         (MICO_GPIO_1)
+#define Arduino_TXD         (MICO_GPIO_0)
+#define Arduino_D2          (MICO_GPIO_NONE)
+#define Arduino_D3          (MICO_GPIO_NONE)
+#define Arduino_D4          (MICO_GPIO_NONE)
+#define Arduino_D5          (MICO_GPIO_4)
+#define Arduino_D6          (MICO_GPIO_NONE)
+#define Arduino_D7          (MICO_GPIO_NONE)
+
+#define Arduino_D8          (MICO_GPIO_NONE)
+#define Arduino_D9          (MICO_GPIO_NONE)
+#define Arduino_CS          (MICO_GPIO_15)
+#define Arduino_SI          (MICO_GPIO_16)
+#define Arduino_SO          (MICO_GPIO_17)
+#define Arduino_SCK         (MICO_GPIO_14)
+#define Arduino_SDA         (MICO_GPIO_21)
+#define Arduino_SCL         (MICO_GPIO_20)
+
+#define Arduino_A0          (MICO_ADC_NONE)
+#define Arduino_A1          (MICO_ADC_NONE)
+#define Arduino_A2          (MICO_ADC_NONE)
+#define Arduino_A3          (MICO_ADC_NONE)
+#define Arduino_A4          (MICO_ADC_NONE)
+#define Arduino_A5          (MICO_ADC_NONE)
+
+#define Arduino_I2C         (MICO_I2C_1)
+#define Arduino_SPI         (MICO_SPI_1)
+#define Arduino_UART        (MICO_UART_2)
+
+#define MICO_I2C_CP         (MICO_I2C_NONE)
 
 
 
@@ -169,4 +198,4 @@ enum
 } /*extern "C" */
 #endif
 
-#endif
+#endif //__MICO_BOARD_H__
