@@ -121,13 +121,12 @@ char* MQTTFormat_toClientString(char* strbuf, int strbuflen, unsigned char* buf,
 	MQTTHeader header = {0};
 	int strindex = 0;
 
-	(void)(strindex);
-
 	header.byte = buf[index++];
 	index += MQTTPacket_decodeBuf(&buf[index], &rem_length);
 
 	switch (header.bits.type)
 	{
+
 	case CONNACK:
 	{
 		unsigned char sessionPresent, connack_rc;
@@ -190,8 +189,6 @@ char* MQTTFormat_toServerString(char* strbuf, int strbuflen, unsigned char* buf,
 	int rem_length = 0;
 	MQTTHeader header = {0};
 	int strindex = 0;
-
-	(void)(strindex);
 
 	header.byte = buf[index++];
 	index += MQTTPacket_decodeBuf(&buf[index], &rem_length);
