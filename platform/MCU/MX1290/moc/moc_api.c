@@ -608,6 +608,11 @@ OSStatus MicoAdcTakeSample( mico_adc_t adc, uint16_t* output )
     return lib_api_p->adc_apis->MicoAdcTakeSample(adc, output);
 }
 
+uint16_t mico_adc_get_bit_range(  mico_adc_t adc  )
+{
+    return 0xFFFF;
+}
+
 OSStatus MicoAdcTakeSampleStreram( mico_adc_t adc, void* buffer, uint16_t buffer_length )
 {
     return lib_api_p->adc_apis->MicoAdcTakeSampleStreram(adc, buffer, buffer_length);

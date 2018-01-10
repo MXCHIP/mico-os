@@ -40,6 +40,7 @@ $(foreach target, $(TARGETS), $(eval GLOBAL_DEFINES += $(target)))
 # Source files
 $(NAME)_SOURCES := mico_platform_common.c \
                    wlan_platform_common.c \
+                   peripherals/platform_adc.c \
                    peripherals/platform_init.c \
                    peripherals/platform_irq.c \
                    peripherals/platform_spi.c \

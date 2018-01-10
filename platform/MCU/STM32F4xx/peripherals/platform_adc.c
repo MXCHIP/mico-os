@@ -142,6 +142,11 @@ exit:
     return err;
 }
 
+uint16_t platform_adc_get_bit_range( const platform_adc_t* adc )
+{
+    return 0xFFF;
+}
+
 OSStatus platform_adc_take_sample_stream( const platform_adc_t* adc, void* buffer, uint16_t buffer_length )
 {
     UNUSED_PARAMETER(adc);

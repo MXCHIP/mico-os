@@ -264,6 +264,11 @@ typedef struct
 
 typedef struct
 {
+    PinName        mbed_pin;
+} platform_adc_t;
+
+typedef struct
+{
     gpio_irq_t                      gpio_irq;
     platform_gpio_irq_callback_t    fun;
     void*                           arg;
@@ -744,48 +749,49 @@ OSStatus platform_wlan_spi_transfer( platform_gpio_driver_t* cs_drv, const platf
 // WEAK OSStatus platform_spi_slave_generate_interrupt( platform_spi_slave_driver_t* driver, uint32_t pulse_duration_ms );
 
 
-// /**
-//  * Initialise ADC interface
-//  *
-//  * @param[in] adc_interface : adc_interface
-//  * @param[in] sample_cycle  : sample cycle
-//  *
-//  * @return @ref OSStatus
-//  */
-// OSStatus platform_adc_init( const platform_adc_t* adc, uint32_t sample_cycle );
+ /**
+  * Initialise ADC interface
+  *
+  * @param[in] adc_interface : adc_interface
+  * @param[in] sample_cycle  : sample cycle
+  *
+  * @return @ref OSStatus
+  */
+ OSStatus platform_adc_init( const platform_adc_t* adc, uint32_t sample_cycle );
 
 
-// /**
-//  * Deinitialise ADC interface
-//  *
-//  * @param[in] adc_interface : adc_interface
-//  *
-//  * @return @ref OSStatus
-//  */
-// OSStatus platform_adc_deinit( const platform_adc_t* adc );
+ /**
+  * Deinitialise ADC interface
+  *
+  * @param[in] adc_interface : adc_interface
+  *
+  * @return @ref OSStatus
+  */
+ OSStatus platform_adc_deinit( const platform_adc_t* adc );
 
 
-// *
-//  * Take ADC sample
-//  *
-//  * @param[in]  adc_interface : adc_interface
-//  * @param[out] output        : variable that will contain the sample output
-//  *
-//  * @return @ref OSStatus
+ /**
+  * Take ADC sample
+  *
+  * @param[in]  adc_interface : adc_interface
+  * @param[out] output        : variable that will contain the sample output
+  *
+  * @return @ref OSStatus
+  * */
  
-// OSStatus platform_adc_take_sample( const platform_adc_t* adc, uint16_t* output );
+ OSStatus platform_adc_take_sample( const platform_adc_t* adc, uint16_t* output );
 
 
-// /**
-//  * Take ADC sample
-//  *
-//  * @param[in]  adc_interface : ADC interface
-//  * @param[out] buffer        : buffer that will contain the sample stream output
-//  * @param[in]  buffer_length : buffer length
-//  *
-//  * @return @ref OSStatus
-//  */
-// OSStatus platform_adc_take_sample_stream( const platform_adc_t* adc, void* buffer, uint16_t buffer_length );
+ /**
+  * Take ADC sample
+  *
+  * @param[in]  adc_interface : ADC interface
+  * @param[out] buffer        : buffer that will contain the sample stream output
+  * @param[in]  buffer_length : buffer length
+  *
+  * @return @ref OSStatus
+  */
+ OSStatus platform_adc_take_sample_stream( const platform_adc_t* adc, void* buffer, uint16_t buffer_length );
 
 
 /**

@@ -18,6 +18,10 @@
 #ifndef __BUTTON_H_
 #define __BUTTON_H_
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include "mico_board.h"
 #include "platform_peripheral.h"
 
@@ -56,7 +60,7 @@ typedef void (*button_long_pressed_cb)(void) ;
 typedef struct _button_context_t {
   mico_gpio_t gpio;
   btn_idle_state idle;
-  int long_pressed_timeout;
+  uint32_t long_pressed_timeout;
   button_pressed_cb pressed_func;
   button_long_pressed_cb long_pressed_func;
   /* Use by driver, do not initialze */
@@ -94,5 +98,9 @@ void button_init( button_context_t *btn_context );
 /**
   * @}
   */
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif  // __BUTTON_H_

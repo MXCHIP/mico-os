@@ -644,6 +644,14 @@ OSStatus platform_adc_init( const platform_adc_t* adc, uint32_t sample_cycle );
  */
 OSStatus platform_adc_deinit( const platform_adc_t* adc );
 
+/**
+ * Read ADC sample resolution
+ *
+ * @param[in] adc_interface : adc_interface
+ *
+ * @return resolution bit mask, 0xFFF means 12 bit adc
+ */
+uint16_t platform_adc_get_bit_range( const platform_adc_t* adc );
 
 /**
  * Take ADC sample

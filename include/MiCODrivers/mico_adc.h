@@ -1,6 +1,6 @@
 /**
  ******************************************************************************
- * @file    MicoDriverAdc.h
+ * @file    mico_adc
  * @author  William Xu
  * @version V1.0.0
  * @date    16-Sep-2014
@@ -8,7 +8,7 @@
  ******************************************************************************
  *
  *  The MIT License
- *  Copyright (c) 2014 MXCHIP Inc.
+ *  Copyright (c) 2018 MXCHIP Inc.
  *
  *  Permission is hereby granted, free of charge, to any person obtaining a copy
  *  of this software and associated documentation files (the "Software"), to deal
@@ -29,11 +29,20 @@
  ******************************************************************************
  */
 
-#ifndef __MICODRIVERADC_H__
-#define __MICODRIVERADC_H__
+#ifndef __MICO_ADC_H__
+#define __MICO_ADC_H__
 
-#pragma once
 #include "mico_common.h"
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+/* Legacy definitions */
+#define MicoAdcInitialize           mico_adc_init
+#define MicoAdcFinalize             mico_adc_deinit
+#define MicoAdcTakeSample           mico_adc_take_sample
+#define MicoAdcTakeSampleStreram    mico_adc_take_sample_streram
 
 /** @addtogroup MICO_PLATFORM
 * @{
@@ -80,7 +89,15 @@
  * @return    kNoErr        : on success.
  * @return    kGeneralErr   : if an error occurred with any step
  */
-OSStatus MicoAdcInitialize( mico_adc_t adc, uint32_t sampling_cycle );
+OSStatus mico_adc_init( mico_adc_t adc, uint32_t sampling_cycle );
+
+/**@biref Get ADC sample bit ranges
+ *
+ * @param adc            : interface
+ *
+ * @return    Bit ranges mask, for example, 0xFFF means adc sample result has 12 bits resolution
+ */
+uint16_t mico_adc_get_bit_range( mico_adc_t adc );
 
 
 /**@biref Takes a single sample from an ADC interface
@@ -93,7 +110,7 @@ OSStatus MicoAdcInitialize( mico_adc_t adc, uint32_t sampling_cycle );
  * @return    kNoErr        : on success.
  * @return    kGeneralErr   : if an error occurred with any step
  */
-OSStatus MicoAdcTakeSample( mico_adc_t adc, uint16_t* output );
+OSStatus mico_adc_take_sample( mico_adc_t adc, uint16_t* output );
 
 
 /**@biref Takes multiple samples from an ADC interface
@@ -110,7 +127,7 @@ OSStatus MicoAdcTakeSample( mico_adc_t adc, uint16_t* output );
  * @return    kNoErr        : on success.
  * @return    kGeneralErr   : if an error occurred with any step
  */
-OSStatus MicoAdcTakeSampleStreram( mico_adc_t adc, void* buffer, uint16_t buffer_length );
+OSStatus mico_adc_take_sample_streram( mico_adc_t adc, void* buffer, uint16_t buffer_length );
 
 
 /**@biref     De-initialises an ADC interface
@@ -122,8 +139,13 @@ OSStatus MicoAdcTakeSampleStreram( mico_adc_t adc, void* buffer, uint16_t buffer
  * @return    kNoErr        : on success.
  * @return    kGeneralErr   : if an error occurred with any step
  */
-OSStatus  MicoAdcFinalize( mico_adc_t adc );
+OSStatus  mico_adc_deinit( mico_adc_t adc );
 
 /** @} */
 /** @} */
+
+#ifdef __cplusplus
+} /*extern "C" */
+#endif
+
 #endif

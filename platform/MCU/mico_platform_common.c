@@ -136,6 +136,13 @@ OSStatus  MicoAdcFinalize( mico_adc_t adc )
   return (OSStatus) platform_adc_deinit( &platform_adc_peripherals[adc] );
 }
 
+uint16_t mico_adc_get_bit_range( mico_adc_t adc )
+{
+    if ( adc >= MICO_ADC_NONE )
+      return kUnsupportedErr;
+    return platform_adc_get_bit_range( &platform_adc_peripherals[adc] );
+}
+
 OSStatus MicoAdcTakeSample( mico_adc_t adc, uint16_t* output )
 {
   if ( adc >= MICO_ADC_NONE )
@@ -143,7 +150,7 @@ OSStatus MicoAdcTakeSample( mico_adc_t adc, uint16_t* output )
   return (OSStatus) platform_adc_take_sample( &platform_adc_peripherals[adc], output );
 }
 
-OSStatus MicoAdcTakeSampleStreram( mico_adc_t adc, void* buffer, uint16_t buffer_length )
+OSStatus MicoAdcTakeSampleStream( mico_adc_t adc, void* buffer, uint16_t buffer_length )
 {
   if ( adc >= MICO_ADC_NONE )
     return kUnsupportedErr;

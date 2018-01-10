@@ -59,6 +59,7 @@ extern OSStatus mico_platform_init      ( void );
 
 /* Externed from platforms/<Platform>/platform.c */
 extern const platform_gpio_t            platform_gpio_pins[];
+extern const platform_adc_t             platform_adc_peripherals[];
 extern const platform_i2c_t             platform_i2c_peripherals[];
 extern const platform_pwm_t             platform_pwm_peripherals[];
 extern const platform_spi_t             platform_spi_peripherals[];
@@ -113,33 +114,40 @@ platform_flash_driver_t     platform_flash_drivers[MICO_FLASH_MAX];
     return kNoErr;
 }
 
-// OSStatus MicoAdcInitialize( mico_adc_t adc, uint32_t sampling_cycle )
-// {
-//   if ( adc >= MICO_ADC_NONE )
-//     return kUnsupportedErr;
-//   return (OSStatus) platform_adc_init( &platform_adc_peripherals[adc], sampling_cycle );
-// }
+ OSStatus MicoAdcInitialize( mico_adc_t adc, uint32_t sampling_cycle )
+ {
+   if ( adc >= MICO_ADC_NONE )
+     return kUnsupportedErr;
+   return (OSStatus) platform_adc_init( &platform_adc_peripherals[adc], sampling_cycle );
+ }
 
-// OSStatus  MicoAdcFinalize( mico_adc_t adc )
-// {
-//   if ( adc >= MICO_ADC_NONE )
-//     return kUnsupportedErr;
-//   return (OSStatus) platform_adc_deinit( &platform_adc_peripherals[adc] );
-// }
+ OSStatus  MicoAdcFinalize( mico_adc_t adc )
+ {
+   if ( adc >= MICO_ADC_NONE )
+     return kUnsupportedErr;
+   return (OSStatus) platform_adc_deinit( &platform_adc_peripherals[adc] );
+ }
 
-// OSStatus MicoAdcTakeSample( mico_adc_t adc, uint16_t* output )
-// {
-//   if ( adc >= MICO_ADC_NONE )
-//     return kUnsupportedErr;
-//   return (OSStatus) platform_adc_take_sample( &platform_adc_peripherals[adc], output );
-// }
+ uint16_t mico_adc_get_bit_range( mico_adc_t adc )
+ {
+     if ( adc >= MICO_ADC_NONE )
+       return kUnsupportedErr;
+     return platform_adc_get_bit_range( &platform_adc_peripherals[adc] );
+ }
 
-// OSStatus MicoAdcTakeSampleStreram( mico_adc_t adc, void* buffer, uint16_t buffer_length )
-// {
-//   if ( adc >= MICO_ADC_NONE )
-//     return kUnsupportedErr;
-//   return (OSStatus) platform_adc_take_sample_stream( &platform_adc_peripherals[adc], buffer, buffer_length );
-// }
+ OSStatus MicoAdcTakeSample( mico_adc_t adc, uint16_t* output )
+ {
+   if ( adc >= MICO_ADC_NONE )
+     return kUnsupportedErr;
+   return (OSStatus) platform_adc_take_sample( &platform_adc_peripherals[adc], output );
+ }
+
+ OSStatus MicoAdcTakeSampleStreram( mico_adc_t adc, void* buffer, uint16_t buffer_length )
+ {
+   if ( adc >= MICO_ADC_NONE )
+     return kUnsupportedErr;
+   return (OSStatus) platform_adc_take_sample_stream( &platform_adc_peripherals[adc], buffer, buffer_length );
+ }
 
 OSStatus mico_gpio_init( mico_gpio_t gpio, mico_gpio_config_t configuration )
 {

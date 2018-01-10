@@ -67,12 +67,12 @@ typedef int8_t mico_gtimer_t;
 #include "MiCODrivers/mico_gpio.h"
 #include "MiCODrivers/mico_wdg.h"
 #include "MiCODrivers/mico_uart.h"
+#include "MiCODrivers/mico_adc.h"
 
 #include "MiCODrivers/MiCODriverI2c.h"
 #include "MiCODrivers/MiCODriverSpi.h"
 #include "MiCODrivers/MiCODriverPwm.h"
 #include "MiCODrivers/MiCODriverRtc.h"
-#include "MiCODrivers/MiCODriverAdc.h"
 #include "MiCODrivers/MiCODriverRng.h"
 #include "MiCODrivers/MiCODriverFlash.h"
 #include "MiCODrivers/MiCODriverMFiAuth.h"
