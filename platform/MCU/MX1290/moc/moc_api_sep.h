@@ -146,6 +146,7 @@ typedef struct {
     extra_crypto_api_t *extra_crypto_apis; 
 
     void* (*ssl_connect_dtls)(int fd, int calen, char*ca, int *errno);
+    void (*ssl_set_alpn_list)(char*list);
 } ssl_crypto_api_v1_t;
 
 typedef struct {
