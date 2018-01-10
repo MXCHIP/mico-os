@@ -82,11 +82,11 @@ const platform_gpio_t platform_gpio_pins[] =
 
 // const platform_pwm_t *platform_pwm_peripherals = NULL;
 
-// const platform_adc_t platform_adc_peripherals[] =
-// {
-//   [MICO_ADC_1] = { ADC1, ADC_Channel_4, RCC_APB2Periph_ADC1, 1, (platform_gpio_t*)&platform_gpio_pins[MICO_GPIO_38] },
-//   [MICO_ADC_2] = { ADC1, ADC_Channel_5, RCC_APB2Periph_ADC1, 1, (platform_gpio_t*)&platform_gpio_pins[MICO_GPIO_34] },
-// };
+const platform_adc_t platform_adc_peripherals[] =
+{
+    [MICO_ADC_1] = { MBED_GPIO_38 },
+    [MICO_ADC_2] = { MBED_GPIO_34 },
+};
 
 const platform_i2c_t platform_i2c_peripherals[] = {
     [MICO_I2C_1] = {
