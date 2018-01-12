@@ -142,8 +142,10 @@ OSStatus mico_eth_init( void )
 static bool lwip_connected = false;
 
 /* If ethernet interface can't get IP address for 30 seconds, start autoip. */
-static void dhcp_timeout_check(struct netif *netif)
+static void dhcp_timeout_check(void* arg)
 {
+    struct netif* netif = (struct netif*)arg;
+
     if ( netif->dhcp->state == DHCP_BOUND ) {
         return;
     }
@@ -208,20 +210,17 @@ OSStatus mico_eth_bringup(bool dhcp, const char *ip, const char *netmask, const 
     netif_set_addr(&lwip_netif, &ip_addr, &netmask_addr, &gw_addr);
 #endif
 
+
 #if LWIP_IPV4
     // Connect to the network
     lwip_dhcp = dhcp;
 
-    if (netif_is_link_up(&lwip_netif)) {
-        if (lwip_dhcp) {
+    if (netif_is_link_up(&lwip_netif) && lwip_dhcp) {
             eth_log("Start DHCP...");
             autoip_stop(&lwip_netif);
             dhcp_start(&lwip_netif);
             tcpip_untimeout(dhcp_timeout_check, &lwip_netif);
             tcpip_timeout(DHCP_TIMEOUT_CHECK_TIME, dhcp_timeout_check, &lwip_netif);
-        } else {
-            netif_set_up(&lwip_netif);
-        }
     }
 
 #endif
@@ -251,7 +250,7 @@ OSStatus mico_eth_bringdown(void)
     if (lwip_dhcp) {
         dhcp_release(&lwip_netif);
         dhcp_stop(&lwip_netif);
-        lwip_dhcp = false;
+        // lwip_dhcp = false;
         autoip_stop(&lwip_netif);
     }
 #endif
@@ -372,22 +371,22 @@ static void mico_lwip_netif_link_irq(struct netif *lwip_netif)
     if (netif_is_link_up(lwip_netif)) {
         eth_log("Ethernet link up");
         if (lwip_dhcp) {
-            ip_addr_t ip_addr;
+            autoip_stop(lwip_netif);
 
+            eth_log("Start DHCP...");
+            ip_addr_t ip_addr;
             ip_addr_set_zero(&ip_addr);
             netif_set_addr(lwip_netif, &ip_addr, &ip_addr, &ip_addr);
-            autoip_stop(lwip_netif);
             dhcp_start(lwip_netif);
             tcpip_untimeout(dhcp_timeout_check, lwip_netif);
             tcpip_timeout(DHCP_TIMEOUT_CHECK_TIME, dhcp_timeout_check, lwip_netif);
-        } else {
-            netif_set_up(lwip_netif);
         }
     } else {
         eth_log("Ethernet link down");
         netif_set_down(lwip_netif);
         if (lwip_dhcp) {
             dhcp_stop(lwip_netif);
+            autoip_stop(lwip_netif);
         }
     }
 }
