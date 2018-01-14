@@ -444,3 +444,8 @@ void* ssl_connect_dtls(int fd, int calen, char*ca, int *errno)
     return _kernel_api.ssl_crypto_apis->ssl_connect_dtls(fd, calen, ca, errno);
 }
 
+void ssl_set_alpn_list(char*list)
+{
+    _kernel_api.ssl_crypto_apis->ssl_set_alpn_list(list);
+}
+

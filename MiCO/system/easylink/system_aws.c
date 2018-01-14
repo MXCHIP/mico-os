@@ -109,7 +109,8 @@ static int aws_broadcast_notification(char *msg, int msg_num)
     struct sockaddr_in s_addr;
     int buf_len = 1024;
     char *buf = malloc(buf_len);
-
+    uint8_t stop = 0xEE;
+    
     memset(buf, 0, buf_len);
     fd = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
     if (fd < 0)
@@ -132,6 +133,15 @@ static int aws_broadcast_notification(char *msg, int msg_num)
     s_addr.sin_family = AF_INET;
     s_addr.sin_addr.s_addr = INADDR_BROADCAST;
     s_addr.sin_port = htons(UDP_TX_PORT);
+    //stop APP broadcast aws packets.
+    for(i=0; i<10; i++) {
+        ret = sendto(fd, &stop, 1, 0, (struct sockaddr *)&s_addr, sizeof(s_addr));
+        if (ret > 0) {
+            i++; // sendto fail don't i++, max sending times is 10, min sending times is 5.
+        }
+        mico_rtos_thread_msleep(20);
+    }
+    
     //send notification
     for (i = 0; i < msg_num; i++) {
         if (aws_thread_force_exit == true) {
@@ -320,7 +330,11 @@ char* aws_notify_msg_create(system_context_t *context)
     sprintf(aws_notify_msg, "{\"version\":\"1.6\",\"model\":\"%s\",\"sn\":\"%s\"}",
         "ALINKTEST_LIVING_LIGHT_ALINK_TEST", sn);
 #endif
+    sprintf(aws_notify_msg, "%s,\"ExtraData\":\"", aws_notify_msg);
+
     mico_easylink_aws_delegate_send_notify_msg(aws_notify_msg);
+
+     sprintf(aws_notify_msg, "%s\"}", aws_notify_msg);
 exit:
     return aws_notify_msg;
 }

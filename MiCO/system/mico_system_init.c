@@ -124,9 +124,11 @@ OSStatus mico_system_init( mico_Context_t* in_context )
 #endif
 
   if( sys_context->flashContentInRam.micoSystemConfig.configured == unConfigured){
+#ifndef MICO_AUTOCONF_DISABLE 
     system_log("Empty configuration. Starting configuration mode...");
     err = mico_system_wlan_start_autoconf( );
     require_noerr( err, exit );
+#endif
   }
 #ifdef EasyLink_Needs_Reboot
   else if( sys_context->flashContentInRam.micoSystemConfig.configured == wLanUnConfigured ){
