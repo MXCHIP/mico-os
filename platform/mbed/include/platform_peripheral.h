@@ -771,6 +771,15 @@ OSStatus platform_wlan_spi_transfer( platform_gpio_driver_t* cs_drv, const platf
 
 
  /**
+  * Read ADC sample resolution
+  *
+  * @param[in] adc_interface : adc_interface
+  *
+  * @return resolution bit mask, 0xFFF means 12 bit adc
+  */
+ uint16_t platform_adc_get_bit_range( const platform_adc_t* adc );
+
+ /**
   * Take ADC sample
   *
   * @param[in]  adc_interface : adc_interface

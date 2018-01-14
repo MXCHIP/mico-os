@@ -11,16 +11,20 @@ NAME := Lib_MiCO_Kernel
 
 GLOBAL_INCLUDES := 
 
+ifeq ($(MICO_CORE),)
+MICO_CORE               := MiCO
+endif
+
 WLAN_RF_MODULE_LIST := 1062 1088
 
 MODULE_LIST := 3165 3166 3238 3239 3297
 
 ifneq ($(filter $(MODULE),$(WLAN_RF_MODULE_LIST)),)
-MICO_PREBUILT_LIBRARY := MiCO.$(MODULE).$(BUS).$(HOST_ARCH).$(TOOLCHAIN_NAME).a
+MICO_PREBUILT_LIBRARY := $(MICO_CORE).$(MODULE).$(BUS).$(HOST_ARCH).$(TOOLCHAIN_NAME).a
 #MICO_PREBUILT_LIBRARY := ../../../../../mico_source/branch_for_merge/output/MiCO.$(MODULE).$(BUS).$(HOST_ARCH).$(TOOLCHAIN_NAME).a
 else
 ifneq ($(filter $(MODULE),$(MODULE_LIST)),)
-MICO_PREBUILT_LIBRARY := MiCO.$(MODULE).$(TOOLCHAIN_NAME).a
+MICO_PREBUILT_LIBRARY := $(MICO_CORE).$(MODULE).$(TOOLCHAIN_NAME).a
 #MICO_PREBUILT_LIBRARY := ../../../../../mico_source/branch_for_merge/output/MiCO.$(MODULE).$(TOOLCHAIN_NAME).a
 endif
 endif

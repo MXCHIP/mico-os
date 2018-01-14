@@ -69,6 +69,12 @@
 *               Variables Definitions
 ******************************************************/
 
+platform_i2c_driver_t platform_i2c_drivers[MICO_I2C_MAX];
+platform_uart_driver_t platform_uart_drivers[MICO_UART_MAX];
+platform_spi_driver_t platform_spi_drivers[MICO_SPI_MAX];
+platform_flash_driver_t platform_flash_drivers[MICO_FLASH_MAX];
+
+
 const platform_gpio_t platform_gpio_pins[] =
 {
   /* Common GPIOs for internal use */
