@@ -96,10 +96,12 @@ OSStatus platform_uart_init( platform_uart_driver_t* driver, const platform_uart
       			break;
 
     		case EVEN_PARITY:
+                wordlen = 9;
       			parity = ParityEven;
       			break;
 
     		case ODD_PARITY:
+                wordlen = 9;
       			parity = ParityOdd;
       			break;
     		default:
