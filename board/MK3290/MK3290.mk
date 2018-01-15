@@ -48,7 +48,7 @@ GLOBAL_INCLUDES  := .
 
 # Components
 $(NAME)_COMPONENTS += drivers/spi_flash
-$(NAME)_COMPONENTS += drivers/MiCOKit_EXT
+$(NAME)_COMPONENTS += drivers/keypad/gpio_button
 
 # Source files
-$(NAME)_SOURCES := platform.c
+$(NAME)_SOURCES := mico_board.c

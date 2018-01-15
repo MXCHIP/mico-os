@@ -220,19 +220,6 @@ void MicoRfLed(bool onoff)
   }
 }
 
-#ifdef USE_MiCOKit_EXT
-// add test mode for MiCOKit-EXT board,check Arduino_D5 pin when system startup
-bool MicoExtShouldEnterTestMode(void)
-{
-  if( MicoGpioInputGet((mico_gpio_t)Arduino_D5)==false ){
-    return true;
-  }
-  else{
-    return false;
-  }
-}
-#endif
-
 #define BOOT_MODE_REG (*(uint32_t *)0x40001C)
 
 #define BOOT_MODE_APP   0
@@ -244,12 +231,4 @@ bool MicoShouldEnterMFGMode(void)
     return BOOT_MODE_REG == BOOT_MODE_QC ? true : false;
 }
 
-bool MicoShouldEnterBootloader(void)
-{
-    return true;
-  if(MicoGpioInputGet((mico_gpio_t)BOOT_SEL)==false && MicoGpioInputGet((mico_gpio_t)MFG_SEL)==true)
-    return true;
-  else
-    return false;
-}
 

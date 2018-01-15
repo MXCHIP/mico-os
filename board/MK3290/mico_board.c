@@ -31,18 +31,11 @@
  */
 
 #include "mico_platform.h"
-#include "platform.h"
-#include "platform_config.h"
+#include "mico_board.h"
+#include "mico_board_conf.h"
 #include "platform_peripheral.h"
-#include "platform_config.h"
 #include "platform_logging.h"
 #include "CheckSumUtils.h"
-#include "keypad/gpio_button/button.h"
-
-
-#ifdef USE_MiCOKit_EXT
-#include "MiCOKit_EXT/micokit_ext.h"
-#endif
 
 /******************************************************
 *                      Macros
@@ -93,7 +86,7 @@ const platform_gpio_t platform_gpio_pins[] =
     [MICO_GPIO_11] = {11},
 };
 
-const platform_pwm_t platform_pwm_peripherals[] = {};
+const platform_pwm_t *platform_pwm_peripherals = NULL;
 
 const platform_i2c_t platform_i2c_peripherals[] =
 {
@@ -202,31 +195,7 @@ const platform_adc_t platform_adc_peripherals[] = {};
 *               Function Definitions
 ******************************************************/
 
-void init_platform( void )
-{
-  button_init_t init;
-	  
-  MicoGpioInitialize( (mico_gpio_t)MICO_SYS_LED, OUTPUT_PUSH_PULL );
-  MicoGpioOutputLow( (mico_gpio_t)MICO_SYS_LED );
-  MicoGpioInitialize( (mico_gpio_t)MICO_RF_LED, OUTPUT_OPEN_DRAIN_NO_PULL );
-  MicoGpioOutputHigh( (mico_gpio_t)MICO_RF_LED );
-  
-  MicoGpioInitialize((mico_gpio_t)BOOT_SEL, INPUT_PULL_UP);
-  MicoGpioInitialize((mico_gpio_t)MFG_SEL, INPUT_PULL_UP);
-
-  /* Keep bluenrg in the RESET state. */
-  MicoGpioInitialize((mico_gpio_t)BLUENRG_SPI_RESET_PIN, OUTPUT_PUSH_PULL);
-  MicoGpioOutputLow((mico_gpio_t)BLUENRG_SPI_RESET_PIN);
-
-  init.gpio = EasyLink_BUTTON;
-  init.pressed_func = PlatformEasyLinkButtonClickedCallback;
-  init.long_pressed_func = PlatformEasyLinkButtonLongPressedCallback;
-  init.long_pressed_timeout = RestoreDefault_TimeOut;
-
-  button_init( IOBUTTON_EASYLINK, init );
-}
-
-void init_platform_bootloader( void )
+void mico_board_init( void )
 {
   MicoGpioInitialize( (mico_gpio_t)MICO_SYS_LED, OUTPUT_PUSH_PULL );
   MicoGpioOutputLow( (mico_gpio_t)MICO_SYS_LED );
@@ -239,8 +208,6 @@ void init_platform_bootloader( void )
   /* Keep bluenrg in the RESET state. */
   MicoGpioInitialize((mico_gpio_t)BLUENRG_SPI_RESET_PIN, OUTPUT_PUSH_PULL);
   MicoGpioOutputLow((mico_gpio_t)BLUENRG_SPI_RESET_PIN);
-
-  return;
 }
 
 void MicoSysLed(bool onoff)
@@ -261,19 +228,6 @@ void MicoRfLed(bool onoff)
   }
 }
 
-#ifdef USE_MiCOKit_EXT
-// add test mode for MiCOKit-EXT board,check Arduino_D5 pin when system startup
-bool MicoExtShouldEnterTestMode(void)
-{
-  if( MicoGpioInputGet((mico_gpio_t)Arduino_D5)==false ){
-    return true;
-  }
-  else{
-    return false;
-  }
-}
-#endif
-
 #define BOOT_MODE_REG (*(uint32_t *)0x40001C)
 
 #define BOOT_MODE_APP   0
@@ -285,12 +239,4 @@ bool MicoShouldEnterMFGMode(void)
     return BOOT_MODE_REG == BOOT_MODE_QC ? true : false;
 }
 
-bool MicoShouldEnterBootloader(void)
-{
-    return true;
-  if(MicoGpioInputGet((mico_gpio_t)BOOT_SEL)==false && MicoGpioInputGet((mico_gpio_t)MFG_SEL)==true)
-    return true;
-  else
-    return false;
-}
 
