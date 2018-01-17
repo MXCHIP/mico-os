@@ -43,7 +43,7 @@ $(NAME)_PREBUILT_LIBRARY := $(MICO_PREBUILT_LIBRARY)
 else
 # Build from source (MXCHIP internal)
 $(info MiCO core based on source code ! )
-$(error The specific MiCO core library: $(MICO_PREBUILT_LIBRARY) is not found! )
+# $(error The specific MiCO core library: $(MICO_PREBUILT_LIBRARY) is not found! )
 endif #ifneq ($(wildcard $(CURDIR)$(MICO_PREBUILT_LIBRARY)),)
 endif #ifneq ($(filter $(MODULE),$(MOC_MODULE_LIST)),)
 

@@ -73,11 +73,6 @@ extern "C"
 /******************************************************
  *                 Type Definitions
  ******************************************************/
-typedef enum
-{
-    FLASH_TYPE_EMBEDDED, 
-    FLASH_TYPE_SPI,
-} platform_flash_type_t;
 
 /******************************************************
  *                    Structures
@@ -161,7 +156,7 @@ typedef struct
 
 typedef struct
 {
-    platform_flash_type_t      flash_type;
+    uint32_t                   flash_type;
     uint32_t                   flash_start_addr;
     uint32_t                   flash_length;
     uint32_t                   flash_protect_opt;

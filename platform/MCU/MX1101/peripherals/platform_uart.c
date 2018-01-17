@@ -255,7 +255,11 @@ static OSStatus FUartRecv( platform_uart_driver_t* driver, void* data, uint32_t 
   }
   else
   {
+    #ifdef NO_MICO_RTOS
+    mico_thread_msleep_no_os(timeout);
+    #else
     mico_thread_msleep(timeout);
+    #endif
     return kNoMemoryErr;
   }
 }
@@ -292,12 +296,12 @@ static OSStatus BUartRecv( platform_uart_driver_t* driver, void* data, uint32_t 
           return kTimeoutErr;
         }
 #else
-      delay_start = mico_get_time();
+      delay_start = mico_rtos_get_time();
       while(1){
         mico_rtos_get_semaphore( &driver->rx_complete, 50);
         if( (BUART_RX_FIFO_SIZE - driver->buart_fifo_head)  <= (uint32_t)BuartIOctl(BUART_IOCTL_RXFIFO_DATLEN_GET, 0) )
           break;
-        if(  mico_get_time() - delay_start > timeout ){
+        if(  mico_rtos_get_time() - delay_start > timeout ){
           driver->rx_size = 0;
           BuartIOctl(UART_IOCTL_RXINT_SET, 0);
           return kTimeoutErr;
@@ -316,7 +320,11 @@ static OSStatus BUartRecv( platform_uart_driver_t* driver, void* data, uint32_t 
           }
         }
 #endif     
+#ifdef NO_MICO_RTOS
+        mico_thread_msleep_no_os(20);
+#else
         mico_thread_msleep(20);
+#endif
       }
       
 #ifndef NO_MICO_RTOS

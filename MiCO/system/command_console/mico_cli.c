@@ -557,38 +557,38 @@ static void aws_handler(char *pcWriteBuffer, int xWriteBufferLen,int argc, char 
 
 static const struct cli_command built_ins[] = {
   {"help", NULL, help_command},
-  {"version", NULL, get_version},
+  // {"version", NULL, get_version},
   {"echo", NULL, echo_cmd_handler},
   {"exit", "CLI exit", cli_exit_handler}, 
   
-  /// WIFI
-  {"scan", "scan ap", wifiscan_Command}, 
-  {"wifistate", "Show wifi state", wifistate_Command}, 
-  {"wifidebug", "wifidebug on/off", wifidebug_Command},
-#ifdef CONFIG_MICO_AWS  
-  {"awsdebug", "enable aws debug info", aws_handler}, 
-#endif
+//   /// WIFI
+//   {"scan", "scan ap", wifiscan_Command}, 
+//   {"wifistate", "Show wifi state", wifistate_Command}, 
+//   {"wifidebug", "wifidebug on/off", wifidebug_Command},
+// #ifdef CONFIG_MICO_AWS  
+//   {"awsdebug", "enable aws debug info", aws_handler}, 
+// #endif
 
-  // network
-  {"ifconfig", "Show IP address", ifconfig_Command}, 
-  {"arp", "arp show/clean", arp_Command}, 
-  {"ping", "ping <ip>", ping_Command}, 
-  {"dns", "show/clean/<domain>", dns_Command}, 
-  {"sockshow", "Show all sockets", socket_show_Command}, 
+//   // network
+//   {"ifconfig", "Show IP address", ifconfig_Command}, 
+//   {"arp", "arp show/clean", arp_Command}, 
+//   {"ping", "ping <ip>", ping_Command}, 
+//   {"dns", "show/clean/<domain>", dns_Command}, 
+//   {"sockshow", "Show all sockets", socket_show_Command}, 
   // os
   {"tasklist", "list all thread name status", task_Command}, 
   
-  // others
-  {"memshow", "print memory information", memory_show_Command}, 
-  {"memdump", "<addr> <length>", memory_dump_Command}, 
-  {"memset", "<addr> <value 1> [<value 2> ... <value n>]", memory_set_Command}, 
-  {"memp", "print memp list", memp_dump_Command},
-  {"wifidriver", "show wifi driver status", driver_state_Command}, // bus credite, flow control...
-  {"reboot", "reboot MiCO system", reboot},
-  {"tftp",     "tftp",                        tftp_Command},
-  {"time",     "system time",                 uptime_Command},
-  {"ota",      "system ota",                  ota_Command},
-  {"flash",    "Flash memory map",            partShow_Command},
+  // // others
+  // {"memshow", "print memory information", memory_show_Command}, 
+  // {"memdump", "<addr> <length>", memory_dump_Command}, 
+  // {"memset", "<addr> <value 1> [<value 2> ... <value n>]", memory_set_Command}, 
+  // {"memp", "print memp list", memp_dump_Command},
+  // {"wifidriver", "show wifi driver status", driver_state_Command}, // bus credite, flow control...
+  // {"reboot", "reboot MiCO system", reboot},
+  // {"tftp",     "tftp",                        tftp_Command},
+  // {"time",     "system time",                 uptime_Command},
+  // {"ota",      "system ota",                  ota_Command},
+  // {"flash",    "Flash memory map",            partShow_Command},
 };
 
 /* Built-in "help" command: prints all registered commands and their help
