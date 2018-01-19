@@ -37,7 +37,7 @@ HOST_MCU_PART_NUMBER 	:= MX1101
 
 BUS := NONE
 
-JTAG := jlink
+JTAG := jlink_swd
 
 # Global includes
 GLOBAL_INCLUDES  := .

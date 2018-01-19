@@ -10,6 +10,8 @@
 
 NAME = MX1101
 
+EXTRA_TARGET_MAKEFILES +=  ./mico-os/platform/MCU/MX1101/mx1101_standard_targets.mk
+
 # Host architecture is ARM Cortex M4
 HOST_ARCH := Cortex-M3
 
@@ -43,9 +45,11 @@ $(NAME)_COMPONENTS += $(TOOLCHAIN_NAME)
 $(NAME)_COMPONENTS += MCU/MX1101/peripherals
 $(NAME)_COMPONENTS += utilities
 $(NAME)_COMPONENTS += MCU/MX1101/SDK
+$(NAME)_COMPONENTS += MCU/MX1101/lwip
 
 # Source files
-$(NAME)_SOURCES := ../../$(HOST_ARCH)/platform_core.c \
+$(NAME)_SOURCES := ../../$(HOST_ARCH)/crt0_$(TOOLCHAIN_NAME).c \
+                   ../../$(HOST_ARCH)/platform_core.c \
                    ../../$(HOST_ARCH)/hardfault_handler.c \
                    ../platform_nsclock.c \
                    ../mico_platform_common.c \
