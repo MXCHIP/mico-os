@@ -26,8 +26,13 @@
 #define MAXIMUM_NUMBER_OF_SYSTEM_MONITORS    (5)
 #endif
 
+#ifdef CONFIG_CPU_MX1290
+#define APPLICATION_WATCHDOG_TIMEOUT_SECONDS  25 /**< Monitor point defined by mico system
+                                                     25 seconds to reload. */
+#else
 #define APPLICATION_WATCHDOG_TIMEOUT_SECONDS  5 /**< Monitor point defined by mico system
                                                      5 seconds to reload. */
+#endif
 
 static mico_system_monitor_t* system_monitors[MAXIMUM_NUMBER_OF_SYSTEM_MONITORS];
 void mico_system_monitor_thread_main( uint32_t arg );
