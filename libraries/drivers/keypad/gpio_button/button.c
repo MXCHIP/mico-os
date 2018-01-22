@@ -31,13 +31,6 @@ static void button_irq_handler( void* arg )
 
     int interval = -1;
 
-#ifdef CONFIG_MX108
-    if (_context->ignore == 1) {
-      _context->ignore = 0;
-      return;
-    }
-#endif
-
     if ( MicoGpioInputGet( _context->gpio ) == ((_context->idle == IOBUTTON_IDLE_STATE_HIGH) ? 0 : 1) ) {
         MicoGpioEnableIRQ( _context->gpio,
                            (_context->idle == IOBUTTON_IDLE_STATE_HIGH) ? IRQ_TRIGGER_RISING_EDGE : IRQ_TRIGGER_FALLING_EDGE,
@@ -72,14 +65,6 @@ static void button_timeout_handler( void* arg )
 void button_init( button_context_t *btn_context )
 {
     btn_context->start_time = 0;
-
-#ifdef CONFIG_MX108
-    /*For MOC108 only. MOC108 will trigger an IRQ if IO is in low state when enable falling IRQ*/
-    if (MicoGpioInputGet(btn_context->gpio) == 0)
-        btn_context->ignore = 1;
-    else
-        btn_context->ignore = 0;
-#endif
 
     if ( btn_context->idle == IOBUTTON_IDLE_STATE_HIGH ) {
         MicoGpioInitialize( btn_context->gpio, INPUT_PULL_UP );
