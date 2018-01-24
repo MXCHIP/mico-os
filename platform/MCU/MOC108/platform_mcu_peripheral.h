@@ -55,7 +55,7 @@ typedef struct
 
 typedef struct
 {
-    uint8_t unimplemented;
+    uint8_t channel;
 } platform_pwm_t;
 
 /* DMA can be enabled by setting SPI_USE_DMA */
