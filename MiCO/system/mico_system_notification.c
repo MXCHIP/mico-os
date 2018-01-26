@@ -28,7 +28,7 @@ typedef struct _Notify_list{
   void  *contex;
 } _Notify_list_t;
 
-_Notify_list_t* Notify_list[20] = {NULL};
+_Notify_list_t* Notify_list[mico_notify_MAX] = {NULL};
 
 /* MICO system defined notifications */
 typedef void (*mico_notify_WIFI_SCAN_COMPLETE_function)           ( ScanResult *pApList, void * inContext );
@@ -45,6 +45,7 @@ typedef void (*mico_notify_SYS_WILL_POWER_OFF_function)           ( void * inCon
 typedef void (*mico_notify_WIFI_CONNECT_FAILED_function)          ( OSStatus err, void * inContext );
 typedef void (*mico_notify_WIFI_FATAL_ERROR_function)             ( void * inContext );
 typedef void (*mico_notify_STACK_OVERFLOW_ERROR_function)         ( char *taskname, void * const inContext );
+typedef void (*mico_notify_GPRS_STATUS_CHANGED_function)          ( notify_gprs_t status, const mico_gprs_net_addr_t* pnet );
 
 /* User defined notifications */
 
@@ -215,6 +216,19 @@ void mico_rtos_stack_overflow(char *taskname)
       temp = temp->next;
     }while(temp!=NULL);
   }    
+}
+
+void mico_gprs_status_handler(notify_gprs_t status, const mico_gprs_net_addr_t *net_addr)
+{
+  _Notify_list_t *temp =  Notify_list[mico_notify_GPRS_STATUS_CHANGED];
+  if(temp == NULL)
+    return;
+  else{
+    do{
+      ((mico_notify_GPRS_STATUS_CHANGED_function)(temp->function))(status, net_addr);
+      temp = temp->next;
+    }while(temp!=NULL);
+  }  
 }
 
 OSStatus mico_system_notify_register( mico_notify_types_t notify_type, void* functionAddress, void* arg )
