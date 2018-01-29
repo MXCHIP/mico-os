@@ -54,6 +54,7 @@
 #include "mico_security.h"
 #include "mico_platform.h"
 #include "mico_system.h"
+#include "mico_gprs.h"
 
 
 #define MicoGetRfVer                wlan_driver_version

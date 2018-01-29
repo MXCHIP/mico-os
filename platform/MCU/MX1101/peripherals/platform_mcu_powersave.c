@@ -66,36 +66,21 @@ static unsigned long  idle_power_down_hook( unsigned long sleep_ms );
 
 OSStatus platform_mcu_powersave_init(void)
 {
-#ifndef MICO_DISABLE_MCU_POWERSAVE
-  #error "Current platform is unsupported"?
-#else
   return kNoErr;
-#endif
 }
 
 OSStatus platform_mcu_powersave_disable( void )
 {
-#ifndef MICO_DISABLE_MCU_POWERSAVE
-  #error "Current platform is unsupported"?
-#else
   return kNoErr;
-#endif
 }
 
 OSStatus platform_mcu_powersave_enable( void )
 {
-#ifndef MICO_DISABLE_MCU_POWERSAVE
-  #error "Current platform is unsupported"?
-#else
   return kNoErr;
-#endif
 }
 
 void platform_mcu_powersave_exit_notify( void )
 {
-#ifndef MICO_DISABLE_MCU_POWERSAVE
-  #error "Current platform is unsupported"?
-#endif
 }
 
 /******************************************************
@@ -109,16 +94,7 @@ void platform_idle_hook( void )
 
 uint32_t platform_power_down_hook( uint32_t sleep_ms )
 {
-#ifdef MICO_DISABLE_MCU_POWERSAVE
-    /* If MCU powersave feature is disabled, enter idle mode when powerdown hook is called by the RTOS */
-    return idle_power_down_hook( sleep_ms );
-
-#else
-    #error "Current platform is unsupported"
-    /* If MCU powersave feature is enabled, enter STOP mode when powerdown hook is called by the RTOS */
-    return stop_mode_power_down_hook( sleep_ms );
-
-#endif
+  return 0;
 }
 
 #ifdef MICO_DISABLE_MCU_POWERSAVE

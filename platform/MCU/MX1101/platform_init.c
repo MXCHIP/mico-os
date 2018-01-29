@@ -254,12 +254,6 @@ void init_architecture( void )
   platform_uart_init( &platform_uart_drivers[STDIO_UART], &platform_uart_peripherals[STDIO_UART], &stdio_uart_config, (ring_buffer_t*)&stdio_rx_buffer );
 #endif
 
-  /* Ensure 802.11 device is in reset. */
-  host_platform_init( );
-
-  /* Initialise nanosecond clock counter */
-  platform_init_nanosecond_clock();
-
 #ifdef BOOTLOADER
   return;
 #endif
@@ -321,6 +315,12 @@ void SysTick_Handler(void)
 uint32_t mico_get_time_no_os(void)
 {
   return no_os_tick;
+}
+
+void mico_thread_msleep_no_os(uint32_t milliseconds)
+{
+  int tick_delay_start = mico_get_time_no_os();
+  while(mico_get_time_no_os() < tick_delay_start+milliseconds);  
 }
 #else
 extern volatile uint32_t gSysTick;

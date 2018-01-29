@@ -224,6 +224,10 @@ typedef enum {
   NOTIFY_AP_DOWN,
 } notify_wlan_t; 
 
+typedef enum {
+  NOTIFY_GPRS_UP = 1,
+  NOTIFY_GPRS_DOWN,
+} notify_gprs_t; 
 
 #ifdef __cplusplus
 } /*extern "C" */
