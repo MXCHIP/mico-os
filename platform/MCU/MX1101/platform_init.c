@@ -333,8 +333,3 @@ void SysTick_Handler(void)
 }
 
 #endif
-
-void event_rx_cb(void)
-{
-
-}

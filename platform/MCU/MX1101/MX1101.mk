@@ -54,7 +54,8 @@ $(NAME)_SOURCES := ../../$(HOST_ARCH)/crt0_$(TOOLCHAIN_NAME).c \
                    ../../$(HOST_ARCH)/hardfault_handler.c \
                    ../platform_nsclock.c \
                    ../mico_platform_common.c \
-                   platform_init.c
+                   platform_init.c \
+                   stubs.c
 
 ifeq ($(APP),bootloader)
 ####################################################################################

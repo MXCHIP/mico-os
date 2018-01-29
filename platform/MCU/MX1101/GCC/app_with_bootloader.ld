@@ -5,6 +5,7 @@ ENTRY(Reset_Handler)
 _estack = 0x2001F400;
 /* Stack size */
 _stack_size = 0x400;
+_eheap = _estack - _stack_size;
 
 /* Specify the memory areas */
 MEMORY
@@ -83,7 +84,6 @@ SECTIONS
     PROVIDE ( end = . );
     PROVIDE ( _end = . );
     PROVIDE ( _heap = . );
-    PROVIDE ( _eheap = _estack - _stack_size );
   } >RAM
 
   /DISCARD/ :
