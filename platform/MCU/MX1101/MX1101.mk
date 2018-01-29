@@ -25,13 +25,15 @@ GLOBAL_INCLUDES := . \
                    ../../$(TOOLCHAIN_NAME) \
                    ../../$(HOST_ARCH) \
                    ../../$(HOST_ARCH)/CMSIS \
-                   peripherals
+                   peripherals \
+                   hwlib/CMSIS/Include \
+                   hwlib/inc
 
 # Global defines
 GLOBAL_DEFINES  := 
 
 # Global flags
-GLOBAL_CFLAGS   += $$(CPU_CFLAGS)    $$(ENDIAN_CFLAGS_LITTLE)
+GLOBAL_CFLAGS   += $$(CPU_CFLAGS)    $$(ENDIAN_CFLAGS_LITTLE) -w
 GLOBAL_CXXFLAGS += $$(CPU_CXXFLAGS)  $$(ENDIAN_CXXFLAGS_LITTLE)
 GLOBAL_ASMFLAGS += $$(CPU_ASMFLAGS)  $$(ENDIAN_ASMFLAGS_LITTLE)
 GLOBAL_LDFLAGS  += $$(CPU_LDFLAGS)   $$(ENDIAN_LDFLAGS_LITTLE) 
@@ -40,13 +42,19 @@ GLOBAL_LDFLAGS  += $$(CLIB_LDFLAGS_NANO_FLOAT)
 GLOBAL_LDFLAGS  += -nostartfiles
 GLOBAL_LDFLAGS  += -Wl,--defsym,__STACKSIZE__=$$($(RTOS)_START_STACK)
 GLOBAL_LDFLAGS  += -L ./platform/MCU/$(NAME)/$(TOOLCHAIN_NAME)
-
+GLOBAL_LDFLAGS  += mico-os/platform/MCU/MX1101/hwlib/libdriver.a
 # Components
 $(NAME)_COMPONENTS += $(TOOLCHAIN_NAME)
 $(NAME)_COMPONENTS += MCU/MX1101/peripherals
 $(NAME)_COMPONENTS += utilities
-$(NAME)_COMPONENTS += MCU/MX1101/SDK
+ifdef TOOLCHAIN_NAME
+ifneq ($(wildcard $(CURDIR)lwip.$(HOST_ARCH).$(TOOLCHAIN_NAME).release.a),)
+$(NAME)_PREBUILT_LIBRARY := lwip.$(HOST_ARCH).$(TOOLCHAIN_NAME).release.a
+else
+# Build from source
 $(NAME)_COMPONENTS += MCU/MX1101/lwip
+endif
+endif
 
 # Source files
 $(NAME)_SOURCES := ../../$(HOST_ARCH)/crt0_$(TOOLCHAIN_NAME).c \
@@ -55,6 +63,8 @@ $(NAME)_SOURCES := ../../$(HOST_ARCH)/crt0_$(TOOLCHAIN_NAME).c \
                    ../platform_nsclock.c \
                    ../mico_platform_common.c \
                    platform_init.c \
+                   main.c \
+                   startup.s \
                    stubs.c
 
 ifeq ($(APP),bootloader)
