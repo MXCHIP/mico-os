@@ -176,9 +176,9 @@ static void application_thread_main( void *arg )
     mico_main();
     mico_rtos_init();
 
-    // if ( MicoShouldEnterMFGMode( ) )
-    //     mico_system_qc_test( );
-    // else
+    if ( MicoShouldEnterMFGMode( ) )
+        mico_system_qc_test( );
+    else
         application_start( );
 
     vTaskDelete( NULL );
