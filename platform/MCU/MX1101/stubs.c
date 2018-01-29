@@ -54,6 +54,18 @@ void memory_set_Command( char *pcWriteBuffer, int xWriteBufferLen, int argc, cha
     }
 }
 
+void socket_show_Command(char *pcWriteBuffer, int xWriteBufferLen, int argc, char **argv)
+{
+    printf("Not implemented yet\r\n");
+}
+
+#define LIBRARY_VER "EMW5062.001"
+
+char* system_lib_version(void)
+{
+    return LIBRARY_VER;
+}
+
 void event_rx_cb(void)
 {
 

@@ -48,3 +48,5 @@ $(NAME)_COMPONENTS += drivers/MiCOKit_EXT
 
 # Source files
 $(NAME)_SOURCES := platform.c
+
+GLOBAL_DEFINES += PPP_IF=1

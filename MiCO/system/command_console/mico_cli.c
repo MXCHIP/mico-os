@@ -501,12 +501,14 @@ static void get_version(char *pcWriteBuffer, int xWriteBufferLen,int argc, char 
   cmd_printf("Application info: %s\r\n", APP_INFO );
   cmd_printf("Bootloader version: %s\r\n", mico_get_bootloader_ver() );
   
+#ifndef PPP_IF
   memset(ver, 0, sizeof(ver));
   ret = MicoGetRfVer(ver, sizeof(ver));
   if (ret == 0)
     cmd_printf("WIFI version: %s\r\n", ver);
   else
     cmd_printf("Can't get WIFI version, return %d\r\n", ret);
+#endif
 }
 
 static void reboot(char *pcWriteBuffer, int xWriteBufferLen,int argc, char **argv)
@@ -557,24 +559,28 @@ static void aws_handler(char *pcWriteBuffer, int xWriteBufferLen,int argc, char 
 
 static const struct cli_command built_ins[] = {
   {"help", NULL, help_command},
-  // {"version", NULL, get_version},
+  {"version", NULL, get_version},
   {"echo", NULL, echo_cmd_handler},
   {"exit", "CLI exit", cli_exit_handler}, 
   
+#ifndef PPP_IF
   // WIFI
-//   {"scan", "scan ap", wifiscan_Command}, 
-//   {"wifistate", "Show wifi state", wifistate_Command}, 
-//   {"wifidebug", "wifidebug on/off", wifidebug_Command},
-// #ifdef CONFIG_MICO_AWS  
-//   {"awsdebug", "enable aws debug info", aws_handler}, 
-// #endif
+  {"scan", "scan ap", wifiscan_Command}, 
+  {"wifistate", "Show wifi state", wifistate_Command}, 
+  {"wifidebug", "wifidebug on/off", wifidebug_Command},
+#ifdef CONFIG_MICO_AWS  
+  {"awsdebug", "enable aws debug info", aws_handler}, 
+#endif
+#endif
 
   // network
   {"ifconfig", "Show IP address", ifconfig_Command}, 
-//   {"arp", "arp show/clean", arp_Command}, 
+#ifndef PPP_IF
+  {"arp", "arp show/clean", arp_Command}, 
+#endif
   {"ping", "ping <ip>", ping_Command}, 
   {"dns", "show/clean/<domain>", dns_Command}, 
-//   {"sockshow", "Show all sockets", socket_show_Command}, 
+  {"sockshow", "Show all sockets", socket_show_Command}, 
   // os
   {"tasklist", "list all thread name status", task_Command}, 
   
@@ -582,13 +588,17 @@ static const struct cli_command built_ins[] = {
   {"memshow", "print memory information", memory_show_Command}, 
   {"memdump", "<addr> <length>", memory_dump_Command}, 
   {"memset", "<addr> <value 1> [<value 2> ... <value n>]", memory_set_Command}, 
-  // {"memp", "print memp list", memp_dump_Command},
-  // {"wifidriver", "show wifi driver status", driver_state_Command}, // bus credite, flow control...
+#ifndef PPP_IF
+  {"memp", "print memp list", memp_dump_Command},
+  {"wifidriver", "show wifi driver status", driver_state_Command}, // bus credite, flow control...
+#endif
   {"reboot", "reboot MiCO system", reboot},
-  // {"tftp",     "tftp",                        tftp_Command},
-  // {"time",     "system time",                 uptime_Command},
-  // {"ota",      "system ota",                  ota_Command},
-  // {"flash",    "Flash memory map",            partShow_Command},
+#ifndef PPP_IF
+  {"tftp",     "tftp",                        tftp_Command},
+  {"time",     "system time",                 uptime_Command},
+  {"ota",      "system ota",                  ota_Command},
+#endif
+  {"flash",    "Flash memory map",            partShow_Command},
 };
 
 /* Built-in "help" command: prints all registered commands and their help
