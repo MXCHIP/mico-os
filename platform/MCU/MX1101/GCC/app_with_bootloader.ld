@@ -3,9 +3,8 @@ ENTRY(Reset_Handler)
 
 /* Highest address of the user mode stack */
 _estack = 0x2001F400;
-/* Generate a link error if heap and stack don't fit into RAM */
-_Min_Heap_Size = 0x15000;      /* required amount of heap  */
-_Min_Stack_Size = 0x1000; /* required amount of stack */
+/* Stack size */
+_stack_size = 0x400;
 
 /* Specify the memory areas */
 MEMORY
@@ -84,10 +83,7 @@ SECTIONS
     PROVIDE ( end = . );
     PROVIDE ( _end = . );
     PROVIDE ( _heap = . );
-    . = . + _Min_Heap_Size;
-    PROVIDE ( _eheap = . );
-    . = . + _Min_Stack_Size;
-    . = ALIGN(8);
+    PROVIDE ( _eheap = _estack - _stack_size );
   } >RAM
 
   /DISCARD/ :
