@@ -28,6 +28,7 @@ SECTIONS
     .text :
     {
         . = ALIGN(4);
+        _stext = .;
 
         link_code_location = .;
         KEEP(*(.text.irq ))
@@ -60,6 +61,7 @@ SECTIONS
         KEEP (*crtend.o(.dtors))
         link_destructors_end = .;
 
+		_etext = .;
         . = ALIGN(16);
 
     }>APP_FLASH  AT> APP_FLASH
@@ -117,6 +119,7 @@ SECTIONS
         *(.stack)
         . = ALIGN(MAX(link_stack_location + __STACKSIZE__ , .), 4);
         link_stack_end = .;
+        _estack = .;
     }> SRAM AT> SRAM
 
     /DISCARD/ :
