@@ -35,6 +35,9 @@ $(NAME)_SOURCES := Update_for_OTA.c \
 
 $(NAME)_CFLAGS   += -Wno-char-subscripts
 
+NO_WIFI_FIRMWARE := YES
+NO_WIFI          := YES
+
 GLOBAL_DEFINES := MICO_NO_WIFI BOOTLOADER
 
 NoRTOS_START_STACK  := 4000

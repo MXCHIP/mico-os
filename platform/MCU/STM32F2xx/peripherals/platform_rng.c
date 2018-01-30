@@ -15,9 +15,9 @@
  ******************************************************************************
  */
 
-#include "platform.h"
+#include "mico_board.h"
 #include "stm32f2xx.h"
-#include "common.h"
+#include "mico_common.h"
 
 /******************************************************
  *                   Macros

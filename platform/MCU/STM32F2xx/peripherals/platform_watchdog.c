@@ -15,10 +15,10 @@
  ******************************************************************************
  */
 
-#include "common.h"
-#include "debug.h"
+#include "mico_common.h"
+#include "mico_debug.h"
 
-#include "platform.h"
+#include "mico_board.h"
 #include "platform_peripheral.h"
 #include "stm32f2xx.h"
 

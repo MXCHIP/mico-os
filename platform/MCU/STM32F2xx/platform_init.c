@@ -18,16 +18,12 @@
 
 
 #include "platform_peripheral.h"
-#include "platform.h"
-#include "platform_config.h"
+#include "mico_board.h"
+#include "mico_board_conf.h"
 #include "platform_logging.h"
 #include <string.h> // For memcmp
 #include "crt0.h"
 #include "platform_init.h"
-
-#ifdef __GNUC__
-#include "../../GCC/stdio_newlib.h"
-#endif /* ifdef __GNUC__ */
 
 
 /******************************************************
@@ -63,25 +59,9 @@ extern OSStatus host_platform_init( void );
 /******************************************************
 *               Variables Definitions
 ******************************************************/
+
 extern platform_uart_t platform_uart_peripherals[];
 extern platform_uart_driver_t platform_uart_drivers[];
-
-#ifndef MICO_DISABLE_STDIO
-static const platform_uart_config_t stdio_uart_config =
-{
-  .baud_rate    = STDIO_UART_BAUDRATE,
-  .data_width   = DATA_WIDTH_8BIT,
-  .parity       = NO_PARITY,
-  .stop_bits    = STOP_BITS_1,
-  .flow_control = FLOW_CONTROL_DISABLED,
-  .flags        = 0,
-};
-
-static volatile ring_buffer_t stdio_rx_buffer;
-static volatile uint8_t             stdio_rx_data[STDIO_BUFFER_SIZE];
-mico_mutex_t        stdio_rx_mutex;
-mico_mutex_t        stdio_tx_mutex;
-#endif /* #ifndef MICO_DISABLE_STDIO */
 
 /******************************************************
 *               Function Definitions
@@ -224,24 +204,9 @@ void init_architecture( void )
 
   /* Initialise GPIO IRQ manager */
   platform_gpio_irq_manager_init();
-  
-#ifndef MICO_DISABLE_STDIO
-#ifndef NO_MICO_RTOS
-  mico_rtos_init_mutex( &stdio_tx_mutex );
-  mico_rtos_unlock_mutex ( &stdio_tx_mutex );
-  mico_rtos_init_mutex( &stdio_rx_mutex );
-  mico_rtos_unlock_mutex ( &stdio_rx_mutex );
-#endif
-
-  ring_buffer_init  ( (ring_buffer_t*)&stdio_rx_buffer, (uint8_t*)stdio_rx_data, STDIO_BUFFER_SIZE );
-  platform_uart_init( &platform_uart_drivers[STDIO_UART], &platform_uart_peripherals[STDIO_UART], &stdio_uart_config, (ring_buffer_t*)&stdio_rx_buffer );
-#endif
 
   /* Ensure 802.11 device is in reset. */
   host_platform_init( );
-
-  /* Initialise nanosecond clock counter */
-  platform_init_nanosecond_clock();
 
 #ifdef BOOTLOADER
   return;
@@ -263,8 +228,8 @@ OSStatus stdio_hardfault( char* data, uint32_t size )
 #ifndef MICO_DISABLE_STDIO
   uint32_t idx;
   for(idx = 0; idx < size; idx++){
-    while ( ( platform_uart_peripherals[ STDIO_UART ].port->SR & USART_SR_TXE ) == 0 );
-    platform_uart_peripherals[ STDIO_UART ].port->DR = (data[idx] & (uint16_t)0x01FF);
+    while ( ( platform_uart_peripherals[ MICO_STDIO_UART ].port->SR & USART_SR_TXE ) == 0 );
+    platform_uart_peripherals[ MICO_STDIO_UART ].port->DR = (data[idx] & (uint16_t)0x01FF);
     
   }
 #endif
@@ -274,21 +239,5 @@ OSStatus stdio_hardfault( char* data, uint32_t size )
 /******************************************************
 *            NO-OS Functions
 ******************************************************/
-
-
-#ifdef NO_MICO_RTOS
-static volatile uint32_t no_os_tick = 0;
-
-void SysTick_Handler(void)
-{
-  no_os_tick ++;
-  platform_watchdog_kick( );
-}
-
-uint32_t mico_get_time_no_os(void)
-{
-  return no_os_tick;
-}
-#endif
 
 

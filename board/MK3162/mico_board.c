@@ -33,8 +33,8 @@
 #include "stdio.h"
 #include "string.h"
 
-#include "platform.h"
-#include "platform_config.h"
+#include "mico_board.h"
+#include "mico_board_conf.h"
 #include "platform_peripheral.h"
 #include "platform_logging.h"
 #include "mico_platform.h"
@@ -64,10 +64,7 @@
 /******************************************************
 *               Function Declarations
 ******************************************************/
-extern WEAK void PlatformEasyLinkButtonClickedCallback(void);
 extern WEAK void PlatformStandbyButtonClickedCallback(void);
-extern WEAK void PlatformEasyLinkButtonLongPressedCallback(void);
-extern WEAK void bootloader_start(void);
 
 /******************************************************
 *               Variables Definitions
@@ -417,29 +414,9 @@ void platform_init_peripheral_irq_priorities( void )
   NVIC_SetPriority( EXTI15_10_IRQn   , 14 ); /* GPIO                */
 }
 
-void init_platform( void )
+void mico_board_init( void )
 {
-  button_init_t init;
-  
-  MicoGpioInitialize( (mico_gpio_t)MICO_SYS_LED, OUTPUT_PUSH_PULL );
-  MicoGpioOutputLow( (mico_gpio_t)MICO_SYS_LED );
-  MicoGpioInitialize( (mico_gpio_t)MICO_RF_LED, OUTPUT_OPEN_DRAIN_NO_PULL );
-  MicoGpioOutputHigh( (mico_gpio_t)MICO_RF_LED );
-  
-  //  Initialise EasyLink buttons
-  init.gpio = EasyLink_BUTTON;
-  init.pressed_func = PlatformEasyLinkButtonClickedCallback;
-  init.long_pressed_func = PlatformEasyLinkButtonLongPressedCallback;
-  init.long_pressed_timeout = 5000;
-  button_init( IOBUTTON_EASYLINK, init );  
-  
-  //  Initialise Standby/wakeup switcher
-  MicoGpioInitialize( Standby_SEL, INPUT_PULL_UP );
-  MicoGpioEnableIRQ( Standby_SEL , IRQ_TRIGGER_FALLING_EDGE, _button_STANDBY_irq_handler, NULL);
-}
 
-void init_platform_bootloader( void )
-{
   MicoGpioInitialize( (mico_gpio_t)MICO_SYS_LED, OUTPUT_PUSH_PULL );
   MicoGpioOutputLow( (mico_gpio_t)MICO_SYS_LED );
   MicoGpioInitialize( (mico_gpio_t)MICO_RF_LED, OUTPUT_OPEN_DRAIN_NO_PULL );
@@ -447,6 +424,10 @@ void init_platform_bootloader( void )
   
   MicoGpioInitialize((mico_gpio_t)BOOT_SEL, INPUT_PULL_UP);
   MicoGpioInitialize((mico_gpio_t)MFG_SEL, INPUT_HIGH_IMPEDANCE);
+
+  //  Initialise Standby/wakeup switcher
+//  MicoGpioInitialize( Standby_SEL, INPUT_PULL_UP );
+//  MicoGpioEnableIRQ( Standby_SEL , IRQ_TRIGGER_FALLING_EDGE, _button_STANDBY_irq_handler, NULL);
 }
 
 void MicoSysLed(bool onoff)

@@ -150,7 +150,6 @@ void init_architecture( void )
   /* Initialise GPIO IRQ manager */
   platform_gpio_irq_manager_init();
 
-
   /* Initialise nanosecond clock counter */
   platform_init_nanosecond_clock();
 

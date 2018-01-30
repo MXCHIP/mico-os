@@ -50,7 +50,7 @@ GLOBAL_LDFLAGS += -L $(MICO_OS_PATH)/board/MK3162
 $(NAME)_COMPONENTS += drivers/keypad/gpio_button
 
 # Source files
-$(NAME)_SOURCES := platform.c
+$(NAME)_SOURCES := mico_board.c
 
 WIFI_FIRMWARE := $(MICO_OS_PATH)/resources/wifi_firmware/$(WLAN_CHIP)/$(WLAN_CHIP)$(WLAN_CHIP_REVISION)$(WLAN_CHIP_BIN_TYPE)-$(WLAN_CHIP_FIRMWARE_VER).bin
 

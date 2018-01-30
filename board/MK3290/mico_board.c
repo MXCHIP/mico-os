@@ -206,8 +206,20 @@ void mico_board_init( void )
   MicoGpioInitialize((mico_gpio_t)MFG_SEL, INPUT_PULL_UP);
 
   /* Keep bluenrg in the RESET state. */
-  MicoGpioInitialize((mico_gpio_t)BLUENRG_SPI_RESET_PIN, OUTPUT_PUSH_PULL);
-  MicoGpioOutputLow((mico_gpio_t)BLUENRG_SPI_RESET_PIN);
+  MicoGpioInitialize(BNRG_RESET_PIN, OUTPUT_PUSH_PULL);
+  MicoGpioOutputLow(BNRG_RESET_PIN);
+
+#ifdef SPI_INTERFACE
+  /* Init SPI interface */
+  SdkEvalSpiInit(0);//SPI_MODE_DMA);
+#endif
+
+#ifdef UART_INTERFACE
+  DTM_IO_Config();
+#endif
+
+  /* Configure the BlueNRG-1 pins - RESET pin */
+  Sdk_Eval_Gpio_Init();
 }
 
 void MicoSysLed(bool onoff)

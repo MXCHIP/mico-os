@@ -8,7 +8,7 @@
  *
  */
 
-#include <common.h>
+#include "mico_common.h"
 #include "platform_cmsis.h"
 //#include "platform_constants.h"
 #include "platform_isr.h"

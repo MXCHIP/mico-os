@@ -16,7 +16,7 @@
  */
 
 
-#include "platform.h"
+#include "mico_platform.h"
 #include "platform_peripheral.h"
 #include "platform_logging.h"
 /******************************************************

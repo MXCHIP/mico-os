@@ -164,8 +164,10 @@ enum
 /* BlueNRG-1 SPI Interface */
 #define BLUENRG_SPI_PORT        (MICO_SPI_1)
 #define BLUENRG_SPI_IRQ_PIN     (MICO_GPIO_10)
-#define BLUENRG_SPI_RESET_PIN   (MICO_GPIO_11)
 #define BLUENRG_SPI_CS_PIN      (MICO_GPIO_15)
+#define BNRG_SPI_MOSI_BOOT      (MICO_GPIO_17)
+#define BNRG_RESET_PIN          (MICO_GPIO_11)
+
 
 /* Components connected to external I/Os*/
 #define USE_MICO_SPI_FLASH

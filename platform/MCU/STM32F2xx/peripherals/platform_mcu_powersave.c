@@ -1,6 +1,6 @@
 /**
  ******************************************************************************
- * @file    platform_mcu_peripheral.c
+ * @file    platform_mcu_powersave.c
  * @author  William Xu
  * @version V1.0.0
  * @date    05-May-2014
@@ -18,8 +18,8 @@
 
 
 #include "platform_peripheral.h"
-#include "platform.h"
-#include "mico_platform.h"
+#include "mico_board.h"
+#include "mico_board_conf.h"
 #include "platform_logging.h"
 #include <string.h> // For memcmp
 #include "crt0.h"
@@ -31,6 +31,9 @@
 
 #define NUMBER_OF_LSE_TICKS_PER_MILLISECOND(scale_factor) ( 32768 / 1000 / scale_factor )
 #define CONVERT_FROM_TICKS_TO_MS( n,s )                   ( n / NUMBER_OF_LSE_TICKS_PER_MILLISECOND(s) )
+
+#define ENABLE_INTERRUPTS   __asm("CPSIE i")  /**< Enable interrupts to start task switching in MICO RTOS. */
+#define DISABLE_INTERRUPTS  __asm("CPSID i")  /**< Disable interrupts to stop task switching in MICO RTOS. */
 
 /******************************************************
 *                    Constants
@@ -57,18 +60,6 @@
 ******************************************************/
 
 /* Default RTC time. Set to 12:20:30 08/04/2013 Monday */
-#ifndef MICO_DISABLE_MCU_POWERSAVE
-static const platform_rtc_time_t default_rtc_time =
-{
-   .sec     = 30,
-   .min     = 20,
-   .hr      = 12,
-   .weekday = 1,
-   .date    = 8,
-   .month   = 4,
-   .year    = 13,
-};
-#endif
 
 #ifndef MICO_DISABLE_MCU_POWERSAVE
 static unsigned long  stop_mode_power_down_hook( unsigned long sleep_ms );
@@ -161,8 +152,7 @@ OSStatus platform_mcu_powersave_init(void)
   
 #ifdef USE_RTC_BKP
   if (RTC_ReadBackupRegister(RTC_BKP_DR0) != USE_RTC_BKP) {
-    /* set it to 12:20:30 08/04/2013 monday */
-    platform_rtc_set_time(&default_rtc_time);
+    platform_rtc_set_time(0);
     RTC_WriteBackupRegister(RTC_BKP_DR0, USE_RTC_BKP);
   }
 #else
@@ -311,7 +301,7 @@ uint32_t platform_power_down_hook( uint32_t sleep_ms )
 static unsigned long idle_power_down_hook( unsigned long sleep_ms  )
 {
     UNUSED_PARAMETER( sleep_ms );
-    MICO_ENABLE_INTERRUPTS( );
+    ENABLE_INTERRUPTS;
     __asm("wfi");
     return 0;
 }
@@ -400,8 +390,7 @@ static unsigned long stop_mode_power_down_hook( unsigned long sleep_ms )
 
 void platform_mcu_enter_standby(uint32_t secondsToWakeup)
 { 
-  mico_rtc_time_t time;
-  uint32_t currentSecond;
+    time_t time;
   RTC_AlarmTypeDef  RTC_AlarmStructure;
 
   PWR_WakeUpPinCmd(ENABLE);
@@ -411,13 +400,12 @@ void platform_mcu_enter_standby(uint32_t secondsToWakeup)
 
   platform_log("Wake up in %ld seconds", secondsToWakeup);
  
-  MicoRtcGetTime(&time);
-  currentSecond = time.hr*3600 + time.min*60 + time.sec;
-  currentSecond += secondsToWakeup;
+  platform_rtc_get_time(&time);
+  time += secondsToWakeup;
   RTC_AlarmStructure.RTC_AlarmTime.RTC_H12     = RTC_HourFormat_24;
-  RTC_AlarmStructure.RTC_AlarmTime.RTC_Hours   = currentSecond/3600%24;
-  RTC_AlarmStructure.RTC_AlarmTime.RTC_Minutes = currentSecond/60%60;
-  RTC_AlarmStructure.RTC_AlarmTime.RTC_Seconds = currentSecond%60;
+  RTC_AlarmStructure.RTC_AlarmTime.RTC_Hours   = time/3600%24;
+  RTC_AlarmStructure.RTC_AlarmTime.RTC_Minutes = time/60%60;
+  RTC_AlarmStructure.RTC_AlarmTime.RTC_Seconds = time%60;
   RTC_AlarmStructure.RTC_AlarmDateWeekDay = 0x31;
   RTC_AlarmStructure.RTC_AlarmDateWeekDaySel = RTC_AlarmDateWeekDaySel_Date;
   RTC_AlarmStructure.RTC_AlarmMask = RTC_AlarmMask_DateWeekDay ;
