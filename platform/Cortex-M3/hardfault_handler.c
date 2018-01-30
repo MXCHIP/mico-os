@@ -88,12 +88,13 @@ void HardFaultException_handler( uint32_t MSP, uint32_t PSP, uint32_t LR );
  *               Variable Definitions
  ******************************************************/
 
-extern uint32_t _stext, _etext, _estack;
+extern unsigned int _stext, _etext, _estack;
 
 /******************************************************
  *               Function Definitions
  ******************************************************/
 OSStatus stdio_hardfault( char* data, uint32_t size );
+unsigned int * pTaskGetCurrentTaskEndOfStack( void );
 
 #ifdef DEBUG_HARDFAULT
 
@@ -111,9 +112,9 @@ PLATFORM_DEFINE_NAKED_ISR( HardFault_Handler )
 
 void hard_fault_handler_c (unsigned int * sp, unsigned int * msp, unsigned int * psp)
 {
-    uint32_t *statck_end;
-    uint32_t text_start = (uint32_t)&_stext;
-    uint32_t text_end = (uint32_t)&_etext;
+    unsigned int *statck_end;
+    unsigned int text_start = (uint32_t)&_stext;
+    unsigned int text_end = (uint32_t)&_etext;
 
     printf("\n>>>>>>>>>>>>>>[");
     switch(__get_IPSR())
@@ -141,7 +142,7 @@ void hard_fault_handler_c (unsigned int * sp, unsigned int * msp, unsigned int *
     printf("R2 = 0x%08x\r\n", sp[2]);
     printf("R3 = 0x%08x\r\n", sp[3]);
     printf("R12 = 0x%08x\r\n", sp[4]);
-    printf("SP [R13] = 0x%08x\r\n", (uint32_t)sp);
+    printf("SP [R13] = 0x%08x\r\n", (unsigned int)sp);
     printf("LR [R14] = 0x%08x\r\n", sp[5]);
     printf("PC [R15] = 0x%08X\r\n", sp[6]);
     printf("PSR = 0x%08X\r\n", sp[7]);
@@ -150,8 +151,8 @@ void hard_fault_handler_c (unsigned int * sp, unsigned int * msp, unsigned int *
     printf("HFSR = 0x%08lx\r\n", SCB->HFSR);
     printf("DFSR = 0x%08lx\r\n", SCB->DFSR);
     printf("AFSR = 0x%08lx\r\n", SCB->AFSR);
-    printf("MSP = 0x%08x  main stack pointer\r\n", (uint32_t)msp);
-    printf("PSP = 0x%08x  process stack pointer\r\n", (uint32_t)psp);
+    printf("MSP = 0x%08x  main stack pointer\r\n", (unsigned int)msp);
+    printf("PSP = 0x%08x  process stack pointer\r\n", (unsigned int)psp);
 
     if(sp == msp)
     {
@@ -167,7 +168,7 @@ void hard_fault_handler_c (unsigned int * sp, unsigned int * msp, unsigned int *
     {
         if(*sp >= text_start && *sp <= text_end)
         {
-            printf("0x%08x ", *sp);
+            printf("0x%08x ", (unsigned int)*sp);
         }
     }
     printf("\r\n");
