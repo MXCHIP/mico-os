@@ -360,6 +360,8 @@ typedef struct tskTaskControlBlock
 		uint8_t ucDelayAborted;
 	#endif
 
+	StackType_t		*pxEndOfStack;
+
 } tskTCB;
 
 /* The old tskTCB name is maintained above then typedefed to the new TCB_t name
@@ -806,7 +808,8 @@ UBaseType_t x;
 	{
 		pxTopOfStack = pxNewTCB->pxStack + ( ulStackDepth - ( uint32_t ) 1 );
 		pxTopOfStack = ( StackType_t * ) ( ( ( portPOINTER_SIZE_TYPE ) pxTopOfStack ) & ( ~( ( portPOINTER_SIZE_TYPE ) portBYTE_ALIGNMENT_MASK ) ) ); /*lint !e923 MISRA exception.  Avoiding casts between pointers and integers is not practical.  Size differences accounted for using portPOINTER_SIZE_TYPE type. */
-
+		pxNewTCB->pxEndOfStack = pxNewTCB->pxStack + ( ulStackDepth - ( uint32_t ) 1 );
+		
 		/* Check the alignment of the calculated top of stack is correct. */
 		configASSERT( ( ( ( portPOINTER_SIZE_TYPE ) pxTopOfStack & ( portPOINTER_SIZE_TYPE ) portBYTE_ALIGNMENT_MASK ) == 0UL ) );
 	}
@@ -4805,7 +4808,7 @@ const TickType_t xConstTickCount = xTickCount;
 	#include "tasks_test_access_functions.h"
 #endif
 
-/*+++++++++++++++++++++++ ADD BY SWYANG@MICO@MXCHIP +++++++++++++++++++++++*/
+/*+++++++++++++++++++++++ ADD BY SNOW YANG +++++++++++++++++++++++*/
 BaseType_t xTaskIsTaskFinished( xTaskHandle xTask )
 {
 	int i;
@@ -4840,4 +4843,16 @@ BaseType_t xTaskIsTaskFinished( xTaskHandle xTask )
     }
     taskEXIT_CRITICAL();
     return pdTRUE;
+}
+
+StackType_t * pTaskGetCurrentTaskEndOfStack( void )
+{
+	StackType_t * xReturn;
+
+	/* A critical section is not required as this is not called from
+	an interrupt and the current TCB will always be the same for any
+	individual execution thread. */
+	xReturn = pxCurrentTCB->pxEndOfStack;
+
+	return xReturn;
 }
