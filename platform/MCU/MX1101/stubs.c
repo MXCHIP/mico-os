@@ -65,3 +65,10 @@ char* system_lib_version(void)
 {
     return LIBRARY_VER;
 }
+
+extern char* ip4addr_ntoa(const void *addr);
+
+char * ipaddr_ntoa(const void *addr)
+{
+	return ip4addr_ntoa(addr);
+}
