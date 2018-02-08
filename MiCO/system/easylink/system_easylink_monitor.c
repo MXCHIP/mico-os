@@ -237,7 +237,7 @@ restart:
     mico_system_delegate_config_will_start( );
     system_log("Start easylink monitor mode");
     mico_easylink_monitor_delegate_will_start( );
-
+    micoWlanSuspend();
     mico_wlan_start_monitor( );
 
     wlan_channel_walker = MICO_TRUE;
