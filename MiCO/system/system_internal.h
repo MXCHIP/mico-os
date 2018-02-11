@@ -27,13 +27,7 @@ extern "C" {
 #endif
 
 
-#ifndef MICO_SYSTEM_LOG_INFO_DISABLE
-  #define system_log(M, ...) custom_log("SYSTEM", M, ##__VA_ARGS__)
-  #define system_log_trace() custom_log_trace("SYSTEM")
-#else
-  #define system_log(M, ...)
-  #define system_log_trace()
-#endif
+#define system_log(M, ...)       MICO_LOG(CONFIG_SYSTEM_DEBUG, "SYSTEM", M, ##__VA_ARGS__)
 
 /* Define MICO service thread stack size */
 #define STACK_SIZE_LOCAL_CONFIG_SERVER_THREAD   0x400

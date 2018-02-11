@@ -124,7 +124,7 @@ OSStatus mico_system_init( mico_Context_t* in_context )
 #endif
 
   if( sys_context->flashContentInRam.micoSystemConfig.configured == unConfigured){
-#ifndef MICO_AUTOCONF_DISABLE 
+#if MICO_WLAN_AUTO_CONFIG
     system_log("Empty configuration. Starting configuration mode...");
     err = mico_system_wlan_start_autoconf( );
     require_noerr( err, exit );
@@ -148,7 +148,9 @@ OSStatus mico_system_init( mico_Context_t* in_context )
   else{
     system_log("Available configuration. Starting Wi-Fi connection...");
     system_connect_wifi_fast( sys_context );
+#if MICO_WLAN_AUTO_SOFTAP_WHEN_DISCONNECTED
     mico_station_status_monitor("testsoftap", "", 30);
+#endif
   }
 #endif
   

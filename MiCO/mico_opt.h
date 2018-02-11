@@ -135,6 +135,14 @@ extern "C" {
 #define MICO_WLAN_FORCE_OTA_ENABLE               1
 #endif
 
+#if !defined MICO_WLAN_AUTO_CONFIG
+#define MICO_WLAN_AUTO_CONFIG                    1
+#endif
+
+
+#if !defined MICO_WLAN_AUTO_SOFTAP_WHEN_DISCONNECTED
+#define MICO_WLAN_AUTO_SOFTAP_WHEN_DISCONNECTED  0
+#endif
 
 /**
  *  EasyLink_TimeOut: Easylink configuration timeout, Default: 60 secs
@@ -263,6 +271,10 @@ extern "C" {
 #define CONFIG_APP_DEBUG                       MICO_DEBUG_ON
 #endif
 
+#if !defined CONFIG_SYSTEM_DEBUG
+#define CONFIG_SYSTEM_DEBUG                    MICO_DEBUG_ON
+#endif
+
 #if !defined CONFIG_MDNS_DEBUG
 #define CONFIG_MDNS_DEBUG                      MICO_DEBUG_OFF
 #endif
@@ -273,6 +285,10 @@ extern "C" {
 
 #if !defined CONFIG_ETH_DEBUG
 #define CONFIG_ETH_DEBUG                       MICO_DEBUG_OFF
+#endif
+
+#if !defined CONFIG_FORCTOTA_DEBUG
+#define CONFIG_FORCTOTA_DEBUG                  MICO_DEBUG_OFF
 #endif
 
 

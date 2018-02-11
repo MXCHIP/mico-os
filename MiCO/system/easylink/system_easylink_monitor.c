@@ -187,7 +187,7 @@ static void easylink_extra_data_cb( int datalen, char* data, system_context_t * 
     return;
 }
 
-static void switch_channel_thread(void *arg)
+static void switch_channel_thread(mico_thread_arg_t arg)
 {
     mico_time_t current;
 
@@ -208,7 +208,7 @@ static void switch_channel_thread(void *arg)
             mico_rtos_delay_milliseconds(wlan_channel_walker_interval);
         }
     }
-    exit:
+
     switch_channel_thread_handler = NULL;
     mico_rtos_delete_thread(NULL);
 }

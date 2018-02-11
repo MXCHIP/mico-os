@@ -28,6 +28,7 @@ SECTIONS
     .text :
     {
         . = ALIGN(4);
+        _stext = .;
 
         link_code_location = .;
         KEEP(*(.text.irq ))
@@ -53,6 +54,8 @@ SECTIONS
         *(.rodata*)
 
         KEEP(*(.eh_frame*))
+        
+        _etext = .;
     }>APP_FLASH  AT> APP_FLASH
 
     /*
@@ -136,6 +139,7 @@ SECTIONS
         *(.stack)
         . = ALIGN(MAX(link_stack_location + __STACKSIZE__ , .), 4);
         link_stack_end = .;
+        _estack = .;
     }> SRAM AT> SRAM
 
 }

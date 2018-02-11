@@ -44,7 +44,6 @@ static bool easylink_thread_force_exit = false;
 /* MiCO callback when WiFi status is changed */
 static void easylink_wifi_status_cb( WiFiEvent event, system_context_t * const inContext )
 {
-    system_log_trace();
     require( inContext, exit );
 
     switch ( event )
@@ -64,7 +63,6 @@ static void easylink_wifi_status_cb( WiFiEvent event, system_context_t * const i
 
 static void easylink_usr_thread( uint32_t inContext )
 {
-    system_log_trace();
     OSStatus err = kNoErr;
     system_context_t *Context = (system_context_t *) inContext;
 

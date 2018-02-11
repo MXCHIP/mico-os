@@ -32,7 +32,6 @@ system_context_t *system_context( void )
 
 static void micoNotify_DHCPCompleteHandler(IPStatusTypedef *pnet, system_context_t * const inContext)
 {
-  system_log_trace();
   require(inContext, exit);
   mico_rtos_lock_mutex(&inContext->flashContentInRam_mutex);
   strcpy((char *)inContext->micoStatus.localIp, pnet->ip);
@@ -46,14 +45,12 @@ exit:
 
 static void micoNotify_ConnectFailedHandler(OSStatus err, system_context_t * const inContext)
 {
-  system_log_trace();
   (void)inContext;
   system_log("Wlan Connection Err %d", err);
 }
 
 static void micoNotify_WlanFatalErrHandler(system_context_t * const inContext)
 {
-  system_log_trace();
   (void)inContext;
   system_log("Wlan Fatal Err!");
   MicoSystemReboot();
@@ -61,7 +58,6 @@ static void micoNotify_WlanFatalErrHandler(system_context_t * const inContext)
 
 static void micoNotify_StackOverflowErrHandler(char *taskname, system_context_t * const inContext)
 {
-  system_log_trace();
   (void)inContext;
   system_log("Thread %s overflow, system rebooting", taskname);
   MicoSystemReboot();
@@ -69,7 +65,6 @@ static void micoNotify_StackOverflowErrHandler(char *taskname, system_context_t 
 
 static void micoNotify_WifiStatusHandler(WiFiEvent event, system_context_t * const inContext)
 {
-  system_log_trace();
   (void)inContext;
   switch (event) {
   case NOTIFY_STATION_UP:
@@ -102,7 +97,6 @@ static void micoNotify_WifiStatusHandler(WiFiEvent event, system_context_t * con
 
 static void micoNotify_WiFIParaChangedHandler(apinfo_adv_t *ap_info, char *key, int key_len, system_context_t * const inContext)
 {
-  system_log_trace();
   bool _needsUpdate = false;
   require(inContext, exit);
   mico_rtos_lock_mutex(&inContext->flashContentInRam_mutex);
@@ -174,7 +168,6 @@ exit:
 
 void system_connect_wifi_normal( system_context_t * const inContext)
 {
-  system_log_trace();
   network_InitTypeDef_adv_st wNetConfig;
   memset(&wNetConfig, 0x0, sizeof(network_InitTypeDef_adv_st));
   
@@ -197,7 +190,6 @@ void system_connect_wifi_normal( system_context_t * const inContext)
 
 void system_connect_wifi_fast( system_context_t * const inContext)
 {
-  system_log_trace();
   network_InitTypeDef_adv_st wNetConfig;
   memset(&wNetConfig, 0x0, sizeof(network_InitTypeDef_adv_st));
   
@@ -265,8 +257,6 @@ button_context_t easylink_btn;
 
 static void PlatformEasyLinkButtonClickedCallback(void)
 {
-  system_log_trace();
-
   require_quiet( sys_context, exit );
 
 #ifdef EasyLink_Needs_Reboot
@@ -292,7 +282,6 @@ exit:
 
 static void PlatformEasyLinkButtonLongPressedCallback(void)
 {
-  system_log_trace();
   mico_Context_t* context = NULL;
   mico_logic_partition_t *partition = NULL;
 

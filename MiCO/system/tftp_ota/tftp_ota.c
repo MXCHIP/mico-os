@@ -24,8 +24,8 @@
 #define FORCE_OTA_NEED    0xfffffffe
 
 
-#define fota_log(M, ...) custom_log("Force OTA", M, ##__VA_ARGS__)
-#define fota_log_trace() custom_log_trace("Force OTA")
+#define fota_log(M, ...)       MICO_LOG(CONFIG_FORCTOTA_DEBUG, "Force OTA", M, ##__VA_ARGS__)
+
 
 static int wifi_up = 0;
 extern void mico_write_ota_tbl(int len, uint16_t crc);
@@ -232,7 +232,7 @@ OSStatus start_force_ota()
    OSStatus err;
 
    err =  mico_rtos_create_thread( NULL, MICO_APPLICATION_PRIORITY, "Force OTA", force_thread, 0x1000,0 );
-   require_noerr_action( err, exit, system_log("ERROR: Unable to start the  force ota thread.") );
+   require_noerr_action( err, exit, fota_log("ERROR: Unable to start the  force ota thread.") );
 
    exit:
            return err;
@@ -240,18 +240,18 @@ OSStatus start_force_ota()
 }
 static void micoNotify_ApListCallback(ScanResult *pApList, mico_Context_t * const inContext)
 {
-	system_log("ota notify");
+	fota_log("ota notify");
     (void)inContext;
 
     if(pApList->ApNum == 0){
         if(NULL != force_ota_sem)
         {
-        	system_log("set force_ota_sem");
+        	fota_log("set force_ota_sem");
             mico_rtos_set_semaphore(&force_ota_sem);
         }
     }else{
-    	system_log("num = %d,ssid = %s",pApList->ApNum,pApList->ApList->ssid);
-    	system_log("start_force_ota");
+    	fota_log("num = %d,ssid = %s",pApList->ApNum,pApList->ApList->ssid);
+    	fota_log("start_force_ota");
         start_force_ota();
     }
 }
@@ -262,11 +262,11 @@ OSStatus start_forceota_check()
 	if((mico_system_context_get( )->micoSystemConfig.reserved & FORCE_OTA_SUEECSS)==0)
 	{
 		#define FORCE_OTA_AP "MICO_OTA_AP"
-		system_log("force ota ssid :%s",FORCE_OTA_AP);
+		fota_log("force ota ssid :%s",FORCE_OTA_AP);
 		/* Register user function when wlan scan is completed */
 		err =  mico_system_notify_register( mico_notify_WIFI_SCAN_COMPLETED, (void *)micoNotify_ApListCallback, NULL );
 		require_noerr( err, exit );
-		system_log("Start scan");
+		fota_log("Start scan");
 		mico_rtos_init_semaphore(&force_ota_sem,1);
 		mxchip_active_scan(FORCE_OTA_AP,0);
 		err = mico_rtos_get_semaphore(&force_ota_sem,MICO_WAIT_FOREVER);

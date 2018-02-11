@@ -32,7 +32,7 @@
 #ifndef __MICOGPRS_H__
 #define __MICOGPRS_H__
 
-#include "common.h"
+#include "mico_common.h"
 #include "mico_system.h"
 
 #ifdef __cplusplus
@@ -46,7 +46,7 @@ typedef struct
   char    mask[16];   /**< Netmask on the target wlan interface: @ref wlanInterfaceTypedef.*/
 } mico_gprs_net_addr_t;
 
-void mico_gprs_status_handler(notify_gprs_t status, const mico_gprs_net_addr_t *net_addr);
+void mico_gprs_status_handler(notify_netif_status_t status, const mico_gprs_net_addr_t *net_addr);
 
 OSStatus mico_gprs_open(void);
 OSStatus mico_gprs_close(void);

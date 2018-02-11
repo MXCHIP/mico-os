@@ -18,58 +18,25 @@
 
 #pragma once
 
-#include "common.h"
+#include "mico_opt.h"
+#include "mico_common.h"
 #include "mico_rtos.h"
 #include "mico_wlan.h"
-
-/* Build-in wlan configuration functions */
-#define CONFIG_MODE_NONE                        (1)
-#define CONFIG_MODE_USER                        (2)
-#define CONFIG_MODE_WAC                         (3)
-#define CONFIG_MODE_EASYLINK                    (4)
-#define CONFIG_MODE_EASYLINK_WITH_SOFTAP        (4)  //Legacy definition, not supported any more
-#define CONFIG_MODE_SOFTAP                      (5)
-#define CONFIG_MODE_MONITOR                     (6)
-#define CONFIG_MODE_MONITOR_EASYLINK            (7)
-#define CONFIG_MODE_AWS                         (8) 
-
 
 
 #ifndef MICO_PREBUILT_LIBS
 #include "mico_config.h"
+#include "mico_board_conf.h"
 #endif
-
-#include "platform_config.h"
 
 #ifdef __cplusplus
 extern "C" {
-#endif
-
-#ifndef MiCO_SDK_VERSION_MAJOR
-#define MiCO_SDK_VERSION_MAJOR      (3)
-#endif
-
-#ifndef MiCO_SDK_VERSION_MINOR
-#define MiCO_SDK_VERSION_MINOR      (5)
-#endif
-
-#ifndef MiCO_SDK_VERSION_REVISION
-#define MiCO_SDK_VERSION_REVISION   (1)
-#endif
-
-#if MICO_WLAN_CONFIG_MODE == CONFIG_MODE_WAC
-#define EasyLink_Needs_Reboot
 #endif
 
 #define maxSsidLen          32
 #define maxKeyLen           64
 #define maxNameLen          32
 #define maxIpLen            16
-
-/* For legacy definition */
-#ifndef MICO_WLAN_CONFIG_MODE
-#define MICO_WLAN_CONFIG_MODE     MICO_CONFIG_MODE
-#endif
 
 typedef enum
 {
@@ -215,19 +182,6 @@ typedef struct
   char                  rf_version[50];
 } system_status_wlan_t;
 
-
-typedef enum {
-  NOTIFY_STATION_UP = 1,
-  NOTIFY_STATION_DOWN,
-
-  NOTIFY_AP_UP,
-  NOTIFY_AP_DOWN,
-} notify_wlan_t; 
-
-typedef enum {
-  NOTIFY_GPRS_UP = 1,
-  NOTIFY_GPRS_DOWN,
-} notify_gprs_t; 
 
 #ifdef __cplusplus
 } /*extern "C" */

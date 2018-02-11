@@ -46,7 +46,7 @@ typedef void (*mico_notify_SYS_WILL_POWER_OFF_function)           ( void * inCon
 typedef void (*mico_notify_WIFI_CONNECT_FAILED_function)          ( OSStatus err, void * inContext );
 typedef void (*mico_notify_WIFI_FATAL_ERROR_function)             ( void * inContext );
 typedef void (*mico_notify_STACK_OVERFLOW_ERROR_function)         ( char *taskname, void * const inContext );
-typedef void (*mico_notify_GPRS_STATUS_CHANGED_function)          ( notify_gprs_t status, const mico_gprs_net_addr_t* pnet );
+typedef void (*mico_notify_GPRS_STATUS_CHANGED_function)          ( notify_netif_status_t status, const mico_gprs_net_addr_t* pnet );
 
 netif_status_t netif_status[INTERFACE_MAX] = {INTERFACE_STATUS_DOWN, INTERFACE_STATUS_DOWN, INTERFACE_STATUS_DOWN};
 
@@ -247,7 +247,7 @@ void mico_rtos_stack_overflow(char *taskname)
   }    
 }
 
-void mico_gprs_status_handler(notify_gprs_t status, const mico_gprs_net_addr_t *net_addr)
+void mico_gprs_status_handler(notify_netif_status_t status, const mico_gprs_net_addr_t *net_addr)
 {
   _Notify_list_t *temp =  Notify_list[mico_notify_GPRS_STATUS_CHANGED];
   if(temp == NULL)

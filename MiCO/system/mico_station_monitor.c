@@ -19,7 +19,7 @@
  */
 
 /** @file
- *  Implementation of the MICOFS External-Use file system.
+ *  Setup softap if station is disconnect from AP
  */
 
 #include "mico.h"
@@ -36,12 +36,10 @@ static void micoNotify_WifiStatusHandler(WiFiEvent event,  void* inContext)
   switch (event) 
   {
   case NOTIFY_STATION_UP:
-    station_m_log("Station up");
     station_up = 1;
     mico_rtos_set_semaphore(&sem);
     break;
   case NOTIFY_STATION_DOWN:
-    station_m_log("Station down");
     station_up = 0;
     mico_rtos_set_semaphore(&sem);
     break;

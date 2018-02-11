@@ -74,7 +74,6 @@ static void easylink_remove_bonjour_from_uap(void)
 
 void easylink_softap_thread( uint32_t inContext )
 {
-    system_log_trace();
     OSStatus err = kNoErr;
     system_context_t *context = (system_context_t *) inContext;
     network_InitTypeDef_st wNetConfig;

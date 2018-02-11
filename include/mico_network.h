@@ -89,6 +89,9 @@ enum {
 
     NOTIFY_ETH_UP,
     NOTIFY_ETH_DOWN,
+
+    NOTIFY_GPRS_UP,
+    NOTIFY_GPRS_DOWN,
 };
 
 typedef uint8_t notify_wlan_t;

@@ -29,7 +29,6 @@ extern void sendNotifySYSWillPowerOff(void);
 
 USED void PlatformStandbyButtonClickedCallback(void)
 {
-  system_log_trace();
   mico_Context_t* context = NULL;
   
   context = mico_system_context_get( );
