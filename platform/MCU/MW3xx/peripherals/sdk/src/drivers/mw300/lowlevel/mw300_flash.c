@@ -70,6 +70,8 @@ const struct flash_device_config fl_dev_list[] = {
 		256},
 	{"MX25L8035E", 0xc22014, 1 * MEGA_BYTE, 4 * KILO_BYTE, 64 * KILO_BYTE,
 		256},
+	{"MX25L6433F", 0xc22017, 8 * MEGA_BYTE, 4 * KILO_BYTE, 64 * KILO_BYTE,
+		256},
 	{"MX25V1635F", 0xc22315, 2 * MEGA_BYTE, 4 * KILO_BYTE, 64 * KILO_BYTE,
 		256},/*yhb added */
   {"FM25Q16A", 0xa14015, 2 * MEGA_BYTE, 4 * KILO_BYTE, 64 * KILO_BYTE,
@@ -328,7 +330,7 @@ Status FLASH_WriteStatus(uint16_t status)
   volatile uint32_t localCnt = 0;
   uint8_t byte;
 
-  if (g_fl_cfg->jedec_id == 0xc22014)
+  if (g_fl_cfg->jedec_id == 0xc22014 || g_fl_cfg->jedec_id == 0xc22017)
 	FLASH_SetWriteEnableBit(ENABLE);
   else if (g_fl_cfg->jedec_id == 0xc22315)
   	FLASH_SetWriteEnableBit(ENABLE);
@@ -355,6 +357,7 @@ Status FLASH_WriteStatus(uint16_t status)
   if ((g_fl_cfg->jedec_id != 0xc84016) &&
           (g_fl_cfg->jedec_id != 0xc84018) &&
 	  (g_fl_cfg->jedec_id != 0xc22014) && 
+    (g_fl_cfg->jedec_id != 0xc22017) && 
 	  (g_fl_cfg->jedec_id != 0xc22315)) {
 	  /* Write status[15:8] */
 	  byte = (status >> 8) & 0xFF;
@@ -937,7 +940,7 @@ uint32_t FLASH_Read(FLASH_ReadMode_Type readMode, uint32_t address, uint8_t *buf
 			FLASH_WriteStatus(statusWrite);
 		}
 		statusWrite = statusLow | 0x0040;
-    } else if (g_fl_cfg->jedec_id != 0xc22014) {
+    } else if (g_fl_cfg->jedec_id != 0xc22014 && g_fl_cfg->jedec_id != 0xc22017) {
 	statusHigh = FLASH_GetStatus(FLASH_STATUS_HI);
 	statusWrite = ((statusHigh<<8) | statusLow) | 0x0200;
 	FLASH_WriteStatus(statusWrite);
@@ -1153,7 +1156,7 @@ Status FLASH_PageWrite(FLASH_ProgramMode_Type programMode, uint32_t address, uin
 			FLASH_WriteStatus(statusWrite);
 		}
 
-	} else if (g_fl_cfg->jedec_id != 0xc22014) {
+	} else if (g_fl_cfg->jedec_id != 0xc22014 && g_fl_cfg->jedec_id != 0xc22017) {
 	statusHigh = FLASH_GetStatus(FLASH_STATUS_HI);
 	statusWrite = ((statusHigh<<8) | statusLow) | 0x0200;
 	FLASH_WriteStatus(statusWrite);  
@@ -1199,7 +1202,7 @@ Status FLASH_PageWrite(FLASH_ProgramMode_Type programMode, uint32_t address, uin
 		QSPI->CONF.BF.ADDR_PIN = QSPI_ADDR_PIN_AS_DATA;
 		/* Set instruction */
 		QSPI_SetInstr(FLASH_INS_CODE_QPP_MX);
-    } else if (g_fl_cfg->jedec_id == 0xc22014) {
+    } else if (g_fl_cfg->jedec_id == 0xc22014 || g_fl_cfg->jedec_id == 0xc22017) {
 	QSPI->CONF.BF.ADDR_PIN = QSPI_ADDR_PIN_AS_DATA;
 	/* Set instruction */
 	QSPI_SetInstr(FLASH_INS_CODE_QPP_MX);

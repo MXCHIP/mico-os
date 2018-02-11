@@ -410,6 +410,7 @@ int FLASH_SetCmdType_QuadModeRead(uint32_t jedecID)
 #endif
 	case 0xc84015:
 	case 0xc22014:
+  case 0xc22017:
 	case 0xc22315:
 		FLASHC->FCCR.BF.CMD_TYPE = FLASHC_HW_CMD_FRQIO;
 	break;

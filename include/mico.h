@@ -58,6 +58,7 @@
 #include "mico_security.h"
 #include "mico_platform.h"
 #include "mico_system.h"
+#include "mico_gprs.h"
 
 #ifdef __cplusplus
 extern "C" {

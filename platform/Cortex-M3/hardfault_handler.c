@@ -88,110 +88,92 @@ void HardFaultException_handler( uint32_t MSP, uint32_t PSP, uint32_t LR );
  *               Variable Definitions
  ******************************************************/
 
+extern unsigned int _stext, _etext, _estack;
+
 /******************************************************
  *               Function Definitions
  ******************************************************/
 OSStatus stdio_hardfault( char* data, uint32_t size );
+unsigned int * pTaskGetCurrentTaskEndOfStack( void );
 
 #ifdef DEBUG_HARDFAULT
 
 PLATFORM_DEFINE_NAKED_ISR( HardFault_Handler )
 {
-//    __ASM("MRS R0, MSP" );
-//    __ASM("MRS R1, PSP" );
-//    __ASM("MOV R2, LR" );
-//    __ASM("B HardFaultException_handler");
     __ASM("TST LR, #4" );
     __ASM("ITE EQ" );
     __ASM("MRSEQ R0, MSP" );
     __ASM("MRSNE R0, PSP" );
-	__ASM("MOV SP, R0" );
+    __ASM("MRS R1, MSP" );
+    __ASM("MRS R2, PSP" );
     __ASM("B hard_fault_handler_c");
 
 }
 
-void hard_fault_handler_c (unsigned int * hardfault_args)
+void hard_fault_handler_c (unsigned int * sp, unsigned int * msp, unsigned int * psp)
 {
-  unsigned int stacked_r0;
-  unsigned int stacked_r1;
-  unsigned int stacked_r2;
-  unsigned int stacked_r3;
-  unsigned int stacked_r12;
-  unsigned int stacked_lr;
-  unsigned int stacked_pc;
-  unsigned int stacked_psr;
-  char logString[50];
+    unsigned int *statck_end;
+    unsigned int text_start = (uint32_t)&_stext;
+    unsigned int text_end = (uint32_t)&_etext;
 
-  stacked_r0 = ((unsigned long) hardfault_args[0]);
-  stacked_r1 = ((unsigned long) hardfault_args[1]);
-  stacked_r2 = ((unsigned long) hardfault_args[2]);
-  stacked_r3 = ((unsigned long) hardfault_args[3]);
-
-  stacked_r12 = ((unsigned long) hardfault_args[4]);
-  stacked_lr = ((unsigned long) hardfault_args[5]);
-  stacked_pc = ((unsigned long) hardfault_args[6]);
-  stacked_psr = ((unsigned long) hardfault_args[7]);
-
-  sprintf (logString,"\n>>>>>>>>>>>>>>[");
-  stdio_hardfault( logString, strlen(logString)+1 );
-  switch(__get_IPSR())
-  {
-    case    3:
-      sprintf (logString, "Hard Fault");
-      stdio_hardfault( logString, strlen(logString)+1 );
-      break;
-
-    case    4:
-      sprintf (logString, "Memory Manage");
-      stdio_hardfault( logString, strlen(logString)+1 );
-      break;
-
-    case    5:
-      sprintf (logString, "Bus Fault");
-      stdio_hardfault( logString, strlen(logString)+1 );
-      break;
-
-    case    6:
-      sprintf (logString, "Usage Fault");
-      stdio_hardfault( logString, strlen(logString)+1 );
-      break;
-
-  default:
-    sprintf (logString, "Unknown Fault %ld", __get_IPSR());
-    stdio_hardfault( logString, strlen(logString)+1 );
+    printf("\n>>>>>>>>>>>>>>[");
+    switch(__get_IPSR())
+    {
+    case 3:
+    printf("Hard Fault");
     break;
-  }
-  sprintf (logString, ",corrupt,dump registers]>>>>>>>>>>>>>>>>>>\n\r");
-  stdio_hardfault( logString, strlen(logString)+1 );
+    case    4:
+    printf("Memory Manage");
+    break;
+    case 5:
+    printf("Bus Fault");
+    break;
+    case 6:
+    printf("Usage Fault");
+    break;
+    default:
+    printf("Unknown Fault %ld", __get_IPSR());
+    break;
+    }
+    printf(",corrupt,dump registers]>>>>>>>>>>>>>>>>>>\n\r");
 
-  sprintf (logString, "R0 = 0x%08x\r\n", stacked_r0);
-  stdio_hardfault( logString, strlen(logString)+1 );
-  sprintf (logString, "R1 = 0x%08x\r\n", stacked_r1);
-  stdio_hardfault( logString, strlen(logString)+1 );
-  sprintf (logString, "R2 = 0x%08x\r\n", stacked_r2);
-  stdio_hardfault( logString, strlen(logString)+1 );
-  sprintf (logString, "R3 = 0x%08x\r\n", stacked_r3);
-  stdio_hardfault( logString, strlen(logString)+1 );
-  sprintf (logString, "R12 = 0x%08x\r\n", stacked_r12);
-  stdio_hardfault( logString, strlen(logString)+1 );
-  sprintf (logString, "LR [R14] = 0x%08x  subroutine call return address\r\n", stacked_lr);
-  stdio_hardfault( logString, strlen(logString)+1 );
-  sprintf (logString, "PC [R15] = 0x%08X  program counter\r\n", stacked_pc);
-  stdio_hardfault( logString, strlen(logString)+1 );
-  sprintf (logString, "PSR = 0x%08X\r\n", stacked_psr);
-  stdio_hardfault( logString, strlen(logString)+1 );
-  sprintf (logString, "BFAR = 0x%08lx\r\n", (*((volatile unsigned long *)(0xE000ED38))));
-  stdio_hardfault( logString, strlen(logString)+1 );
-  sprintf (logString, "CFSR = 0x%08lx\r\n", (*((volatile unsigned long *)(0xE000ED28))));
-  stdio_hardfault( logString, strlen(logString)+1 );
-  sprintf (logString, "HFSR = 0x%08lx\r\n", (*((volatile unsigned long *)(0xE000ED2C))));
-  stdio_hardfault( logString, strlen(logString)+1 );
-  sprintf (logString, "DFSR = 0x%08lx\r\n", (*((volatile unsigned long *)(0xE000ED30))));
-  stdio_hardfault( logString, strlen(logString)+1 );
-  sprintf (logString, "AFSR = 0x%08lx\r\n", (*((volatile unsigned long *)(0xE000ED3C))));
-  stdio_hardfault( logString, strlen(logString)+1 );
+    printf("R0 = 0x%08x\r\n", sp[0]);
+    printf("R1 = 0x%08x\r\n", sp[1]);
+    printf("R2 = 0x%08x\r\n", sp[2]);
+    printf("R3 = 0x%08x\r\n", sp[3]);
+    printf("R12 = 0x%08x\r\n", sp[4]);
+    printf("SP [R13] = 0x%08x\r\n", (unsigned int)sp);
+    printf("LR [R14] = 0x%08x\r\n", sp[5]);
+    printf("PC [R15] = 0x%08X\r\n", sp[6]);
+    printf("PSR = 0x%08X\r\n", sp[7]);
+    printf("BFAR = 0x%08lx\r\n", SCB->BFAR);
+    printf("CFSR = 0x%08lx\r\n", SCB->CFSR);
+    printf("HFSR = 0x%08lx\r\n", SCB->HFSR);
+    printf("DFSR = 0x%08lx\r\n", SCB->DFSR);
+    printf("AFSR = 0x%08lx\r\n", SCB->AFSR);
+    printf("MSP = 0x%08x  main stack pointer\r\n", (unsigned int)msp);
+    printf("PSP = 0x%08x  process stack pointer\r\n", (unsigned int)psp);
 
-  while (1);
+    if(sp == msp)
+    {
+        statck_end = &_estack;
+    }
+    else
+    {
+        statck_end = pTaskGetCurrentTaskEndOfStack();
+    }
+
+    printf("Call stack:\r\n");
+    while(sp++ <= statck_end)
+    {
+        if(*sp >= text_start && *sp <= text_end)
+        {
+            printf("0x%08x ", (unsigned int)*sp);
+        }
+    }
+    printf("\r\n");
+
+    while (1);
 }
 
 #if defined( __GNUC__ ) && ( ! defined( __clang__ ) )

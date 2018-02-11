@@ -53,7 +53,9 @@ static mico_semaphore_t easylink_connect_sem; /**< Used to suspend thread while 
 static bool easylink_success = false;         /**< true: connect to wlan, false: start soft ap mode or roll back to previous settings */
 static uint32_t easylink_id = 0;      /**< Unique for an easylink instance. */
 static mico_thread_t easylink_monitor_thread_handler = NULL;
+static mico_thread_t switch_channel_thread_handler = NULL;
 static bool easylink_thread_force_exit = false;
+static bool switch_channel_flag = true;
 
 static mico_config_source_t source = CONFIG_BY_NONE;
 static mico_connect_fail_config_t connect_fail_config = EXIT_EASYLINK;
@@ -91,6 +93,8 @@ static void easylink_complete_cb( network_InitTypeDef_st *nwkpara, system_contex
     memset( inContext->flashContentInRam.micoSystemConfig.bssid, 0x0, 6 );
     memcpy( inContext->flashContentInRam.micoSystemConfig.user_key, nwkpara->wifi_key, maxKeyLen );
     inContext->flashContentInRam.micoSystemConfig.user_keyLength = strlen( nwkpara->wifi_key );
+    memcpy( inContext->flashContentInRam.micoSystemConfig.key, nwkpara->wifi_key, maxKeyLen );
+    inContext->flashContentInRam.micoSystemConfig.keyLength = strlen( nwkpara->wifi_key );
     inContext->flashContentInRam.micoSystemConfig.dhcpEnable = true;
     mico_rtos_unlock_mutex( &inContext->flashContentInRam_mutex );
     system_log("Get SSID: %s, Key: %s", inContext->flashContentInRam.micoSystemConfig.ssid, inContext->flashContentInRam.micoSystemConfig.user_key);
@@ -183,24 +187,30 @@ static void easylink_extra_data_cb( int datalen, char* data, system_context_t * 
     return;
 }
 
-static OSStatus _monitor_timed_check_cb(void *arg)
+static void switch_channel_thread(void *arg)
 {
     mico_time_t current;
 
-    mico_time_get_time( &current );
-    if ( current > (mico_time_t) arg ) {
-        easylink_success = false;
-        mico_rtos_set_semaphore( &easylink_sem );
-    }
+    while(switch_channel_flag)
+    {
+        mico_time_get_time( &current );
+        if ( current > (mico_time_t) arg ) {
+            easylink_success = false;
+            mico_rtos_set_semaphore( &easylink_sem );
+            break;
+        }
 
-    if( wlan_channel_walker == MICO_TRUE){
-        mico_wlan_monitor_set_channel( wlan_channel );
-        mico_easylink_monitor_delegate_channel_changed( wlan_channel );
-        wlan_channel++;
-        if ( wlan_channel >= 14 ) wlan_channel = 1;
+        if( wlan_channel_walker == MICO_TRUE){
+            mico_wlan_monitor_set_channel( wlan_channel );
+            mico_easylink_monitor_delegate_channel_changed( wlan_channel );
+            wlan_channel++;
+            if ( wlan_channel >= 14 ) wlan_channel = 1;
+            mico_rtos_delay_milliseconds(wlan_channel_walker_interval);
+        }
     }
-
-    return kNoErr;
+    exit:
+    switch_channel_thread_handler = NULL;
+    mico_rtos_delete_thread(NULL);
 }
 
 static void monitor_cb( uint8_t * frame, int len )
@@ -237,19 +247,20 @@ restart:
     mico_system_delegate_config_will_start( );
     system_log("Start easylink monitor mode");
     mico_easylink_monitor_delegate_will_start( );
-
+    micoWlanSuspend();
     mico_wlan_start_monitor( );
 
     wlan_channel_walker = MICO_TRUE;
     mico_time_get_time( &current );
-    mico_rtos_register_timed_event( &_monitor_timed_check, MICO_NETWORKING_WORKER_THREAD, _monitor_timed_check_cb,
-                                    wlan_channel_walker_interval, (void *)(current + EasyLink_TimeOut) );
+    mico_rtos_create_thread(&switch_channel_thread_handler, MICO_DEFAULT_WORKER_PRIORITY, "sw_channel", 
+                            switch_channel_thread,0x1000, (mico_thread_arg_t)(current + EasyLink_TimeOut));
 
     while( mico_rtos_get_semaphore( &easylink_sem, 0 ) == kNoErr );
     err = mico_rtos_get_semaphore( &easylink_sem, MICO_WAIT_FOREVER );
 
-    mico_rtos_deregister_timed_event( &_monitor_timed_check );
-    mico_wlan_stop_monitor( );
+    // mico_rtos_deregister_timed_event( &_monitor_timed_check );
+    switch_channel_flag = false;
+    mico_wlan_stop_monitor();
     mico_easylink_monitor_delegate_stoped();
 
     /* Easylink force exit by user, clean and exit */

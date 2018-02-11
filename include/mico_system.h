@@ -533,6 +533,8 @@ typedef enum{
   mico_notify_WIFI_SCAN_ADV_COMPLETED,    /**< A anvanced wlan scan is completed, type: void (*function)(ScanResult_adv *pApList, void* arg)*/
   mico_notify_WIFI_Fatal_ERROR,           /**< A fatal error occured when communicating with wlan sub-system, type: void (*function)(void* arg)*/
   mico_notify_Stack_Overflow_ERROR,       /**< A MiCO RTOS thread's stack is over-flowed, type: void (*function)(char *taskname, void* arg)*/
+  mico_notify_GPRS_STATUS_CHANGED,
+  mico_notify_MAX
  
 } mico_notify_types_t;
 

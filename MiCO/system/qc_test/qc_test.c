@@ -141,7 +141,9 @@ static void _qc_test_thread( mico_thread_arg_t arg )
     QC_TEST_PRINT_STRING( "Bootloader Version:", mico_get_bootloader_ver( ) );
     QC_TEST_PRINT_STRING( "Library Version:", MicoGetVer() );
     QC_TEST_PRINT_STRING_FUN( "APP Version:", mico_app_info );
+#ifndef PPP_IF
     QC_TEST_PRINT_STRING_FUN( "Driver:", wlan_driver_version );
+#endif
 
 #ifdef QC_TEST_GPIO_ENABLE
     qc_test_gpio();
@@ -151,6 +153,7 @@ static void _qc_test_thread( mico_thread_arg_t arg )
     qc_test_ble();
 #endif
 
+#ifndef PPP_IF
     mico_wlan_get_mac_address( mac );
     sprintf( str, "%02X-%02X-%02X-%02X-%02X-%02X", mac[0], mac[1], mac[2], mac[3], mac[4], mac[5] );
     QC_TEST_PRINT_STRING( "MAC:", str );
@@ -158,6 +161,7 @@ static void _qc_test_thread( mico_thread_arg_t arg )
     qc_scan( );
 
     qc_test_tcpip( );
+#endif
 
 exit:
     free( rx_data );
