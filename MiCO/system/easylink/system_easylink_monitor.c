@@ -43,7 +43,6 @@ extern void mico_wlan_monitor_no_easylink(void);
  *               Variables Definitions
  ******************************************************/
 
-static mico_timed_event_t _monitor_timed_check;
 static uint8_t wlan_channel = 1;
 static mico_bool_t wlan_channel_walker = MICO_TRUE;
 static uint32_t wlan_channel_walker_interval = 100;
@@ -256,7 +255,6 @@ restart:
     while( mico_rtos_get_semaphore( &easylink_sem, 0 ) == kNoErr );
     err = mico_rtos_get_semaphore( &easylink_sem, MICO_WAIT_FOREVER );
 
-    // mico_rtos_deregister_timed_event( &_monitor_timed_check );
     switch_channel_flag = false;
     mico_wlan_stop_monitor();
     mico_easylink_monitor_delegate_stoped();
