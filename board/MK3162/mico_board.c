@@ -466,3 +466,11 @@ bool MicoShouldEnterBootloader(void)
   else
     return false;
 }
+
+bool MicoShouldEnterATEMode(void)
+{
+  if (MicoGpioInputGet((mico_gpio_t)BOOT_SEL) == false && MicoGpioInputGet((mico_gpio_t)EasyLink_BUTTON) == false)
+    return true;
+  else
+    return false;
+}
