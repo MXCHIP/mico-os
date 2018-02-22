@@ -215,6 +215,11 @@ OSStatus mico_rtos_delete_thread( mico_thread_t* thread )
     return kNoErr;
 }
 
+void mico_rtos_thread_yield( void )
+{
+    vTaskDelay( (portTickType) 0 );
+}
+
 OSStatus mico_rtos_thread_join( mico_thread_t* thread )
 {
     mico_thread_t tmp = *thread;

@@ -70,6 +70,12 @@ OSStatus mico_rtos_delete_thread( mico_thread_t* thread )
     return lib_api_p->mico_rtos_delete_thread( thread );
 }
 
+void mico_rtos_thread_yield( void )
+{
+    return lib_api_p->mico_rtos_thread_yield( );
+}
+
+
 void mico_rtos_suspend_thread(mico_thread_t* thread)
 {
     lib_api_p->mico_rtos_suspend_thread(thread);
