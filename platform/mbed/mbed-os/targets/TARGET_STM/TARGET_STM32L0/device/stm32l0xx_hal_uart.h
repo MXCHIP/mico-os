@@ -1115,7 +1115,7 @@ typedef struct
   * @param  _BAUD_: Baud rate set by the user
   * @retval Division result
   */
-#define __DIV_LPUART(_PCLK_, _BAUD_)                ((uint32_t)(((((uint64_t)_PCLK_)*256.0) + (((uint64_t)_BAUD_)/2U)) / (((uint64_t)_BAUD_))))
+#define __DIV_LPUART(_PCLK_, _BAUD_)                ((uint32_t)(((((uint64_t)_PCLK_)<<8) + (((uint64_t)_BAUD_)>>1)) / (((uint64_t)_BAUD_))))
     
 /** @brief  BRR division operation to set BRR register in 8-bit oversampling mode
   * @param  _PCLK_: UART clock
