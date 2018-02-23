@@ -51,6 +51,12 @@ void init_debug_uart(void)
 }
 #endif
 
+static void _mico_rtos_thread_yield(void)
+{
+   mico_rtos_delay_milliseconds( 0 );
+}
+
+
 mico_api_t *moc_adapter(new_mico_api_t *new_mico_api)
 {
   static mico_api_t mico_api;
@@ -65,6 +71,7 @@ mico_api_t *moc_adapter(new_mico_api_t *new_mico_api)
 
   mico_api.mico_rtos_create_thread = (int (*)(void **, uint8_t, char const *, void (*)(uint32_t), uint32_t, void *))_kernel_api.os_apis->mico_rtos_create_thread;
   mico_api.mico_rtos_delete_thread = _kernel_api.os_apis->mico_rtos_delete_thread;
+  mico_api.mico_rtos_thread_yield = _mico_rtos_thread_yield;
   mico_api.mico_rtos_suspend_thread = _kernel_api.os_apis->mico_rtos_suspend_thread;
   mico_api.mico_rtos_suspend_all_thread = _kernel_api.os_apis->mico_rtos_suspend_all_thread;
   mico_api.mico_rtos_resume_all_thread = (long(*)(void))_kernel_api.os_apis->mico_rtos_resume_all_thread;

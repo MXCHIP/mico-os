@@ -201,6 +201,7 @@ typedef struct mico_api_struct
     OSStatus (*mico_rtos_create_thread)( mico_thread_t* thread, uint8_t priority, const char* name,
                                          mico_thread_function_t function, uint32_t stack_size, void* arg );
     OSStatus (*mico_rtos_delete_thread)( mico_thread_t* thread );
+    void (*mico_rtos_thread_yield)( void );
     void (*mico_rtos_suspend_thread)( mico_thread_t* thread );
     void (*mico_rtos_suspend_all_thread)( void );
     long (*mico_rtos_resume_all_thread)( void );
