@@ -13,8 +13,6 @@ ifndef USES_BOOTLOADER
 USES_BOOTLOADER :=1
 endif
 
-#$(NAME)_COMPONENTS += MiCO/core  MiCO/system  MiCO/security   
-
 $(NAME)_COMPONENTS += MiCO/core MiCO/security MiCO/system
 
 $(NAME)_SOURCES := mico_main.c core/mico_config.c

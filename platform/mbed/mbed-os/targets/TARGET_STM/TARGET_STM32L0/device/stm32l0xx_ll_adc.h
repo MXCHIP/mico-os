@@ -622,7 +622,6 @@ typedef struct
 #define LL_ADC_SAMPLINGTIME_55CYCLES_5     (ADC_SMPR_SMP_2 | ADC_SMPR_SMP_0)                     /*!< Sampling time 55.5 ADC clock cycles */
 #define LL_ADC_SAMPLINGTIME_71CYCLES_5     (ADC_SMPR_SMP_2 | ADC_SMPR_SMP_1)                     /*!< Sampling time 71.5 ADC clock cycles */
 #define LL_ADC_SAMPLINGTIME_239CYCLES_5    (ADC_SMPR_SMP_2 | ADC_SMPR_SMP_1 | ADC_SMPR_SMP_0)    /*!< Sampling time 239.5 ADC clock cycles */
-#define LL_ADC_SAMPLINGTIME_160CYCLES_5    (ADC_SMPR_SMP_2 | ADC_SMPR_SMP_1 | ADC_SMPR_SMP_0) 
 /**
   * @}
   */

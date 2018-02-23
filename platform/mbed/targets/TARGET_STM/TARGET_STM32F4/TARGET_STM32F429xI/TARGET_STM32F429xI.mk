@@ -9,8 +9,6 @@
 
 NAME = stm32f429xi
 
-$(NAME)_SOURCES := device/cmsis_nvic.c
-
 
 ###############################################
 # Use abslute path to reference mico-os codes #

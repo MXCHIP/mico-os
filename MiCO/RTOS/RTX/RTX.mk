@@ -9,7 +9,7 @@
 
 NAME := RTX
 
-VERSION := 1.0.0
+VERSION := 5.1.0
 
 VERSION_MAJOR 	= $(word 1, $(subst ., ,$(VERSION)))
 VERSION_MINOR 	= $(word 2, $(subst ., ,$(VERSION)))

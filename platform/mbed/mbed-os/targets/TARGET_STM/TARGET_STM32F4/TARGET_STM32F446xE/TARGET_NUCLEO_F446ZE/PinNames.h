@@ -190,6 +190,18 @@ typedef enum {
     D14         = PB_9,
     D15         = PB_8,
 
+    // STDIO for console print
+#ifdef MBED_CONF_TARGET_STDIO_UART_TX
+    STDIO_UART_TX = MBED_CONF_TARGET_STDIO_UART_TX,
+#else
+    STDIO_UART_TX = PD_8,
+#endif
+#ifdef MBED_CONF_TARGET_STDIO_UART_RX
+    STDIO_UART_RX = MBED_CONF_TARGET_STDIO_UART_RX,
+#else
+    STDIO_UART_RX = PD_9,
+#endif
+
     // Generic signals namings
     LED1        = PB_0,
     LED2        = PB_7,
@@ -197,10 +209,12 @@ typedef enum {
     LED4        = LED1,
     LED_RED     = LED3,
     USER_BUTTON = PC_13,
-    SERIAL_TX   = PD_8, // Virtual Com Port
-    SERIAL_RX   = PD_9, // Virtual Com Port
-    USBTX       = SERIAL_TX, // Virtual Com Port
-    USBRX       = SERIAL_RX, // Virtual Com Port
+    // Standardized button names
+    BUTTON1 = USER_BUTTON,
+    SERIAL_TX   = STDIO_UART_TX, // Virtual Com Port
+    SERIAL_RX   = STDIO_UART_RX, // Virtual Com Port
+    USBTX       = STDIO_UART_TX, // Virtual Com Port
+    USBRX       = STDIO_UART_RX, // Virtual Com Port
     I2C_SCL     = D15,
     I2C_SDA     = D14,
     SPI_MOSI    = D11,
@@ -208,6 +222,30 @@ typedef enum {
     SPI_SCK     = D13,
     SPI_CS      = D10,
     PWM_OUT     = D9,
+
+    //USB pins
+    USB_OTG_HS_ULPI_D0 = PA_3,
+    USB_OTG_HS_SOF = PA_4,
+    USB_OTG_HS_ULPI_CK = PA_5,
+    USB_OTG_FS_SOF = PA_8,
+    USB_OTG_FS_VBUS = PA_9,
+    USB_OTG_FS_ID = PA_10,
+    USB_OTG_FS_DM = PA_11,
+    USB_OTG_FS_DP = PA_12,
+    USB_OTG_HS_ULPI_D1 = PB_0,
+    USB_OTG_HS_ULPI_D2 = PB_1,
+    USB_OTG_HS_ULPI_D4 = PB_2,
+    USB_OTG_HS_ULPI_D7 = PB_5,
+    USB_OTG_HS_ULPI_D3 = PB_10,
+    USB_OTG_HS_ID = PB_12,
+    USB_OTG_HS_ULPI_D5 = PB_12,
+    USB_OTG_HS_ULPI_D6 = PB_13,
+    USB_OTG_HS_VBUS = PB_13,
+    USB_OTG_HS_DM = PB_14,
+    USB_OTG_HS_DP = PB_15,
+    USB_OTG_HS_ULPI_STP = PC_0,
+    USB_OTG_HS_ULPI_DIR = PC_2,
+    USB_OTG_HS_ULPI_NXT = PC_3,
 
     // Not connected
     NC = (int)0xFFFFFFFF

@@ -45,6 +45,13 @@
 #define BUS_LEVEL_MAX_RETRIES                (5)
 #define SDIO_ENUMERATION_TIMEOUT_MS          (500)
 
+/* STBITERR is not existed on STM32F215, define it only for code compatibility  */
+#if defined (STM32F412Zx) || defined (STM32F412Vx) || defined (STM32F412Rx)
+#define SDIO_STA_STBITERR_Pos          (9U)
+#define SDIO_STA_STBITERR_Msk          (0x1U << SDIO_STA_STBITERR_Pos)         /*!< 0x00000200 */
+#define SDIO_STA_STBITERR              SDIO_STA_STBITERR_Msk                   /*!<Start bit not detected on all data signals in wide bus mode */
+#endif
+
 /******************************************************
  *             Structures
  ******************************************************/
@@ -388,7 +395,7 @@ OSStatus host_platform_bus_init( void )
     sdio_init_structure.HardwareFlowControl = SDIO_HARDWARE_FLOW_CONTROL_DISABLE;
     SDIO_Init( SDIO, sdio_init_structure );
     SDIO_PowerState_ON( SDIO );
-    SDIO_SetSDIOReadWaitMode( SDIO_READ_WAIT_MODE_CLK );
+    SDIO_SetSDMMCReadWaitMode(SDIO, SDIO_READ_WAIT_MODE_CLK);
     __SDIO_ENABLE();
 
     platform_mcu_powersave_enable();

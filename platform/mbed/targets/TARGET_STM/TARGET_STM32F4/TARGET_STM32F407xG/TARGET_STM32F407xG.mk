@@ -7,9 +7,7 @@
 #  permission of MXCHIP Corporation.
 #
 
-NAME = stm32f407xg
-
-$(NAME)_SOURCES := device/cmsis_nvic.c
+NAME = stm32f429xl
 
 
 ###############################################

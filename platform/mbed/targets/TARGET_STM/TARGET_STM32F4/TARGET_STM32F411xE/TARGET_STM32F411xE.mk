@@ -9,9 +9,6 @@
 
 NAME = stm32f411xe
 
-$(NAME)_SOURCES := cmsis_nvic.c
-
-
 ###############################################
 # Use abslute path to reference mico-os codes #
 ###############################################

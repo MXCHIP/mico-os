@@ -150,6 +150,7 @@ uint32_t mico_rtos_max_priorities = RTOS_HIGHEST_PRIORITY - RTOS_LOWEST_PRIORITY
 
 
 #if __MBED__
+#include "cmsis.h"
 #include "cmsis_nvic.h"
 
 extern void vPortSVCHandler     ( void );

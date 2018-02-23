@@ -33,15 +33,25 @@
 #include "cmsis.h"
 #include "PinNamesTypes.h"
 
+typedef enum {
+    ALT0  = 0x100,
+    ALT1  = 0x200,
+    ALT2  = 0x300,
+    ALT3  = 0x400
+} ALTx;
+
 #ifdef __cplusplus
 extern "C" {
 #endif
 
 typedef enum {
     PA_0  = 0x00,
+    PA_0_ALT0 = PA_0|ALT0,
     PA_1  = 0x01,
     PA_2  = 0x02,
+    PA_2_ALT0 = PA_2|ALT0,
     PA_3  = 0x03,
+    PA_3_ALT0 = PA_3|ALT0,
     PA_4  = 0x04,
     PA_5  = 0x05,
     PA_6  = 0x06,
@@ -53,16 +63,20 @@ typedef enum {
     PA_12 = 0x0C,
     PA_13 = 0x0D,
     PA_14 = 0x0E,
+    PA_14_ALT0 = PA_14|ALT0,
     PA_15 = 0x0F,
 
     PB_0  = 0x10,
+    PB_0_ALT0 = PB_0|ALT0,
     PB_1  = 0x11,
     PB_2  = 0x12,
     PB_3  = 0x13,
     PB_4  = 0x14,
     PB_5  = 0x15,
     PB_6  = 0x16,
+    PB_6_ALT0 = PB_6|ALT0,
     PB_7  = 0x17,
+    PB_7_ALT0 = PB_7|ALT0,
 
     PC_14 = 0x2E,
     PC_15 = 0x2F,
@@ -95,15 +109,27 @@ typedef enum {
     D12         = PB_4,
     D13         = PB_3,
 
+    // STDIO for console print
+#ifdef MBED_CONF_TARGET_STDIO_UART_TX
+    STDIO_UART_TX = MBED_CONF_TARGET_STDIO_UART_TX,
+#else
+    STDIO_UART_TX = PA_2,
+#endif
+#ifdef MBED_CONF_TARGET_STDIO_UART_RX
+    STDIO_UART_RX = MBED_CONF_TARGET_STDIO_UART_RX,
+#else
+    STDIO_UART_RX = PA_15,
+#endif
+
     // Generic signals namings
     LED1        = PB_3,
     LED2        = PB_3,
     LED3        = PB_3,
     LED4        = PB_3,
-    SERIAL_TX   = PA_2,
-    SERIAL_RX   = PA_15,
-    USBTX       = PA_2,
-    USBRX       = PA_15,
+    SERIAL_TX   = STDIO_UART_TX,
+    SERIAL_RX   = STDIO_UART_RX,
+    USBTX       = STDIO_UART_TX,
+    USBRX       = STDIO_UART_RX,
     I2C_SCL     = PB_6,
     I2C_SDA     = PB_7,
     SPI_MOSI    = PB_5,

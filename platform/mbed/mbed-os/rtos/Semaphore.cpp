@@ -20,29 +20,64 @@
  * SOFTWARE.
  */
 #include "rtos/Semaphore.h"
+#include "rtos/Kernel.h"
+#include "platform/mbed_assert.h"
 
 #include <string.h>
 
 namespace rtos {
 
 Semaphore::Semaphore(int32_t count) {
-#ifdef CMSIS_OS_RTX
-    memset(_semaphore_data, 0, sizeof(_semaphore_data));
-    _osSemaphoreDef.semaphore = _semaphore_data;
-#endif
-    _osSemaphoreId = osSemaphoreCreate(&_osSemaphoreDef, count);
+    constructor(count, 0xffff);
+}
+
+Semaphore::Semaphore(int32_t count, uint16_t max_count) {
+    constructor(count, max_count);
+}
+
+void Semaphore::constructor(int32_t count, uint16_t max_count) {
+    memset(&_obj_mem, 0, sizeof(_obj_mem));
+    osSemaphoreAttr_t attr = { 0 };
+    attr.cb_mem = &_obj_mem;
+    attr.cb_size = sizeof(_obj_mem);
+    _id = osSemaphoreNew(max_count, count, &attr);
+    MBED_ASSERT(_id != NULL);
 }
 
 int32_t Semaphore::wait(uint32_t millisec) {
-    return osSemaphoreWait(_osSemaphoreId, millisec);
+    osStatus_t stat = osSemaphoreAcquire(_id, millisec);
+    switch (stat) {
+        case osOK:
+            return osSemaphoreGetCount(_id) + 1;
+        case osErrorTimeout:
+        case osErrorResource:
+            return 0;
+        case osErrorParameter:
+        default:
+            return -1;
+    }
+}
+
+int32_t Semaphore::wait_until(uint64_t millisec) {
+    uint64_t now = Kernel::get_ms_count();
+    uint32_t timeout;
+
+    if (now >= millisec) {
+        return wait(0);
+    } else if (millisec - now >= osWaitForever) {
+        // API permits early return
+        return wait(osWaitForever - 1);
+    } else {
+        return wait(millisec - now);
+    }
 }
 
 osStatus Semaphore::release(void) {
-    return osSemaphoreRelease(_osSemaphoreId);
+    return osSemaphoreRelease(_id);
 }
 
 Semaphore::~Semaphore() {
-    osSemaphoreDelete(_osSemaphoreId);
+    osSemaphoreDelete(_id);
 }
 
 }

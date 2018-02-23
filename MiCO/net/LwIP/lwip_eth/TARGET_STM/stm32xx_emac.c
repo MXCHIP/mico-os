@@ -5,9 +5,6 @@
 #include "lwip/tcpip.h"
 #include <string.h>
 
-#include "stm32f4xx.h"
-#include "cmsis_nvic.h"
-
 #include "mico_eth.h"
 #include "mico_lwip_ethif_logging.h"
 

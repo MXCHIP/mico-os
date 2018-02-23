@@ -23,7 +23,7 @@
 #include "netsocket/Socket.h"
 #include "netsocket/NetworkStack.h"
 #include "netsocket/NetworkInterface.h"
-#include "rtos/Semaphore.h"
+#include "rtos/EventFlags.h"
 
 
 /** TCP socket connection
@@ -45,7 +45,7 @@ public:
      */
     template <typename S>
     TCPSocket(S *stack)
-        : _pending(0), _read_sem(0), _write_sem(0),
+        : _pending(0), _event_flag(0),
           _read_in_progress(false), _write_in_progress(false)
     {
         open(stack);
@@ -56,6 +56,11 @@ public:
      *  Closes socket if the socket is still open
      */
     virtual ~TCPSocket();
+
+   /** Override multicast functions to return error for TCP
+    *
+    */
+    int join_multicast_group(const SocketAddress &address) { return NSAPI_ERROR_UNSUPPORTED; }
 
     /** Connects TCP socket to a remote host
      *
@@ -83,9 +88,9 @@ public:
      *  The socket must be connected to a remote host. Returns the number of
      *  bytes sent from the buffer.
      *
-     *  By default, send blocks until data is sent. If socket is set to
-     *  non-blocking or times out, NSAPI_ERROR_WOULD_BLOCK is returned
-     *  immediately.
+     *  By default, send blocks until all data is sent. If socket is set to
+     *  non-blocking or times out, a partial amount can be written.
+     *  NSAPI_ERROR_WOULD_BLOCK is returned if no data was written.
      *
      *  @param data     Buffer of data to send to the host
      *  @param size     Size of the buffer in bytes
@@ -99,14 +104,16 @@ public:
      *  The socket must be connected to a remote host. Returns the number of
      *  bytes received into the buffer.
      *
-     *  By default, recv blocks until data is sent. If socket is set to
-     *  non-blocking or times out, NSAPI_ERROR_WOULD_BLOCK is returned
-     *  immediately.
+     *  By default, recv blocks until some data is received. If socket is set to
+     *  non-blocking or times out, NSAPI_ERROR_WOULD_BLOCK can be returned to
+     *  indicate no data.
      *
      *  @param data     Destination buffer for data received from the host
      *  @param size     Size of the buffer in bytes
      *  @return         Number of received bytes on success, negative error
-     *                  code on failure
+     *                  code on failure. If no data is available to be received
+     *                  and the peer has performed an orderly shutdown,
+     *                  recv() returns 0.
      */
     nsapi_size_or_error_t recv(void *data, nsapi_size_t size);
 
@@ -117,8 +124,7 @@ protected:
     virtual void event();
 
     volatile unsigned _pending;
-    rtos::Semaphore _read_sem;
-    rtos::Semaphore _write_sem;
+    rtos::EventFlags _event_flag;
     bool _read_in_progress;
     bool _write_in_progress;
 };

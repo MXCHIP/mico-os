@@ -40,11 +40,12 @@ MBED_DRV_DIR := mico-os/platform/mbed/mbed-os/targets/TARGET_STM/TARGET_STM32F4
 ST_DRV_DIR   := $(MBED_DRV_DIR)/device
 ST_DRV_SRC   := $(notdir $(wildcard $(ST_DRV_DIR)/*.c))
 
-$(NAME)_ABS_SOURCES := $(MBED_DRV_DIR)/analogin_api.c \
+$(NAME)_ABS_SOURCES := $(MBED_DRV_DIR)/analogin_device.c \
+                       $(MBED_DRV_DIR)/analogout_device.c \
+                       $(MBED_DRV_DIR)/flash_api.c \
                        $(MBED_DRV_DIR)/gpio_irq_device.c \
-                       $(MBED_DRV_DIR)/mbed_overrides.c \
                        $(MBED_DRV_DIR)/pwmout_device.c \
-                       $(MBED_DRV_DIR)/serial_api.c \
+                       $(MBED_DRV_DIR)/serial_device.c \
                        $(MBED_DRV_DIR)/spi_api.c
                    
 # Add all files under "device" directory       

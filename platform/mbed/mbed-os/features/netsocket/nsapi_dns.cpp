@@ -214,7 +214,7 @@ static nsapi_size_or_error_t nsapi_dns_query_multiple(NetworkStack *stack, const
     socket.set_timeout(DNS_TIMEOUT);
 
     // create network packet
-    uint8_t *packet = (uint8_t *)malloc(DNS_BUFFER_SIZE);
+    uint8_t * const packet = (uint8_t *)malloc(DNS_BUFFER_SIZE);
     if (!packet) {
         return NSAPI_ERROR_NO_MEMORY;
     }
@@ -227,7 +227,7 @@ static nsapi_size_or_error_t nsapi_dns_query_multiple(NetworkStack *stack, const
         uint8_t *question = packet;
         dns_append_question(&question, host, version);
 
-        err = socket.sendto(SocketAddress(dns_servers[i], 53), packet, DNS_BUFFER_SIZE);
+        err = socket.sendto(SocketAddress(dns_servers[i], 53), packet, question - packet);
         // send may fail for various reasons, including wrong address type - move on
         if (err < 0) {
             continue;
@@ -243,8 +243,9 @@ static nsapi_size_or_error_t nsapi_dns_query_multiple(NetworkStack *stack, const
         }
 
         const uint8_t *response = packet;
-        if (dns_scan_response(&response, addr, addr_count) > 0) {
-            result = NSAPI_ERROR_OK;
+        int count = dns_scan_response(&response, addr, addr_count);
+        if (count > 0) {
+            result = count;
         }
 
         /* The DNS response is final, no need to check other servers */

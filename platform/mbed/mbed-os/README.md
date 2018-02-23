@@ -1,22 +1,35 @@
-# ARM mbed OS
- 
-mbed OS is an open-source embedded operating system designed specifically for the "things" in the Internet of Things (IoT). It includes all the features you need to develop a connected product based on an ARM Cortex-M microcontroller.
- 
-mbed OS accelerates the process of creating a connected product by providing a platform operating system that includes robust security foundations, standards based communication capabilities, built-in cloud management services, and drivers for sensors, I/O devices and connectivity. mbed OS is built as a modular, configurable software stack so that you can readily customize it to the device you're developing for, and reduce memory requirements by excluding unnecessary software components.
- 
-## Current release
+[![Mbed OS][mbed-os-logo]][mbed-os-link]
 
-The current release, along with a selection of previous versions are detailed here:
-[Release Notes](https://docs.mbed.com/docs/mbed-os-release-notes/en/latest/)
+[![Build status release][mbed-travis-release-svg]][mbed-travis-release] 
+[![Build status master][mbed-travis-master-svg]][mbed-travis-master] 
+[![Tools coverage status][mbed-coveralls-tools-svg]][mbed-coveralls-tools] 
+[![PR progress][mbed-waffle-svg]][mbed-waffle] 
 
-## Getting Started for Developers
- 
-Please note that you will require [mbed CLI](https://github.com/ARMmbed/mbed-cli) to build mbed OS. For more details, please read the getting started guide for developers using mbed OS in applications:
- 
-- [Getting Started](https://docs.mbed.com/docs/mbed-os-handbook/en/latest/)
+[mbed-os-logo]: logo.png
+[mbed-os-link]: https://www.mbed.com/en/platform/mbed-os/
+[mbed-travis-master]: https://travis-ci.org/ARMmbed/mbed-os
+[mbed-travis-master-svg]: https://travis-ci.org/ARMmbed/mbed-os.svg?branch=master
+[mbed-travis-release]: https://travis-ci.org/ARMmbed/mbed-os/branches
+[mbed-travis-release-svg]: https://travis-ci.org/ARMmbed/mbed-os.svg?branch=latest
+[mbed-coveralls-tools]: https://coveralls.io/github/ARMmbed/mbed-os?branch=master
+[mbed-coveralls-tools-svg]: https://coveralls.io/repos/github/ARMmbed/mbed-os/badge.svg?branch=master
+[mbed-waffle]: https://waffle.io/ARMmbed/mbed-os
+[mbed-waffle-svg]: https://badge.waffle.io/ARMmbed/mbed-os.svg?columns=all
 
-## Getting Started for Contributors
+Arm Mbed OS is an open source embedded operating system designed specifically for the "things" in the Internet of Things. It includes all the features you need to develop a connected product based on an Arm Cortex-M microcontroller, including security, connectivity, an RTOS and drivers for sensors and I/O devices.
+
+Mbed OS provides a platform that includes:
+* Security foundations.
+* Cloud management services.
+* Drivers for sensors, I/O devices and connectivity. 
+
+## Release notes
+The [release notes](https://os.mbed.com/releases) detail the current release. You can also find information about previous versions.
+
+## Getting started for developers
  
-We have a getting started guide for contributors working on mbed OS:
+We have a [developer website](https://os.mbed.com) for asking questions, engaging with others, finding information on boards and components, using an online IDE and compiler, reading the documentation and learning about what's new and what's coming next in Mbed OS.
+
+## Getting started for contributors
  
-- Have a look in the docs directory
+We also have a [contributing and publishing guide](https://os.mbed.com/contributing/) that covers licensing, contributor agreements and style guidelines.

@@ -20,37 +20,83 @@
  * SOFTWARE.
  */
 #include "rtos/Mutex.h"
+#include "rtos/Kernel.h"
 
 #include <string.h>
-#include "platform/mbed_error.h"
+#include "mbed_error.h"
+#include "mbed_assert.h"
 
 namespace rtos {
 
-Mutex::Mutex() {
-#ifdef CMSIS_OS_RTX
-    memset(_mutex_data, 0, sizeof(_mutex_data));
-    _osMutexDef.mutex = _mutex_data;
-#endif
-    _osMutexId = osMutexCreate(&_osMutexDef);
-    if (_osMutexId == NULL) {
-        error("Error initializing the mutex object\n");
-    }
+Mutex::Mutex(): _count(0)
+{
+    constructor();
+}
+
+Mutex::Mutex(const char *name)
+{
+    constructor(name);
+}
+
+void Mutex::constructor(const char *name)
+{
+    memset(&_obj_mem, 0, sizeof(_obj_mem));
+    osMutexAttr_t attr = { 0 };
+    attr.name = name ? name : "aplication_unnamed_mutex";
+    attr.cb_mem = &_obj_mem;
+    attr.cb_size = sizeof(_obj_mem);
+    attr.attr_bits = osMutexRecursive | osMutexPrioInherit | osMutexRobust;
+    _id = osMutexNew(&attr);
+    MBED_ASSERT(_id);
 }
 
 osStatus Mutex::lock(uint32_t millisec) {
-    return osMutexWait(_osMutexId, millisec);
+    osStatus status = osMutexAcquire(_id, millisec);
+    if (osOK == status) {
+        _count++;
+    }
+    return status;
 }
 
 bool Mutex::trylock() {
-    return (osMutexWait(_osMutexId, 0) == osOK);
+    return trylock_for(0);
+}
+
+bool Mutex::trylock_for(uint32_t millisec) {
+    osStatus status = lock(millisec);
+    if (status == osOK) {
+        return true;
+    }
+
+    MBED_ASSERT(status == osErrorTimeout || status == osErrorResource);
+
+    return false;
+}
+
+bool Mutex::trylock_until(uint64_t millisec) {
+    uint64_t now = Kernel::get_ms_count();
+
+    if (now >= millisec) {
+        return trylock();
+    } else if (millisec - now >= osWaitForever) {
+        // API permits early return
+        return trylock_for(osWaitForever - 1);
+    } else {
+        return trylock_for(millisec - now);
+    }
 }
 
 osStatus Mutex::unlock() {
-    return osMutexRelease(_osMutexId);
+    _count--;
+    return osMutexRelease(_id);
+}
+
+osThreadId Mutex::get_owner() {
+    return osMutexGetOwner(_id);
 }
 
 Mutex::~Mutex() {
-    osMutexDelete(_osMutexId);
+    osMutexDelete(_id);
 }
 
 }

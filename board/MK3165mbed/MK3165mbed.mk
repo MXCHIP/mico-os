@@ -68,12 +68,13 @@ GLOBAL_DEFINES          += OS_TASKCNT=14
 GLOBAL_DEFINES          += OS_MAINSTKSIZE=256
 GLOBAL_DEFINES          += OS_CLOCK=96000000
 GLOBAL_DEFINES          += OS_ROBINTOUT=1
+GLOBAL_DEFINES          += CLOCK_SOURCE=USE_PLL_HSE_XTAL CLOCK_SOURCE_USB=1
                            
 GLOBAL_DEFINES += TRANSACTION_QUEUE_SIZE_SPI=2 USB_STM_HAL USBHOST_OTHER MXCHIP_LIBRARY HSE_VALUE=((uint32_t)26000000)
 
 # Source files
 $(NAME)_SOURCES += mbed/PeripheralPins.c \
-                   mbed/system_stm32f4xx.c
+                   mbed/system_clock.c
                    
 # Global includes
 GLOBAL_INCLUDES  += mbed

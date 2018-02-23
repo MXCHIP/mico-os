@@ -35,8 +35,6 @@ BUS := EML3047
 NO_WIFI_FIRMWARE        := YES     
 
 # # Extra build target in mico_standard_targets.mk, include bootloader, and copy output file to eclipse debug file (copy_output_for_eclipse)
-#EXTRA_TARGET_MAKEFILES +=  mico-os/board/EML3047/mico_standard_targets_for_stm32l0xx.mk
-
 EXTRA_TARGET_MAKEFILES +=  $(MAKEFILES_PATH)/mico_standard_targets.mk
 
 
@@ -67,13 +65,14 @@ GLOBAL_DEFINES          += OS_TASKCNT=14
 GLOBAL_DEFINES          += OS_MAINSTKSIZE=256
 GLOBAL_DEFINES          += OS_CLOCK=32000000
 GLOBAL_DEFINES          += OS_ROBINTOUT=1
+GLOBAL_DEFINES          += CLOCK_SOURCE=USE_PLL_HSE_XTAL
+
                            
 GLOBAL_DEFINES += TRANSACTION_QUEUE_SIZE_SPI=2 USB_STM_HAL USBHOST_OTHER MXCHIP_LIBRARY
 
 # Source files
 $(NAME)_SOURCES += mbed/PeripheralPins.c \
-                   mbed/device/system_stm32l0xx.c \
-                   mbed/device/cmsis_nvic.c
+                   mbed/device/system_clock.c
                    
                    
 # Global includes

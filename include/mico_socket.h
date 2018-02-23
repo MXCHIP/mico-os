@@ -38,7 +38,7 @@
 #include <sys/select.h>
 #endif
 #include "mico_errno.h"
-
+#include "mico_poll.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -220,18 +220,6 @@ typedef enum {
     SO_NO_CHECK           = 0x100a      /**< Don't create UDP checksum. */
 
 } SOCK_OPT_VAL;
-
-struct pollfd {
-	int fd; /**< fd related to */
-	short events; /**< which POLL... events to respond to */
-	short revents; /**< which POLL... events occurred */
-};
-#define POLLIN		0x0001
-#define POLLPRI		0x0002
-#define POLLOUT		0x0004
-#define POLLERR		0x0008
-#define POLLHUP		0x0010
-#define POLLNVAL	0x0020
 
 
 /**
@@ -496,7 +484,6 @@ int accept (int socket, struct sockaddr *addr, socklen_t *length_ptr);
   */
 int select(int nfds, fd_set *readfds, fd_set *writefds, fd_set *exceptfds, struct timeval *timeout);
 
-int poll(struct pollfd *fds, int nfds, int timeout);
 
 /**
   * @brief      Send a message on a socket
