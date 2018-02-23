@@ -492,8 +492,10 @@ OSStatus SocketReadHTTPSBody( mico_ssl_t ssl, HTTPHeader_t *inHeader )
 
   while ( inHeader->extraDataLen < inHeader->contentLength )
   {
-    selectResult = select( inSock + 1, &readSet, NULL, NULL, (struct timeval *)&t );
-    require_action( selectResult >= 1, exit, err = kNotReadableErr );
+    if ( !ssl_pending(ssl) ) {
+      selectResult = select( inSock + 1, &readSet, NULL, NULL, (struct timeval *)&t );
+      require_action( selectResult >= 1, exit, err = kNotReadableErr );
+    }
 
     if(inHeader->isCallbackSupported == true){
       /* We has extra data, and we give these data to application by onReceivedDataCallback function */
