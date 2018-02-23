@@ -92,7 +92,7 @@ noos_mutex_t mutex_pool[MUTEX_POOL_NUM];
 
 OSStatus mico_rtos_create_thread( mico_thread_t* thread, uint8_t priority, const char* name, mico_thread_function_t function, uint32_t stack_size, uint32_t arg )
 {
-    return kUnsupportedErr;
+    return kNoErr;
 }
 
 OSStatus mico_rtos_delete_thread( mico_thread_t* thread )
@@ -317,7 +317,7 @@ void mico_rtos_exit_critical( void )
 
 OSStatus mico_rtos_init_queue( mico_queue_t* queue, const char* name, uint32_t message_size, uint32_t number_of_messages )
 {
-    return kUnsupportedErr;
+    return kNoErr;
 }
 
 OSStatus mico_rtos_push_to_queue( mico_queue_t* queue, void* message, uint32_t timeout_ms )

@@ -205,11 +205,10 @@ uint8_t SetSysClock_PLL_HSI(void)
     __HAL_PWR_VOLTAGESCALING_CONFIG(PWR_REGULATOR_VOLTAGE_SCALE1);
 
     /* Enable HSI and HSI48 oscillators and activate PLL with HSI as source */
-    RCC_OscInitStruct.OscillatorType      = RCC_OSCILLATORTYPE_HSI | RCC_OSCILLATORTYPE_HSI48;
+    RCC_OscInitStruct.OscillatorType      = RCC_OSCILLATORTYPE_HSI;
     RCC_OscInitStruct.HSEState            = RCC_HSE_OFF;
     RCC_OscInitStruct.HSIState            = RCC_HSI_ON;
     RCC_OscInitStruct.HSICalibrationValue = 16;
-    RCC_OscInitStruct.HSI48State          = RCC_HSI48_ON; /* For USB and RNG clock */
     // PLLCLK = (16 MHz * 4)/2 = 32 MHz
     RCC_OscInitStruct.PLL.PLLState        = RCC_PLL_ON;
     RCC_OscInitStruct.PLL.PLLSource       = RCC_PLLSOURCE_HSI;
@@ -229,11 +228,11 @@ uint8_t SetSysClock_PLL_HSI(void)
         return 0; // FAIL
     }
 
-    RCC_PeriphClkInit.PeriphClockSelection = RCC_PERIPHCLK_USB;
-    RCC_PeriphClkInit.UsbClockSelection = RCC_USBCLKSOURCE_HSI48;
-    if (HAL_RCCEx_PeriphCLKConfig(&RCC_PeriphClkInit) != HAL_OK) {
-        return 0; // FAIL
-    }
+//    RCC_PeriphClkInit.PeriphClockSelection = RCC_PERIPHCLK_USB;
+//    RCC_PeriphClkInit.UsbClockSelection = RCC_USBCLKSOURCE_HSI48;
+//    if (HAL_RCCEx_PeriphCLKConfig(&RCC_PeriphClkInit) != HAL_OK) {
+//        return 0; // FAIL
+//    }
 
     /* Output clock on MCO1 pin(PA8) for debugging purpose */
     //HAL_RCC_MCOConfig(RCC_MCO1, RCC_MCO1SOURCE_HSI, RCC_MCODIV_1); // 16 MHz
