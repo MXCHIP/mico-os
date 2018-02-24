@@ -214,16 +214,28 @@ void init_platform( void )
   MicoGpioInitialize((mico_gpio_t)BOOT_SEL, INPUT_PULL_UP);
   MicoGpioInitialize((mico_gpio_t)MFG_SEL, INPUT_PULL_UP);
 
-  /* Keep bluenrg in the RESET state. */
-  MicoGpioInitialize((mico_gpio_t)BLUENRG_SPI_RESET_PIN, OUTPUT_PUSH_PULL);
-  MicoGpioOutputLow((mico_gpio_t)BLUENRG_SPI_RESET_PIN);
-
   init.gpio = EasyLink_BUTTON;
   init.pressed_func = PlatformEasyLinkButtonClickedCallback;
   init.long_pressed_func = PlatformEasyLinkButtonLongPressedCallback;
   init.long_pressed_timeout = RestoreDefault_TimeOut;
 
   button_init( IOBUTTON_EASYLINK, init );
+
+  /* Keep bluenrg in the RESET state. */
+  MicoGpioInitialize(BNRG_RESET_PIN, OUTPUT_PUSH_PULL);
+  MicoGpioOutputLow(BNRG_RESET_PIN);
+
+#ifdef SPI_INTERFACE
+  /* Init SPI interface */
+  SdkEvalSpiInit(0);//SPI_MODE_DMA);
+#endif
+
+#ifdef UART_INTERFACE
+  DTM_IO_Config();
+#endif
+
+  /* Configure the BlueNRG-1 pins - RESET pin */
+  Sdk_Eval_Gpio_Init();
 }
 
 void init_platform_bootloader( void )
@@ -237,8 +249,20 @@ void init_platform_bootloader( void )
   MicoGpioInitialize((mico_gpio_t)MFG_SEL, INPUT_PULL_UP);
 
   /* Keep bluenrg in the RESET state. */
-  MicoGpioInitialize((mico_gpio_t)BLUENRG_SPI_RESET_PIN, OUTPUT_PUSH_PULL);
-  MicoGpioOutputLow((mico_gpio_t)BLUENRG_SPI_RESET_PIN);
+  MicoGpioInitialize(BNRG_RESET_PIN, OUTPUT_PUSH_PULL);
+  MicoGpioOutputLow(BNRG_RESET_PIN);
+
+#ifdef SPI_INTERFACE
+  /* Init SPI interface */
+  SdkEvalSpiInit(0);//SPI_MODE_DMA);
+#endif
+
+#ifdef UART_INTERFACE
+  DTM_IO_Config();
+#endif
+
+  /* Configure the BlueNRG-1 pins - RESET pin */
+  Sdk_Eval_Gpio_Init();
 
   return;
 }
