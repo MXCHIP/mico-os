@@ -18,6 +18,8 @@ export SOURCE_ROOT ?= ./
 export MICO_OS_PATH := $(SOURCE_ROOT)mico-os
 export MAKEFILES_PATH := $(SOURCE_ROOT)mico-os/makefiles
 export SCRIPTS_PATH := $(SOURCE_ROOT)mico-os/makefiles/scripts
+export LIST_SUB_DIRS_SCRIPT  := $(MAKEFILES_PATH)/scripts/list_sub_directories.py
+
 MAKEFILE_TARGETS := clean release  # targets used by makefile 
 
 #define BUILD_STRING, MiCO toolchain commands on different hosts

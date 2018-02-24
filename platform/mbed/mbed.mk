@@ -10,7 +10,6 @@
 NAME = MiCO_mbed_hal_Interface
 
 MBED_OS_DIR = mbed-os
-LIST_SUB_DIRS_SCRIPT  := $(MAKEFILES_PATH)/scripts/list_sub_directories.py
 
 GLOBAL_INCLUDES := . \
                    .. \
