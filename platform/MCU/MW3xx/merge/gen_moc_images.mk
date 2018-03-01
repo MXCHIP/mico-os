@@ -35,8 +35,13 @@ MOC_APP_OFFSET      := 0x64000
 
 
 #MOC bootloader
+ifeq ($(MODULE), 3031B)
+MOC_BOOT_BIN_FILE    := $(MICO_OS_PATH)/platform/MCU/MW3xx/merge/boot2_3031B.bin
+else
 MOC_BOOT_BIN_FILE    := $(MICO_OS_PATH)/platform/MCU/MW3xx/merge/boot2.bin
+endif
 MOC_BOOT_OFFSET      := 0x0
+
 
 #moc kernel + user application
 MOC_KERNEL_APP_BIN_OUTPUT_FILE :=$(LINK_OUTPUT_FILE:$(LINK_OUTPUT_SUFFIX)=.ota$(BIN_OUTPUT_SUFFIX))
