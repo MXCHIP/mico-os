@@ -165,6 +165,23 @@ extern void vTaskSwitchContext( void ); 			\
 #define portTASK_FUNCTION_PROTO( vFunction, pvParameters ) void vFunction( void * pvParameters )
 #define portTASK_FUNCTION( vFunction, pvParameters ) void vFunction( void * pvParameters )
 
+__inline static uint32_t port_interrupt_mask_from_isr(void)
+{
+    uint32_t val;
+
+    val = *((volatile uint32_t *)((0x00802000 + 17 * 4)));
+    *((volatile uint32_t *)((0x00802000 + 17 * 4))) = 0x0;
+    return val;
+}
+
+#ifndef portSET_INTERRUPT_MASK_FROM_ISR
+	#define portSET_INTERRUPT_MASK_FROM_ISR() port_interrupt_mask_from_isr();
+#endif
+
+#ifndef portCLEAR_INTERRUPT_MASK_FROM_ISR
+	#define portCLEAR_INTERRUPT_MASK_FROM_ISR( uxSavedStatusValue )   (*((volatile uint32_t *)((0x00802000 + 17 * 4))) = (uxSavedStatusValue))    
+#endif
+
 #ifdef __cplusplus
 }
 #endif
