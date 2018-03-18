@@ -657,10 +657,10 @@ OSStatus MicoI2cTransfer( mico_i2c_device_t* device, mico_i2c_message_t* message
 
 OSStatus MicoSpiInitialize( const mico_spi_device_t* spi )
 {
-    if ( platform_spi_drivers[spi->port].initialized == MICO_TRUE )
-        return kNoErr;
+    // if ( platform_spi_drivers[spi->port].initialized == MICO_TRUE )
+    //     return kNoErr;
     lib_api_p->spi_apis->spi_init(spi);
-    platform_spi_drivers[spi->port].initialized = MICO_TRUE;
+    // platform_spi_drivers[spi->port].initialized = MICO_TRUE;
     return kNoErr;
 }
 
