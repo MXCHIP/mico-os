@@ -101,6 +101,7 @@ typedef struct {
 	char * (*asctime)(const struct tm *tm);
 
     void (*mico_rtos_resume_thread)(mico_thread_t* thread);
+    int (*hardfault_get)(char *msg, int len);
 } os_api_v1_t;
 
 typedef struct {
