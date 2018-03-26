@@ -108,7 +108,6 @@ void startApplication( uint32_t app_addr )
 void platform_mcu_reset( void )
 {
     mico_rtos_enter_critical();
-    MicoWdgInitialize(1);
     for(;;);
 }
 
