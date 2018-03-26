@@ -102,6 +102,8 @@ typedef struct {
 
     void (*mico_rtos_resume_thread)(mico_thread_t* thread);
     int (*hardfault_get)(char *msg, int len);
+    int (*mico_init_once_timer)( mico_timer_t* timer, uint32_t time_ms, timer_handler_t function, void* arg );
+    int (*mico_change_timer_period)( mico_timer_t* timer, uint32_t new_period );
 } os_api_v1_t;
 
 typedef struct {
