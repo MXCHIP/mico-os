@@ -26,7 +26,7 @@
 #define MAXIMUM_NUMBER_OF_SYSTEM_MONITORS    (5)
 #endif
 
-#ifdef CONFIG_CPU_MX1290
+#if defined (CONFIG_CPU_MX1290) || defined (CONFIG_MX108)
 #define APPLICATION_WATCHDOG_TIMEOUT_SECONDS  25 /**< Monitor point defined by mico system
                                                      25 seconds to reload. */
 #else
