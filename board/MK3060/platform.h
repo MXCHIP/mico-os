@@ -60,6 +60,7 @@ typedef enum
     MICO_GPIO_23,
     MICO_GPIO_20,
     MICO_GPIO_21,
+    MICO_GPIO_31,
     MICO_GPIO_0,
     MICO_GPIO_1,
     MICO_GPIO_15,

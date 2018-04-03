@@ -81,6 +81,7 @@ const platform_gpio_t platform_gpio_pins[] =
     [MICO_GPIO_23] = {23},
     [MICO_GPIO_20] = {20},
     [MICO_GPIO_21] = {21},
+    [MICO_GPIO_31] = { 0},
     [MICO_GPIO_0]  = { 0},
     [MICO_GPIO_1]  = { 1}, 
     [MICO_GPIO_15] = {15},
