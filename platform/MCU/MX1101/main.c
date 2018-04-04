@@ -52,6 +52,7 @@ int user_main( void )
 
 	init_clocks();
 	init_architecture();
+	init_platform();
 	
 	main();
 

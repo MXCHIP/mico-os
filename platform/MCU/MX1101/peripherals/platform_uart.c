@@ -448,9 +448,7 @@ void platform_buart_irq( platform_uart_driver_t* driver )
          ( (uint32_t)BuartIOctl(BUART_IOCTL_RXFIFO_DATLEN_GET, 0)  >= driver->rx_size ) )
     {
       driver->rx_size = 0;
-    }
-
-    {     
+   
 #ifndef NO_MICO_RTOS
       mico_rtos_set_semaphore( &driver->rx_complete );   
 #else
