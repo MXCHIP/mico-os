@@ -247,10 +247,13 @@ typedef struct {
     int (*disable_log_uart)(void);
 } uart_api_t;
 
+typedef void (*rtc_irq_handler)(void);
+
 typedef struct {
 	void (*MicoRtcInitialize)(void);
 	OSStatus (*MicoRtcGetTime)(mico_rtc_time_t *time);
 	OSStatus (*MicoRtcSetTime)(mico_rtc_time_t *time);
+    OSStatus (*MicoRtcSetalarm)(mico_rtc_time_t *time, rtc_irq_handler handler);
 } rtc_api_t;
 
 typedef struct {

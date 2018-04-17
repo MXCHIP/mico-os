@@ -473,3 +473,8 @@ int mico_init_once_timer( mico_timer_t* timer, uint32_t time_ms, timer_handler_t
     return _kernel_api.os_apis->mico_init_once_timer( timer, time_ms, function, arg );
 }
 
+OSStatus MicoRtcSetalarm(mico_rtc_time_t *time, rtc_irq_handler handler)
+{
+    return _kernel_api.rtc_apis->MicoRtcSetalarm( time, handler );
+}
+
