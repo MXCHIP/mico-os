@@ -560,7 +560,8 @@ void MicoSystemReboot( void )
 {
   platform_mcu_reset();
 }
-OSStatus MicoWdgInitialize( uint32_t timeout )
+
+OSStatus mico_wdg_init( uint32_t timeout )
 {
     return (OSStatus) platform_watchdog_init( timeout );
 }

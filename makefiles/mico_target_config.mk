@@ -170,7 +170,8 @@ BUILD_TYPE          := $(if $(filter $(BUILD_TYPE_LIST),$(COMPONENTS)),$(firstwo
 IMAGE_TYPE          := $(if $(filter $(IMAGE_TYPE_LIST),$(COMPONENTS)),$(firstword $(filter $(IMAGE_TYPE_LIST),$(COMPONENTS))),ram)
 RUN_LINT            := $(filter lint,$(COMPONENTS))
 MOC                 := $(filter $(MOC_LIST),$(COMPONENTS))
-COMPONENTS          := $(filter-out $(MOC_LIST) $(BUS_LIST) $(BUILD_TYPE_LIST) $(IMAGE_TYPE_LIST) $(TOTAL_BUILD), $(COMPONENTS))
+ALIOS               := $(filter alios,$(COMPONENTS))
+COMPONENTS          := $(filter-out $(MOC_LIST) $(BUS_LIST) $(BUILD_TYPE_LIST) $(IMAGE_TYPE_LIST) $(TOTAL_BUILD) alios, $(COMPONENTS))
 
 # Set debug/release specific options
 ifeq ($(BUILD_TYPE),release)
@@ -182,6 +183,11 @@ endif
 # MOC define mocOS and mocIP
 ifneq ($(MOC),)
 COMPONENTS += mocOS mocIP mocSSL
+endif
+
+ifneq ($(ALIOS),)
+COMPONENTS += alios_kernel alios_acrypto
+ALIOS_SUPPORT := 1
 endif
 
 # Check if there are any unknown components; output error if so.
@@ -229,6 +235,10 @@ EXTRA_CFLAGS :=    -DMiCO_SDK_VERSION_MAJOR=$(MiCO_SDK_VERSION_MAJOR) \
 $(eval CURDIR := $(PLATFORM_DIRECTORY)/)
 include $(PLATFORM_DIRECTORY)/$(notdir $(PLATFORM_DIRECTORY)).mk
 
+
+ifneq ($(MBED_SUPPORT),)
+
+else
 ifneq ($(MBED_SUPPORT),)
 include $(MICO_OS_PATH)/platform/mbed/mbed.mk
 
@@ -239,7 +249,8 @@ $(foreach DIR, $(DIRS), $(if $(filter $(notdir $(DIR)), $(TARGETS)), $(eval incl
 else
 $(eval CURDIR := $(MICO_OS_PATH)/platform/MCU/$(HOST_MCU_FAMILY)/)
 include $(MICO_OS_PATH)/platform/MCU/$(HOST_MCU_FAMILY)/$(HOST_MCU_FAMILY).mk
-endif
+endif # MBED_SUPPORT
+endif # MBED_SUPPORT
 
 MAIN_COMPONENT_PROCESSING :=1
 $(eval $(call PROCESS_COMPATIBILITY_CHECK,))

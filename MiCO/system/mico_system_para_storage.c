@@ -103,9 +103,6 @@ void* mico_system_context_get_user_data( mico_Context_t* const in_context )
 
 static bool is_crc_match( uint16_t crc_1, uint16_t crc_2)
 {
-  if( crc_1 == 0 || crc_2 == 0)
-    return false;
-  
   if( crc_1 != crc_2 )
     return false;
       

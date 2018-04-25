@@ -231,23 +231,9 @@ MICO_RTOS_DEFINE_ISR( BuartInterrupt )
 ******************************************************/
 
 void init_platform( void )
-{
-  button_init_t init;
-	  
-  MicoGpioInitialize( (mico_gpio_t)MICO_SYS_LED, OUTPUT_PUSH_PULL );
-  MicoGpioOutputLow( (mico_gpio_t)MICO_SYS_LED );
-  MicoGpioInitialize( (mico_gpio_t)MICO_RF_LED, OUTPUT_OPEN_DRAIN_NO_PULL );
-  MicoGpioOutputHigh( (mico_gpio_t)MICO_RF_LED );
-  
+{ 
   MicoGpioInitialize((mico_gpio_t)BOOT_SEL, INPUT_PULL_UP);
   MicoGpioInitialize((mico_gpio_t)MFG_SEL, INPUT_PULL_UP);
-
-  init.gpio = EasyLink_BUTTON;
-  init.pressed_func = PlatformEasyLinkButtonClickedCallback;
-  init.long_pressed_func = PlatformEasyLinkButtonLongPressedCallback;
-  init.long_pressed_timeout = RestoreDefault_TimeOut;
-
-  button_init( IOBUTTON_EASYLINK, init );
 }
 
 void init_platform_bootloader( void )
@@ -283,7 +269,7 @@ void MicoRfLed(bool onoff)
 
 bool MicoShouldEnterMFGMode(void)
 {
-    return false;
+    return MicoGpioInputGet((mico_gpio_t)BOOT_SEL) == false && MicoGpioInputGet(MFG_SEL) == false;
 }
 
 bool MicoShouldEnterBootloader(void)

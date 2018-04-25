@@ -251,8 +251,9 @@ restart:
 
     wlan_channel_walker = MICO_TRUE;
     mico_time_get_time( &current );
-    mico_rtos_create_thread(&switch_channel_thread_handler, MICO_DEFAULT_WORKER_PRIORITY, "sw_channel", 
-                            switch_channel_thread,0x1000, (mico_thread_arg_t)(current + EasyLink_TimeOut));
+    switch_channel_flag = true;
+    mico_rtos_create_thread(&switch_channel_thread_handler, MICO_DEFAULT_WORKER_PRIORITY, "sw_channel",
+                            switch_channel_thread, 0x1000, (mico_thread_arg_t)(current + EasyLink_TimeOut));
 
     while( mico_rtos_get_semaphore( &easylink_sem, 0 ) == kNoErr );
     err = mico_rtos_get_semaphore( &easylink_sem, MICO_WAIT_FOREVER );

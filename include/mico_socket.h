@@ -839,6 +839,22 @@ void ssl_set_cert(const char *_cert_pem, const char *private_key_pem);
  */
 mico_ssl_t ssl_connect(int fd, int calen, char*ca, int *errno);
 
+/** @brief      SSL client create a SSL connection.
+ *
+ * @details    This function is called on the client side and initiates an SSL/TLS handshake with a 
+ *              server.  When this function is called, the underlying communication channel has already 
+ *              been set up. This function is called after TCP 3-way handshak finished. 
+ *
+ *  @param      fd: The fd number for a connected TCP socket.
+ *  @param      calen: the string length of ca. 0=do not verify server's certificate.
+ *  @param      ca: pointer to the CA certificate string, used to verify server's certificate.
+ *  @param      sni_servername: sni server name.
+ *  @param      errno: return the errno if ssl_connect return NULL.
+ *
+ *  @retval     return the SSL context pointer on success or NULL for fail.
+ */
+mico_ssl_t ssl_connect_sni(int fd, int calen, char*ca, char *sni_servername, int *errno);
+
 /** @brief      SSL Server accept a SSL connection
  *
  *  @param      fd: The fd number for a connected TCP socket.

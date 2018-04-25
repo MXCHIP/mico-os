@@ -161,6 +161,8 @@ static void _qc_test_thread( mico_thread_arg_t arg )
     qc_scan( );
 
     qc_test_tcpip( );
+#else
+    qc_gsm();
 #endif
 
 exit:
