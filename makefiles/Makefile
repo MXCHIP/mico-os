@@ -16,6 +16,7 @@ export MiCO_SDK_VERSION_REVISION :=  0
 export SOURCE_ROOT ?= ./
 
 export MICO_OS_PATH := $(SOURCE_ROOT)mico-os
+export ALIOS_PATH := $(SOURCE_ROOT)mico-os/alios
 export MAKEFILES_PATH := $(SOURCE_ROOT)mico-os/makefiles
 export SCRIPTS_PATH := $(SOURCE_ROOT)mico-os/makefiles/scripts
 export LIST_SUB_DIRS_SCRIPT  := $(MAKEFILES_PATH)/scripts/list_sub_directories.py

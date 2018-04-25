@@ -1,0 +1,16 @@
+SUBSYSTEM=="tty", ATTRS{idVendor}=="0403", ATTRS{idProduct}=="6015", SYMLINK="mk3060-%s{serial}"
+SUBSYSTEM=="tty", ATTRS{idVendor}=="10c4", ATTRS{idProduct}=="ea60", SYMLINK="esp32-%s{devpath}"
+
+##STM32_nucleo
+#SUBSYSTEM=="tty", ATTRS{idVendor}=="0483", ATTRS{idProduct}=="374b", SYMLINK="stm32l432-%s{serial}"
+#SUBSYSTEM=="tty", ATTRS{idVendor}=="0483", ATTRS{idProduct}=="374b", ATTRS{serial}=="0672FF333036434B43055349", SYMLINK="stm32l433-%s{serial}"
+#SUBSYSTEM=="tty", ATTRS{idVendor}=="0483", ATTRS{idProduct}=="374b", ATTRS{serial}=="066DFF484851877267024231", SYMLINK="stm32l475-%s{serial}"
+#SUBSYSTEM=="tty", ATTRS{idVendor}=="0483", ATTRS{idProduct}=="374b", ATTRS{serial}=="066DFF484851877267050727", SYMLINK="stm32l475-%s{serial}"
+#SUBSYSTEM=="tty", ATTRS{idVendor}=="0483", ATTRS{idProduct}=="374b", ATTRS{serial}=="066FFF555352845187081536", SYMLINK="stm32l496-%s{serial}"
+
+##LoRA
+#SUBSYSTEM=="tty", ATTRS{idVendor}=="0403", ATTRS{idProduct}=="6015", ATTRS{serial}=="DN02XAAL", SYMLINK="lora-%s{serial}"
+#SUBSYSTEM=="tty", ATTRS{idVendor}=="0403", ATTRS{idProduct}=="6015", ATTRS{serial}=="DN02XAAP", SYMLINK="lora-%s{serial}"
+#SUBSYSTEM=="tty", ATTRS{idVendor}=="0403", ATTRS{idProduct}=="6015", ATTRS{serial}=="DN02XAXX", SYMLINK="lora-%s{serial}"
+#SUBSYSTEM=="tty", ATTRS{idVendor}=="0403", ATTRS{idProduct}=="6015", ATTRS{serial}=="DN02XAXW", SYMLINK="lora-%s{serial}"
+

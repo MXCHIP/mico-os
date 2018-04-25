@@ -1,0 +1,5 @@
+set sendmail="/usr/bin/msmtp"
+set use_from=yes
+set realname="Li Cheng"
+set from="lc122798@alibaba-inc.com"
+set editor="vim"

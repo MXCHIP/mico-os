@@ -10,8 +10,4 @@
 NAME := alios_kernel
 
 
-$(NAME)_COMPONENTS := alios/kernel/vcall
-
-
-
-
+$(NAME)_COMPONENTS := vcall

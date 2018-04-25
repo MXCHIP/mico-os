@@ -1,0 +1,22 @@
+#!/usr/bin/env bash
+
+host="118.31.76.36"
+port="2000"
+if [ $# -gt 0 ];then
+    host=$1
+fi
+if [ $# -gt 1 ];then
+    port=$2
+fi
+
+cd ${HOME}/udcenter
+PIDS=`ps aux | grep "python udcenter.py" | grep "client" | awk '{ print $2 }'`
+if [ "${PIDS}" != "" ]; then
+    kill ${PIDS}
+    sleep 1
+fi
+rm -rf /tmp/.testbed_client
+if [ -f ~/.bashrc ]; then
+    . ~/.bashrc
+fi
+screen -dmL python udcenter.py client -s ${host} -p ${port}

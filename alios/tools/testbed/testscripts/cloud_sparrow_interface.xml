@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<test-type file="py" description="Alink_5PPS_30min">
+    <type name="Alink 5PPS半小时测试">
+        <test-scopes/>
+        <test-parameters>
+            <test-parameter default-value="" sname="userpath" name="用户指定刷机镜像路径" description="用户指定刷机镜像路径" optional="true" value-type="Text"/>
+            <test-parameter default-value="/home/ioti/lb-all.bin" sname="path" name="刷机镜像路径" description="刷机镜像路径" optional="true" value-type="Hidden"/>
+            <test-parameter default-value="alink_testrun" sname="testfile" name="测试文件名" description="测试文件名" optional="true" value-type="Hidden"/>
+            <test-parameter default-value="true" sname="ifDeleteImage" name="任务完成后删除下载镜像包" description="是否删除镜像包" optional="true" value-type="CheckBox"/>
+        </test-parameters>
+    </type>
+</test-type>

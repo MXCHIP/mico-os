@@ -186,8 +186,29 @@ COMPONENTS += mocOS mocIP mocSSL
 endif
 
 ifneq ($(ALIOS),)
-COMPONENTS += alios_kernel alios_acrypto
+COMPONENTS += alios_kernel alios_crypto
 ALIOS_SUPPORT := 1
+BUS := SDIO
+WLAN_CHIP := ALIOS
+WLAN_CHIP_REVISION := ALIOS
+WLAN_CHIP_FAMILY := ALIOS
+
+COMPONENT_DIRECTORIES := $(ALIOS_PATH) \
+                         $(ALIOS_PATH)/kernel \
+                         $(ALIOS_PATH)/board \
+                         $(ALIOS_PATH)/platform \
+                         $(ALIOS_PATH)/utility \
+                         $(ALIOS_PATH)/framework \
+                         $(ALIOS_PATH)/security \
+                         $(MICO_OS_PATH) \
+                         $(MICO_OS_PATH)/sub_build \
+                         $(MICO_OS_PATH)/MiCO \
+                         $(MICO_OS_PATH)/MiCO/net \
+                         $(MICO_OS_PATH)/MiCO/RTOS \
+                         $(MICO_OS_PATH)/MiCO/security/TLS \
+                         $(MICO_OS_PATH)/libraries \
+                         $(SOURCE_ROOT) \
+                         $(SOURCE_ROOT)/board
 endif
 
 # Check if there are any unknown components; output error if so.
@@ -197,7 +218,7 @@ $(foreach comp, $(COMPONENTS), $(if $(wildcard $(foreach dir, $(COMPONENT_DIRECT
 NET_FULL	    ?=$(strip $(foreach comp,$(subst .,/,$(COMPONENTS)),$(if $(wildcard $(MICO_OS_PATH)/MiCO/net/$(comp)),$(comp),)))
 RTOS_FULL       ?=$(strip $(foreach comp,$(subst .,/,$(COMPONENTS)),$(if $(wildcard $(MICO_OS_PATH)/MiCO/RTOS/$(comp)),$(comp),)))
 TLS_FULL        ?=$(strip $(foreach comp,$(subst .,/,$(COMPONENTS)),$(if $(wildcard $(MICO_OS_PATH)/MiCO/security/TLS/$(comp)),$(comp),)))
-PLATFORM_FULL   :=$(strip $(foreach comp,$(subst .,/,$(COMPONENTS)),$(if $(wildcard $(MICO_OS_PATH)/board/$(comp)),$(MICO_OS_PATH)/board/$(comp),$(if $(wildcard $(SOURCE_ROOT)/board/$(comp)),$(SOURCE_ROOT)/board/$(comp),))))
+PLATFORM_FULL   :=$(strip $(foreach comp,$(subst .,/,$(COMPONENTS)),$(if $(wildcard $(MICO_OS_PATH)/board/$(comp)),$(MICO_OS_PATH)/board/$(comp),$(if $(wildcard $(SOURCE_ROOT)/board/$(comp)),$(SOURCE_ROOT)/board/$(comp), $(if $(wildcard $(ALIOS_PATH)/board/$(comp)),$(ALIOS_PATH)/board/$(comp),   )  ))))
 APP_FULL        :=$(strip $(foreach comp,$(subst .,/,$(COMPONENTS)),$(if $(wildcard $(SOURCE_ROOT)$(comp)),$(SOURCE_ROOT)$(comp),$(if $(wildcard $(MICO_OS_PATH)/$(comp)),$(MICO_OS_PATH)/$(comp),))))
 
 NET			:=$(notdir $(NET_FULL))
@@ -236,7 +257,7 @@ $(eval CURDIR := $(PLATFORM_DIRECTORY)/)
 include $(PLATFORM_DIRECTORY)/$(notdir $(PLATFORM_DIRECTORY)).mk
 
 
-ifneq ($(MBED_SUPPORT),)
+ifneq ($(ALIOS_SUPPORT),)
 
 else
 ifneq ($(MBED_SUPPORT),)

@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+
+PIDS=`ps aux | grep "python udcenter.py" | grep "server" | awk '{ print $2 }'`
+if [ "${PIDS}" != "" ]; then
+    kill ${PIDS}
+fi
