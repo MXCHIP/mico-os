@@ -26,11 +26,18 @@ $(NAME)_COMPONENTS += utilities
 GLOBAL_DEFINES += 
 
 # Add MCU component
+ifneq ($(ALIOS_SUPPORT),)
+
+else
 ifneq ($(MBED_SUPPORT),)
 $(NAME)_COMPONENTS += platform/mbed
 else
 $(NAME)_COMPONENTS += platform/MCU/$(HOST_MCU_FAMILY)
 endif
+endif
+
+# Easylink Button
+$(NAME)_COMPONENTS += drivers/keypad/gpio_button
 
 # Define the default ThreadX and FreeRTOS starting stack sizes
 FreeRTOS_START_STACK := 800
@@ -44,3 +51,5 @@ GLOBAL_INCLUDES += . \
                    security
                    
 # $(NAME)_CFLAGS  = $(COMPILER_SPECIFIC_PEDANTIC_CFLAGS)
+
+

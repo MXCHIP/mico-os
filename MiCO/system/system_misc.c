@@ -19,7 +19,6 @@
 #include "mico.h"
 #include "StringUtils.h"
 #include "time.h"
-#include "button.h"
 
 #include "system_internal.h"
 
@@ -252,6 +251,7 @@ OSStatus system_network_daemen_start( system_context_t * const inContext )
 }
 
 #if MICO_CONFIG_EASYLINK_BTN_ENABLE
+#include "button.h"
 
 button_context_t easylink_btn;
 

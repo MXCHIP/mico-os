@@ -10,7 +10,7 @@
 NAME := LwIP
 
 ifneq ($(ALIOS_SUPPORT),)
-
+GLOBAL_DEFINES += WITH_LWIP
 else
 
 ifneq ($(filter $(HOST_MCU_FAMILY),MOC108),)

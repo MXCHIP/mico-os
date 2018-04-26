@@ -96,7 +96,7 @@ extern "C" {
 #endif
 
 // ==== COMPATIBILITY TYPES
-typedef uint8_t         Boolean;
+
 typedef uint8_t         mico_bool_t;
 
 #define MICO_FALSE      (0)

@@ -7,7 +7,7 @@
 #  permission of MXCHIP Corporation.
 #
 
-NAME := MiCO_FreeRTOS_Interface
+NAME := MiCO_alios_Interface
 
 GLOBAL_INCLUDES := . 
 

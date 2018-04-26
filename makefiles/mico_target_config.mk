@@ -48,7 +48,6 @@ $(if $(TEMP_MAKEFILE),,\
 	 $(info Unknown component: $(COMP) - directory or makefile for component not found. Ensure the $(COMP_LOCATION) directory contains $(COMP_MAKEFILE_NAME).mk) \
 	 $(info Below is a list of valid local components (Some are internal): ) \
 	 $(call FIND_VALID_COMPONENTS, VALID_COMPONENT_LIST,$(COMPONENT_DIRECTORIES)) \
-     $(foreach comp,$(VALID_COMPONENT_LIST),$(info $(comp))) \
      $(info Below is a list of valid components from the internet: ) \
      $(info $(call DOWNLOAD_COMPONENT_LIST)) \
      $(error Unknown component: $(COMP) - directory or makefile for component not found. Ensure the $(COMP_LOCATION) directory contains $(COMP_MAKEFILE_NAME).mk))
@@ -115,6 +114,7 @@ $(NAME)_OPTIM_CXXFLAGS ?= $(if $(findstring debug,$($(NAME)_BUILD_TYPE)), $(COMP
 
 MiCO_SDK_INCLUDES           +=$(addprefix -I$($(NAME)_LOCATION),$(GLOBAL_INCLUDES))
 MiCO_SDK_INCLUDES           +=$(addprefix -I,$(GLOBAL_ABS_INCLUDES))
+
 MiCO_SDK_LINK_SCRIPT        +=$(if $(GLOBAL_LINK_SCRIPT),$(GLOBAL_LINK_SCRIPT),)
 MiCO_SDK_DEFAULT_LINK_SCRIPT+=$(if $(DEFAULT_LINK_SCRIPT),$(addprefix $($(NAME)_LOCATION),$(DEFAULT_LINK_SCRIPT)),)
 MiCO_SDK_DEFINES            +=$(GLOBAL_DEFINES)
@@ -170,8 +170,8 @@ BUILD_TYPE          := $(if $(filter $(BUILD_TYPE_LIST),$(COMPONENTS)),$(firstwo
 IMAGE_TYPE          := $(if $(filter $(IMAGE_TYPE_LIST),$(COMPONENTS)),$(firstword $(filter $(IMAGE_TYPE_LIST),$(COMPONENTS))),ram)
 RUN_LINT            := $(filter lint,$(COMPONENTS))
 MOC                 := $(filter $(MOC_LIST),$(COMPONENTS))
-ALIOS               := $(filter alios,$(COMPONENTS))
-COMPONENTS          := $(filter-out $(MOC_LIST) $(BUS_LIST) $(BUILD_TYPE_LIST) $(IMAGE_TYPE_LIST) $(TOTAL_BUILD) alios, $(COMPONENTS))
+ALIOS               := $(filter aos,$(COMPONENTS))
+COMPONENTS          := $(filter-out $(MOC_LIST) $(BUS_LIST) $(BUILD_TYPE_LIST) $(IMAGE_TYPE_LIST) $(TOTAL_BUILD) aos, $(COMPONENTS))
 
 # Set debug/release specific options
 ifeq ($(BUILD_TYPE),release)
@@ -192,6 +192,7 @@ BUS := SDIO
 WLAN_CHIP := ALIOS
 WLAN_CHIP_REVISION := ALIOS
 WLAN_CHIP_FAMILY := ALIOS
+HOST_OPENOCD := ALIOS
 
 COMPONENT_DIRECTORIES := $(ALIOS_PATH) \
                          $(ALIOS_PATH)/kernel \
@@ -258,6 +259,8 @@ include $(PLATFORM_DIRECTORY)/$(notdir $(PLATFORM_DIRECTORY)).mk
 
 
 ifneq ($(ALIOS_SUPPORT),)
+$(eval CURDIR := $(ALIOS_PATH)/platform/mcu/$(HOST_MCU_FAMILY)/)
+include $(PLATFORM_DIRECTORY)/$(notdir $(PLATFORM_DIRECTORY)).mk
 
 else
 ifneq ($(MBED_SUPPORT),)
@@ -295,6 +298,9 @@ endif
 
 # Process all the components + MiCO
 COMPONENTS += MiCO
+ifneq ($(ALIOS),)
+COMPONENTS += alios
+endif
 $(info processing components: $(COMPONENTS))
 
 CURDIR :=
