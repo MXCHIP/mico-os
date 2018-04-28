@@ -12,15 +12,29 @@ NAME := Lib_Utilities
 GLOBAL_INCLUDES += .
 
 $(NAME)_SOURCES := AESUtils.c \
-				   RingBufferUtils.c \
-                   StringUtils.c \
                    LinkListUtils.c \
                    SocketUtils.c \
-                   CheckSumUtils.c \
                    HTTPUtils.c \
                    TimeUtils.c \
                    TLVUtils.c \
                    URLUtils.c
+                   
+ifeq ($(ALIOS_SUPPORT),y)
+# AliOS + moc108 source codes
+ifeq ($(HOST_MCU_FAMILY),moc108)
+
+else
+# AliOS source codes
+$(NAME)_SOURCES += RingBufferUtils.c \
+                   StringUtils.c
+endif
+
+else
+# MiCO source codes
+$(NAME)_SOURCES += CheckSumUtils.c \
+                   RingBufferUtils.c \
+                   StringUtils.c
+endif
                    
 $(NAME)_COMPONENTS += utilities/json_c
 

@@ -28,7 +28,7 @@ GLOBAL_LDFLAGS  += $$(CPU_LDFLAGS)   $$(ENDIAN_LDFLAGS_LITTLE)
 
 
 # Components
-$(NAME)_COMPONENTS += platform/mbed/mbed-os
+$(NAME)_COMPONENTS += mbed-os
 
 # Components, add mbed targets
 TARGETS := $(foreach target, $(MBED_TARGETS), TARGET_$(target))

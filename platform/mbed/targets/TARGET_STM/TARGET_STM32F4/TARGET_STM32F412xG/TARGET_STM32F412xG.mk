@@ -9,12 +9,12 @@
 
 NAME = stm32f412xg
 
-SRC_DIR := ../../../../mbed-os/targets/TARGET_STM/TARGET_STM32F4/TARGET_STM32F412xG
+SRC_DIR := $(MBED_OS_PATH)/targets/TARGET_STM/TARGET_STM32F4/TARGET_STM32F412xG
 
 
 $(NAME)_SOURCES := TOOLCHAIN_$(TOOLCHAIN_NAME_MBED)/startup_stm32f412xx.s
                    
-GLOBAL_INCLUDES := $(SRC_DIR) $(SRC_DIR)/device
+GLOBAL_ABS_INCLUDES := $(SRC_DIR) $(SRC_DIR)/device
                    
 
 ifeq ($(APP),bootloader)

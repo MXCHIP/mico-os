@@ -25,7 +25,6 @@
 
 
 #ifndef MICO_PREBUILT_LIBS
-#include "mico_config.h"
 #include "mico_board_conf.h"
 #endif
 

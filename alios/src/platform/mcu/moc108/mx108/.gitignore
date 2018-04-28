@@ -1,5 +1,0 @@
-.gdbinit
-.settings/language.settings.xml
-.settings/org.eclipse.cdt.managedbuilder.core.prefs
-Debug
-si

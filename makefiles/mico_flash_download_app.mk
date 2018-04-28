@@ -12,7 +12,8 @@ SFLASH_REDIRECT	= > $(SFLASH_LOG_FILE)
 
 SFLASH_APP_TARGET := sub_build.spi_flash_write@NoRTOS@$(PLATFORM)@release
 SFLASH_APP_PLATFROM_BUS := $(PLATFORM)
-SFLASH_PREBUILD_APP := $(if $(wildcard $(MICO_OS_PATH)/board/$(PLATFORM)),$(MICO_OS_PATH)/board/$(PLATFORM),$(if $(wildcard $(SOURCE_ROOT)/board/$(PLATFORM)),$(SOURCE_ROOT)/board/$(PLATFORM),))/flash_prog.elf
+
+SFLASH_PREBUILD_APP := $(PLATFORM_DIRECTORY)/flash_prog.elf
 
 FILE_BIN_SCRIPT:= $(MAKEFILES_PATH)/scripts/flash_pack.py
 FILE_BIN_NUM:= 001

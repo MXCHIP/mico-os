@@ -185,31 +185,29 @@ ifneq ($(MOC),)
 COMPONENTS += mocOS mocIP mocSSL
 endif
 
-ifneq ($(ALIOS),)
-COMPONENTS += alios_kernel alios_crypto
-ALIOS_SUPPORT := 1
-BUS := SDIO
-WLAN_CHIP := ALIOS
-WLAN_CHIP_REVISION := ALIOS
-WLAN_CHIP_FAMILY := ALIOS
-HOST_OPENOCD := ALIOS
+# Read platform information
+PLATFORM_FULL   	:=$(strip $(foreach comp,$(subst .,/,$(COMPONENTS)),$(if $(wildcard $(MICO_OS_PATH)/board/$(comp)),$(MICO_OS_PATH)/board/$(comp),$(if $(wildcard $(SOURCE_ROOT)/board/$(comp)),$(SOURCE_ROOT)/board/$(comp), ))))
+PLATFORM    		:=$(notdir $(PLATFORM_FULL))
+PLATFORM_DIRECTORY 	:= $(PLATFORM_FULL)
 
-COMPONENT_DIRECTORIES := $(ALIOS_PATH) \
-                         $(ALIOS_PATH)/kernel \
-                         $(ALIOS_PATH)/board \
-                         $(ALIOS_PATH)/platform \
-                         $(ALIOS_PATH)/utility \
-                         $(ALIOS_PATH)/framework \
-                         $(ALIOS_PATH)/security \
-                         $(MICO_OS_PATH) \
-                         $(MICO_OS_PATH)/sub_build \
-                         $(MICO_OS_PATH)/MiCO \
-                         $(MICO_OS_PATH)/MiCO/net \
-                         $(MICO_OS_PATH)/MiCO/RTOS \
-                         $(MICO_OS_PATH)/MiCO/security/TLS \
-                         $(MICO_OS_PATH)/libraries \
-                         $(SOURCE_ROOT) \
-                         $(SOURCE_ROOT)/board
+# Load platform makefile to make variables like WLAN_CHIP, HOST_OPENOCD & HOST_ARCH available to all makefiles
+$(eval CURDIR := $(PLATFORM_DIRECTORY)/)
+include $(PLATFORM_DIRECTORY)/$(notdir $(PLATFORM_DIRECTORY)).mk
+
+# Add AliOS components
+ifeq ($(ALIOS_SUPPORT),y)
+ifneq ($(wildcard $(SOURCE_ROOT)alios/alios.mk),)
+COMPONENTS += alios_kernel alios_crypto
+include $(SOURCE_ROOT)alios/alios.mk
+else
+$(error alios component not found, use mico cube command: "mico add alios".)
+endif
+endif
+
+ifeq ($(MBED_SUPPORT),1)
+ifeq ($(wildcard $(SOURCE_ROOT)mbed-os/mbed-os.mk),)
+$(error mbed os component not found, use mico cube command: "mico add mbed-os".)
+endif
 endif
 
 # Check if there are any unknown components; output error if so.
@@ -219,16 +217,12 @@ $(foreach comp, $(COMPONENTS), $(if $(wildcard $(foreach dir, $(COMPONENT_DIRECT
 NET_FULL	    ?=$(strip $(foreach comp,$(subst .,/,$(COMPONENTS)),$(if $(wildcard $(MICO_OS_PATH)/MiCO/net/$(comp)),$(comp),)))
 RTOS_FULL       ?=$(strip $(foreach comp,$(subst .,/,$(COMPONENTS)),$(if $(wildcard $(MICO_OS_PATH)/MiCO/RTOS/$(comp)),$(comp),)))
 TLS_FULL        ?=$(strip $(foreach comp,$(subst .,/,$(COMPONENTS)),$(if $(wildcard $(MICO_OS_PATH)/MiCO/security/TLS/$(comp)),$(comp),)))
-PLATFORM_FULL   :=$(strip $(foreach comp,$(subst .,/,$(COMPONENTS)),$(if $(wildcard $(MICO_OS_PATH)/board/$(comp)),$(MICO_OS_PATH)/board/$(comp),$(if $(wildcard $(SOURCE_ROOT)/board/$(comp)),$(SOURCE_ROOT)/board/$(comp), $(if $(wildcard $(ALIOS_PATH)/board/$(comp)),$(ALIOS_PATH)/board/$(comp),   )  ))))
 APP_FULL        :=$(strip $(foreach comp,$(subst .,/,$(COMPONENTS)),$(if $(wildcard $(SOURCE_ROOT)$(comp)),$(SOURCE_ROOT)$(comp),$(if $(wildcard $(MICO_OS_PATH)/$(comp)),$(MICO_OS_PATH)/$(comp),))))
 
 NET			:=$(notdir $(NET_FULL))
 RTOS        :=$(notdir $(RTOS_FULL))
 TLS         :=$(notdir $(TLS_FULL))
-PLATFORM    :=$(notdir $(PLATFORM_FULL))
 APP         :=$(notdir $(APP_FULL))
-
-PLATFORM_DIRECTORY := $(PLATFORM_FULL)
 
 # Define default RTOS and TCPIP stack
 ifndef RTOS
@@ -253,19 +247,17 @@ EXTRA_CFLAGS :=    -DMiCO_SDK_VERSION_MAJOR=$(MiCO_SDK_VERSION_MAJOR) \
                    -I$(OUTPUT_DIR)/resources/  \
                    -DPLATFORM=$(SLASH_QUOTE_START)$$(PLATFORM)$(SLASH_QUOTE_END)
 
-# Load platform makefile to make variables like WLAN_CHIP, HOST_OPENOCD & HOST_ARCH available to all makefiles
-$(eval CURDIR := $(PLATFORM_DIRECTORY)/)
-include $(PLATFORM_DIRECTORY)/$(notdir $(PLATFORM_DIRECTORY)).mk
-
+# AliOS native apps, add some default configurations
+$(if $(filter alios, $(subst /, ,$(dir $(APP_FULL)))), \
+     $(eval ALIOS_NATIVE_APP := y),)
 
 ifneq ($(ALIOS_SUPPORT),)
 $(eval CURDIR := $(ALIOS_PATH)/platform/mcu/$(HOST_MCU_FAMILY)/)
-include $(PLATFORM_DIRECTORY)/$(notdir $(PLATFORM_DIRECTORY)).mk
+include $(ALIOS_PATH)/platform/mcu/$(HOST_MCU_FAMILY)/$(HOST_MCU_FAMILY).mk
 
 else
 ifneq ($(MBED_SUPPORT),)
 include $(MICO_OS_PATH)/platform/mbed/mbed.mk
-
 TARGETS := $(foreach target, $(MBED_TARGETS), TARGET_$(target))
 $(eval DIRS := $(shell $(PYTHON) $(LIST_SUB_DIRS_SCRIPT) mico-os/platform/mbed/targets))
 $(foreach DIR, $(DIRS), $(if $(filter $(notdir $(DIR)), $(TARGETS)), $(eval include $(DIR)/$(notdir $(DIR)).mk),))
@@ -298,9 +290,6 @@ endif
 
 # Process all the components + MiCO
 COMPONENTS += MiCO
-ifneq ($(ALIOS),)
-COMPONENTS += alios
-endif
 $(info processing components: $(COMPONENTS))
 
 CURDIR :=

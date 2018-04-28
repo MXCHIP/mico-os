@@ -26,7 +26,7 @@ GLOBAL_INCLUDES := .
 ###############################################
 # Use abslute path to reference mico-os codes #
 ###############################################
-MBED_DRV_DIR := mico-os/platform/mbed/mbed-os/targets/TARGET_STM/TARGET_STM32L0
+MBED_DRV_DIR := $(MBED_OS_PATH)/targets/TARGET_STM/TARGET_STM32L0
 ST_DRV_DIR   := $(MBED_DRV_DIR)/device
 ST_DRV_SRC   := $(notdir $(wildcard $(ST_DRV_DIR)/*.c))
 

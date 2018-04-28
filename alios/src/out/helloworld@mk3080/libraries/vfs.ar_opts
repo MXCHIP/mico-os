@@ -1,1 +1,0 @@
-out/helloworld@mk3080/Modules/kernel/vfs/device.o out/helloworld@mk3080/Modules/kernel/vfs/select.o out/helloworld@mk3080/Modules/kernel/vfs/vfs.o out/helloworld@mk3080/Modules/kernel/vfs/vfs_file.o out/helloworld@mk3080/Modules/kernel/vfs/vfs_inode.o out/helloworld@mk3080/Modules/kernel/vfs/vfs_register.o  

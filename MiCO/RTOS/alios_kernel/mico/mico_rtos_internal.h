@@ -19,11 +19,7 @@
 
 #pragma once
 
-#include "FreeRTOS.h"
-#include "task.h"
-#include "semphr.h"
-#include "timers.h"
-
+#if 0
 
 /******************************************************
  *                      Macros
@@ -39,7 +35,7 @@
 #define RTOS_LOWEST_PRIORITY             (0)
 #define RTOS_HIGHEST_PRIORITY            (configMAX_PRIORITIES-1)
 #define RTOS_DEFAULT_THREAD_PRIORITY     (1)
-
+#endif
 /******************************************************
  *                    Constants
  ******************************************************/
@@ -62,8 +58,9 @@
 #define NETWORKING_WORKER_THREAD_STACK_SIZE                               (2 * 1024)
 #define NETWORKING_WORKER_THREAD_QUEUE_SIZE                                     (15)
 
-#define RTOS_NAME                     "FreeRTOS"
-#define RTOS_VERSION                  FreeRTOS_VERSION
+
+#define RTOS_NAME                     "RHINO"
+#define RTOS_VERSION                  SYSINFO_KERNEL_VERSION
 
 /******************************************************
  *                   Enumerations
@@ -81,8 +78,8 @@
  *                 Global Variables
  ******************************************************/
 
-/******************************************************
- *               Function Declarations
- ******************************************************/
+ /******************************************************
+  *               Function Declarations
+  ******************************************************/
 
-OSStatus init_timer_thread(void);
+ OSStatus init_timer_thread(void);

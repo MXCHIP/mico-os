@@ -13,7 +13,7 @@ NAME = stm
 # Use abslute path to reference mico-os codes #
 ###############################################
 
-SOURCE_DIR := mico-os/platform/mbed/mbed-os/targets/TARGET_STM
+SOURCE_DIR := $(MBED_OS_PATH)/targets/TARGET_STM
 
 SOURCE_SRC := $(notdir $(wildcard $(SOURCE_DIR)/*.c))
 

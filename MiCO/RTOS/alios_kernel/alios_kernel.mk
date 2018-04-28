@@ -12,7 +12,6 @@ NAME := alios_kernel
 
 $(NAME)_COMPONENTS := vcall
 
-
-#$(NAME)_COMPONENTS += MiCO/RTOS/alios_kernel/mico
+$(NAME)_COMPONENTS += MiCO/RTOS/alios_kernel/mico
 
 GLOBAL_INCLUDES := ..

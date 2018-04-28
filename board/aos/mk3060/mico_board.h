@@ -194,6 +194,7 @@ enum
 #define MICO_I2C_CP         (MICO_I2C_NONE)
 
 
+void mico_board_init(void);
 
 #ifdef __cplusplus
 } /*extern "C" */

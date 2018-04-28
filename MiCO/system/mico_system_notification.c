@@ -52,6 +52,8 @@ netif_status_t netif_status[INTERFACE_MAX] = {INTERFACE_STATUS_DOWN, INTERFACE_S
 
 /* User defined notifications */
 
+#ifndef ALIOS_SUPPORT
+
 void ApListCallback(ScanResult *pApList)
 {
   _Notify_list_t *temp =  Notify_list[mico_notify_WIFI_SCAN_COMPLETED];
@@ -142,6 +144,7 @@ void NetCallback(IPStatusTypedef *pnet)
     }while(temp!=NULL);
   }
 }
+#endif
 
 void RptConfigmodeRslt(network_InitTypeDef_st *nwkpara)
 {

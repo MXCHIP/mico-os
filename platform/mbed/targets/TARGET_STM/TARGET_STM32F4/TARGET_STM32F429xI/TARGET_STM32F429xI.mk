@@ -13,7 +13,7 @@ NAME = stm32f429xi
 ###############################################
 # Use abslute path to reference mico-os codes #
 ###############################################
-SRC_DIR := mico-os/platform/mbed/mbed-os/targets/TARGET_STM/TARGET_STM32F4/TARGET_STM32F429xI
+SRC_DIR := $(MBED_OS_PATH)/targets/TARGET_STM/TARGET_STM32F4/TARGET_STM32F429xI
 
 $(NAME)_ABS_SOURCES := $(SRC_DIR)/device/TOOLCHAIN_$(TOOLCHAIN_NAME_MBED)/startup_stm32f429xx.S \
                        $(SRC_DIR)/device/system_init_pre.c
