@@ -70,7 +70,7 @@ enum
     MICO_GPIO_29,
     MICO_GPIO_MAX, /* Denotes the total number of GPIO port aliases. Not a valid GPIO alias */
     MICO_GPIO_NONE,
-    MICO_SYS_LED = MICO_GPIO_NONE, 
+    MICO_SYS_LED = MICO_GPIO_4,
     MICO_RF_LED = MICO_GPIO_NONE, 
     BOOT_SEL = MICO_GPIO_NONE, 
     MFG_SEL = MICO_GPIO_NONE, 

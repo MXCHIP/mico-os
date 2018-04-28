@@ -148,6 +148,7 @@ static void worker_thread_main( uint32_t arg )
     }
 }
 
+#ifndef ALIOS_SUPPORT
 OSStatus mico_rtos_create_worker_thread( mico_worker_thread_t* worker_thread, uint8_t priority, uint32_t stack_size, uint32_t event_queue_size )
 {
     memset( worker_thread, 0, sizeof( *worker_thread ) );
@@ -403,6 +404,8 @@ static void timer_thread_func(void* arg)
         mxchip_timer_tick();
     }
 }
+#endif
+
 #endif
 
 

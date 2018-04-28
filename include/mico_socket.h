@@ -38,7 +38,10 @@
 #include <sys/select.h>
 #endif
 #include "mico_errno.h"
+
+#ifndef ALIOS_SUPPORT
 #include "mico_poll.h"
+#endif
 
 #ifdef __cplusplus
 extern "C" {

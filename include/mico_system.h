@@ -36,12 +36,11 @@
 #include "mico_common.h"
 
 #include "system.h"
-#include "command_console/mico_cli.h"
 #include "json_c/json.h"
 #include "system_internal.h"
 
-#ifndef MICO_PREBUILT_LIBS
-#include "mico_config.h"
+#ifndef ALIOS_SUPPORT
+#include "command_console/mico_cli.h"
 #endif
 
 #ifdef __cplusplus

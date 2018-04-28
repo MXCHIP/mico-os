@@ -48,7 +48,6 @@ $(if $(TEMP_MAKEFILE),,\
 	 $(info Unknown component: $(COMP) - directory or makefile for component not found. Ensure the $(COMP_LOCATION) directory contains $(COMP_MAKEFILE_NAME).mk) \
 	 $(info Below is a list of valid local components (Some are internal): ) \
 	 $(call FIND_VALID_COMPONENTS, VALID_COMPONENT_LIST,$(COMPONENT_DIRECTORIES)) \
-     $(foreach comp,$(VALID_COMPONENT_LIST),$(info $(comp))) \
      $(info Below is a list of valid components from the internet: ) \
      $(info $(call DOWNLOAD_COMPONENT_LIST)) \
      $(error Unknown component: $(COMP) - directory or makefile for component not found. Ensure the $(COMP_LOCATION) directory contains $(COMP_MAKEFILE_NAME).mk))
@@ -115,6 +114,7 @@ $(NAME)_OPTIM_CXXFLAGS ?= $(if $(findstring debug,$($(NAME)_BUILD_TYPE)), $(COMP
 
 MiCO_SDK_INCLUDES           +=$(addprefix -I$($(NAME)_LOCATION),$(GLOBAL_INCLUDES))
 MiCO_SDK_INCLUDES           +=$(addprefix -I,$(GLOBAL_ABS_INCLUDES))
+
 MiCO_SDK_LINK_SCRIPT        +=$(if $(GLOBAL_LINK_SCRIPT),$(GLOBAL_LINK_SCRIPT),)
 MiCO_SDK_DEFAULT_LINK_SCRIPT+=$(if $(DEFAULT_LINK_SCRIPT),$(addprefix $($(NAME)_LOCATION),$(DEFAULT_LINK_SCRIPT)),)
 MiCO_SDK_DEFINES            +=$(GLOBAL_DEFINES)
@@ -170,8 +170,8 @@ BUILD_TYPE          := $(if $(filter $(BUILD_TYPE_LIST),$(COMPONENTS)),$(firstwo
 IMAGE_TYPE          := $(if $(filter $(IMAGE_TYPE_LIST),$(COMPONENTS)),$(firstword $(filter $(IMAGE_TYPE_LIST),$(COMPONENTS))),ram)
 RUN_LINT            := $(filter lint,$(COMPONENTS))
 MOC                 := $(filter $(MOC_LIST),$(COMPONENTS))
-ALIOS               := $(filter alios,$(COMPONENTS))
-COMPONENTS          := $(filter-out $(MOC_LIST) $(BUS_LIST) $(BUILD_TYPE_LIST) $(IMAGE_TYPE_LIST) $(TOTAL_BUILD) alios, $(COMPONENTS))
+ALIOS               := $(filter aos,$(COMPONENTS))
+COMPONENTS          := $(filter-out $(MOC_LIST) $(BUS_LIST) $(BUILD_TYPE_LIST) $(IMAGE_TYPE_LIST) $(TOTAL_BUILD) aos, $(COMPONENTS))
 
 # Set debug/release specific options
 ifeq ($(BUILD_TYPE),release)
@@ -185,9 +185,29 @@ ifneq ($(MOC),)
 COMPONENTS += mocOS mocIP mocSSL
 endif
 
-ifneq ($(ALIOS),)
-COMPONENTS += alios_kernel alios_acrypto
-ALIOS_SUPPORT := 1
+# Read platform information
+PLATFORM_FULL   	:=$(strip $(foreach comp,$(subst .,/,$(COMPONENTS)),$(if $(wildcard $(MICO_OS_PATH)/board/$(comp)),$(MICO_OS_PATH)/board/$(comp),$(if $(wildcard $(SOURCE_ROOT)/board/$(comp)),$(SOURCE_ROOT)/board/$(comp), ))))
+PLATFORM    		:=$(notdir $(PLATFORM_FULL))
+PLATFORM_DIRECTORY 	:= $(PLATFORM_FULL)
+
+# Load platform makefile to make variables like WLAN_CHIP, HOST_OPENOCD & HOST_ARCH available to all makefiles
+$(eval CURDIR := $(PLATFORM_DIRECTORY)/)
+include $(PLATFORM_DIRECTORY)/$(notdir $(PLATFORM_DIRECTORY)).mk
+
+# Add AliOS components
+ifeq ($(ALIOS_SUPPORT),y)
+ifneq ($(wildcard $(SOURCE_ROOT)alios/alios.mk),)
+COMPONENTS += alios_kernel alios_crypto
+include $(SOURCE_ROOT)alios/alios.mk
+else
+$(error alios component not found, use mico cube command: "mico add alios".)
+endif
+endif
+
+ifeq ($(MBED_SUPPORT),1)
+ifeq ($(wildcard $(SOURCE_ROOT)mbed-os/mbed-os.mk),)
+$(error mbed os component not found, use mico cube command: "mico add mbed-os".)
+endif
 endif
 
 # Check if there are any unknown components; output error if so.
@@ -197,16 +217,12 @@ $(foreach comp, $(COMPONENTS), $(if $(wildcard $(foreach dir, $(COMPONENT_DIRECT
 NET_FULL	    ?=$(strip $(foreach comp,$(subst .,/,$(COMPONENTS)),$(if $(wildcard $(MICO_OS_PATH)/MiCO/net/$(comp)),$(comp),)))
 RTOS_FULL       ?=$(strip $(foreach comp,$(subst .,/,$(COMPONENTS)),$(if $(wildcard $(MICO_OS_PATH)/MiCO/RTOS/$(comp)),$(comp),)))
 TLS_FULL        ?=$(strip $(foreach comp,$(subst .,/,$(COMPONENTS)),$(if $(wildcard $(MICO_OS_PATH)/MiCO/security/TLS/$(comp)),$(comp),)))
-PLATFORM_FULL   :=$(strip $(foreach comp,$(subst .,/,$(COMPONENTS)),$(if $(wildcard $(MICO_OS_PATH)/board/$(comp)),$(MICO_OS_PATH)/board/$(comp),$(if $(wildcard $(SOURCE_ROOT)/board/$(comp)),$(SOURCE_ROOT)/board/$(comp),))))
 APP_FULL        :=$(strip $(foreach comp,$(subst .,/,$(COMPONENTS)),$(if $(wildcard $(SOURCE_ROOT)$(comp)),$(SOURCE_ROOT)$(comp),$(if $(wildcard $(MICO_OS_PATH)/$(comp)),$(MICO_OS_PATH)/$(comp),))))
 
 NET			:=$(notdir $(NET_FULL))
 RTOS        :=$(notdir $(RTOS_FULL))
 TLS         :=$(notdir $(TLS_FULL))
-PLATFORM    :=$(notdir $(PLATFORM_FULL))
 APP         :=$(notdir $(APP_FULL))
-
-PLATFORM_DIRECTORY := $(PLATFORM_FULL)
 
 # Define default RTOS and TCPIP stack
 ifndef RTOS
@@ -231,17 +247,17 @@ EXTRA_CFLAGS :=    -DMiCO_SDK_VERSION_MAJOR=$(MiCO_SDK_VERSION_MAJOR) \
                    -I$(OUTPUT_DIR)/resources/  \
                    -DPLATFORM=$(SLASH_QUOTE_START)$$(PLATFORM)$(SLASH_QUOTE_END)
 
-# Load platform makefile to make variables like WLAN_CHIP, HOST_OPENOCD & HOST_ARCH available to all makefiles
-$(eval CURDIR := $(PLATFORM_DIRECTORY)/)
-include $(PLATFORM_DIRECTORY)/$(notdir $(PLATFORM_DIRECTORY)).mk
+# AliOS native apps, add some default configurations
+$(if $(filter alios, $(subst /, ,$(dir $(APP_FULL)))), \
+     $(eval ALIOS_NATIVE_APP := y),)
 
-
-ifneq ($(MBED_SUPPORT),)
+ifneq ($(ALIOS_SUPPORT),)
+$(eval CURDIR := $(ALIOS_PATH)/platform/mcu/$(HOST_MCU_FAMILY)/)
+include $(ALIOS_PATH)/platform/mcu/$(HOST_MCU_FAMILY)/$(HOST_MCU_FAMILY).mk
 
 else
 ifneq ($(MBED_SUPPORT),)
 include $(MICO_OS_PATH)/platform/mbed/mbed.mk
-
 TARGETS := $(foreach target, $(MBED_TARGETS), TARGET_$(target))
 $(eval DIRS := $(shell $(PYTHON) $(LIST_SUB_DIRS_SCRIPT) mico-os/platform/mbed/targets))
 $(foreach DIR, $(DIRS), $(if $(filter $(notdir $(DIR)), $(TARGETS)), $(eval include $(DIR)/$(notdir $(DIR)).mk),))

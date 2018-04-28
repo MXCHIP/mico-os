@@ -17,13 +17,13 @@
  */
 
 #include "mico_common.h"
-#include "mico_config.h"
+#include "mico_opt.h"
 #include "mico_board_conf.h"
 
 #ifdef MICO_DEFAULT_APPLICATION_STACK_SIZE
-uint32_t  app_stack_size = MICO_DEFAULT_APPLICATION_STACK_SIZE; 
+uint32_t MICO_WEAK app_stack_size = MICO_DEFAULT_APPLICATION_STACK_SIZE;
 #else
-uint32_t  app_stack_size = 1500;
+uint32_t MICO_WEAK app_stack_size = 1500;
 #endif
 
 
@@ -50,9 +50,9 @@ const uint32_t  mico_timer_queue_len = 5;
 const uint32_t mico_nmode_enable = true;
 
 #ifdef DEBUG
-int mico_debug_enabled = 1;
+int  MICO_WEAK mico_debug_enabled = 1;
 #else
-int mico_debug_enabled = 0;
+int  MICO_WEAK mico_debug_enabled = 0;
 #endif
 
 #ifdef SDIO_1_BIT

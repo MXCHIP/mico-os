@@ -33,7 +33,6 @@
 #define __MICOGPRS_H__
 
 #include "mico_common.h"
-#include "mico_system.h"
 
 #ifdef __cplusplus
 extern "C" {

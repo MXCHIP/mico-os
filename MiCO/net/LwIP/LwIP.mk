@@ -9,6 +9,10 @@
 
 NAME := LwIP
 
+ifneq ($(ALIOS_SUPPORT),)
+GLOBAL_DEFINES += WITH_LWIP
+else
+
 ifneq ($(filter $(HOST_MCU_FAMILY),MOC108),)
 VERSION := 2.0.2
 else
@@ -50,4 +54,4 @@ LWIP_MBED_TARGETS := $(foreach target, $(MBED_TARGETS), TARGET_$(target))
 $(eval DIRS := $(shell $(PYTHON) $(LIST_SUB_DIRS_SCRIPT) mico-os/MiCO/net/LwIP/lwip_eth))
 $(foreach DIR, $(DIRS), $(if $(filter $(notdir $(DIR)), $(LWIP_MBED_TARGETS)), $(eval $(NAME)_COMPONENTS += $(subst \,/,$(DIR))),))
 
-
+endif

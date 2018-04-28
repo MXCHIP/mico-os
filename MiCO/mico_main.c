@@ -64,6 +64,8 @@
 /******************************************************
  *               Variable Definitions
  ******************************************************/
+
+#ifndef ALIOS_SUPPORT
 #ifndef MICO_DISABLE_STDIO
 static const mico_uart_config_t stdio_uart_config =
 {
@@ -79,6 +81,9 @@ static volatile ring_buffer_t stdio_rx_buffer;
 static volatile uint8_t       stdio_rx_data[STDIO_BUFFER_SIZE];
 mico_mutex_t                  stdio_tx_mutex = NULL;
 #endif /* #ifndef MICO_DISABLE_STDIO */
+#endif /* #ifndef ALIOS_SUPPORT */
+
+extern int mico_debug_enabled;
 
 /******************************************************
  *               Function Definitions
@@ -89,8 +94,16 @@ void mico_main( void )
 {
 #if MICO_APPLICATION
 
+#ifdef DEBUG
+    mico_debug_enabled = 1;
+#else
+    mico_debug_enabled = 0;
+#endif
+
     /* Customized board configuration. */
     mico_board_init( );
+
+#ifndef ALIOS_SUPPORT
 
 #ifndef MICO_DISABLE_STDIO
     if( stdio_tx_mutex == NULL )
@@ -98,6 +111,8 @@ void mico_main( void )
 
     ring_buffer_init( (ring_buffer_t*) &stdio_rx_buffer, (uint8_t*) stdio_rx_data, STDIO_BUFFER_SIZE );
     mico_stdio_uart_init( &stdio_uart_config, (ring_buffer_t*) &stdio_rx_buffer );
+#endif
+
 #endif
 
     mico_rtos_init( );

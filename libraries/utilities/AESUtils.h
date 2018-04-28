@@ -39,6 +39,8 @@
 #include "SecurityUtils.h"
 #define AES_UTILS_USE_MICO_AES 1
 
+typedef uint32_t        Boolean;
+
 #if( !defined( AES_UTILS_HAS_GLADMAN_GCM ) )
 //    #if( __has_include( "gcm.h" ) )
     #ifdef _GCM_H

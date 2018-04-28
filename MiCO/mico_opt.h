@@ -20,7 +20,11 @@
 #define __MICO_OPT_H
 
 #ifndef MICO_PREBUILT_LIBS
+#ifdef ALIOS_NATIVE_APP
+#include "alios_native_app_config.h"
+#else
 #include "mico_config.h"
+#endif
 #include "mico_board_conf.h"
 #endif
 
@@ -102,7 +106,7 @@ extern "C" {
  *  Start standard QC test function other than application
  */
 #if !defined MICO_QUALITY_CONTROL_ENABLE
-#define MICO_QUALITY_CONTROL_ENABLE             1
+#define MICO_QUALITY_CONTROL_ENABLE             0
 #endif
 
 /******************************************************************************
