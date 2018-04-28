@@ -25,6 +25,7 @@
 #include "RingBufferUtils.h"
 
 #include <hal/soc/gpio.h>
+#include <hal/soc/uart.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -116,44 +117,22 @@ typedef gpio_irq_trigger_t platform_gpio_irq_trigger_t;
 /**
  * UART data width
  */
-typedef enum
-{
-    DATA_WIDTH_5BIT,
-    DATA_WIDTH_6BIT,
-    DATA_WIDTH_7BIT,
-    DATA_WIDTH_8BIT,
-    DATA_WIDTH_9BIT
-} platform_uart_data_width_t;
+typedef hal_uart_data_width_t platform_uart_data_width_t;
 
 /**
  * UART stop bits
  */
-typedef enum
-{
-    STOP_BITS_1,
-    STOP_BITS_2,
-} platform_uart_stop_bits_t;
+typedef hal_uart_stop_bits_t platform_uart_stop_bits_t;
 
 /**
  * UART flow control
  */
-typedef enum
-{
-    FLOW_CONTROL_DISABLED,
-    FLOW_CONTROL_CTS,
-    FLOW_CONTROL_RTS,
-    FLOW_CONTROL_CTS_RTS
-} platform_uart_flow_control_t;
+typedef hal_uart_flow_control_t platform_uart_flow_control_t;
 
 /**
  * UART parity
  */
-typedef enum
-{
-    NO_PARITY,
-    ODD_PARITY,
-    EVEN_PARITY,
-} platform_uart_parity_t;
+typedef hal_uart_parity_t platform_uart_parity_t;
 
 /**
  * I2C address width
