@@ -21,19 +21,11 @@
 #  IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 ############################################################################### 
 
-NAME := TARGET_MOC108
+NAME := alios_peripheral
 
 
-$(NAME)_SOURCES := ../platform_retarget.c
+$(NAME)_SOURCES := src/aos_gpio.c \
+                   mico_platform_common.c
                    
-GLOBAL_INCLUDES := .
-
-
-$(NAME)_COMPONENTS := platform/alios/aos_peripheral
-
-DEFAULT_LINK_SCRIPT += TOOLCHAIN_$(TOOLCHAIN_NAME_MBED)/moc108$(LINK_SCRIPT_SUFFIX)
-
-EXTRA_TARGET_MAKEFILES +=  ./mico-os/platform/alios/TARGET_MOC108/moc108_standard_targets.mk
-EXTRA_TARGET_MAKEFILES +=  ./mico-os/platform/alios/TARGET_MOC108/gen_crc_bin.mk
-
+GLOBAL_INCLUDES := . inc
 

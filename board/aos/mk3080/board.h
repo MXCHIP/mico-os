@@ -36,46 +36,25 @@ extern "C"
   
 #define MICO_UNUSED 0xFF
 
-enum
-{
-    MICO_SYS_LED,
-    MICO_RF_LED,
-    BOOT_SEL,
-    MFG_SEL,
-    EasyLink_BUTTON,
-    MICO_GPIO_1 ,
+enum {
+    MICO_GPIO_1,
     MICO_GPIO_2,
-    //MICO_GPIO_3,
-    MICO_GPIO_4,
-    MICO_GPIO_5,
-    MICO_GPIO_6,
     MICO_GPIO_7,
     MICO_GPIO_8,
     MICO_GPIO_9,
     MICO_GPIO_10,
-    //MICO_GPIO_11,
     MICO_GPIO_12,
     MICO_GPIO_13,
     MICO_GPIO_14,
-    //MICO_GPIO_15,
-    //MICO_GPIO_16,
-    //MICO_GPIO_17,
-    MICO_GPIO_18,
     MICO_GPIO_19,
-    MICO_GPIO_20,
     MICO_GPIO_21,
     MICO_GPIO_22,
     MICO_GPIO_23,
-    //MICO_GPIO_24,
-    //MICO_GPIO_25,
-    //MICO_GPIO_26,
-    //MICO_GPIO_27,
-    //MICO_GPIO_28,
-    MICO_GPIO_29,
-    //MICO_GPIO_30,
     MICO_GPIO_MAX, /* Denotes the total number of GPIO port aliases. Not a valid GPIO alias */
     MICO_GPIO_NONE,
 };
+
+
 
 enum
 {
@@ -144,7 +123,7 @@ enum
 #endif
 
 #define UART_FOR_APP     MICO_UART_1
-#define MFG_TEST         MICO_UART_1
+#define MICO_MFG_TEST         MICO_UART_1
 #define CLI_UART         MICO_UART_1
 
 /* Components connected to external I/Os*/

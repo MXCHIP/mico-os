@@ -1,7 +1,7 @@
 ############################################################################### 
 #
 #  The MIT License
-#  Copyright (c) 2018 MXCHIP Inc.
+#  Copyright (c) 2016 MXCHIP Inc.
 #
 #  Permission is hereby granted, free of charge, to any person obtaining a copy 
 #  of this software and associated documentation files (the "Software"), to deal
@@ -21,19 +21,25 @@
 #  IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 ############################################################################### 
 
-NAME := TARGET_MOC108
+EXTRA_POST_BUILD_TARGETS += gen_standard_images
 
+#bootloader
+BOOT_BIN_FILE    := $(PLATFORM_DIRECTORY)/boot.bin
+BOOT_OFFSET      := 0x0
 
-$(NAME)_SOURCES := ../platform_retarget.c
-                   
-GLOBAL_INCLUDES := .
+#application 
+APP_BIN_FILE :=$(BIN_OUTPUT_FILE)
+APP_OFFSET:= 0xC000
 
+#wifi firmware
 
-$(NAME)_COMPONENTS := platform/alios/aos_peripheral
+# Required to build Full binary file
+GEN_COMMON_BIN_OUTPUT_FILE_SCRIPT:= $(SCRIPTS_PATH)/gen_common_bin_output_file.py
 
-DEFAULT_LINK_SCRIPT += TOOLCHAIN_$(TOOLCHAIN_NAME_MBED)/moc108$(LINK_SCRIPT_SUFFIX)
+MOC_ALL_BIN_OUTPUT_FILE :=$(LINK_OUTPUT_FILE:$(LINK_OUTPUT_SUFFIX)=.all$(BIN_OUTPUT_SUFFIX))
 
-EXTRA_TARGET_MAKEFILES +=  ./mico-os/platform/alios/TARGET_MOC108/moc108_standard_targets.mk
-EXTRA_TARGET_MAKEFILES +=  ./mico-os/platform/alios/TARGET_MOC108/gen_crc_bin.mk
-
-
+gen_standard_images: build_done
+	$(QUIET)$(ECHO) Generate Standard Flash Images: $(MOC_ALL_BIN_OUTPUT_FILE)
+	$(QUIET)$(RM) $(MOC_ALL_BIN_OUTPUT_FILE)
+	$(PYTHON) $(GEN_COMMON_BIN_OUTPUT_FILE_SCRIPT) -o $(MOC_ALL_BIN_OUTPUT_FILE) -f $(BOOT_OFFSET) $(BOOT_BIN_FILE)              
+	$(PYTHON) $(GEN_COMMON_BIN_OUTPUT_FILE_SCRIPT) -o $(MOC_ALL_BIN_OUTPUT_FILE) -f $(APP_OFFSET)  $(APP_BIN_FILE)

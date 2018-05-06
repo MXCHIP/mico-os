@@ -33,7 +33,6 @@
 #include "mico_platform.h"
 #include "mico_board.h"
 #include "mico_board_conf.h"
-#include "platform_peripheral.h"
 #include "platform_logging.h"
 #include "CheckSumUtils.h"
 

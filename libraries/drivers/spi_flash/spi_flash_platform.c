@@ -20,6 +20,8 @@
 
 #if defined ( USE_MICO_SPI_FLASH )
 
+extern const mico_spi_device_t mico_spi_flash;
+
 int sflash_platform_init ( /*@shared@*/ void* peripheral_id, /*@out@*/ void** platform_peripheral_out )
 {
     UNUSED_PARAMETER( peripheral_id );  /* Unused due to single SPI Flash */

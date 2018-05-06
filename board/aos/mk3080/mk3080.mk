@@ -27,17 +27,15 @@ GLOBAL_CFLAGS += -DSYSINFO_DEVICE_NAME=\"$(CONFIG_SYSINFO_DEVICE_NAME)\"
 
 GLOBAL_CFLAGS += -L $(SOURCE_ROOT)/board/mk3080
 
-
 # Extra build target in mico_standard_targets.mk, include bootloader, and copy output file to eclipse debug file (copy_output_for_eclipse)
-#EXTRA_TARGET_MAKEFILES +=  $(SOURCE_ROOT)/platform/mcu/$(HOST_MCU_FAMILY)/download.mk
-#EXTRA_TARGET_MAKEFILES +=  $(SOURCE_ROOT)/platform/mcu/$(HOST_MCU_FAMILY)/gen_crc_bin.mk
+EXTRA_TARGET_MAKEFILES +=  $(ALIOS_PATH)/platform/mcu/$(HOST_MCU_FAMILY)/download.mk
+EXTRA_TARGET_MAKEFILES +=  $(ALIOS_PATH)/platform/mcu/$(HOST_MCU_FAMILY)/pick.mk
 
 
 # Run in mico configurations
 ALIOS_SUPPORT := y
-ALIOS_TARGETS := MX1290
+ALIOS_DEVICES := GPIO
 $(NAME)_SOURCES += mico_board.c
-GLOBAL_LDFLAGS += -L $(MICO_OS_PATH)/board/aos/mk3060
 
 
 

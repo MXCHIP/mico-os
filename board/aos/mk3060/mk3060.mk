@@ -38,6 +38,7 @@ endif
 
 # Run in mico configurations
 ALIOS_SUPPORT := y
+ALIOS_DEVICES := GPIO
 ALIOS_TARGETS := MOC108
 $(NAME)_SOURCES += mico_board.c
 GLOBAL_LDFLAGS += -L $(MICO_OS_PATH)/board/aos/mk3060

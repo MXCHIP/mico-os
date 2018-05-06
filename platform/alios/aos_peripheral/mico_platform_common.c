@@ -17,16 +17,13 @@
 #include <stdint.h>
 #include <string.h>
 #include <malloc.h>
-
 #include "mico_debug.h"
 #include "mico_common.h"
+
 #include "mico_platform.h"
 
-#include "platform_peripheral.h"
-#include "platform_logging.h"
 
-#include "mico_board_conf.h"
-
+//#ifndef ALIOS_HAS_MICO_PLATFORM
 /******************************************************
 *                      Macros
 ******************************************************/
@@ -51,69 +48,54 @@
 *               Static Function Declarations
 ******************************************************/
 
-extern OSStatus mico_platform_init      ( void );
-
 /******************************************************
 *               Variable Definitions
 ******************************************************/
 
 /* Externed from platforms/<Platform>/platform.c */
+#ifdef ALIOS_DEV_GPIO
 extern const platform_gpio_t            platform_gpio_pins[];
-extern const platform_adc_t             platform_adc_peripherals[];
-extern const platform_i2c_t             platform_i2c_peripherals[];
-extern const platform_pwm_t             platform_pwm_peripherals[];
-extern const platform_spi_t             platform_spi_peripherals[];
-extern const platform_uart_t            platform_uart_peripherals[];
-extern const platform_flash_t           platform_flash_peripherals[];
-extern const mico_logic_partition_t     mico_partitions[];
+platform_gpio_driver_t                  platform_gpio_drivers[MICO_GPIO_MAX];
+#endif
 
-platform_gpio_driver_t      platform_gpio_drivers[MICO_GPIO_MAX];
-platform_gpio_irq_driver_t  platform_gpio_irq_drivers[MICO_GPIO_MAX];
-platform_uart_driver_t      platform_uart_drivers[MICO_UART_MAX];
-platform_i2c_driver_t       platform_i2c_drivers[MICO_I2C_MAX];
-platform_pwm_driver_t       platform_pwm_drivers[MICO_PWM_MAX];
-platform_spi_driver_t       platform_spi_drivers[MICO_SPI_MAX];
-platform_flash_driver_t     platform_flash_drivers[MICO_FLASH_MAX];
+#ifdef ALIOS_DEV_ADC
+extern const platform_adc_t             platform_adc_peripherals[];
+#endif
+
+#ifdef ALIOS_DEV_I2C
+extern const platform_i2c_t             platform_i2c_peripherals[];
+platform_i2c_driver_t                   platform_i2c_drivers[MICO_I2C_MAX];
+#endif
+
+#ifdef ALIOS_DEV_PWM
+extern const platform_pwm_t             platform_pwm_peripherals[];
+platform_pwm_driver_t                   platform_pwm_drivers[MICO_PWM_MAX];
+#endif
+
+#ifdef ALIOS_DEV_SPI
+extern const platform_spi_t             platform_spi_peripherals[];
+platform_spi_driver_t                   platform_spi_drivers[MICO_SPI_MAX];
+
+#endif
+
+#ifdef ALIOS_DEV_UART
+extern const platform_uart_t            platform_uart_peripherals[];
+platform_uart_driver_t                  platform_uart_drivers[MICO_UART_MAX];
+#endif
+
+#ifdef ALIOS_DEV_FLASH
+extern const platform_flash_t           platform_flash_peripherals[];
+platform_flash_driver_t                 platform_flash_drivers[MICO_FLASH_MAX];
+extern const mico_logic_partition_t     mico_partitions[];
+#endif
+
 
 /******************************************************
 *               Function Definitions
 ******************************************************/
 
 
- OSStatus mico_platform_init( void )
-{
-#if defined(__CC_ARM)
-    platform_log("Platform initialised, build by RVMDK");
-#elif defined (__IAR_SYSTEMS_ICC__)
-    platform_log("Platform initialised, build by IAR");
-#elif defined (__GNUC__)
-    platform_log("Platform initialised, build by GNUC");
-#endif
-
-    if ( true == platform_watchdog_check_last_reset( ) )
-         {
-        platform_log( "WARNING: Watchdog reset occured previously. Please see platform_watchdog.c for debugging instructions." );
-    }
-
-#ifdef USES_RESOURCE_FILESYSTEM
-    platform_filesystem_init();
-#endif
-
-#ifndef BOOTLOADER
-
-#ifdef USE_MiCOKit_EXT
-    micokit_ext_init( );
-#endif
-
-#ifdef USE_MiCOKit_STMEMS
-    micokit_STmems_init();
-#endif
-
-#endif
-
-    return kNoErr;
-}
-
+#ifdef ALIOS_DEV_ADC
  OSStatus MicoAdcInitialize( mico_adc_t adc, uint32_t sampling_cycle )
  {
    if ( adc >= MICO_ADC_NONE )
@@ -149,11 +131,16 @@ platform_flash_driver_t     platform_flash_drivers[MICO_FLASH_MAX];
    return (OSStatus) platform_adc_take_sample_stream( &platform_adc_peripherals[adc], buffer, buffer_length );
  }
 
+#endif
+
+
+#ifdef ALIOS_DEV_GPIO
+
 OSStatus mico_gpio_init( mico_gpio_t gpio, mico_gpio_config_t configuration )
 {
-  if ( gpio >= MICO_GPIO_NONE )
-    return kUnsupportedErr;
-  return (OSStatus) platform_gpio_init( &platform_gpio_drivers[gpio], &platform_gpio_pins[gpio], configuration );
+    if ( gpio >= MICO_GPIO_NONE )
+        return kUnsupportedErr;
+   return (OSStatus) platform_gpio_init( &platform_gpio_drivers[gpio], &platform_gpio_pins[gpio], configuration );
 }
 
 OSStatus mico_gpio_output_high( mico_gpio_t gpio )
@@ -191,22 +178,25 @@ bool mico_gpio_input_get( mico_gpio_t gpio )
   return platform_gpio_input_get( &platform_gpio_drivers[gpio] );
 }
 
+
 OSStatus mico_gpio_enable_irq( mico_gpio_t gpio, mico_gpio_irq_trigger_t trigger, mico_gpio_irq_handler_t handler,
                                void* arg )
 {
     if ( gpio >= MICO_GPIO_NONE )
         return kUnsupportedErr;
-    return (OSStatus) platform_gpio_irq_enable( &platform_gpio_irq_drivers[gpio], &platform_gpio_pins[gpio], trigger,
-                                                handler, arg );
+    return (OSStatus) platform_gpio_irq_enable(  &platform_gpio_drivers[gpio], &platform_gpio_pins[gpio], trigger, handler, arg );
 }
 
 OSStatus mico_gpio_disable_irq( mico_gpio_t gpio )
 {
     if ( gpio >= MICO_GPIO_NONE )
         return kUnsupportedErr;
-    return (OSStatus) platform_gpio_irq_disable( &platform_gpio_irq_drivers[gpio] );
+    return (OSStatus) platform_gpio_irq_disable(  &platform_gpio_drivers[gpio] );
 }
 
+#endif
+
+#ifdef ALIOS_DEV_I2C
 OSStatus MicoI2cInitialize( mico_i2c_device_t* device )
 {
     platform_i2c_config_t config;
@@ -308,41 +298,33 @@ OSStatus MicoI2cTransfer( mico_i2c_device_t* device, mico_i2c_message_t* message
 
     return err;
 }
+#endif
 
-void mico_mcu_powersave_config( int enable )
+
+#ifdef ALIOS_DEV_PWM
+OSStatus MicoPwmInitialize(mico_pwm_t pwm, uint32_t frequency, float duty_cycle)
 {
-    if ( enable == 1 )
-        platform_mcu_powersave_enable( );
-    else
-        platform_mcu_powersave_disable( );
+    if ( pwm >= MICO_PWM_NONE )
+        return kUnsupportedErr;
+    return (OSStatus) platform_pwm_init( &platform_pwm_drivers[pwm],&platform_pwm_peripherals[pwm], frequency, duty_cycle );
 }
 
-void MicoSystemStandBy( uint32_t secondsToWakeup )
+OSStatus MicoPwmStart( mico_pwm_t pwm )
 {
-   //platform_mcu_enter_standby( secondsToWakeup );
+    if ( pwm >= MICO_PWM_NONE )
+        return kUnsupportedErr;
+    return (OSStatus)platform_pwm_start( &platform_pwm_drivers[pwm] );
 }
 
- OSStatus MicoPwmInitialize(mico_pwm_t pwm, uint32_t frequency, float duty_cycle)
- {
-   if ( pwm >= MICO_PWM_NONE )
-     return kUnsupportedErr;
-   return (OSStatus) platform_pwm_init( &platform_pwm_drivers[pwm],&platform_pwm_peripherals[pwm], frequency, duty_cycle );
- }
+OSStatus MicoPwmStop( mico_pwm_t pwm )
+{
+    if ( pwm >= MICO_PWM_NONE )
+        return kUnsupportedErr;
+    return (OSStatus) platform_pwm_stop( &platform_pwm_drivers[pwm] );
+}
+#endif
 
- OSStatus MicoPwmStart( mico_pwm_t pwm )
- {
-   if ( pwm >= MICO_PWM_NONE )
-     return kUnsupportedErr;
-   return (OSStatus)platform_pwm_start( &platform_pwm_drivers[pwm] );
- }
-
- OSStatus MicoPwmStop( mico_pwm_t pwm )
- {
-   if ( pwm >= MICO_PWM_NONE )
-     return kUnsupportedErr;
-   return (OSStatus) platform_pwm_stop( &platform_pwm_drivers[pwm] );
- }
-
+#ifdef ALIOS_DEV_RTC
 OSStatus mico_rtc_init(void)
 {
     return platform_rtc_init();
@@ -357,8 +339,10 @@ OSStatus mico_rtc_set_time(time_t t)
 {
     return platform_rtc_set_time(t);
 }
+#endif
 
 
+#ifdef ALIOS_DEV_SPI
 OSStatus MicoSpiInitialize( const mico_spi_device_t* spi )
 {
     platform_spi_config_t config;
@@ -474,6 +458,9 @@ OSStatus MicoSpiTransfer( const mico_spi_device_t* spi, const mico_spi_message_s
 //   return (OSStatus) platform_spi_slave_generate_interrupt( &platform_spi_slave_drivers[spi], pulse_duration_ms );
 // }
 
+#endif
+
+#ifdef ALIOS_DEV_UART
 OSStatus mico_uart_init( mico_uart_t uart, const mico_uart_config_t* config, ring_buffer_t* optional_rx_buffer )
 {
     if ( uart >= MICO_UART_NONE )
@@ -531,17 +518,21 @@ uint32_t mico_uart_recvd_data_len( mico_uart_t uart )
 
     return (OSStatus) platform_uart_get_length_in_buffer( &platform_uart_drivers[uart] );
 }
+#endif
 
+#ifdef ALIOS_DEV_RNG
 OSStatus MicoRandomNumberRead( void *inBuffer, int inByteCount )
 {
    return (OSStatus) platform_random_number_read( inBuffer, inByteCount );
 }
+#endif
 
 void mico_system_reboot( void )
 {
     NVIC_SystemReset();
 }
 
+#ifdef ALIOS_DEV_WDG
 OSStatus mico_wdg_init( uint32_t timeout )
 {
     return (OSStatus) platform_watchdog_init( timeout );
@@ -551,7 +542,9 @@ void mico_wdg_reload( void )
 {
     platform_watchdog_kick( );
 }
+#endif
 
+#ifdef ALIOS_DEV_FLASH
 mico_logic_partition_t* MicoFlashGetInfo( mico_partition_t inPartition )
 {
     mico_logic_partition_t *logic_partition = NULL;
@@ -800,36 +793,11 @@ OSStatus MicoFlashDisableSecurity( mico_partition_t partition, uint32_t off_set,
     exit:
     return err;
 }
+#endif
 
 #endif
 
-uint64_t mico_nanosecond_clock_value( void )
-{
-    return platform_get_nanosecond_clock_value( );
-}
-
-void mico_nanosecond_deinit( void )
-{
-    platform_deinit_nanosecond_clock( );
-}
-
-void mico_nanosecond_reset( void )
-{
-    platform_reset_nanosecond_clock( );
-}
-
-void mico_nanosecond_init( void )
-{
-    platform_init_nanosecond_clock( );
-}
-
-void mico_nanosecond_delay( uint64_t delayns )
-{
-  platform_nanosecond_delay( delayns );
-}
-
-
-
+#if 0
 static micoMemInfo_t mico_memory;
 
 extern unsigned char __StackLimit[];
@@ -847,6 +815,7 @@ micoMemInfo_t* mico_memory_info( void )
     mico_memory.total_memory = total_mem;
     return &mico_memory;
 }
+#endif
 
 WEAK void platform_eth_mac_address( char *mac )
 {
@@ -857,3 +826,4 @@ WEAK void platform_eth_mac_address( char *mac )
     mac[4] = 0x00;
     mac[5] = 0x00;
 }
+

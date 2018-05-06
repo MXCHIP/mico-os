@@ -125,3 +125,143 @@ void board_init(void)
     hal_gpio_init(&gpio_key_awss);
     hal_gpio_enable_irq(&gpio_key_awss, IRQ_TRIGGER_FALLING_EDGE, handle_awss_key, NULL);
 }
+
+#include <stdio.h>
+#include <string.h>
+#include <CheckSumUtils.h>
+
+#define PRODUCT_KEY_MAXLEN          (20)
+#define DEVICE_NAME_MAXLEN          (32)
+#define DEVICE_SECRET_MAXLEN        (64)
+
+static char pk[PRODUCT_KEY_MAXLEN + 1];
+static char ps[DEVICE_SECRET_MAXLEN + 1];
+static char dn[DEVICE_NAME_MAXLEN + 1];
+static char ds[DEVICE_SECRET_MAXLEN + 1];
+
+void Board_SecrectInit(void)
+{
+    static bool init = false;
+    if(init)
+        return;
+
+    init = true;
+
+    uint32_t offset = 0x00;
+    char magic[2];
+    hal_flash_read(HAL_PARTITION_LINK_KEY, &offset, magic, 2);
+    if(magic[0] != 'I' || magic[1] != 'D')
+    {
+        printf("\r\n******** [ERROR] Magic number of link key isn't match ********\r\n");
+        return;
+    }
+
+    uint8_t len;
+    hal_flash_read(HAL_PARTITION_LINK_KEY, &offset, &len, 1);
+
+    uint8_t *data = malloc(len);
+    hal_flash_read(HAL_PARTITION_LINK_KEY, &offset, data, len);
+
+    uint16_t crc;
+    hal_flash_read(HAL_PARTITION_LINK_KEY, &offset, &crc, 2);
+
+    uint16_t crc_tmp;
+    CRC16_Context contex;
+    CRC16_Init( &contex );
+    CRC16_Update( &contex, data, len);
+    CRC16_Final( &contex, &crc_tmp );
+    if(crc != crc_tmp)
+    {
+        printf("\r\n******** [ERROR] CRC of link key isn't match ********\r\n");
+        free(data);
+        return;
+    }
+
+    uint8_t *tmp = data;
+    // Product key
+    len = strlen(tmp);
+    strcpy(pk, tmp);
+    tmp += len + 1;
+
+    // Product secrect
+    len = strlen(tmp);
+    strcpy(ps, tmp);
+    tmp += len + 1;
+
+    // Device secrect
+    len = strlen(tmp);
+    strcpy(ds, tmp);
+    tmp += len + 1;
+
+    // Device name
+    len = strlen(tmp);
+    strcpy(dn, tmp);
+    tmp += len + 1;
+
+    printf("\r\n");
+    printf("Secrect Init\r\n");
+    printf("================================\r\n");
+    printf("Product key: %s\r\n", pk);
+    printf("Product secrect: %s\r\n", ps);
+    printf("Device name: %s\r\n", dn);
+    printf("Device secrect: %s\r\n", ds);
+    printf("================================\r\n");
+
+    free(data);
+}
+
+int Platform_GetProductKey(char product_key[PRODUCT_KEY_MAXLEN])
+{
+    int len = strlen(pk);
+    strncpy(product_key, pk, len);
+    return len;
+}
+
+int Platform_GetDeviceName(char device_name[DEVICE_NAME_MAXLEN])
+{
+    int len = strlen(dn);
+    strncpy(device_name, dn, len);
+    return len;
+}
+
+int Platform_GetDeviceSecret(char device_secret[DEVICE_SECRET_MAXLEN])
+{
+    int len = strlen(ds);
+    strncpy(device_secret, ds, len);
+    return len;
+}
+
+int Platform_GetProductSecret(char product_secret[DEVICE_SECRET_MAXLEN])
+{
+    int len = strlen(ps);
+    strncpy(product_secret, ps, len);
+    return len;
+}
+
+#if 1
+void Board_SecrectUpdate(int argc, char **argv)
+{
+    uint32_t offset = 0x00;
+    char magic[2] = {'I','D'};
+    hal_flash_write(HAL_PARTITION_LINK_KEY, &offset, magic, 2);
+
+    uint8_t len = strlen(argv[1])+1+strlen(argv[2])+1+strlen(argv[3])+1+strlen(argv[4])+1;
+    hal_flash_write(HAL_PARTITION_LINK_KEY, &offset, &len, 1);
+
+    hal_flash_write(HAL_PARTITION_LINK_KEY, &offset, argv[1], strlen(argv[1])+1);
+    hal_flash_write(HAL_PARTITION_LINK_KEY, &offset, argv[2], strlen(argv[2])+1);
+    hal_flash_write(HAL_PARTITION_LINK_KEY, &offset, argv[3], strlen(argv[3])+1);
+    hal_flash_write(HAL_PARTITION_LINK_KEY, &offset, argv[4], strlen(argv[4])+1);
+
+    uint16_t crc;
+    CRC16_Context contex;
+    CRC16_Init( &contex );
+    CRC16_Update( &contex, argv[1], strlen(argv[1])+1);
+    CRC16_Update( &contex, argv[2], strlen(argv[2])+1);
+    CRC16_Update( &contex, argv[3], strlen(argv[3])+1);
+    CRC16_Update( &contex, argv[4], strlen(argv[4])+1);
+    CRC16_Final( &contex, &crc );
+    hal_flash_write(HAL_PARTITION_LINK_KEY, &offset, &crc, 2);
+}
+#endif
+

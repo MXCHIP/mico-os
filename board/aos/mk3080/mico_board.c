@@ -30,10 +30,9 @@
  ******************************************************************************
  */
 
-#include "mico_platform.h"
 #include "mico_board.h"
+#include "mico_platform.h"
 #include "mico_board_conf.h"
-#include "platform_peripheral.h"
 #include "platform_logging.h"
 #include "CheckSumUtils.h"
 
@@ -64,26 +63,25 @@
 /******************************************************
 *               Variables Definitions
 ******************************************************/
-#if 0
+
 const platform_gpio_t platform_gpio_pins[] =
 {
-    [MICO_GPIO_4]  = {12},
-    [MICO_GPIO_22] = {18},
-    [MICO_GPIO_23] = {17},
-    [MICO_GPIO_20] = {11},
-    [MICO_GPIO_21] = {21},
-    [MICO_GPIO_31] = { 0}, //??
-    [MICO_GPIO_0]  = { 7},
-    [MICO_GPIO_1]  = { 8},
-    [MICO_GPIO_15] = { 6},
-    [MICO_GPIO_17] = { 3},
-    [MICO_GPIO_16] = { 4},
-    [MICO_GPIO_14] = { 5},
-    [MICO_GPIO_30] = { 1},
-    [MICO_GPIO_29] = { 2},
+    [MICO_GPIO_1]  = { 0},
+    [MICO_GPIO_2]  = { 1},
+    [MICO_GPIO_7]  = { 2},
+    [MICO_GPIO_8]  = { 3},
+    [MICO_GPIO_9]  = { 4},
+    [MICO_GPIO_10] = { 5},
+    [MICO_GPIO_12] = { 6},
+    [MICO_GPIO_13] = { 7},
+    [MICO_GPIO_14] = { 8},
+    [MICO_GPIO_19] = { 9},
+    [MICO_GPIO_21] = {10},
+    [MICO_GPIO_22] = {11},
+    [MICO_GPIO_23] = {12},
 };
 
-
+#if 0
 const platform_pwm_t *platform_pwm_peripherals = NULL;
 
 const platform_i2c_t platform_i2c_peripherals[] =
@@ -199,11 +197,8 @@ void mico_board_init( void )
   MicoGpioOutputLow( (mico_gpio_t)MICO_SYS_LED );
   MicoGpioInitialize( (mico_gpio_t)MICO_RF_LED, OUTPUT_OPEN_DRAIN_NO_PULL );
   MicoGpioOutputHigh( (mico_gpio_t)MICO_RF_LED );
-  
-  MicoGpioInitialize((mico_gpio_t)BOOT_SEL, INPUT_PULL_UP);
-  MicoGpioInitialize((mico_gpio_t)MFG_SEL, INPUT_PULL_UP);
 }
-
+#if 0
 void MicoSysLed(bool onoff)
 {
   if (onoff) {
@@ -221,6 +216,7 @@ void MicoRfLed(bool onoff)
     MicoGpioOutputHigh( (mico_gpio_t)MICO_RF_LED );
   }
 }
+#endif
 
 #define BOOT_MODE_REG (*(uint32_t *)0x40001C)
 

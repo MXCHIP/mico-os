@@ -197,6 +197,7 @@ include $(PLATFORM_DIRECTORY)/$(notdir $(PLATFORM_DIRECTORY)).mk
 # Add AliOS components
 ifeq ($(ALIOS_SUPPORT),y)
 ifneq ($(wildcard $(SOURCE_ROOT)alios/alios.mk),)
+ALIOS_TARGETS ?= GENERAL
 COMPONENTS += alios_kernel alios_crypto
 include $(SOURCE_ROOT)alios/alios.mk
 else

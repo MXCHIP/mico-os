@@ -49,6 +49,32 @@ extern "C"
 /******************************************************
  *                    Constants
  ******************************************************/
+
+enum {
+    MICO_PARTITION_ERROR = -1,
+    MICO_PARTITION_BOOTLOADER,
+    MICO_PARTITION_APPLICATION,
+    MICO_PARTITION_ATE,
+    MICO_PARTITION_OTA_TEMP,
+    MICO_PARTITION_RF_FIRMWARE,
+    MICO_PARTITION_PARAMETER_1,
+    MICO_PARTITION_PARAMETER_2,
+    MICO_PARTITION_PARAMETER_3,
+    MICO_PARTITION_PARAMETER_4,
+    MICO_PARTITION_LINK_KEY,
+    MICO_PARTITION_BT_FIRMWARE,
+    MICO_PARTITION_SPIFFS,
+    MICO_PARTITION_MAX,
+    MICO_PARTITION_NONE,
+};
+
+/* I/O connection <-> Peripheral Connections */
+#define BOOT_SEL        MICO_GPIO_19
+#define MFG_SEL         MICO_GPIO_NONE
+#define MICO_RF_LED     MICO_GPIO_NONE
+#define MICO_SYS_LED    MICO_GPIO_19
+#define EasyLink_BUTTON MICO_GPIO_23
+
    
 /******************************************************
  *                   Enumerations

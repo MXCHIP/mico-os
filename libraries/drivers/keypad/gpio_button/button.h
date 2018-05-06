@@ -22,8 +22,7 @@
 extern "C" {
 #endif
 
-#include "mico_board.h"
-#include "platform_peripheral.h"
+#include "mico.h"
 
 
 /** @addtogroup MICO_Drivers_interface

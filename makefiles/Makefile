@@ -16,7 +16,7 @@ export MiCO_SDK_VERSION_REVISION :=  0
 export SOURCE_ROOT ?= ./
 
 export MICO_OS_PATH := $(SOURCE_ROOT)mico-os
-export ALIOS_PATH := $(SOURCE_ROOT)alios/src
+export ALIOS_PATH := $(SOURCE_ROOT)alios/AliOS-Things
 export MBED_OS_PATH := $(SOURCE_ROOT)mbed-os
 export MAKEFILES_PATH := $(SOURCE_ROOT)mico-os/makefiles
 export SCRIPTS_PATH := $(SOURCE_ROOT)mico-os/makefiles/scripts
@@ -132,7 +132,7 @@ $(SOURCE_ROOT)build/$(CLEANED_BUILD_STRING)/config.mk: $(MAKEFILES_PATH)/mico_ta
 endif
 
 
-JOBS ?=1
+JOBS ?=4
 ifeq (,$(SUB_BUILD))
 JOBSNO := -j$(JOBS)
 endif

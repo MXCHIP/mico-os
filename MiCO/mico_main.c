@@ -29,8 +29,10 @@
 
 #include "mico_rtos_common.h"
 
+#ifndef ALIOS_SUPPORT
 #if MICO_QUALITY_CONTROL_ENABLE
 #include "qc_test.h"
+#endif
 #endif
 
 /******************************************************
@@ -65,8 +67,10 @@
  *               Variable Definitions
  ******************************************************/
 
-#ifndef ALIOS_SUPPORT
+
 #ifndef MICO_DISABLE_STDIO
+
+#ifndef ALIOS_SUPPORT
 static const mico_uart_config_t stdio_uart_config =
 {
   .baud_rate    = MICO_STDIO_UART_BAUDRATE,
@@ -79,9 +83,11 @@ static const mico_uart_config_t stdio_uart_config =
 
 static volatile ring_buffer_t stdio_rx_buffer;
 static volatile uint8_t       stdio_rx_data[STDIO_BUFFER_SIZE];
-mico_mutex_t                  stdio_tx_mutex = NULL;
-#endif /* #ifndef MICO_DISABLE_STDIO */
 #endif /* #ifndef ALIOS_SUPPORT */
+
+mico_mutex_t MICO_WEAK stdio_tx_mutex = NULL;
+#endif /* #ifndef MICO_DISABLE_STDIO */
+
 
 extern int mico_debug_enabled;
 
@@ -103,12 +109,11 @@ void mico_main( void )
     /* Customized board configuration. */
     mico_board_init( );
 
-#ifndef ALIOS_SUPPORT
-
 #ifndef MICO_DISABLE_STDIO
     if( stdio_tx_mutex == NULL )
         mico_rtos_init_mutex( &stdio_tx_mutex );
 
+#ifndef ALIOS_SUPPORT
     ring_buffer_init( (ring_buffer_t*) &stdio_rx_buffer, (uint8_t*) stdio_rx_data, STDIO_BUFFER_SIZE );
     mico_stdio_uart_init( &stdio_uart_config, (ring_buffer_t*) &stdio_rx_buffer );
 #endif
@@ -117,6 +122,7 @@ void mico_main( void )
 
     mico_rtos_init( );
 
+#ifndef ALIOS_SUPPORT
 #if MICO_QUALITY_CONTROL_ENABLE
 #ifndef RTOS_mocOS
     if ( MicoShouldEnterMFGMode( ) ) {
@@ -124,6 +130,7 @@ void mico_main( void )
         mico_rtos_delete_thread(NULL);
         mico_rtos_thread_yield();
     }
+#endif
 #endif
 #endif
 

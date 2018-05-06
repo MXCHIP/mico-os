@@ -26,7 +26,7 @@
 #include "platform_init.h"
 #include "portmacro.h"
 
-#include "MiCODrivers/mico_wdg.h"
+#include "mico_hal/mico_wdg.h"
 
 /******************************************************
 *                      Macros

@@ -35,59 +35,32 @@
 
 #include "mico_opt.h"
 #include "mico_common.h"
-#include "platform_peripheral.h"
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-typedef platform_spi_slave_config_t             mico_spi_slave_config_t;
 
-typedef platform_spi_slave_transfer_direction_t mico_spi_slave_transfer_direction_t;
+#include "mico_hal/mico_gpio.h"
+#include "mico_hal/mico_wdg.h"
+#include "mico_hal/mico_uart.h"
+#include "mico_hal/mico_adc.h"
 
-typedef platform_spi_slave_transfer_status_t    mico_spi_slave_transfer_status_t;
-
-typedef platform_spi_slave_command_t            mico_spi_slave_command_t;
-
-typedef platform_spi_slave_data_buffer_t        mico_spi_slave_data_buffer_t;
-
-typedef int8_t mico_gpio_t;  /**< MiCO GPIO peripheral handle, MICO_GPIO_XX define by board/<board_name>/board.h. */
-typedef int8_t mico_spi_t;   /**< MiCO SPI peripheral handle, MICO_SPI_XX define by board/<board_name>/board.h. */
-typedef int8_t mico_iis_t;   /**< MiCO IIS peripheral handle, MICO_IIS_XX define by board/<board_name>/board.h. */
-typedef int8_t mico_adc_t;   /**< MiCO ADC peripheral handle, MICO_ADC_XX define by board/<board_name>/board.h. */
-typedef int8_t mico_i2c_t;   /**< MiCO I2C peripheral handle, MICO_I2C_XX define by board/<board_name>/board.h. */
-typedef int8_t mico_pwm_t;   /**< MiCO PWM peripheral handle, MICO_PWM_XX define by board/<board_name>/board.h. */
-typedef int8_t mico_uart_t;  /**< MiCO UART peripheral handle, MICO_UART_XX define by board/<board_name>/board.h. */
-
-typedef int8_t mico_flash_t;
-typedef int8_t mico_partition_t;
-typedef int8_t mico_gtimer_t;
-
-
-#include "MiCODrivers/mico_gpio.h"
-#include "MiCODrivers/mico_wdg.h"
-#include "MiCODrivers/mico_uart.h"
-#include "MiCODrivers/mico_adc.h"
-
-#include "MiCODrivers/MiCODriverI2c.h"
-#include "MiCODrivers/MiCODriverSpi.h"
-#include "MiCODrivers/MiCODriverPwm.h"
-#include "MiCODrivers/MiCODriverRtc.h"
-#include "MiCODrivers/MiCODriverRng.h"
-#include "MiCODrivers/MiCODriverFlash.h"
-#include "MiCODrivers/MiCODriverMFiAuth.h"
-#include "MiCODrivers/MiCODriverI2s.h"
+#include "mico_hal/mico_i2c.h"
+#include "mico_hal/mico_spi.h"
+#include "mico_hal/mico_pwm.h"
+#include "mico_hal/mico_rtc.h"
+#include "mico_hal/mico_rng.h"
+#include "mico_hal/mico_flash.h"
+#include "mico_hal/mico_mfi_auth.h"
+#include "mico_hal/mico_i2s.h"
 #ifdef CONFIG_CPU_MX1290
-#include "MiCODrivers/MiCODriverGtimer.h"
+#include "mico_hal/mico_gtimer.h"
 #endif
 
 #define MicoMcuPowerSaveConfig mico_mcu_powersave_config
 
 #define MicoSystemReboot mico_system_reboot
-
-#ifdef USE_MICO_SPI_FLASH
-extern const mico_spi_device_t mico_spi_flash;
-#endif
 
 
 /** @defgroup MICO_PLATFORM  MICO Hardware Abstract Layer APIs
