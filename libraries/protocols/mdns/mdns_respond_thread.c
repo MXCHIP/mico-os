@@ -198,7 +198,7 @@ static int find_authorities(struct mdns_message *m, uint8_t * name,
 			results[SRV_INDEX] = &m->authorities[i];
 			break;
 		default:
-			LOG("Warning: unexpected record of type %d",
+			MDNS_LOG("Warning: unexpected record of type %d",
 			    m->authorities[i].type);
 			n--;
 		}
@@ -732,7 +732,7 @@ static int prepare_probe(struct mdns_message *m, int config_idx,
 				responder_add_all_services(m,
 					MDNS_SECTION_AUTHORITIES, 255,
 					config_idx, services) != 0) {
-			LOG("Resource records don't fit into probe packet."
+			MDNS_LOG("Resource records don't fit into probe packet."
 					);
 			return -1;
 		}
@@ -745,7 +745,7 @@ static int prepare_probe(struct mdns_message *m, int config_idx,
 				config_idx, services) != 0 ||
 			responder_add_all_services(m, MDNS_SECTION_AUTHORITIES,
 				255, config_idx, services) != 0) {
-			LOG("Resource records don't fit into probe packet."
+			MDNS_LOG("Resource records don't fit into probe packet."
 					);
 			return -1;
 		}
@@ -1352,13 +1352,13 @@ static int check_max_response(struct mdns_message *rx, struct mdns_message *tx,
 	    mdns_add_question(rx, in_addr_arpa, T_ANY, C_IN) != 0 ||
 	    responder_add_all_services(rx, MDNS_SECTION_QUESTIONS, 0, config_idx
 		    , NULL) != 0) {
-		LOG("Resource records don't fit into query of response packet."
+		MDNS_LOG("Resource records don't fit into query of response packet."
 				"");
 		return -1;
 	}
 
 	if (mdns_parse_message(rx, VALID_LENGTH(rx)) != 0) {
-		LOG("Failed to parse biggest expected query.");
+		MDNS_LOG("Failed to parse biggest expected query.");
 		return -1;
 	}
 
@@ -1370,7 +1370,7 @@ static int check_max_response(struct mdns_message *rx, struct mdns_message *tx,
 	 */
 	mr_stats.rx_queries--;
 	if (prepare_response(rx, tx, config_idx) < RS_NO_SEND) {
-		LOG("Resource records don't fit into response packet.");
+		MDNS_LOG("Resource records don't fit into response packet.");
 		return -1;
 	}
 
@@ -1382,17 +1382,17 @@ static int validate_service(struct mdns_service *s)
 	int maxlen;
 
 	if (!valid_label(s->servname)) {
-		LOG("Invalid service name: %s", s->servname);
+		MDNS_LOG("Invalid service name: %s", s->servname);
 		return ERR_MDNS_INVAL;
 	}
 
 	if (!valid_label(s->servtype)) {
-		LOG("Invalid service type: %s", s->servtype);
+		MDNS_LOG("Invalid service type: %s", s->servtype);
 		return ERR_MDNS_INVAL;
 	}
 
 	if (s->proto != MDNS_PROTO_TCP && s->proto != MDNS_PROTO_UDP) {
-		LOG("Invalid proto: %d", s->proto);
+		MDNS_LOG("Invalid proto: %d", s->proto);
 		return ERR_MDNS_INVAL;
 	}
 
@@ -1460,18 +1460,18 @@ int mdns_verify_service(struct mdns_service *services[], netif_t iface)
 		return ERR_MDNS_TOOBIG;
 
 	if (max_probe_growth(num_services) > TAILROOM(&tx_msg)) {
-		DBG("Insufficient space for host name and service names");
+		MDNS_DBG("Insufficient space for host name and service names");
 		return ERR_MDNS_TOOBIG;
 	}
 
 	ret = check_max_response(&rx_msg, &tx_msg, config_idx);
 	if (ret == -1) {
-		DBG("Insufficient space for host name and service names in"
+		MDNS_DBG("Insufficient space for host name and service names in"
 				"response");
 		return ERR_MDNS_TOOBIG;
 	}
 	if (max_response_growth(num_services) > TAILROOM(&tx_msg)) {
-		DBG("Insufficient growth for host name and service names in"
+		MDNS_DBG("Insufficient growth for host name and service names in"
 				"response");
 		return ERR_MDNS_TOOBIG;
 	}
@@ -1797,9 +1797,9 @@ static int fix_response_conflicts(struct mdns_message *m,
 		ret = fix_announcement_conflicts(m, p, config_idx, state);
 
 	if (ret == 1) {
-		DBG("Responder detected conflict with this response:");
+		MDNS_DBG("Responder detected conflict with this response:");
 		debug_print_message(m);
-		//DBG("");
+		//MDNS_DBG("");
 	}
 
 	return ret;
@@ -1858,14 +1858,14 @@ static int responder_state_machine(struct sockaddr_storage from, int *state,
 			}
 			if (ret & RS_SEND_DELAY) {
 				/* Implment random delay from 20-120msec */
-				DBG("delaying response\r\n");
+				MDNS_DBG("delaying response\r\n");
 				rand_time = mdns_rand_range(100);
 				SET_TIMEOUT(&probe_wait_time[config_idx],
 					    (rand_time + 20));
 				state[config_idx] = READY_TO_SEND;
 			} else if (ret & RS_SEND) {
 				/* We send immedately */
-				DBG("responding to query:\r\n");
+				MDNS_DBG("responding to query:\r\n");
 				debug_print_message(&rx_msg);
 				mr_stats.tx_response++;
 #ifdef CONFIG_BONJ_CONFORMANCE
@@ -1889,7 +1889,7 @@ static int responder_state_machine(struct sockaddr_storage from, int *state,
 
 	case READY_TO_SEND:
 			/* We send, no matter if triggered by timeout or RX */
-		DBG("responding to query:\r\n");
+		MDNS_DBG("responding to query:\r\n");
 		debug_print_message(&rx_msg);
 		mr_stats.tx_response++;
 #ifdef CONFIG_BONJ_CONFORMANCE
@@ -1920,7 +1920,7 @@ static int responder_state_machine(struct sockaddr_storage from, int *state,
 				SET_TIMEOUT(&probe_wait_time[config_idx], 0);
 				state[config_idx] = READY_TO_RESPOND;
 				} else if (ret & RS_SEND_DELAY) {
-				DBG("delaying response\r\n");
+				MDNS_DBG("delaying response\r\n");
 				/* Implement random delay from 20-120msec */
 				rand_time = mdns_rand_range(100);
 				SET_TIMEOUT(&probe_wait_time[config_idx],
@@ -1928,7 +1928,7 @@ static int responder_state_machine(struct sockaddr_storage from, int *state,
 				state[config_idx] = READY_TO_SEND;
 			} else if (ret & RS_SEND) {
 				/* We send immedately */
-				DBG("responding to query:\r\n");
+				MDNS_DBG("responding to query:\r\n");
 				debug_print_message(&rx_msg);
 				mr_stats.tx_response++;
 #ifdef CONFIG_BONJ_CONFORMANCE
@@ -1975,7 +1975,7 @@ static int process_probe_resp(struct mdns_message *tx, struct mdns_message *rx,
 		/* We have tried more than 10 names. Now we have
 		 * to limit the probe rate to 1probe per secound.
 		 */
-		DBG("Responder tried more than 10 possible names. Limiting the"
+		MDNS_DBG("Responder tried more than 10 possible names. Limiting the"
 		    " probe rate");
 		SET_TIMEOUT(timeout, 1100);
 		return INIT;
@@ -1999,7 +1999,7 @@ int probe_state_machine(int idx, int *state, int *event,
 			mr_stats.tx_probes_curr = 0;
 			mr_stats.tx_announce_curr = 0;
 			mr_stats.probe_rx_events_curr = 0;
-			DBG("Sending probe #%d to index = %d\r\n", \
+			MDNS_DBG("Sending probe #%d to index = %d\r\n", \
 				state[idx] + 1, idx);
 			prepare_probe(&tx_msg, idx, services);
 			mr_stats.tx_probes++;
@@ -2015,7 +2015,7 @@ int probe_state_machine(int idx, int *state, int *event,
 	case FIRST_PROBE_SENT:
 	case SECOND_PROBE_SENT:
 		if (event[idx] == EVENT_TIMEOUT) {
-			DBG("Sending probe #%d to index = %d\r\n", \
+			MDNS_DBG("Sending probe #%d to index = %d\r\n", \
 				state[idx] + 1, idx);
 			prepare_probe(&tx_msg, idx, services);
 			mr_stats.tx_probes++;
@@ -2085,7 +2085,7 @@ int process_inter_probe_rx(int sock, int *state, int *event,
 	len = recvfrom(sock, (char *)rx_msg.data, sizeof(rx_msg.data),
 		MSG_DONTWAIT, (struct sockaddr *)&from, &in_size);
 	if (len < 0) {
-		LOG("responder failed to recv packet");
+		MDNS_LOG("responder failed to recv packet");
 		return kGeneralErr;
 	}
 
@@ -2190,7 +2190,7 @@ static int send_init_probes(int idx, int *state, int *event,
 
 		stop_wait = mdns_time_ms();
 		if (active_fds < 0)
-			LOG("error: select() failed: %d", active_fds);
+			MDNS_LOG("error: select() failed: %d", active_fds);
 
 		/* Check whether the timeout has occurred on each of the
 		 * interface */
@@ -2240,7 +2240,7 @@ static inline void mdns_ctrl_halt()
 		if (interface_state[i] != STOPPED) {
 			ret = prepare_announcement(&tx_msg, 0, i, NULL);
 			if (ret != 0) {
-				LOG("Error halting responder.");
+				MDNS_LOG("Error halting responder.");
 				return;
 			}
 			mr_stats.tx_bye++;
@@ -2248,7 +2248,7 @@ static inline void mdns_ctrl_halt()
 		}
 		interface_state[i] = STOPPED;
 	}
-	LOG("responder done.");
+	MDNS_LOG("responder done.");
 	responder_enabled = 0;
 }
 
@@ -2263,12 +2263,12 @@ static inline void mdns_ctrl_iface_join_group(netif_t iface)
     mc.imr_multiaddr = mdns_mquery_v4group.sin_addr;
     mc.imr_interface = in_addr_any;
     if (setsockopt(mc_sock, IPPROTO_IP, IP_ADD_MEMBERSHIP, &mc, sizeof(mc)) < 0) {
-        LOG("error: failed to join multicast group");
+        MDNS_LOG("error: failed to join multicast group");
     };
 
     /* set other IP-level options */
     if (setsockopt(mc_sock, IPPROTO_IP, IP_MULTICAST_TTL, (char *)&ttl, sizeof(ttl)) < 0) {
-        LOG("error: failed to set multicast TTL");
+        MDNS_LOG("error: failed to set multicast TTL");
     }
 
 #ifdef CONFIG_IPV6
@@ -2278,7 +2278,7 @@ static inline void mdns_ctrl_iface_join_group(netif_t iface)
     mc6.ipv6mr_interface = INTERFACE_STA;
     memcpy(&mc6.ipv6mr_multiaddr, &mdns_mquery_v6group.sin6_addr, sizeof(struct in6_addr));
     if (setsockopt(mc_sock, IPPROTO_IPV6, IPV6_JOIN_GROUP, &mc6, sizeof(mc6)) < 0) {
-        LOG("error: failed to join IPv6 mld group");
+        MDNS_LOG("error: failed to join IPv6 mld group");
     };
 #endif
 }
@@ -2294,12 +2294,12 @@ static inline void mdns_ctrl_iface_leave_group(netif_t iface)
     mc.imr_multiaddr = mdns_mquery_v4group.sin_addr;
     mc.imr_interface = in_addr_any;
     if (setsockopt(mc_sock, IPPROTO_IP, IP_DROP_MEMBERSHIP, &mc, sizeof(mc)) < 0) {
-        LOG("error: failed to join multicast group");
+        MDNS_LOG("error: failed to join multicast group");
     };
 
     /* set other IP-level options */
     if (setsockopt(mc_sock, IPPROTO_IP, IP_MULTICAST_TTL, (char *)&ttl, sizeof(ttl)) < 0) {
-        LOG("error: failed to set multicast TTL");
+        MDNS_LOG("error: failed to set multicast TTL");
     }
 
 #ifdef CONFIG_IPV6
@@ -2309,7 +2309,7 @@ static inline void mdns_ctrl_iface_leave_group(netif_t iface)
     mc6.ipv6mr_interface = INTERFACE_STA;
     memcpy(&mc6.ipv6mr_multiaddr, &mdns_mquery_v6group.sin6_addr, sizeof(struct in6_addr));
     if (setsockopt(mc_sock, IPPROTO_IPV6, IPV6_LEAVE_GROUP, &mc6, sizeof(mc6)) < 0) {
-        LOG("error: failed to join IPv6 mld group");
+        MDNS_LOG("error: failed to join IPv6 mld group");
     };
 #endif
 }
@@ -2319,11 +2319,11 @@ static inline void mdns_ctrl_iface_up(netif_t iface, int *state, int *event,
 {
 	int config_idx = get_config_idx_from_iface(iface);
 	if (config_idx == kGeneralErr) {
-		LOG("No interface found.");
+		MDNS_LOG("No interface found.");
 		return;
 	}
 	if (interface_state[config_idx] != STOPPED) {
-		LOG("Interface already in RUNNING state.");
+		MDNS_LOG("Interface already in RUNNING state.");
 		return;
 	}
 	state[config_idx] = INIT;
@@ -2334,11 +2334,11 @@ static inline void mdns_ctrl_iface_down(netif_t iface)
 {
 	int config_idx = get_config_idx_from_iface(iface);
 	if (config_idx == kGeneralErr) {
-		LOG("No interface found.");
+		MDNS_LOG("No interface found.");
 		return;
 	}
 	if (interface_state[config_idx] == STOPPED) {
-		LOG("Interface already in STOPPED state.");
+		MDNS_LOG("Interface already in STOPPED state.");
 		return;
 	}
 	send_close_probe(config_idx, NULL);
@@ -2350,13 +2350,13 @@ static inline void mdns_ctrl_reannounce(netif_t iface, int *state)
 	int i, ret;
 	int config_idx = get_config_idx_from_iface(iface);
 	if (config_idx == kGeneralErr) {
-		LOG("No interface found.");
+		MDNS_LOG("No interface found.");
 		return;
 	}
 	/* RFC 6762 Section 8.4 */
 	ret = prepare_announcement(&tx_msg, 255, config_idx, NULL);
 	if (ret != 0) {
-		LOG("Failed to reannounce service(s).");
+		MDNS_LOG("Failed to reannounce service(s).");
 		return;
 	}
 	/* Send atleast two announcements, 1 seconds apart */
@@ -2382,12 +2382,12 @@ static inline void mdns_ctrl_announce(void *service, netif_t iface, int *state,
 
 	config_idx = get_config_idx_from_iface(iface);
 	if (config_idx == kGeneralErr) {
-		LOG("Failed to announce the service. No interface found");
+		MDNS_LOG("Failed to announce the service. No interface found");
 		return;
 	}
 
     if ( IS_INTERFACE_DOWN(iface) ) {
-        LOG("Interface is down, skip probe");
+        MDNS_LOG("Interface is down, skip probe");
         return;
     }
 
@@ -2405,7 +2405,7 @@ static inline void mdns_ctrl_deannounce(void *service, netif_t iface)
 
 	config_idx = get_config_idx_from_iface(iface);
 	if (config_idx == kGeneralErr) {
-		LOG("Failed to deeannounce the service. No interface found."
+		MDNS_LOG("Failed to deeannounce the service. No interface found."
 				"");
 		return;
 	}
@@ -2423,12 +2423,12 @@ static inline void mdns_ctrl_announce_arr(void *services, netif_t iface,
 
 	config_idx = get_config_idx_from_iface(iface);
 	if (config_idx == kGeneralErr) {
-		LOG("Failed to announce services. No interface found.");
+		MDNS_LOG("Failed to announce services. No interface found.");
 		return;
 	}
 
     if ( IS_INTERFACE_DOWN(iface) ) {
-        LOG("Interface is down, skip probe");
+        MDNS_LOG("Interface is down, skip probe");
         return;
     }
 
@@ -2440,7 +2440,7 @@ static inline void mdns_ctrl_deannounce_arr(void *service, netif_t iface)
 {
 	int config_idx = get_config_idx_from_iface(iface);
 	if (config_idx == kGeneralErr) {
-		LOG("Failed to deannounce services. No interface found.");
+		MDNS_LOG("Failed to deannounce services. No interface found.");
 		return;
 	}
 	send_close_probe(config_idx, service);
@@ -2507,19 +2507,19 @@ static void do_responder(void)
 		stop_wait = mdns_time_ms();
 
 		if (active_fds < 0)
-			LOG("error: select() failed: %d", active_fds);
+			MDNS_LOG("error: select() failed: %d", active_fds);
 
 		if (FD_ISSET(ctrl_sock, &fds)) {
 		    if( mdns_socket_queue(MDNS_CTRL_RESPONDER, &ctrl_responder_queue, 0) < 0 ) {
-		        LOG("error: loopback socket err");
+		        MDNS_LOG("error: loopback socket err");
 		        continue;
 		    }
 
 		    ret = mico_rtos_pop_from_queue(ctrl_responder_queue, &msg, 0);
 			if (ret == -1) {
-				LOG("Warning: responder failed to get control message");
+				MDNS_LOG("Warning: responder failed to get control message");
 			} else {
-	            DBG("Responder got control message = %d.\r\n", msg.cmd);
+	            MDNS_DBG("Responder got control message = %d.\r\n", msg.cmd);
 				if (msg.cmd == MDNS_CTRL_HALT) {
 					mdns_ctrl_halt();
 					continue;
@@ -2541,7 +2541,7 @@ static void do_responder(void)
 					continue;
 				} else if (msg.cmd ==
 						MDNS_CTRL_ANNOUNCE_SERVICE) {
-				    DBG("================mdns_announce_service=================\r\n");
+				    MDNS_DBG("================mdns_announce_service=================\r\n");
 
 					mdns_ctrl_announce(msg.service,
 							msg.iface, state, event,
@@ -2576,7 +2576,7 @@ static void do_responder(void)
 		    len = recvfrom(mc_sock, (char *)rx_msg.data, sizeof(rx_msg.data), MSG_DONTWAIT,
 		                   (struct sockaddr *)&from, &in_size);
 				if (len < 0) {
-					LOG("responder failed to recv packet");
+					MDNS_LOG("responder failed to recv packet");
 					continue;
 				}
 #ifdef CONFIG_IPV6
@@ -2620,7 +2620,7 @@ static void do_responder(void)
 		}
 	}
 	if (!responder_enabled) {
-		LOG("Signalled to stop mdns_responder");
+		MDNS_LOG("Signalled to stop mdns_responder");
 		mico_rtos_deinit_mutex(&mdns_mutex);
 		mico_rtos_delete_thread(NULL);
 	}
@@ -2665,7 +2665,7 @@ int responder_launch(const char *domain, char *hostname)
 	mc_sock = mdns_socket_mcast();
 
 	if (mc_sock < 0) {
-		LOG("error: unable to open multicast socket in responder");
+		MDNS_LOG("error: unable to open multicast socket in responder");
 		return mc_sock;
 	}
 
@@ -2679,12 +2679,12 @@ int responder_launch(const char *domain, char *hostname)
 
 	mc6_sock = mdns6_socket_mcast(mdns_ipv6_addr, htons(5353));
 	if (mc6_sock < 0) {
-		LOG("error: unable to open multicast socket in responder");
+		MDNS_LOG("error: unable to open multicast socket in responder");
 		return mc6_sock;
 	}
 	ret = mld6_joingroup(IP6_ADDR_ANY, &mdns_ipv6_addr);
 	if (ret < 0) {
-		LOG("error: unable to join IPv6 mDNS multicast group");
+		MDNS_LOG("error: unable to join IPv6 mDNS multicast group");
 		return ret;
 	}
 #endif	/*	CONFIG_IPV6	*/
@@ -2693,7 +2693,7 @@ int responder_launch(const char *domain, char *hostname)
 	ctrl_sock = mdns_socket_queue(MDNS_CTRL_RESPONDER, NULL, sizeof(mdns_ctrl_data));
 
 	if (ctrl_sock < 0) {
-		LOG("Failed to create responder control socket: %d",
+		MDNS_LOG("Failed to create responder control socket: %d",
 		    ctrl_sock);
 		return kGeneralErr;
 	}
@@ -2711,7 +2711,7 @@ static int signal_and_wait_for_responder_halt()
 	int num_iterations = total_wait_time / check_interval;
 
 	if (!responder_enabled) {
-		LOG("Warning: mdns responder not running");
+		MDNS_LOG("Warning: mdns responder not running");
 		return kNoErr;
 	}
 
@@ -2719,7 +2719,7 @@ static int signal_and_wait_for_responder_halt()
 	    mico_rtos_delay_milliseconds(check_interval);
 
 	if (!num_iterations)
-		LOG("Error: timed out waiting for mdns responder to stop");
+		MDNS_LOG("Error: timed out waiting for mdns responder to stop");
 
 	return responder_enabled ? kGeneralErr : kNoErr;
 }
@@ -2731,23 +2731,23 @@ int responder_halt(void)
 
 	ret = mdns_send_ctrl_msg(MDNS_CTRL_HALT, MDNS_CTRL_RESPONDER);
 	if (ret != 0) {
-		LOG("Warning: failed to send HALT msg to mdns responder");
+		MDNS_LOG("Warning: failed to send HALT msg to mdns responder");
 		return kGeneralErr;
 	}
 	ret = signal_and_wait_for_responder_halt();
 
 	if (ret != kNoErr)
-		LOG("Warning: failed to HALT mdns responder");
+		MDNS_LOG("Warning: failed to HALT mdns responder");
 
 	/* force a halt */
 	if (responder_enabled != false) {
-		LOG("Warning: failed to halt mdns responder, forcing.");
+		MDNS_LOG("Warning: failed to halt mdns responder, forcing.");
 		responder_enabled = false;
 	}
 
 	ret = mico_rtos_delete_thread(responder_thread);
 	if (ret != kNoErr)
-		LOG("Warning: failed to delete thread.");
+		MDNS_LOG("Warning: failed to delete thread.");
 
 	for (i = 0; i < MDNS_MAX_SERVICE_CONFIG; i++) {
 		mdns_remove_all_services(config_g[i].iface_idx);

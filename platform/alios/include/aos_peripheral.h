@@ -49,6 +49,31 @@ extern "C" {
 #include "platform_flash.h"
 #include "platform_iis.h"
 
+
+#define MICO_PERIPHERAL_UNSUPPORTED ( 0xFFFFFFFF )
+
+/* SPI mode constants */
+#define SPI_CLOCK_RISING_EDGE  ( 1 << 0 )
+#define SPI_CLOCK_FALLING_EDGE ( 0 << 0 )
+#define SPI_CLOCK_IDLE_HIGH    ( 1 << 1 )
+#define SPI_CLOCK_IDLE_LOW     ( 0 << 1 )
+#define SPI_USE_DMA            ( 1 << 2 )
+#define SPI_NO_DMA             ( 0 << 2 )
+#define SPI_MSB_FIRST          ( 1 << 3 )
+#define SPI_LSB_FIRST          ( 0 << 3 )
+
+/* I2C flags constants */
+#define I2C_DEVICE_DMA_MASK_POSN ( 0 )
+#define I2C_DEVICE_NO_DMA        ( 0 << I2C_DEVICE_DMA_MASK_POSN )
+#define I2C_DEVICE_USE_DMA       ( 1 << I2C_DEVICE_DMA_MASK_POSN )
+
+#define USE_RTC_BKP 0x00BB32F2 // Use RTC BKP to initilize system time.
+
+
+#define UART_WAKEUP_MASK_POSN   0
+#define UART_WAKEUP_DISABLE    (0 << UART_WAKEUP_MASK_POSN) /**< UART can not wakeup MCU from stop mode */
+#define UART_WAKEUP_ENABLE     (1 << UART_WAKEUP_MASK_POSN) /**< UART can wake up MCU from stop mode */
+
 #endif
 
 

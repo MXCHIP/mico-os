@@ -30,7 +30,6 @@
  ******************************************************************************
  */
 
-#include "mico_board.h"
 #include "platform_peripheral.h"
 #include "mico_board_conf.h"
 #include "platform_logging.h"
@@ -417,31 +416,32 @@ void mico_board_init( void )
     /* Ensure 802.11 device is in reset. */
     host_platform_init( );
 
-    mico_gpio_init( MICO_SYS_LED, OUTPUT_PUSH_PULL );
-    mico_gpio_output_low( MICO_SYS_LED );
-    mico_gpio_init( MICO_RF_LED, OUTPUT_OPEN_DRAIN_NO_PULL );
-    mico_gpio_output_high( MICO_RF_LED );
-  
-    mico_gpio_init(BOOT_SEL, INPUT_PULL_UP);
-    mico_gpio_init(MFG_SEL, INPUT_PULL_UP);
+    platform_gpio_init( &platform_gpio_pins[MICO_SYS_LED], OUTPUT_PUSH_PULL );
+    platform_gpio_output_low( &platform_gpio_pins[MICO_SYS_LED] );
+
+    platform_gpio_init( &platform_gpio_pins[MICO_RF_LED], OUTPUT_PUSH_PULL );
+    platform_gpio_output_high( &platform_gpio_pins[MICO_RF_LED] );
+
+    platform_gpio_init( &platform_gpio_pins[BOOT_SEL], OUTPUT_PUSH_PULL );
+    platform_gpio_init( &platform_gpio_pins[MFG_SEL], OUTPUT_PUSH_PULL );
 }
 
 
 void MicoSysLed(bool onoff)
 {
   if (onoff) {
-      mico_gpio_output_low( MICO_SYS_LED );
+      platform_gpio_output_low( &platform_gpio_pins[MICO_SYS_LED] );
   } else {
-      mico_gpio_output_high( MICO_SYS_LED );
+      platform_gpio_output_high( &platform_gpio_pins[MICO_SYS_LED] );
   }
 }
 
 void MicoRfLed(bool onoff)
 {
   if (onoff) {
-      mico_gpio_output_low( MICO_RF_LED );
+      platform_gpio_output_low( &platform_gpio_pins[MICO_RF_LED] );
   } else {
-      mico_gpio_output_high( MICO_RF_LED );
+      platform_gpio_output_high( &platform_gpio_pins[MICO_RF_LED] );
   }
 }
 
@@ -460,18 +460,18 @@ bool MicoExtShouldEnterTestMode(void)
 
 bool MicoShouldEnterMFGMode(void)
 {
-  if(MicoGpioInputGet(BOOT_SEL)==false && MicoGpioInputGet(MFG_SEL)==false)
-    return true;
+  if(platform_gpio_input_get(&platform_gpio_pins[BOOT_SEL])==false && platform_gpio_input_get(&platform_gpio_pins[MFG_SEL])==false)
+      return true;
   else
-    return false;
+      return false;
 }
 
 bool MicoShouldEnterBootloader(void)
 {
-  if(MicoGpioInputGet(BOOT_SEL)==false && MicoGpioInputGet(MFG_SEL)==true)
-    return true;
-  else
-    return false;
+    if(platform_gpio_input_get(&platform_gpio_pins[BOOT_SEL])==false && platform_gpio_input_get(&platform_gpio_pins[MFG_SEL])==true)
+        return true;
+    else
+        return false;
 }
 
 void mico_eth_set_default_interface(void)
@@ -491,7 +491,3 @@ void init_platform( void )
 
 }
 
-void mico_app_info(char *str, int len)
-{
-  snprintf( str, len, "%s %s, build at %s %s", APP_INFO, FIRMWARE_REVISION, __TIME__, __DATE__);
-}

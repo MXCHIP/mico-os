@@ -234,13 +234,13 @@ extern char *eventnames[];
 /* logging helpers */
 void debug_print_message(struct mdns_message *m);
 void debug_print_name(struct mdns_message *m, uint8_t *name);
-#define LOG(M, ...) MICO_LOG(CONFIG_MDNS_DEBUG, "MDNS LOG", M, ##__VA_ARGS__)
-#define DBG(M, ...) MICO_PRINT(CONFIG_MDNS_DEBUG, M, ##__VA_ARGS__)
+#define MDNS_LOG(M, ...) MICO_LOG(CONFIG_MDNS_DEBUG, "MDNS LOG", M, ##__VA_ARGS__)
+#define MDNS_DBG(M, ...) MICO_PRINT(CONFIG_MDNS_DEBUG, M, ##__VA_ARGS__)
 #else
 #define debug_print_message(m) do {} while (0)
 #define debug_print_name(m, n) do {} while (0)
-#define DBG(...) do {} while (0)
-#define LOG(...) do {} while (0)
+#define MDNS_DBG(...) do {} while (0)
+#define MDNS_LOG(...) do {} while (0)
 #endif
 
 
@@ -340,7 +340,7 @@ int query_halt(void);
 #define CHECK_TAILROOM(m, l)										  \
 	do {															  \
 		if (TAILROOM(m) < l) {										  \
-			DBG("Warning: truncated mdns message (%d).\r\n", __LINE__); \
+			MDNS_DBG("Warning: truncated mdns message (%d).\r\n", __LINE__); \
 			return -1;												  \
 		}															  \
 	} while (0)
@@ -412,7 +412,7 @@ int mdns_verify_service(struct mdns_service *services[], netif_t iface);
 #ifdef MDNS_DBG
 #define ASSERT(condition) do { \
 	if (!(condition)) { \
-		DBG("%s: %d: ASSERTION FAILED\r\n", __FILE__, __LINE__); \
+		MDNS_DBG("%s: %d: ASSERTION FAILED\r\n", __FILE__, __LINE__); \
 		while (1); \
 	} \
 } while (0)

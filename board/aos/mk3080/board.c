@@ -159,7 +159,7 @@ void Board_SecrectInit(void)
     uint8_t len;
     hal_flash_read(HAL_PARTITION_LINK_KEY, &offset, &len, 1);
 
-    uint8_t *data = malloc(len);
+    char *data = malloc(len);
     hal_flash_read(HAL_PARTITION_LINK_KEY, &offset, data, len);
 
     uint16_t crc;
@@ -177,7 +177,7 @@ void Board_SecrectInit(void)
         return;
     }
 
-    uint8_t *tmp = data;
+    char *tmp = data;
     // Product key
     len = strlen(tmp);
     strcpy(pk, tmp);

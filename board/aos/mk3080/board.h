@@ -9,9 +9,6 @@ extern "C"
 #endif
 
 
-#define HARDWARE_REVISION   "V1.0"
-#define MODEL               "MK3080"
-
 #ifdef BOOTLOADER
 #define STDIO_UART 0
 #define STDIO_UART_BUADRATE 921600
@@ -34,8 +31,6 @@ extern "C"
  *                   Enumerations
  ******************************************************/
   
-#define MICO_UNUSED 0xFF
-
 enum {
     MICO_GPIO_1,
     MICO_GPIO_2,
@@ -113,14 +108,6 @@ enum
   MICO_PARTITION_USER_MAX
 };
 
-
-#ifdef BOOTLOADER
-#define STDIO_UART          MICO_UART_NONE
-#define STDIO_UART_BAUDRATE (115200) 
-#else
-#define STDIO_UART          MICO_UART_NONE
-#define STDIO_UART_BAUDRATE (115200) 
-#endif
 
 #define UART_FOR_APP     MICO_UART_1
 #define MICO_MFG_TEST         MICO_UART_1

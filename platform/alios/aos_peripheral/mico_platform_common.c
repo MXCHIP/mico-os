@@ -527,9 +527,11 @@ OSStatus MicoRandomNumberRead( void *inBuffer, int inByteCount )
 }
 #endif
 
+extern void hal_reboot(void);
+
 void mico_system_reboot( void )
 {
-    NVIC_SystemReset();
+    hal_reboot();
 }
 
 #ifdef ALIOS_DEV_WDG

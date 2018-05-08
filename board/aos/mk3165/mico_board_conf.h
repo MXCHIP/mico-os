@@ -29,7 +29,8 @@
 ******************************************************************************
 */ 
 
-#pragma once
+#ifndef __MICO_BOARD_CONF_H_
+#define __MICO_BOARD_CONF_H_
 
 #ifdef __cplusplus
 extern "C"
@@ -46,11 +47,11 @@ extern "C"
 ******************************************************/
 
 #define HARDWARE_REVISION   "1.0"
-#define DEFAULT_NAME        "MiCOKit-108"
-#define MODEL               "MK108_1"
+#define DEFAULT_NAME        "MiCOKit-3165"
+#define MODEL               "MK3165_1"
 
 /* MICO RTOS tick rate in Hz */
-#define MICO_DEFAULT_TICK_RATE_HZ                   (500)
+#define MICO_DEFAULT_TICK_RATE_HZ                   (1000)
 
   /************************************************************************
  * Uncomment to disable watchdog. For debugging only */
@@ -74,22 +75,70 @@ extern "C"
 
 /************************************************************************
  * CPU clock. */
-#define MCU_CLOCK_HZ            (120000000)
+#define MCU_CLOCK_HZ            (100000000)
 
 /************************************************************************
  * How many bits are used in NVIC priority configuration */
 #define CORTEX_NVIC_PRIO_BITS   (4)
 
 /************************************************************************
- * MICO_ENABLE_STDIO_TO_BOOT = 1 */
-#define MICO_ENABLE_STDIO_TO_BOOT 1
+ * Enable write protection to write-disabled embedded flash sectors */
+//#define MCU_EBANLE_FLASH_PROTECT
 
-/************************************************************************
- * No EasyLink button */
-#define MICO_CONFIG_EASYLINK_BTN_ENABLE                 1
+
+#define HSE_SOURCE              RCC_HSE_ON               /* Use external crystal                 */
+#define AHB_CLOCK_DIVIDER       RCC_SYSCLK_Div1          /* AHB clock = System clock             */
+#define APB1_CLOCK_DIVIDER      RCC_HCLK_Div2            /* APB1 clock = AHB clock / 2           */
+#define APB2_CLOCK_DIVIDER      RCC_HCLK_Div1            /* APB2 clock = AHB clock / 1           */
+#define PLL_SOURCE              RCC_PLLSource_HSE        /* PLL source = external crystal        */
+#define PLL_M_CONSTANT          26                       /* PLLM = 16                            */
+#define PLL_N_CONSTANT          400                      /* PLLN = 400                           */
+#define PLL_P_CONSTANT          4                        /* PLLP = 4                             */
+#define PPL_Q_CONSTANT          7                        /* PLLQ = 7                             */
+#define SYSTEM_CLOCK_SOURCE     RCC_SYSCLKSource_PLLCLK  /* System clock source = PLL clock      */
+#define SYSTICK_CLOCK_SOURCE    SysTick_CLKSource_HCLK   /* SysTick clock source = AHB clock     */
+#define INT_FLASH_WAIT_STATE    FLASH_Latency_3          /* Internal flash wait state = 3 cycles */
+
+/******************************************************
+ *  EMW1062 Options
+ ******************************************************/
+/*  Wi-Fi chip module */
+#define EMW1062
+
+/*  GPIO pins are used to bootstrap Wi-Fi to SDIO or gSPI mode */
+//#define MICO_WIFI_USE_GPIO_FOR_BOOTSTRAP_0
+//#define MICO_WIFI_USE_GPIO_FOR_BOOTSTRAP_1
+
+/*  Wi-Fi GPIO0 pin is used for out-of-band interrupt */
+#define MICO_WIFI_OOB_IRQ_GPIO_PIN  ( 0 )
+
+/*  Wi-Fi power pin is present */
+//#define MICO_USE_WIFI_POWER_PIN
+
+/*  Wi-Fi reset pin is present */
+#define MICO_USE_WIFI_RESET_PIN
+
+/*  Wi-Fi 32K pin is present */
+//#define MICO_USE_WIFI_32K_PIN
+
+/*  USE SDIO 1bit mode */
+//#define SDIO_1_BIT
+
+/* Wi-Fi power pin is active high */
+//#define MICO_USE_WIFI_POWER_PIN_ACTIVE_HIGH
+
+/*  WLAN Powersave Clock Source
+ *  The WLAN sleep clock can be driven from one of two sources:
+ *  1. MCO (MCU Clock Output) - default
+ *  2. WLAN 32K internal oscillator (30% inaccuracy)
+ */
+#define MICO_USE_WIFI_32K_CLOCK_MCO
+
+//#define MICO_USE_BUILTIN_RF_DRIVER
 
 #ifdef __cplusplus
 } /*extern "C" */
 #endif
 
+#endif
  

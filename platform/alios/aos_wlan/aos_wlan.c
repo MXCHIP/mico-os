@@ -1,10 +1,10 @@
 /**
  ******************************************************************************
- * @file    platform_gpio.c
+ * @file    aos_wlan.c
  * @author  William Xu
  * @version V1.0.0
  * @date    30-Apr-2018
- * @brief   This file provide GPIO driver functions.
+ * @brief   This file provide wlan driver functions.
  ******************************************************************************
  *  UNPUBLISHED PROPRIETARY SOURCE CODE
  *  Copyright (c) 2018 MXCHIP Inc.
@@ -15,9 +15,10 @@
  ******************************************************************************
  */
 
-#ifdef ALIOS_DEV_GPIO
+#include "mico_common.h"
+#include "mico_wlan.h"
 
-#include "aos_gpio.h"
+#include <hal/wifi.h>
 
 /******************************************************
 *                    Constants
@@ -39,6 +40,8 @@
 *               Variables Definitions
 ******************************************************/
 
+hal_wifi_module_t *aos_wlan = NULL;
+
 /******************************************************
 *               Function Declarations
 ******************************************************/
@@ -47,51 +50,16 @@
 *               Function Definitions
 ******************************************************/
 
-OSStatus platform_gpio_init( platform_gpio_driver_t* driver, const platform_gpio_t* gpio, platform_pin_config_t config )
+MICO_WEAK void mxchipInit(void)
 {
-    driver->port = gpio->port;
-    driver->config = config;
-
-    return (OSStatus) hal_gpio_init( driver );
+    aos_wlan = hal_wifi_get_default_module();
 }
 
-OSStatus platform_gpio_deinit( platform_gpio_driver_t* driver )
+OSStatus micoWlanStartAdv(network_InitTypeDef_adv_st* inNetworkInitParaAdv)
 {
-    return (OSStatus) hal_gpio_finalize( driver );
-}
-
-OSStatus platform_gpio_output_high( platform_gpio_driver_t* driver )
-{
-    return (OSStatus) hal_gpio_output_high( driver );
-}
-
-OSStatus platform_gpio_output_low( platform_gpio_driver_t* driver )
-{
-    return (OSStatus) hal_gpio_output_low( driver );
+    int s = 0;
+    return hal_wifi_start_adv(aos_wlan, (hal_wifi_init_type_adv_t *)inNetworkInitParaAdv);
 }
 
 
-OSStatus platform_gpio_output_trigger( platform_gpio_driver_t* driver )
-{
-    return (OSStatus) hal_gpio_output_toggle( driver );
-}
-
-bool platform_gpio_input_get( platform_gpio_driver_t* driver )
-{
-    uint32_t value;
-    hal_gpio_input_get(driver, &value);
-    return (value)? true:false;
-}
-
-OSStatus platform_gpio_irq_enable( platform_gpio_driver_t* irq_driver, const platform_gpio_t* gpio, platform_gpio_irq_trigger_t trigger, platform_gpio_irq_callback_t handler, void* arg )
-{
-    return hal_gpio_enable_irq(irq_driver, trigger, handler, arg);
-}
-
-OSStatus platform_gpio_irq_disable( platform_gpio_driver_t* irq_driver )
-{
-    return hal_gpio_clear_irq(irq_driver);
-}
-
-#endif
 

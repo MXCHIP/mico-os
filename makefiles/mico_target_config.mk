@@ -130,6 +130,7 @@ $(eval PROCESSED_COMPONENTS += $(NAME))
 $(eval PROCESSED_COMPONENTS_LOCS += $(COMP))
 $(eval COMPONENTS += $($(NAME)_COMPONENTS))
 
+
 $(if $(strip $(filter-out $(PROCESSED_COMPONENTS_LOCS),$(COMPONENTS))),$(eval $(call PROCESS_COMPONENT,$(filter-out $(PROCESSED_COMPONENTS_LOCS),$(COMPONENTS)))),)
 endef
 
@@ -335,6 +336,9 @@ $(CONFIG_FILE_DIR):
 $(foreach comp,$(PROCESSED_COMPONENTS), $(eval $(comp)_CFLAGS_ALL := $(call ADD_COMPILER_SPECIFIC_STANDARD_CFLAGS,$($(comp)_OPTIM_CFLAGS))) )
 $(foreach comp,$(PROCESSED_COMPONENTS), $(eval $(comp)_CFLAGS_ALL += $(EXTRA_CFLAGS)) )
 $(foreach comp,$(PROCESSED_COMPONENTS), $(eval $(comp)_CFLAGS_ALL += $($(comp)_CFLAGS)) )
+
+# Remove AliOS warnings, componentes under AliOS-Things
+$(foreach comp, $(PROCESSED_COMPONENTS), $(if $(filter AliOS-Things, $(subst /, ,$(dir $($(comp)_LOCATION)))),$(eval $(comp)_CFLAGS_ALL += -w),))
 
 $(foreach comp,$(PROCESSED_COMPONENTS), $(eval $(comp)_CXXFLAGS_ALL := $(call ADD_COMPILER_SPECIFIC_STANDARD_CXXFLAGS,$($(comp)_OPTIM_CXXFLAGS))) )
 $(foreach comp,$(PROCESSED_COMPONENTS), $(eval $(comp)_CXXFLAGS_ALL += $(EXTRA_CFLAGS)) )

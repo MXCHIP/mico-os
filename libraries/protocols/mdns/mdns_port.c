@@ -196,7 +196,7 @@ int mdns_start(const char *domain, char *hostname)
         }
         else
         {
-            LOG("mdns responder already started");
+            MDNS_LOG("mdns responder already started");
         }
     }
     if (is_querier_started != true)
@@ -207,7 +207,7 @@ int mdns_start(const char *domain, char *hostname)
     }
     else
     {
-        LOG("mdns querier already started");
+        MDNS_LOG("mdns querier already started");
     }
 
 exit:
@@ -216,7 +216,7 @@ exit:
 
 void mdns_stop(void)
 {
-    LOG("Stopping mdns.\r\n");
+    MDNS_LOG("Stopping mdns.\r\n");
     if (is_responder_started == true)
     {
         responder_halt();
@@ -224,7 +224,7 @@ void mdns_stop(void)
     }
     else
     {
-        LOG("Can't stop mdns responder; responder not started");
+        MDNS_LOG("Can't stop mdns responder; responder not started");
     }
     if (is_querier_started == true)
     {
@@ -233,7 +233,7 @@ void mdns_stop(void)
     }
     else
     {
-        LOG("Can't stop mdns querier; querier not started");
+        MDNS_LOG("Can't stop mdns querier; querier not started");
     }
 
     mico_system_notify_register(mico_notify_WIFI_STATUS_CHANGED, (void *)net_status_changed_delegate, NULL);
@@ -264,13 +264,13 @@ int mdns_socket_mcast(void)
 
     if (sock < 0)
     {
-        LOG("error: could not open multicast socket\n");
+        MDNS_LOG("error: could not open multicast socket\n");
         return ERR_MDNS_FSOC;
     }
 
     if (setsockopt(sock, SOL_SOCKET, SO_REUSEADDR, (char *)&yes, sizeof(yes)) < 0)
     {
-        LOG("error: failed to set SO_REUSEADDR option\n");
+        MDNS_LOG("error: failed to set SO_REUSEADDR option\n");
         close(sock);
         return ERR_MDNS_FREUSE;
     }
@@ -320,7 +320,7 @@ int dns_socket_ucast(uint16_t port)
 
     if (dns_socket_used)
     {
-        LOG("error: unicast-socket is already used.");
+        MDNS_LOG("error: unicast-socket is already used.");
         return ERR_MDNS_INUSE;
     }
 
@@ -331,14 +331,14 @@ int dns_socket_ucast(uint16_t port)
     sock = socket(AF_INET, SOCK_DGRAM, 0);
     if (sock < 0)
     {
-        LOG("error: could not open unicast socket\n");
+        MDNS_LOG("error: could not open unicast socket\n");
         return ERR_MDNS_FSOC;
     }
 #ifdef SO_REUSEPORT
     if (setsockopt(sock, SOL_SOCKET, SO_REUSEPORT, (char *)&yes,
                    sizeof(yes)) < 0)
     {
-        LOG("error: failed to set SO_REUSEPORT option\n");
+        MDNS_LOG("error: failed to set SO_REUSEPORT option\n");
         close(sock);
         return ERR_MDNS_FREUSE;
     }
@@ -405,7 +405,7 @@ int mdns_send_msg(struct mdns_message *m, int sock, unsigned short port, netif_t
 #endif
         )
     {
-        LOG("Interface is not up\n\r");
+        MDNS_LOG("Interface is not up\n\r");
         return kGeneralErr;
     }
 
@@ -432,11 +432,11 @@ int mdns_send_msg(struct mdns_message *m, int sock, unsigned short port, netif_t
         if (len < size)
         {
             mr_stats.tx_ipv4_err++;
-            LOG("error: failed to send IPv4 message\r\n");
+            MDNS_LOG("error: failed to send IPv4 message\r\n");
             return kGeneralErr;
         }
         mr_stats.total_tx++;
-        DBG("IPV4 sent %u-byte message\r\n", size);
+        MDNS_DBG("IPV4 sent %u-byte message\r\n", size);
     }
 
 #ifdef CONFIG_IPV6
@@ -454,11 +454,11 @@ int mdns_send_msg(struct mdns_message *m, int sock, unsigned short port, netif_t
         if (len < size)
         {
             mr_stats.tx_ipv6_err++;
-            LOG("error: failed to send IPv6 message\r\n");
+            MDNS_LOG("error: failed to send IPv6 message\r\n");
             return 0;
         }
 
-        DBG("IPV6 sent %u-byte message\r\n", size);
+        MDNS_DBG("IPV6 sent %u-byte message\r\n", size);
     }
 #endif
     return MICO_SUCCESS;

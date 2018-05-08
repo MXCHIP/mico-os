@@ -29,7 +29,8 @@ $(NAME)_SOURCES := ../platform_retarget.c
 GLOBAL_INCLUDES := .
 
 
-$(NAME)_COMPONENTS := platform/alios/aos_peripheral
+$(NAME)_COMPONENTS := platform/alios/aos_peripheral \
+                      platform/alios/aos_wlan
 
 DEFAULT_LINK_SCRIPT += TOOLCHAIN_$(TOOLCHAIN_NAME_MBED)/moc108$(LINK_SCRIPT_SUFFIX)
 

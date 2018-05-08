@@ -20,6 +20,7 @@
 #include "mdns_private.h"
 
 extern mdns_responder_stats mr_stats;
+extern int cli_register_commands(const struct cli_command *commands, int num_commands);
 
 static void mdns_stat(char *pcWriteBuffer, int xWriteBufferLen, int argc, char **argv);
 

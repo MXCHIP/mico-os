@@ -3,16 +3,6 @@
 #include "hal/soc/flash.h"
 #include "mico_board.h"
 
-#define HARDWARE_REVISION   "V1.0"
-#define MODEL               "STM32F411"
-
-#ifdef BOOTLOADER
-#define STDIO_UART 0
-#define STDIO_UART_BUADRATE 115200
-#else
-#define STDIO_UART 0
-#define STDIO_UART_BUADRATE 115200
-#endif
 
 #define HSE_SOURCE              RCC_HSE_ON               /* Use external crystal                 */
 #define AHB_CLOCK_DIVIDER       RCC_SYSCLK_Div1          /* AHB clock = System clock             */

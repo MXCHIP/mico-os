@@ -21,14 +21,8 @@
 #  IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 ############################################################################### 
 
-NAME := TARGET_GENERAL
+NAME := alios_wlan
 
 
-$(NAME)_SOURCES := ../platform_retarget.c
-
-
-$(NAME)_COMPONENTS := platform/alios/aos_peripheral \
-                      platform/alios/aos_wlan
-
-
-
+$(NAME)_SOURCES := aos_wlan.c
+                   

@@ -1,9 +1,9 @@
 /**
 ******************************************************************************
-* @file    platform_config.h
+* @file    mico_board_conf.h
 * @author  William Xu
 * @version V1.0.0
-* @date    05-May-2014
+* @date    08-May-2018
 * @brief   This file provides common configuration for current platform.
 ******************************************************************************
 *
@@ -29,12 +29,9 @@
 ******************************************************************************
 */ 
 
-#pragma once
 
-#ifdef __cplusplus
-extern "C"
-{
-#endif
+#ifndef __MICO_BOARD_CONF_H__
+#define __MICO_BOARD_CONF_H__
 
 
 /******************************************************
@@ -45,16 +42,15 @@ extern "C"
 *                    Constants
 ******************************************************/
 
-#define HARDWARE_REVISION   "1.0"
-#define DEFAULT_NAME        "MiCOKit-108"
-#define MODEL               "MK108_1"
+#define HARDWARE_REVISION   "3080B"
+#define DEFAULT_NAME        "EMW3080B Module"
+#define MODEL               "EMW3080B"
 
 /* MICO RTOS tick rate in Hz */
-#define MICO_DEFAULT_TICK_RATE_HZ                   (500)
-
-  /************************************************************************
+#define MICO_DEFAULT_TICK_RATE_HZ                   (1000)
+/************************************************************************
  * Uncomment to disable watchdog. For debugging only */
-//#define MICO_DISABLE_WATCHDOG
+#define MICO_DISABLE_WATCHDOG
 
 /************************************************************************
  * Uncomment to disable standard IO, i.e. printf(), etc. */
@@ -73,23 +69,43 @@ extern "C"
 #define RestoreDefault_TimeOut                      (3000)
 
 /************************************************************************
- * CPU clock. */
-#define MCU_CLOCK_HZ            (120000000)
+ * CPU clock */
+#define MCU_CLOCK_HZ            (125000000)
 
 /************************************************************************
  * How many bits are used in NVIC priority configuration */
 #define CORTEX_NVIC_PRIO_BITS   (4)
 
 /************************************************************************
- * MICO_ENABLE_STDIO_TO_BOOT = 1 */
-#define MICO_ENABLE_STDIO_TO_BOOT 1
+ * Enable write protection to write-disabled embedded flash sectors */
+//#define MCU_ENABLE_FLASH_PROTECT
 
 /************************************************************************
- * No EasyLink button */
-#define MICO_CONFIG_EASYLINK_BTN_ENABLE                 1
+ * Platform provide OTA temporary partition as secondary application partition */
+//#define MICO_ENABLE_SECONDARY_APPLICATION
 
-#ifdef __cplusplus
-} /*extern "C" */
+/************************************************************************
+ * Support Easylink&softap mode */
+#define PLATFORM_CONFIG_EASYLINK_SOFTAP_COEXISTENCE        1
+
+/******************************************************
+*                   Enumerations
+******************************************************/
+
+/******************************************************
+*                 Type Definitions
+******************************************************/
+
+/******************************************************
+*                    Structures
+******************************************************/
+
+/******************************************************
+*                 Global Variables
+******************************************************/
+
+/******************************************************
+*               Function Declarations
+******************************************************/
 #endif
 
- 

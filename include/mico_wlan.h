@@ -43,6 +43,7 @@
 extern "C" {
 #endif
   
+#ifndef ALIOS_SUPPORT
 #define micoWlanStart             StartNetwork
 #define micoWlanStartAdv          StartAdvNetwork
 #define micoWlanGetIPStatus       getNetPara
@@ -62,11 +63,13 @@ extern "C" {
 #define micoWlanDisablePowerSave  ps_disable
 #define micoWlanStartAirkiss      OpenAirkiss
 #define micoWlanStopAirkiss       CloseAirkiss
+#endif
 
-#define mico_wlan_get_mac_address wlan_get_mac_address
 
 #define WiFi_Interface  wlanInterfaceTypedef
 #define net_para_st     IPStatusTypedef
+
+#define mico_wlan_get_mac_address wlan_get_mac_address
 
 /** @addtogroup MICO_Core_APIs
   * @{
@@ -166,6 +169,7 @@ extern "C" {
 /** 
  *  @brief  Wi-Fi security type enumeration definition.
  */ 
+#ifndef ALIOS_SUPPORT
 enum wlan_sec_type_e{
    SECURITY_TYPE_NONE,        /**< Open system. */
    SECURITY_TYPE_WEP,         /**< Wired Equivalent Privacy. WEP security. */
@@ -176,6 +180,7 @@ enum wlan_sec_type_e{
    SECURITY_TYPE_WPA2_MIXED,  /**< WPA2 /w AES or TKIP */
    SECURITY_TYPE_AUTO,        /**< It is used when calling @ref micoWlanStartAdv, MICO read security type from scan result. */
 };
+#endif
 
 typedef uint8_t wlan_sec_type_t;
 

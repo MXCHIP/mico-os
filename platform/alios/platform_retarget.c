@@ -23,6 +23,8 @@ WEAK void mico_main(void);
 WEAK void mico_main(void) {
 }
 
+extern int __real_main(void);
+
 int application_start(int argc, char *argv[])
 {
     mico_main();

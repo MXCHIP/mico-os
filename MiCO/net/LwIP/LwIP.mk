@@ -9,7 +9,7 @@
 
 NAME := LwIP
 
-ifneq ($(ALIOS_SUPPORT),)
+ifeq ($(ALIOS_SUPPORT),y)
 GLOBAL_DEFINES += WITH_LWIP
 else
 

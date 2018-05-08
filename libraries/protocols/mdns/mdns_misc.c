@@ -29,13 +29,13 @@ static int parse_resource(struct mdns_message *m, struct mdns_resource *r)
 	r->name = m->cur;
 	len = dname_size(m->cur);
 	if (len == 0 || len == -1 || len > MDNS_MAX_NAME_LEN) {
-		DBG("Warning: invalid name in resource\r\n");
+		MDNS_DBG("Warning: invalid name in resource\r\n");
 		return -1;
 	}
 	CHECK_TAILROOM(m, len);
 	if (dname_overrun(m->data, m->end, m->cur) != 0) {
-		DBG("Warning: bad pointer in resource name\r\n");
-		DBG("%c %c %c %c %c %c %c %c %c %c\r\n",
+		MDNS_DBG("Warning: bad pointer in resource name\r\n");
+		MDNS_DBG("%c %c %c %c %c %c %c %c %c %c\r\n",
 		    m->cur[0], m->cur[1], m->cur[2], m->cur[3], m->cur[4],
 		    m->cur[5], m->cur[6], m->cur[7], m->cur[8], m->cur[9]);
 		return -1;
@@ -58,14 +58,14 @@ static int parse_resource(struct mdns_message *m, struct mdns_resource *r)
 	switch (r->type) {
 	case T_A:
 		if (r->rdlength != 4) {
-			DBG("Error: insufficient data in A record\r\n");
+			MDNS_DBG("Error: insufficient data in A record\r\n");
 			return -1;
 		}
 		break;
 	case T_SRV:
 	case T_PTR:
 		if (dname_overrun(m->data, m->end, r->rdata) != 0) {
-			DBG("Warning: bad pointer in resource data\r\n");
+			MDNS_DBG("Warning: bad pointer in resource data\r\n");
 			return -1;
 		}
 		break;
@@ -105,7 +105,7 @@ int mdns_parse_message(struct mdns_message *m, int mlen)
 	int len, i;
 
 	if (mlen < sizeof(struct mdns_header)) {
-		LOG("Warning: DNS message too short.\r\n");
+		MDNS_LOG("Warning: DNS message too short.\r\n");
 		return -1;
 	}
 #ifdef MDNS_QUERY_API
@@ -133,12 +133,12 @@ int mdns_parse_message(struct mdns_message *m, int mlen)
 	m->header->flags.num = ntohs(m->header->flags.num);
 
 	if (m->header->flags.fields.opcode != DNS_OPCODE_QUERY) {
-		DBG("Ignoring message with opcode != QUERY\r\n");
+		MDNS_DBG("Ignoring message with opcode != QUERY\r\n");
 		return -1;
 	}
 
 	if (m->num_questions > MDNS_MAX_QUESTIONS) {
-		LOG("Warning: Only parsing first %d questions of %d\r\n",
+		MDNS_LOG("Warning: Only parsing first %d questions of %d\r\n",
 		    MDNS_MAX_QUESTIONS, m->num_questions);
 		m->num_questions = MDNS_MAX_QUESTIONS;
 	}
@@ -147,12 +147,12 @@ int mdns_parse_message(struct mdns_message *m, int mlen)
 		m->questions[i].qname = m->cur;
 		len = dname_size(m->cur);
 		if (len == 0 || len == -1 || len > MDNS_MAX_NAME_LEN) {
-			DBG("Warning: invalid name in question %d\r\n", i);
+			MDNS_DBG("Warning: invalid name in question %d\r\n", i);
 			return -1;
 		}
 		CHECK_TAILROOM(m, len);
 		if (dname_overrun(m->data, m->end, m->cur) != 0) {
-			DBG("Warning: bad pointer in question name\r\n");
+			MDNS_DBG("Warning: bad pointer in question name\r\n");
 			return -1;
 		}
 
@@ -163,53 +163,53 @@ int mdns_parse_message(struct mdns_message *m, int mlen)
 		t = get_uint16_t(m->cur);
 		m->cur += sizeof(uint16_t);
 		if (t > T_ANY)
-			DBG("Warning: unexpected type in question: %u\r\n", t);
+			MDNS_DBG("Warning: unexpected type in question: %u\r\n", t);
 		m->questions[i].qtype = t;
 
 		/* get qclass */
 		t = get_uint16_t(m->cur);
 		m->cur += sizeof(uint16_t);
 		if (t != C_FLUSH && t != C_IN)
-			DBG("Warning: unexpected class in question: %u\r\n", t);
+			MDNS_DBG("Warning: unexpected class in question: %u\r\n", t);
 		m->questions[i].qclass = t;
 	}
 
 	if (m->num_answers > MDNS_MAX_ANSWERS) {
-		LOG("Warning: Only parsing first %d answers of %d\r\n",
+		MDNS_LOG("Warning: Only parsing first %d answers of %d\r\n",
 		    MDNS_MAX_ANSWERS, m->num_answers);
 		m->num_answers = MDNS_MAX_ANSWERS;
 	}
 	for (i = 0; i < m->num_answers; i++) {
 		len = parse_resource(m, &m->answers[i]);
 		if (len == -1) {
-			DBG("Failed to parse answer %d\r\n", i);
+			MDNS_DBG("Failed to parse answer %d\r\n", i);
 			return -1;
 		}
 	}
 
 	if (m->num_authorities > MDNS_MAX_AUTHORITIES) {
-		LOG("Warning: Only parsing first %d authorities of %d\r\n",
+		MDNS_LOG("Warning: Only parsing first %d authorities of %d\r\n",
 		    MDNS_MAX_ANSWERS, m->num_authorities);
 		m->num_authorities = MDNS_MAX_AUTHORITIES;
 	}
 	for (i = 0; i < m->num_authorities; i++) {
 		len = parse_resource(m, &m->authorities[i]);
 		if (len == -1) {
-			DBG("Failed to parse authority %d.\r\n", i);
+			MDNS_DBG("Failed to parse authority %d.\r\n", i);
 			return -1;
 		}
 	}
 
 	/* Put additional records to normal records array */
     if (m->num_additionals > (MDNS_MAX_ANSWERS - m->num_answers)) {
-        LOG("Warning: Only parsing first %d num_additional answers of %d\r\n",
+        MDNS_LOG("Warning: Only parsing first %d num_additional answers of %d\r\n",
             MDNS_MAX_ANSWERS - m->num_answers, m->num_additionals);
         m->num_additionals = MDNS_MAX_ANSWERS - m->num_answers;
     }
     for (i = m->num_answers; i < (m->num_additionals + m->num_answers); i++) {
         len = parse_resource(m, &m->answers[i]);
         if (len == -1) {
-            DBG("Failed to parse answer %d\r\n", i);
+            MDNS_DBG("Failed to parse answer %d\r\n", i);
             return -1;
         }
     }
@@ -519,7 +519,7 @@ int mdns_set_txt_rec(struct mdns_service *s, char *keyvals, char separator)
 	if (s->keyvals != NULL) {
 		s->kvlen = dnameify(s->keyvals, s->kvlen, separator, NULL);
 		if (s->kvlen > MDNS_MAX_KEYVAL_LEN) {
-			LOG("key/value exceeds MDNS_MAX_KEYVAL_LEN");
+			MDNS_LOG("key/value exceeds MDNS_MAX_KEYVAL_LEN");
 			return ERR_MDNS_TOOBIG;
 		} else
 			return MICO_SUCCESS;
@@ -538,7 +538,7 @@ int dns_send_msg(struct mdns_message *m, int sock, unsigned short port,
 
 	if (sock == -1) return -WM_FAIL;
 
-	DBG("Sending packet on Unicast socket : %s\n\r", inet_ntoa(out_addr));
+	MDNS_DBG("Sending packet on Unicast socket : %s\n\r", inet_ntoa(out_addr));
 	/* get message length */
 	size = (unsigned int)m->cur - (unsigned int)m->header;
 
@@ -553,7 +553,7 @@ int dns_send_msg(struct mdns_message *m, int sock, unsigned short port,
 	 * shouldn't be transmitted
 	*/
 	if (!ip) {
-		DBG("Interface is not up\n\r");
+		MDNS_DBG("Interface is not up\n\r");
 		return kGeneralErr;
 	}
 
@@ -561,11 +561,11 @@ int dns_send_msg(struct mdns_message *m, int sock, unsigned short port,
 		     sizeof(struct sockaddr_in));
 
 	if (len < size) {
-		LOG("error: failed to send message\r\n");
+		MDNS_LOG("error: failed to send message\r\n");
 		return 0;
 	}
 
-	DBG("sent %u-byte message\r\n", size);
+	MDNS_DBG("sent %u-byte message\r\n", size);
 	return 1;
 }
 #endif
@@ -636,7 +636,7 @@ int mdns_start(const char *domain, char *hostname)
 				return ret;
 			is_responder_started = true;
 		} else {
-			LOG("mdns responder already started\n\r");
+			MDNS_LOG("mdns responder already started\n\r");
 		}
 	}
 	if (is_querier_started != true) {
@@ -645,25 +645,25 @@ int mdns_start(const char *domain, char *hostname)
 			return ret;
 		is_querier_started = true;
 	} else {
-		LOG("mdns querier already started\n\r");
+		MDNS_LOG("mdns querier already started\n\r");
 	}
 	return 0;
 }
 
 void mdns_stop(void)
 {
-	LOG("Stopping mdns.\r\n");
+	MDNS_LOG("Stopping mdns.\r\n");
 	if (is_responder_started == true) {
 		responder_halt();
 		is_responder_started = false;
 	} else {
-		LOG("Can't stop mdns responder; responder not started");
+		MDNS_LOG("Can't stop mdns responder; responder not started");
 	}
 	if (is_querier_started == true) {
 		query_halt();
 		is_querier_started = false;
 	} else {
-		LOG("Can't stop mdns querier; querier not started");
+		MDNS_LOG("Can't stop mdns querier; querier not started");
 	}
 }
 #endif

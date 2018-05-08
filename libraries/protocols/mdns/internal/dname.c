@@ -219,9 +219,9 @@ int dname_increment(uint8_t *name)
 		name[len + 1] = '-';
 		name[len + 2] = '2';
 	}
-	DBG("Derived new name: ");
+	MDNS_DBG("Derived new name: ");
 	debug_print_name(NULL, name);
-	DBG("\r\n");
+	MDNS_DBG("\r\n");
 	return 0;
 }
 

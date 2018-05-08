@@ -157,7 +157,7 @@ static int do_callback(struct service_instance *s, int c)
 	int ret;
 	ret = (s->smon->cb)(s->smon->cbdata, &s->service, c);
 	if (ret != kNoErr) {
-		LOG("Warning: callback returned failure.\r\n");
+		MDNS_LOG("Warning: callback returned failure.\r\n");
 	}
 	return ret;
 }
@@ -209,20 +209,20 @@ static int add_service(struct service_monitor *smon)
 {
 	struct service_monitor *found = NULL;
 
-	DBG("Adding service ");
+	MDNS_DBG("Adding service ");
 	debug_print_name(NULL, smon->fqst);
-	DBG(" to monitor list\r\n");
+	MDNS_DBG(" to monitor list\r\n");
 
 	/* ensure that we're not already monitoring this service */
 	found = find_service_monitor(NULL, smon->fqst);
 	if (found != NULL) {
-		DBG("error: already monitoring this service\r\n");
+		MDNS_DBG("error: already monitoring this service\r\n");
 		return ERR_MDNS_INUSE;
 	}
 
 	found = SLIST_FIRST(&smons_free);
 	if (found == NULL) {
-		DBG("error: no more service monitor slots available.\r\n");
+		MDNS_DBG("error: no more service monitor slots available.\r\n");
 		return ERR_MDNS_NOMEM;
 	}
 	SLIST_REMOVE_HEAD(&smons_free, list_item);
@@ -290,27 +290,27 @@ static void remove_service(uint8_t * fqst)
 	struct service_monitor *found;
 
 	if (fqst[0] == 0) {
-		DBG("Removing all services from monitor list:\r\n");
+		MDNS_DBG("Removing all services from monitor list:\r\n");
 		while (!SLIST_EMPTY(&smons_active)) {
 			found = SLIST_FIRST(&smons_active);
 			SLIST_REMOVE_HEAD(&smons_active, list_item);
-			DBG("\t");
+			MDNS_DBG("\t");
 			debug_print_name(NULL, found->fqst);
-			DBG("\r\n");
+			MDNS_DBG("\r\n");
 			cleanup_service(found);
 			SLIST_INSERT_HEAD(&smons_free, found, list_item);
 		}
 		return;
 	}
 
-	DBG("Removing service ");
+	MDNS_DBG("Removing service ");
 	debug_print_name(NULL, fqst);
-	DBG(" from monitor list\r\n");
+	MDNS_DBG(" from monitor list\r\n");
 
 	/* find the service of interest */
 	found = find_service_monitor(NULL, fqst);
 	if (found == NULL) {
-		DBG("Warning: service was not being monitored\r\n");
+		MDNS_DBG("Warning: service was not being monitored\r\n");
 		return;
 	}
 	SLIST_REMOVE(&smons_active, found, service_monitor, list_item);
@@ -543,9 +543,9 @@ static int update_srv(struct service_instance *sinst, struct mdns_message *m,
 	int ret = 0;
 
 	if (r->ttl == 0) {
-		DBG("Got SRV goodbye for ");
+		MDNS_DBG("Got SRV goodbye for ");
 		debug_print_name(NULL, sinst->service.fqsn);
-		DBG(".\r\n");
+		MDNS_DBG(".\r\n");
 		cleanup_sinst(sinst);
 		return -1;
 	}
@@ -626,9 +626,9 @@ static int apply_elapsed(struct service_instance *sinst, uint32_t elapsed,
 	if (sinst->next_refresh == 0) {
 		/* time to refresh */
 		if (sinst->ttl_percent < 5) {
-			DBG("Timed out resolving SRV record for ");
+			MDNS_DBG("Timed out resolving SRV record for ");
 			debug_print_name(NULL, sinst->service.fqsn);
-			DBG(".  Evicting.\r\n");
+			MDNS_DBG(".  Evicting.\r\n");
 			cleanup_sinst(sinst);
 			return -1;
 		}
@@ -642,12 +642,12 @@ static int apply_elapsed(struct service_instance *sinst, uint32_t elapsed,
 			sinst->next_refresh =
 			    sinst->srv_ttl0 * sinst->ttl_percent / 100;
 		}
-		DBG("Refreshing SRV record for ");
+		MDNS_DBG("Refreshing SRV record for ");
 		debug_print_name(NULL, sinst->service.fqsn);
-		DBG(".\r\n");
+		MDNS_DBG(".\r\n");
 		sinst->ttl_percent >>= 1;
 		if (mdns_add_question(m, sinst->service.fqsn, T_ANY, C_IN) != 0) {
-			LOG("Warning: failed to add query for SRV record.\r\n");
+			MDNS_LOG("Warning: failed to add query for SRV record.\r\n");
 			return 0;
 		} else {
 			return 1;
@@ -939,9 +939,9 @@ static int update_arec(struct arec *arec, enum arec_event e,
 	int ret = 0;
 
 	if (e == AREC_EVENT_RX_REC && a->ttl == 0) {
-		DBG("Got A record goodbye for ");
+		MDNS_DBG("Got A record goodbye for ");
 		debug_print_name(NULL, arec->fqdn);
-		DBG(".\r\n");
+		MDNS_DBG(".\r\n");
 		evict_arec(arec);
 		return 0;
 	}
@@ -949,19 +949,19 @@ static int update_arec(struct arec *arec, enum arec_event e,
 	switch (arec->state) {
 	case AREC_STATE_INIT:
 		if (e == AREC_EVENT_RX_REC) {
-			DBG("Immediately resolved A record for ");
+			MDNS_DBG("Immediately resolved A record for ");
 			debug_print_name(NULL, arec->fqdn);
-			DBG("\r\n");
+			MDNS_DBG("\r\n");
 			arec->state = AREC_STATE_RESOLVED;
 			set_ip(arec, a);
 
 		} else if (e == AREC_EVENT_ADD_QUESTIONS) {
 			/* time to send the first query for this arec */
-			DBG("Launching A record query for ");
+			MDNS_DBG("Launching A record query for ");
 			debug_print_name(NULL, arec->fqdn);
-			DBG("\r\n");
+			MDNS_DBG("\r\n");
 			if (mdns_add_question(m, arec->fqdn, T_A, C_IN) != 0) {
-				LOG("Warning: failed to add query for A record.\r\n");
+				MDNS_LOG("Warning: failed to add query for A record.\r\n");
 			}
 			ret = 1;
 			arec->state = AREC_STATE_QUERYING;
@@ -978,12 +978,12 @@ static int update_arec(struct arec *arec, enum arec_event e,
 
 	case AREC_STATE_QUERYING:
 		if (e == AREC_EVENT_RX_REC) {
-			DBG("Resolved A record for ");
+			MDNS_DBG("Resolved A record for ");
 			debug_print_name(NULL, arec->fqdn);
-			DBG("\r\n");
+			MDNS_DBG("\r\n");
 			arec->state = AREC_STATE_RESOLVED;
 			set_ip(arec, a);
-			DBG("Next update in %ld ms.\r\n", arec->next_refresh);
+			MDNS_DBG("Next update in %ld ms.\r\n", arec->next_refresh);
 
 		} else if (e == AREC_EVENT_ADD_QUESTIONS) {
 			/* still no response.  It's been "elapsed" ms since our last
@@ -993,20 +993,20 @@ static int update_arec(struct arec *arec, enum arec_event e,
 			    SUBTRACT(arec->next_refresh, elapsed);
 			if (arec->next_refresh == 0 && arec->ttl_percent < 5) {
 				/* we tried to refresh but failed.  So give up. */
-				DBG("Failed to resolve A record for ");
+				MDNS_DBG("Failed to resolve A record for ");
 				debug_print_name(NULL, arec->fqdn);
-				DBG(".  Evicting.\r\n");
+				MDNS_DBG(".  Evicting.\r\n");
 				evict_arec(arec);
 				break;
 			}
 
 			if (arec->next_refresh == 0) {
-				DBG("Still trying to refresh A record for ");
+				MDNS_DBG("Still trying to refresh A record for ");
 				debug_print_name(NULL, arec->fqdn);
-				DBG("\r\n");
+				MDNS_DBG("\r\n");
 				if (mdns_add_question(m, arec->fqdn, T_A, C_IN)
 				    != 0)
-					LOG("Warning: failed to add query for A record.\r\n");
+					MDNS_LOG("Warning: failed to add query for A record.\r\n");
 				ret = 1;
 				arec->ttl_percent >>= 1;
 				arec->next_refresh =
@@ -1026,12 +1026,12 @@ static int update_arec(struct arec *arec, enum arec_event e,
 			arec->next_refresh =
 			    SUBTRACT(arec->next_refresh, elapsed);
 			if (arec->next_refresh == 0) {
-				DBG("Refreshing A record for ");
+				MDNS_DBG("Refreshing A record for ");
 				debug_print_name(NULL, arec->fqdn);
-				DBG("\r\n");
+				MDNS_DBG("\r\n");
 				if (mdns_add_question(m, arec->fqdn, T_A, C_IN)
 				    != 0)
-					LOG("Warning: failed to add query for A record.\r\n");
+					MDNS_LOG("Warning: failed to add query for A record.\r\n");
 				ret = 1;
 				arec->ttl_percent = 10;
 				arec->next_refresh =
@@ -1057,9 +1057,9 @@ static int update_aaaa_rec(struct aaaa_rec *aaaa_rec, enum aaaa_rec_event e,
 	int ret = 0;
 
 	if (e == AAAA_REC_EVENT_RX_REC && a->ttl == 0) {
-		DBG("Got AAAA record goodbye for ");
+		MDNS_DBG("Got AAAA record goodbye for ");
 		debug_print_name(NULL, aaaa_rec->fqdn);
-		DBG(".\r\n");
+		MDNS_DBG(".\r\n");
 		evict_aaaa_rec(aaaa_rec);
 		return 0;
 	}
@@ -1067,20 +1067,20 @@ static int update_aaaa_rec(struct aaaa_rec *aaaa_rec, enum aaaa_rec_event e,
 	switch (aaaa_rec->state) {
 	case AAAA_REC_STATE_INIT:
 		if (e == AAAA_REC_EVENT_RX_REC) {
-			DBG("Immediately resolved AAAA record for ");
+			MDNS_DBG("Immediately resolved AAAA record for ");
 			debug_print_name(NULL, aaaa_rec->fqdn);
-			DBG("\r\n");
+			MDNS_DBG("\r\n");
 			aaaa_rec->state = AAAA_REC_STATE_RESOLVED;
 			set_ip_v6(aaaa_rec, a);
 
 		} else if (e == AAAA_REC_EVENT_ADD_QUESTIONS) {
 			/* time to send the first query for this aaaa_rec */
-			DBG("Launching AAAA record query for ");
+			MDNS_DBG("Launching AAAA record query for ");
 			debug_print_name(NULL, aaaa_rec->fqdn);
-			DBG("\r\n");
+			MDNS_DBG("\r\n");
 			if (mdns_add_question(m, aaaa_rec->fqdn, T_AAAA, C_IN)
 					!= 0) {
-				LOG("Warning: failed to add query for AAAA"
+				MDNS_LOG("Warning: failed to add query for AAAA"
 						"record.\r\n");
 			}
 			ret = 1;
@@ -1099,12 +1099,12 @@ static int update_aaaa_rec(struct aaaa_rec *aaaa_rec, enum aaaa_rec_event e,
 
 	case AAAA_REC_STATE_QUERYING:
 		if (e == AAAA_REC_EVENT_RX_REC) {
-			DBG("Resolved AAAA record for ");
+			MDNS_DBG("Resolved AAAA record for ");
 			debug_print_name(NULL, aaaa_rec->fqdn);
-			DBG("\r\n");
+			MDNS_DBG("\r\n");
 			aaaa_rec->state = AAAA_REC_STATE_RESOLVED;
 			set_ip_v6(aaaa_rec, a);
-			DBG("Next update in %ld ms.\r\n",
+			MDNS_DBG("Next update in %ld ms.\r\n",
 					aaaa_rec->next_refresh);
 
 		} else if (e == AAAA_REC_EVENT_ADD_QUESTIONS) {
@@ -1117,20 +1117,20 @@ static int update_aaaa_rec(struct aaaa_rec *aaaa_rec, enum aaaa_rec_event e,
 					< 5) {
 				/* we tried to refresh but failed.  So give up
 				 */
-				DBG("Failed to resolve AAAA record for ");
+				MDNS_DBG("Failed to resolve AAAA record for ");
 				debug_print_name(NULL, aaaa_rec->fqdn);
-				DBG(".  Evicting.\r\n");
+				MDNS_DBG(".  Evicting.\r\n");
 				evict_aaaa_rec(aaaa_rec);
 				break;
 			}
 
 			if (aaaa_rec->next_refresh == 0) {
-				DBG("Still trying to refresh AAAA record for ");
+				MDNS_DBG("Still trying to refresh AAAA record for ");
 				debug_print_name(NULL, aaaa_rec->fqdn);
-				DBG("\r\n");
+				MDNS_DBG("\r\n");
 				if (mdns_add_question(m, aaaa_rec->fqdn, T_AAAA,
 						C_IN) != 0)
-					LOG("Warning: failed to add query for"
+					MDNS_LOG("Warning: failed to add query for"
 							"AAAA record.\r\n");
 				ret = 1;
 				aaaa_rec->ttl_percent >>= 1;
@@ -1150,12 +1150,12 @@ static int update_aaaa_rec(struct aaaa_rec *aaaa_rec, enum aaaa_rec_event e,
 			aaaa_rec->next_refresh =
 			    SUBTRACT(aaaa_rec->next_refresh, elapsed);
 			if (aaaa_rec->next_refresh == 0) {
-				DBG("Refreshing AAAA record for ");
+				MDNS_DBG("Refreshing AAAA record for ");
 				debug_print_name(NULL, aaaa_rec->fqdn);
-				DBG("\r\n");
+				MDNS_DBG("\r\n");
 				if (mdns_add_question(m, aaaa_rec->fqdn, T_AAAA,
 						C_IN) != 0)
-					LOG("Warning: failed to add query for"
+					MDNS_LOG("Warning: failed to add query for"
 							"AAAA record.\r\n");
 				ret = 1;
 				aaaa_rec->ttl_percent = 10;
@@ -1200,9 +1200,9 @@ static int update_service_cache(struct mdns_message *m, uint32_t elapsed)
 		sinst = find_service_instance(smon, m, ptr->rdata);
 		if (sinst != NULL) {
 			/* sneak a bit of state machine logic in here */
-			DBG("Got PTR with ttl=%ld for ", ptr->ttl);
+			MDNS_DBG("Got PTR with ttl=%ld for ", ptr->ttl);
 			debug_print_name(NULL, sinst->service.fqsn);
-			DBG(".\r\n");
+			MDNS_DBG(".\r\n");
 			if (ptr->ttl == 0) {
 				if (sinst->state == SINST_STATE_CLEAN ||
 				    sinst->state == SINST_STATE_UPDATING)
@@ -1222,7 +1222,7 @@ static int update_service_cache(struct mdns_message *m, uint32_t elapsed)
 			SLIST_INSERT_HEAD(&smon->sinsts, sinst, list_item);
 			sinst->smon = smon;
 			if (copy_servinfo(&sinst->service, m, ptr->rdata) == -1) {
-				LOG("Warning: failed to copy service info.\r\n");
+				MDNS_LOG("Warning: failed to copy service info.\r\n");
 				SLIST_REMOVE_HEAD(&smon->sinsts, list_item);
 				SLIST_INSERT_HEAD(&sinsts_free, sinst,
 						  list_item);
@@ -1244,7 +1244,7 @@ static int update_service_cache(struct mdns_message *m, uint32_t elapsed)
 		reset_service_instance(sinst);
 		sinst->smon = smon;
 		if (copy_servinfo(&sinst->service, m, ptr->rdata) == -1) {
-			LOG("Warning: failed to copy service info.\r\n");
+			MDNS_LOG("Warning: failed to copy service info.\r\n");
 			continue;
 		}
 
@@ -1317,9 +1317,9 @@ static int update_service_cache(struct mdns_message *m, uint32_t elapsed)
 		if (smon == NULL || sinst == NULL)
 			continue;
 
-		DBG("Got TXT with ttl=%ld for ", r->ttl);
+		MDNS_DBG("Got TXT with ttl=%ld for ", r->ttl);
 		debug_print_name(NULL, sinst->service.fqsn);
-		DBG(".\r\n");
+		MDNS_DBG(".\r\n");
 #ifdef CONFIG_IPV6
 		update_sinst(sinst, SINST_EVENT_GOT_TXT, m, NULL, NULL, NULL, r,
 			     elapsed);
@@ -1334,9 +1334,9 @@ static int update_service_cache(struct mdns_message *m, uint32_t elapsed)
 		if (smon == NULL || sinst == NULL)
 			continue;
 
-		DBG("Got SRV with ttl=%ld for ", r->ttl);
+		MDNS_DBG("Got SRV with ttl=%ld for ", r->ttl);
 		debug_print_name(NULL, sinst->service.fqsn);
-		DBG(".\r\n");
+		MDNS_DBG(".\r\n");
 #ifdef CONFIG_IPV6
 		update_sinst(sinst, SINST_EVENT_GOT_SRV, m, NULL, NULL, r, NULL,
 			     elapsed);
@@ -1350,9 +1350,9 @@ static int update_service_cache(struct mdns_message *m, uint32_t elapsed)
 		arec = find_arec(m, a->name);
 		if (arec == NULL)
 			continue;
-		DBG("Got A with ttl=%ld for ", a->ttl);
+		MDNS_DBG("Got A with ttl=%ld for ", a->ttl);
 		debug_print_name(NULL, arec->fqdn);
-		DBG(".\r\n");
+		MDNS_DBG(".\r\n");
 		update_arec(arec, AREC_EVENT_RX_REC, m, a, elapsed);
 	}
 
@@ -1361,9 +1361,9 @@ static int update_service_cache(struct mdns_message *m, uint32_t elapsed)
 		aaaa_rec = find_aaaa_rec(m, a->name);
 		if (aaaa_rec == NULL)
 			continue;
-		DBG("Got AAAA with ttl=%ld for ", a->ttl);
+		MDNS_DBG("Got AAAA with ttl=%ld for ", a->ttl);
 		debug_print_name(NULL, aaaa_rec->fqdn);
-		DBG(".\r\n");
+		MDNS_DBG(".\r\n");
 		update_aaaa_rec(aaaa_rec, AAAA_REC_EVENT_RX_REC, m, a, elapsed);
 	}
 #endif
@@ -1416,7 +1416,7 @@ static int add_known_answers(struct mdns_message *m,
 	return 0;
 
 fail:
-	LOG("Warning: all known answers didn't fit in packet\r\n");
+	MDNS_LOG("Warning: all known answers didn't fit in packet\r\n");
 	return -1;
 }
 
@@ -1486,12 +1486,12 @@ static int prepare_query(struct mdns_message *m, uint32_t elapsed,
 			    60000 : smon->refresh_period * 2;
 			smon->fqst_offset = m->cur - m->data;
 			if (mdns_add_question(m, smon->fqst, T_ANY, C_IN) != 0) {
-				LOG("ERROR: failed to populate questions!\r\n");
+				MDNS_LOG("ERROR: failed to populate questions!\r\n");
 				return -1;
 			}
-			DBG("Added query for service ");
+			MDNS_DBG("Added query for service ");
 			debug_print_name(NULL, smon->fqst);
-			DBG("\r\n");
+			MDNS_DBG("\r\n");
 #if CONFIG_DNSSD_QUERY
 			/* Since we have only one unicast socket, there will be
 			   only one smon for unicast */
@@ -1575,7 +1575,7 @@ static void do_querier(void)
 	mico_queue_t *ctrl_query_queue;
 	query_ctrl_msg ctrl_msg;
 
-	LOG("do_querier() launched\r\n");
+	MDNS_LOG("do_querier() launched\r\n");
 	while (query_enabled) {
 		FD_ZERO(&fds);
 		FD_SET(ctrl_sock, &fds);
@@ -1604,25 +1604,25 @@ static void do_querier(void)
 		sleep_time = ADD(interval(start_wait, stop_wait), 1);
 
 		if (active_fds < 0)
-			LOG("error: net_select() failed: %d\r\n", active_fds);
+			MDNS_LOG("error: net_select() failed: %d\r\n", active_fds);
 
 		/* handle control events
 		 */
 		if (FD_ISSET(ctrl_sock, &fds)) {
             if( mdns_socket_queue(MDNS_CTRL_QUERIER, &ctrl_query_queue, 0) == -1 ) {
-                LOG("error: loopback socket err");
+                MDNS_LOG("error: loopback socket err");
                 continue;
             }
 
             ret = mico_rtos_pop_from_queue(ctrl_query_queue, &ctrl_msg, 0);
 			/* we at least need a command and length */
 			if (ret == -1) {
-				LOG("Warning: querier failed to get control message\r\n");
+				MDNS_LOG("Warning: querier failed to get control message\r\n");
 				status = ERR_MDNS_INVAL;
 			} else {
-			    DBG("Querier got control message: %d.\r\n", ctrl_msg.command);
+			    MDNS_DBG("Querier got control message: %d.\r\n", ctrl_msg.command);
 				if (ctrl_msg.command == MDNS_CTRL_HALT) {
-					LOG("Querier done.\r\n");
+					MDNS_LOG("Querier done.\r\n");
 					query_enabled = 0;
 					status = kNoErr;
 				} else if (ctrl_msg.command ==
@@ -1634,7 +1634,7 @@ static void do_querier(void)
 					remove_service(ctrl_msg.data.fqst);
 					status = kNoErr;
 				} else {
-					LOG("Unkown control message %d\r\n",
+					MDNS_LOG("Unkown control message %d\r\n",
 					    ctrl_msg.command);
 					status = ERR_MDNS_NOIMPL;
 				}
@@ -1646,8 +1646,8 @@ static void do_querier(void)
 				   0, (struct sockaddr *)&from, sizeof(from));
 
 			if (ret == -1)
-				//LOG("error: failed to send control status: %d\r\n", net_get_sock_error(ctrl_sock));
-			    LOG("error: failed to send control status\r\n");
+				//MDNS_LOG("error: failed to send control status: %d\r\n", net_get_sock_error(ctrl_sock));
+			    MDNS_LOG("error: failed to send control status\r\n");
 #else
 			UNUSED_VARIABLE(status);
 #endif
@@ -1664,7 +1664,7 @@ static void do_querier(void)
 	 || (dns_socket_used == true && FD_ISSET(uc_sock, &fds))
 #endif
 		) {
-			DBG("querier got message\r\n");
+			MDNS_DBG("querier got message\r\n");
 			in_size = sizeof(struct sockaddr_storage);
 			if (FD_ISSET(mc_sock, &fds)) {
 				in_sock = mc_sock;
@@ -1680,8 +1680,8 @@ static void do_querier(void)
 				 sizeof(rx_msg.data), MSG_DONTWAIT,
 				 (struct sockaddr *)&from, &in_size);
 			if (len < 0) {
-				//LOG("querier failed to recv packet: %d\r\n", net_get_sock_error(in_sock));
-			    LOG("querier failed to recv packet\r\n");
+				//MDNS_LOG("querier failed to recv packet: %d\r\n", net_get_sock_error(in_sock));
+			    MDNS_LOG("querier failed to recv packet\r\n");
 				continue;
 			}
 
@@ -1689,7 +1689,7 @@ static void do_querier(void)
 			if (ret == 0)
 				update_service_cache(&rx_msg, sleep_time);
 		}
-		DBG("Preparing next query\r\n");
+		MDNS_DBG("Preparing next query\r\n");
 		struct in_addr out_addr;
 		uint32_t mcast_next_event = UINT32_MAX;
 #if CONFIG_DNSSD_QUERY
@@ -1700,7 +1700,7 @@ static void do_querier(void)
 		if (ret == 1) {
 			for (i = 0; i < MDNS_MAX_SERVICE_CONFIG; i++)
 				if (config_g[i].iface_idx != INTERFACE_NONE) {
-					DBG("Sending on multicast port\n\r");
+					MDNS_DBG("Sending on multicast port\n\r");
 					mdns_send_msg(&tx_msg, mc_sock, htons(5353),
 					              config_g[i].iface_idx, 0);
 				}
@@ -1712,7 +1712,7 @@ static void do_querier(void)
 			if (ret == 1) {
 				for (i = 0; i < MDNS_MAX_SERVICE_CONFIG; i++)
 					if (config_g[i].iface_idx != INTERFACE_NONE) {
-						DBG("Sending on unicast"
+						MDNS_DBG("Sending on unicast"
 						    " port\n\r");
 						dns_send_msg(&tx_msg, uc_sock,
 						     53,
@@ -1727,17 +1727,17 @@ static void do_querier(void)
 		next_event = mcast_next_event;
 #endif
 		if (next_event == UINT32_MAX) {
-			DBG("No event scheduled\r\n");
+			MDNS_DBG("No event scheduled\r\n");
 			timeout = NULL;
 		} else {
-			DBG("Next event in %ld ms\r\n", next_event);
+			MDNS_DBG("Next event in %ld ms\r\n", next_event);
 			SET_TIMEOUT(&tv, next_event);
 			timeout = &tv;
 		}
 	}
 
 	if (!query_enabled) {
-		LOG("Signalled to stop mdns_querier\r\n");
+		MDNS_LOG("Signalled to stop mdns_querier\r\n");
 		query_enabled = 1;
 		mico_rtos_delete_thread(NULL);
 	}
@@ -1797,14 +1797,14 @@ int query_launch()
 	/* create both ends of the control socket */
 	ctrl_sock = mdns_socket_queue(MDNS_CTRL_QUERIER, NULL, sizeof(query_ctrl_msg));
 	if (ctrl_sock < 0) {
-		LOG("Failed to create query control socket: %d\r\n", ctrl_sock);
+		MDNS_LOG("Failed to create query control socket: %d\r\n", ctrl_sock);
 		return ctrl_sock;
 	}
 
 	mc_sock = mdns_socket_mcast();
 
 	if (mc_sock < 0) {
-		LOG("error: unable to open multicast socket in querier\r\n");
+		MDNS_LOG("error: unable to open multicast socket in querier\r\n");
 		return mc_sock;
 	}
 
@@ -1821,7 +1821,7 @@ static int signal_and_wait_for_query_halt()
 	int num_iterations = total_wait_time / check_interval;
 
 	if (!query_enabled) {
-		LOG("Warning: mdns responder not running\r\n");
+		MDNS_LOG("Warning: mdns responder not running\r\n");
 		return kNoErr;
 	}
 
@@ -1829,7 +1829,7 @@ static int signal_and_wait_for_query_halt()
 	    mico_rtos_delay_milliseconds(check_interval);
 
 	if (!num_iterations)
-		LOG("Error: timed out waiting for mdns querier to stop\r\n");
+		MDNS_LOG("Error: timed out waiting for mdns querier to stop\r\n");
 
 	return query_enabled ? kGeneralErr : kNoErr;
 }
@@ -1842,23 +1842,23 @@ int query_halt(void)
 
 	ret = mdns_send_ctrl_msg_uint32(MDNS_CTRL_QUERIER, MDNS_CTRL_HALT);
 	if (ret != 0) {
-		LOG("Warning: failed to send HALT message to mdns querier\r\n");
+		MDNS_LOG("Warning: failed to send HALT message to mdns querier\r\n");
 		return kGeneralErr;
 	}
 	ret = signal_and_wait_for_query_halt();
 
 	if (ret != kNoErr)
-		LOG("Warning: failed to HALT mdns querier\r\n");
+		MDNS_LOG("Warning: failed to HALT mdns querier\r\n");
 
 	/* force a halt */
 	if (query_enabled) {
-		LOG("Warning: failed to halt mdns querier, forcing.\r\n");
+		MDNS_LOG("Warning: failed to halt mdns querier, forcing.\r\n");
 		query_enabled = 0;
 	}
 
 	ret = mico_rtos_delete_thread(query_thread);
 	if (ret != kNoErr)
-		LOG("Warning: failed to delete thread.\r\n");
+		MDNS_LOG("Warning: failed to delete thread.\r\n");
 
 	ret = mdns_socket_close(&ctrl_sock);
 #if CONFIG_DNSSD_QUERY
@@ -1883,7 +1883,7 @@ static int save_query_monitor(struct service_monitor *m, char *fqst,
 
 	ret = dnameify(fqst, strlen(fqst) + 1, '.', m->fqst);
 	if (ret == -1) {
-		LOG("Failed to parse fully-qualified service type\r\n");
+		MDNS_LOG("Failed to parse fully-qualified service type\r\n");
 		return ERR_MDNS_INVAL;
 	}
 	/* dnameify doesn't null-terminate by design.  But we want to use
@@ -1930,11 +1930,11 @@ int dnssd_query_monitor(char *fqst, mdns_query_cb cb,
 	int ret, config_idx;
 
 	if (dns_addr.s_addr == 0) {
-		LOG("Invalid DNS address\r\n");
+		MDNS_LOG("Invalid DNS address\r\n");
 		return ERR_MDNS_INVAL;
 	}
 	if (cb == NULL) {
-		LOG("mdns query callback must not be NULL\r\n");
+		MDNS_LOG("mdns query callback must not be NULL\r\n");
 		return ERR_MDNS_INVAL;
 	}
 
@@ -1954,10 +1954,10 @@ int dnssd_query_monitor(char *fqst, mdns_query_cb cb,
 
 	uc_sock = dns_socket_ucast(53);
 	if (uc_sock < 0) {
-		LOG("error: unable to open multicast socket in querier\r\n");
+		MDNS_LOG("error: unable to open multicast socket in querier\r\n");
 		return uc_sock;
 	}
-	DBG("Created unicast socket for DNS Client\n\r");
+	MDNS_DBG("Created unicast socket for DNS Client\n\r");
 	ret = query_send_ctrl_msg(&ctrl_msg, MDNS_CTRL_QUERIER);
 	if (ret != kNoErr)
 		dns_socket_close(uc_sock);
@@ -1979,7 +1979,7 @@ int mdns_query_monitor(char *fqst, mdns_query_cb cb, void *data, netif_t iface)
 	int config_idx;
 
 	if (cb == NULL) {
-		LOG("mdns query callback must not be NULL\r\n");
+		MDNS_LOG("mdns query callback must not be NULL\r\n");
 		return ERR_MDNS_INVAL;
 	}
 
@@ -1997,7 +1997,7 @@ int mdns_query_monitor(char *fqst, mdns_query_cb cb, void *data, netif_t iface)
 
 	ctrl_msg.command = MDNS_CTRL_MONITOR;
 	ctrl_msg.length = sizeof(query_ctrl_msg);
-	LOG("Start monitor: %d\r\n", ctrl_msg.command);
+	MDNS_LOG("Start monitor: %d\r\n", ctrl_msg.command);
 	return mdns_send_ctrl_msg(MDNS_CTRL_QUERIER, &ctrl_msg);
 }
 
@@ -2012,12 +2012,12 @@ void mdns_query_unmonitor(char *fqst)
 	else {
 		ret = strlen(fqst);
 		if (ret > MDNS_MAX_NAME_LEN) {
-			LOG("error: invalid service type\r\n");
+			MDNS_LOG("error: invalid service type\r\n");
 			return;
 		}
 		ret = dnameify(fqst, strlen(fqst) + 1, '.', ctrl_msg.data.fqst);
 		if (ret == -1) {
-			LOG("Failed to parse fully-qualified service type\r\n");
+			MDNS_LOG("Failed to parse fully-qualified service type\r\n");
 			return;
 		}
 	}
