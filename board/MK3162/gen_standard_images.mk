@@ -13,6 +13,8 @@ ATE_BIN_FILE := $(MICO_OS_PATH)/resources/ate_firmware/3162/ate.bin
 ATE_OFFSET:= 0x60000
 
 #wifi firmware
+RF_BIN_FILE := $(MICO_OS_PATH)/resources/wifi_firmware/43362/43362A2-5.90.230.22.bin
+RF_OFFSET:= 0xC0000
 
 # Required to build Full binary file
 GEN_COMMON_BIN_OUTPUT_FILE_SCRIPT:= $(SCRIPTS_PATH)/gen_common_bin_output_file.py
@@ -25,3 +27,4 @@ gen_standard_images: build_done
 	$(PYTHON) $(GEN_COMMON_BIN_OUTPUT_FILE_SCRIPT) -o $(MOC_ALL_BIN_OUTPUT_FILE) -f $(BOOT_OFFSET) $(BOOT_BIN_FILE)              
 	$(PYTHON) $(GEN_COMMON_BIN_OUTPUT_FILE_SCRIPT) -o $(MOC_ALL_BIN_OUTPUT_FILE) -f $(APP_OFFSET)  $(APP_BIN_FILE)
 	$(PYTHON) $(GEN_COMMON_BIN_OUTPUT_FILE_SCRIPT) -o $(MOC_ALL_BIN_OUTPUT_FILE) -f $(ATE_OFFSET)  $(ATE_BIN_FILE)
+	$(PYTHON) $(GEN_COMMON_BIN_OUTPUT_FILE_SCRIPT) -o $(MOC_ALL_BIN_OUTPUT_FILE) -f $(RF_OFFSET)   $(RF_BIN_FILE)
