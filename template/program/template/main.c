@@ -32,7 +32,7 @@
 
 #include "mico.h"
 
-int application_start( void )
+int main( void )
 {
   	// Add your code here
 	return 0;
