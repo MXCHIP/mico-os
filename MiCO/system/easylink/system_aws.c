@@ -76,6 +76,9 @@ static void aws_complete_cb( network_InitTypeDef_st *nwkpara, system_context_t *
 
     require_action_string( nwkpara, exit, err = kTimeoutErr, "AWS Timeout or terminated" );
 
+#ifdef MICO_EXTRA_AP_NUM
+    system_network_update(inContext, nwkpara->wifi_ssid);
+#endif
     /* Store SSID and KEY*/
     mico_rtos_lock_mutex( &inContext->flashContentInRam_mutex );
     memcpy( inContext->flashContentInRam.micoSystemConfig.ssid, nwkpara->wifi_ssid, maxSsidLen );

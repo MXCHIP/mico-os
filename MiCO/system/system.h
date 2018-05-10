@@ -33,7 +33,13 @@
 #define CONFIG_MODE_MONITOR_EASYLINK            (7)
 #define CONFIG_MODE_AWS                         (8) 
 
-
+/* 
+ * Please define MICO_EXTRA_AP_NUM in mico_config.h to save more than one AP info.
+ * Example: #define MICO_EXTRA_AP_NUM 3
+ * MiCO will save 1 main AP and 3 extra APs info in flash. System try to connect the main AP first,  
+ * then try to connect extra and main AP. 
+ * Please enter configure mode to add extra AP information. 
+ */
 
 #ifndef MICO_PREBUILT_LIBS
 #include "mico_config.h"
@@ -118,6 +124,14 @@ typedef struct  _boot_table_t {
 #endif
 }boot_table_t;
 
+typedef struct _extra_ap_info
+{
+  uint8_t         valid;
+  char            ssid[maxSsidLen+1];
+  char            key[maxKeyLen]; 
+  uint8_t         key_len;
+}extra_ap_info_t;
+
 typedef struct _mico_sys_config_t
 {
   /*Device identification*/
@@ -154,6 +168,10 @@ typedef struct _mico_sys_config_t
 
   /*Update seed number when configuration is changed*/
   int32_t         seed;
+  
+#ifdef MICO_EXTRA_AP_NUM
+  extra_ap_info_t extra_ap[MICO_EXTRA_AP_NUM];
+#endif
 } mico_sys_config_t;
 
 

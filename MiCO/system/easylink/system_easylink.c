@@ -78,6 +78,9 @@ static void easylink_complete_cb( network_InitTypeDef_st *nwkpara, system_contex
     OSStatus err = kNoErr;
 
     require_action_string( nwkpara, exit, err = kTimeoutErr, "EasyLink Timeout or terminated" );
+#ifdef MICO_EXTRA_AP_NUM
+    system_network_update(inContext, nwkpara->wifi_ssid);
+#endif
 
     /* Store SSID and KEY*/
     mico_rtos_lock_mutex( &inContext->flashContentInRam_mutex );
