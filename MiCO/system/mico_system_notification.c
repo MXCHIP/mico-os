@@ -52,37 +52,47 @@ netif_status_t netif_status[INTERFACE_MAX] = {INTERFACE_STATUS_DOWN, INTERFACE_S
 
 /* User defined notifications */
 
-#ifndef ALIOS_SUPPORT
-
+#ifdef ALIOS_SUPPORT
+void mico_wlan_scan_result_handler(hal_wifi_module_t *m, hal_wifi_scan_result_t *pApList, void *arg)
+#else
 void ApListCallback(ScanResult *pApList)
+#endif
 {
   _Notify_list_t *temp =  Notify_list[mico_notify_WIFI_SCAN_COMPLETED];
   if(temp == NULL)
     return;
   else{
     do{
-      ((mico_notify_WIFI_SCAN_COMPLETE_function)(temp->function))(pApList, temp->arg);
+      ((mico_notify_WIFI_SCAN_COMPLETE_function)(temp->function))((ScanResult *)pApList, temp->arg);
       temp = temp->next;
     }while(temp!=NULL);
   }
 }
 
+#ifdef ALIOS_SUPPORT
+void mico_wlan_scan_adv_result_handler(hal_wifi_module_t *m, hal_wifi_scan_result_adv_t *pApAdvList, void *arg)
+#else
 void ApListAdvCallback(ScanResult_adv *pApAdvList)
+#endif
 {
   _Notify_list_t *temp =  Notify_list[mico_notify_WIFI_SCAN_ADV_COMPLETED];
   if(temp == NULL)
     return;
   else{
     do{
-      ((mico_notify_WIFI_SCAN_ADV_COMPLETE_function)(temp->function))(pApAdvList, temp->arg);
+      ((mico_notify_WIFI_SCAN_ADV_COMPLETE_function)(temp->function))((ScanResult_adv *)pApAdvList, temp->arg);
       temp = temp->next;
     }while(temp!=NULL);
   }
 }
 
+#ifdef ALIOS_SUPPORT
+void mico_wlan_status_changed_handler(hal_wifi_module_t *m, hal_wifi_event_t status, void *arg)
+#else
 void WifiStatusHandler(WiFiEvent status)
+#endif
 {
-    switch ( status )
+    switch ( (WiFiEvent)status )
     {
         case NOTIFY_STATION_UP:
             netif_status[INTERFACE_STA] = INTERFACE_STATUS_UP;
@@ -119,32 +129,39 @@ void WifiStatusHandler(WiFiEvent status)
   }
 }
 
+#ifdef ALIOS_SUPPORT
+void mico_wlan_connected_ap_info_handler(hal_wifi_module_t *m, hal_wifi_ap_info_adv_t *ap_info, char *key, int key_len, void *arg)
+#else
 void connected_ap_info(apinfo_adv_t *ap_info, char *key, int key_len)
+#endif
 {
   _Notify_list_t *temp =  Notify_list[mico_notify_WiFI_PARA_CHANGED];
   if(temp == NULL)
     return;
   else{
     do{
-      ((mico_notify_WiFI_PARA_CHANGED_function)(temp->function))(ap_info, key, key_len, temp->arg);
+      ((mico_notify_WiFI_PARA_CHANGED_function)(temp->function))((apinfo_adv_t *)ap_info, key, key_len, temp->arg);
       temp = temp->next;
     }while(temp!=NULL);
   }
 }
 
+#ifdef ALIOS_SUPPORT
+void mico_network_ipv4_addr_resolved_handler(hal_wifi_module_t *m, hal_wifi_ip_stat_t *pnet, void *arg)
+#else
 void NetCallback(IPStatusTypedef *pnet)
+#endif
 {
   _Notify_list_t *temp =  Notify_list[mico_notify_DHCP_COMPLETED];
   if(temp == NULL)
     return;
   else{
     do{
-      ((mico_notify_DHCP_COMPLETE_function)(temp->function))(pnet, temp->arg);
+      ((mico_notify_DHCP_COMPLETE_function)(temp->function))((IPStatusTypedef *)pnet, temp->arg);
       temp = temp->next;
     }while(temp!=NULL);
   }
 }
-#endif
 
 void RptConfigmodeRslt(network_InitTypeDef_st *nwkpara)
 {
@@ -211,7 +228,11 @@ void sendNotifySYSWillPowerOff(void)
   }    
 }
 
+#ifdef ALIOS_SUPPORT
+void mico_wlan_connect_failed_handler(hal_wifi_module_t *m, int err, void *arg)
+#else
 void join_fail(OSStatus err)
+#endif
 {
   _Notify_list_t *temp =  Notify_list[mico_notify_WIFI_CONNECT_FAILED];
   if(temp == NULL)
@@ -224,7 +245,11 @@ void join_fail(OSStatus err)
   }    
 }
 
+#ifdef ALIOS_SUPPORT
+void mico_wlan_fatal_err_handler(hal_wifi_module_t *m, void *arg)
+#else
 void wifi_reboot_event(void)
+#endif
 {
   _Notify_list_t *temp =  Notify_list[mico_notify_WIFI_Fatal_ERROR];
   if(temp == NULL)
@@ -263,6 +288,18 @@ void mico_gprs_status_handler(notify_netif_status_t status, const mico_gprs_net_
   }  
 }
 
+#ifdef ALIOS_SUPPORT
+const hal_wifi_event_cb_t wlan_cb = {
+    .connect_fail = mico_wlan_connect_failed_handler,
+    .ip_got = mico_network_ipv4_addr_resolved_handler,
+    .stat_chg = mico_wlan_status_changed_handler,
+    .scan_compeleted = mico_wlan_scan_result_handler,
+    .scan_adv_compeleted = mico_wlan_scan_adv_result_handler,
+    .para_chg = mico_wlan_connected_ap_info_handler,
+    .fatal_err = mico_wlan_fatal_err_handler,
+};
+#endif
+
 OSStatus mico_system_notify_register( mico_notify_types_t notify_type, void* functionAddress, void* arg )
 {
   OSStatus err = kNoErr;
@@ -275,6 +312,12 @@ OSStatus mico_system_notify_register( mico_notify_types_t notify_type, void* fun
   if(Notify_list[notify_type] == NULL){
     Notify_list[notify_type] = notify;
     notify->next = NULL;
+#ifdef ALIOS_SUPPORT
+    hal_wifi_module_t *wifi = hal_wifi_get_default_module();
+    if (wifi->ev_cb != &wlan_cb)
+        hal_wifi_install_event(wifi, &wlan_cb);
+#endif
+
   }else{
     if(temp->function == functionAddress)
         return kNoErr;   //Nodify already exist
@@ -328,35 +371,3 @@ OSStatus mico_system_notify_remove_all( mico_notify_types_t notify_type)
     return kNoErr;
 }
 
-
-// void WatchDog(void)
-// {
-  
-// }
-
-
-// void RptConfigmodeRslt(network_InitTypeDef_st *nwkpara)
-// {
-
-// }
-
-
-// void NetCallback(net_para_st *pnet)
-// {
-
-// }
-
-
-
-
-
-// void dns_ip_set(u8 *hostname, u32 ip)
-// {
-
-// }
-
-
-// void socket_connected(int fd)
-// {
-
-// }

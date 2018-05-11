@@ -57,17 +57,21 @@ struct in6_addr in6_addr_any = IN6ADDR_ANY_INIT;
 /******************************************************
  *                    Structures
  ******************************************************/
+
+//#ifndef ALIOS_SUPPORT
 struct pollfd {
 	int fd; /**< fd related to */
 	short events; /**< which POLL... events to respond to */
 	short revents; /**< which POLL... events occurred */
 };
+//#endif
 #define POLLIN		0x0001
 #define POLLPRI		0x0002
 #define POLLOUT		0x0004
 #define POLLERR		0x0008
 #define POLLHUP		0x0010
 #define POLLNVAL	0x0020
+
 
 /******************************************************
  *               Function Declarations
@@ -88,7 +92,7 @@ int socket(int domain, int type, int protocol)
 
 int setsockopt (int socket, int level, int optname, void *optval, socklen_t optlen)
 {
-    return lwip_setsockopt( socket, level, optname, optval, optlen );
+    return lwip_setsockopt( socket, level, optname, (const void *)optval, optlen );
 }
 
 int getsockopt (int socket, int level, int optname, void *optval, socklen_t *optlen_ptr)

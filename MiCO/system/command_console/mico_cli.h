@@ -16,6 +16,9 @@
 extern "C" {
 #endif
 
+#ifdef ALIOS_SUPPORT
+#include "aos/cli.h"
+#else
 /** Structure for registering CLI commands */
 struct cli_command {
 	/** The name of the CLI command */
@@ -26,6 +29,7 @@ struct cli_command {
 	void (*function) (char *pcWriteBuffer, int xWriteBufferLen, int argc, char **argv);
 };
 
+#define CLI_ARGS char *pcWriteBuffer, int xWriteBufferLen, int argc, char **argv
 
 #define cmd_printf(...) do{\
                                 if (xWriteBufferLen > 0) {\
@@ -34,9 +38,7 @@ struct cli_command {
                                     pcWriteBuffer+=strlen(pcWriteBuffer);\
                                 }\
                              }while(0)
-
-
-#define CLI_ARGS char *pcWriteBuffer, int xWriteBufferLen, int argc, char **argv
+#endif
 
 /** Register a CLI command
  *
@@ -99,7 +101,7 @@ int cli_unregister_commands(const struct cli_command *commands,
  * \return 0 on success
  * \return error code otherwise.
  */
-int cli_getchar(char *inbuf);
+int mico_cli_getchar(char *inbuf);
 
 #if (defined CONFIG_PLATFORM_8195A) & (!defined MOC100)
 #define cli_putstr printf

@@ -110,13 +110,13 @@ void tftp_ota(void)
     mico_system_notify_remove_all(mico_notify_WiFI_PARA_CHANGED);
     mico_system_notify_remove_all(mico_notify_DHCP_COMPLETED);
     mico_system_notify_remove_all(mico_notify_WIFI_CONNECT_FAILED);
-	  mico_system_notify_remove_all(mico_notify_EASYLINK_WPS_COMPLETED);
+	mico_system_notify_remove_all(mico_notify_EASYLINK_WPS_COMPLETED);
     mico_system_notify_register( mico_notify_WIFI_STATUS_CHANGED, (void *)FOTA_WifiStatusHandler, NULL );
-    micoWlanStopEasyLink();
-	  micoWlanStopEasyLinkPlus();
-    micoWlanStopAirkiss();
+//  micoWlanStopEasyLink();
+//	micoWlanStopEasyLinkPlus();
+//  micoWlanStopAirkiss();
     micoWlanSuspendStation();
-	mico_rtos_thread_msleep(10);
+    mico_rtos_delay_milliseconds(10);
 		
     tmpbuf = (uint8_t*)malloc(TMP_BUF_LEN);
     if (tmpbuf == NULL) {
@@ -146,7 +146,7 @@ void tftp_ota(void)
     micoWlanStart(&conf);
 
     while(wifi_up == 0) {
-        mico_rtos_thread_msleep(100);
+        mico_rtos_delay_milliseconds(100);
         i++;
         if (i > 100) {
             fota_log("ERROR!! Can't find the OTA AP");
@@ -213,8 +213,7 @@ void tftp_ota(void)
     fota_log("OTA bin md5 check success, CRC %x. upgrading...", crc);
     mico_ota_switch_to_new_fw( filelen, crc );
     mico_ota_finished(OTA_SUCCESS, NULL);
-    while(1)
-        mico_rtos_thread_sleep(100);
+    mico_rtos_delay_milliseconds(MICO_WAIT_FOREVER);
 }
 
 /******************************************************

@@ -251,7 +251,7 @@ extern "C" {
 /**
  * LWIP_PROVIDE_ERRNO: System does not have errno defines - force LwIP to create them
  */
-#define LWIP_PROVIDE_ERRNO             (0)
+//#define LWIP_PROVIDE_ERRNO             (0)
 #define ERRNO                          (0)
 
 /**

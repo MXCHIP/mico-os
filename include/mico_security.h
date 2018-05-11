@@ -71,12 +71,15 @@ enum {
 /** 
  *  @brief  MD5 Context definition
  */
+#ifdef ALIOS_SUPPORT
+typedef void*  md5_context;
+#else
 typedef struct {
   uint32_t state[4];        /** state (ABCD) */
   uint32_t count[2];        /** number of bits, modulo 2^64 (lsb first) */
   uint32_t buffer[64];      /** input buffer */
 } md5_context;
-
+#endif
 
 /**
  * @brief          MD5 context setup

@@ -23,10 +23,8 @@ ifneq ($(filter $(subst ., ,$(COMPONENTS)),mocOS mocIP),)
 $(NAME)_SOURCES += moc_main.c
 endif
 
-ifneq ($(ALIOS_SUPPORT),y)
 $(NAME)_COMPONENTS += MiCO/security \
                       MiCO/system
-endif
 
 $(NAME)_COMPONENTS += utilities
 

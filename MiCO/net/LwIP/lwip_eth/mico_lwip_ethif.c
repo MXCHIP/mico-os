@@ -20,6 +20,7 @@
 #include <stdlib.h>
 #include <stdarg.h>
 #include "mico_common.h"
+#include "mico_lwip_ethif_logging.h"
 
 #include "mico_eth.h"
 
@@ -35,8 +36,7 @@
 #include "lwip/netif.h"
 #include "netif/etharp.h"
 
-#include "mico_lwip_ethif_logging.h"
-#include "platform_peripheral.h"
+
 
 #if PLATFORM_ETH_ENABLE
 
@@ -89,6 +89,7 @@ static const ip_addr_t *mico_eth_get_ipv6_addr(void);
 
 extern OSStatus mxchipInit( void );
 
+extern void platform_eth_mac_address( char *mac );
 extern err_t eth_arch_enetif_init(struct netif *netif);
 extern void eth_arch_enable_interrupts(void);
 extern void WifiStatusHandler(notify_netif_status_t status);

@@ -43,7 +43,6 @@
 extern "C" {
 #endif
   
-#ifndef ALIOS_SUPPORT
 #define micoWlanStart             StartNetwork
 #define micoWlanStartAdv          StartAdvNetwork
 #define micoWlanGetIPStatus       getNetPara
@@ -63,7 +62,6 @@ extern "C" {
 #define micoWlanDisablePowerSave  ps_disable
 #define micoWlanStartAirkiss      OpenAirkiss
 #define micoWlanStopAirkiss       CloseAirkiss
-#endif
 
 
 #define WiFi_Interface  wlanInterfaceTypedef

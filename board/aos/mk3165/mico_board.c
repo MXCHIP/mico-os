@@ -413,9 +413,6 @@ void platform_init_peripheral_irq_priorities( void )
 
 void mico_board_init( void )
 {
-    /* Ensure 802.11 device is in reset. */
-    host_platform_init( );
-
     platform_gpio_init( &platform_gpio_pins[MICO_SYS_LED], OUTPUT_PUSH_PULL );
     platform_gpio_output_low( &platform_gpio_pins[MICO_SYS_LED] );
 

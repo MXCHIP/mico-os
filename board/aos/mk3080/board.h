@@ -111,7 +111,8 @@ enum
 
 #define UART_FOR_APP     MICO_UART_1
 #define MICO_MFG_TEST         MICO_UART_1
-#define CLI_UART         MICO_UART_1
+#define MICO_CLI_UART         MICO_UART_1
+#define MICO_STDIO_UART_BAUDRATE (115200)
 
 /* Components connected to external I/Os*/
 #define Standby_SEL      (MICO_GPIO_29)

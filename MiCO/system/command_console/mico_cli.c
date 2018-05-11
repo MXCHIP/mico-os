@@ -31,9 +31,12 @@
 #define PROMPT			"\r\n# "
 #define EXIT_MSG		"exit"
 #define NUM_BUFFERS		1
+
+#ifndef ALIOS_SUPPORT
 #define MAX_COMMANDS	50
 #define INBUF_SIZE      80
 #define OUTBUF_SIZE     1024
+#endif
 
 #ifndef MOC
 static void task_Command( char *pcWriteBuffer, int xWriteBufferLen, int argc, char **argv );
@@ -62,6 +65,7 @@ mico_semaphore_t log_rx_interrupt_sema;
 
 #else
 
+#ifndef ALIOS_SUPPORT
 struct cli_st {
   int initialized;
   
@@ -73,6 +77,7 @@ struct cli_st {
   int echo_disabled;
   
 } ;
+#endif
 
 static struct cli_st *pCli = NULL;
 static uint8_t *cli_rx_data;
@@ -282,7 +287,7 @@ static int get_input(char *inbuf, unsigned int *bp)
   if (inbuf == NULL) {
     return 0;
   }
-  while (cli_getchar(&inbuf[*bp]) == 1) {
+  while (mico_cli_getchar(&inbuf[*bp]) == 1) {
 		if (inbuf[*bp] == RET_CHAR)
 			continue;
     if (inbuf[*bp] == END_CHAR) {	/* end of input line */
@@ -466,16 +471,18 @@ static void uptime_Command(char *pcWriteBuffer, int xWriteBufferLen,int argc, ch
     cmd_printf("UP time %ldms\r\n", mico_rtos_get_time());
 }
 
+
 extern void tftp_ota( void );
-void tftp_ota_thread( mico_thread_arg_t arg )
+void mico_tftp_ota_thread( mico_thread_arg_t arg )
 {
     tftp_ota( );
     mico_rtos_delete_thread( NULL );
 }
+
     
 static void ota_Command( char *pcWriteBuffer, int xWriteBufferLen, int argc, char **argv )
 {
-    mico_rtos_create_thread( NULL, MICO_APPLICATION_PRIORITY, "LOCAL OTA", tftp_ota_thread, 0x4096, 0 );
+    mico_rtos_create_thread( NULL, MICO_APPLICATION_PRIORITY, "LOCAL OTA", mico_tftp_ota_thread, 0x4096, 0 );
 }
 
 static void help_command(char *pcWriteBuffer, int xWriteBufferLen,int argc, char **argv);
@@ -534,6 +541,51 @@ static void echo_cmd_handler(char *pcWriteBuffer, int xWriteBufferLen,int argc, 
   }
 }
 
+MICO_WEAK  void ifconfig_Command( char *pcWriteBuffer, int xWriteBufferLen, int argc, char **argv )
+{
+    cmd_printf("Not support\r\n");
+}
+
+MICO_WEAK  void arp_Command( char *pcWriteBuffer, int xWriteBufferLen, int argc, char **argv )
+{
+    cmd_printf("Not support\r\n");
+}
+
+MICO_WEAK  void ping_Command( char *pcWriteBuffer, int xWriteBufferLen, int argc, char **argv )
+{
+    cmd_printf("Not support\r\n");
+}
+
+MICO_WEAK  void dns_Command( char *pcWriteBuffer, int xWriteBufferLen, int argc, char **argv )
+{
+    cmd_printf("Not support\r\n");
+}
+
+MICO_WEAK  void socket_show_Command( char *pcWriteBuffer, int xWriteBufferLen, int argc, char **argv )
+{
+    cmd_printf("Not support\r\n");
+}
+
+MICO_WEAK  void memory_show_Command( char *pcWriteBuffer, int xWriteBufferLen, int argc, char **argv )
+{
+    cmd_printf("Not support\r\n");
+}
+
+MICO_WEAK  void memory_dump_Command( char *pcWriteBuffer, int xWriteBufferLen, int argc, char **argv )
+{
+    cmd_printf("Not support\r\n");
+}
+
+MICO_WEAK  void memory_set_Command( char *pcWriteBuffer, int xWriteBufferLen, int argc, char **argv )
+{
+    cmd_printf("Not support\r\n");
+}
+
+MICO_WEAK  void memp_dump_Command( char *pcWriteBuffer, int xWriteBufferLen, int argc, char **argv )
+{
+    cmd_printf("Not support\r\n");
+}
+
 static void cli_exit_handler(char *pcWriteBuffer, int xWriteBufferLen,int argc, char **argv)
 {
   // exit command not executed
@@ -573,7 +625,6 @@ static const struct cli_command built_ins[] = {
   {"awsdebug", "enable aws debug info", aws_handler}, 
 #endif
 #endif
-
   // network
   {"ifconfig", "Show IP address", ifconfig_Command}, 
 #ifndef PPP_IF
@@ -742,6 +793,10 @@ void log_service_init(void)
 
 int cli_init(void)
 {
+#ifdef ALIOS_SUPPORT
+    aos_cli_stop();
+#endif
+
   int ret;
 
   console_init();
@@ -861,7 +916,7 @@ int cli_putstr(const char *msg)
   return 0;
 }
 
-int cli_getchar(char *inbuf)
+int mico_cli_getchar(char *inbuf)
 {
   if (MicoUartRecv(MICO_CLI_UART, inbuf, 1, MICO_WAIT_FOREVER) == 0)
     return 1;

@@ -12,3 +12,4 @@ NAME := alios_crypto
 
 $(NAME)_COMPONENTS := alicrypto
 
+$(NAME)_SOURCES := mico_wrap.c

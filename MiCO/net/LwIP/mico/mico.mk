@@ -9,5 +9,4 @@
 
 NAME := MiCO_$(NET)_Interface
 
-GLOBAL_INCLUDES += .
 					
