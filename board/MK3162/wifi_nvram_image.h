@@ -86,7 +86,7 @@ static const char wifi_nvram_image[] =
 "spuravoid_enable2g=1"                                               "\x00"
 "edonthd=-70"                                                        "\x00"
 "edoffthd=-76"                                                       "\x00"
-"\x00\x00"
+"\x00\x00";
 
 #else /* ifndef INCLUDED_NVRAM_IMAGE_H_ */
 
