@@ -165,28 +165,6 @@ OSStatus update(void)
 
   /*Not a correct record*/
   if(updateLogCheck( &updateLog, &dest_partition) != Log_NeedUpdate){
-    size = ( ota_partition_info->partition_length )/SizePerRW;
-    for(i = 0; i <= size; i++){
-      if( i==size ){
-        err = MicoFlashRead( MICO_PARTITION_OTA_TEMP , &update_data_offset, data , ( ota_partition_info->partition_length )%SizePerRW );
-        require_noerr(err, exit);
-      }
-      else{
-        err = MicoFlashRead( MICO_PARTITION_OTA_TEMP, &update_data_offset, data , SizePerRW);
-        require_noerr(err, exit);
-      }
-      
-      for(j=0; j<SizePerRW; j++){
-        if(data[j] != 0xFF){
-          update_log("Update data need to be erased");
-          err = MicoFlashDisableSecurity( MICO_PARTITION_OTA_TEMP, 0x0, ota_partition_info->partition_length );
-          require_noerr(err, exit);
-          err = MicoFlashErase( MICO_PARTITION_OTA_TEMP, 0x0, ota_partition_info->partition_length );
-          require_noerr(err, exit);
-          goto exit;
-        }
-      }
-    }
     goto exit;
   }
 
