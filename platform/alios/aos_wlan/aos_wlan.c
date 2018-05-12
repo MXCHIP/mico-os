@@ -62,10 +62,24 @@ OSStatus micoWlanStartAdv(network_InitTypeDef_adv_st* inNetworkInitParaAdv)
     return hal_wifi_start_adv(aos_wlan, (hal_wifi_init_type_adv_t *)inNetworkInitParaAdv);
 }
 
-//TODO type should convert not equal
 OSStatus micoWlanStart(network_InitTypeDef_st* inNetworkInitParaAdv)
 {
-    return hal_wifi_start_adv(aos_wlan, (hal_wifi_init_type_adv_t *)inNetworkInitParaAdv);
+    hal_wifi_init_type_t conf;
+
+    memset(&conf, 0x0, sizeof(hal_wifi_init_type_t));
+
+    conf.dhcp_mode = inNetworkInitParaAdv->dhcpMode;
+    conf.wifi_mode = inNetworkInitParaAdv->wifi_mode;
+    memcpy(conf.wifi_ssid, inNetworkInitParaAdv->wifi_ssid, 32);
+    memcpy(conf.wifi_key, inNetworkInitParaAdv->wifi_key, 64);
+    memcpy(conf.wifi_ssid, inNetworkInitParaAdv->wifi_ssid, 32);
+    memcpy(conf.local_ip_addr, inNetworkInitParaAdv->local_ip_addr, 16);
+    memcpy(conf.net_mask, inNetworkInitParaAdv->net_mask, 16);
+    memcpy(conf.gateway_ip_addr, inNetworkInitParaAdv->gateway_ip_addr, 16);
+    memcpy(conf.dns_server_ip_addr, inNetworkInitParaAdv->dnsServer_ip_addr, 16);
+    conf.wifi_retry_interval = inNetworkInitParaAdv->wifi_retry_interval;
+
+    return hal_wifi_start(aos_wlan, &conf);
 }
 
 void wlan_get_mac_address( uint8_t *mac )

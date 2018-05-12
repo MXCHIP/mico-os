@@ -49,6 +49,7 @@
 #ifndef __AOS_UART_H__
 #define __AOS_UART_H__
 
+#include <stdint.h>
 #include <hal/soc/uart.h>
 #include "RingBufferUtils.h"
 
@@ -62,12 +63,10 @@ extern "C" {
  ******************************************************/
 
 typedef struct{
-    uint32_t place_holder;
+    uint8_t port;
 } platform_uart_t;
 
-typedef struct {
-    uint32_t place_holder;
-} platform_uart_driver_t;
+typedef uart_dev_t platform_uart_driver_t;
 
 
 /**

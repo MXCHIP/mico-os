@@ -842,6 +842,10 @@ int cli_init(void)
 {
   int ret;
 
+#ifdef ALIOS_SUPPORT
+    aos_cli_stop();
+#endif
+
   pCli = (struct cli_st*)malloc(sizeof(struct cli_st));
   if (pCli == NULL)
     return kNoMemoryErr;

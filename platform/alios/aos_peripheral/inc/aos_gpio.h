@@ -46,8 +46,8 @@
 
 
 
-#ifndef __AOS_GENERIC_GPIO_H__
-#define __AOS_GENERIC_GPIO_H__
+#ifndef __AOS_GPIO_H__
+#define __AOS_GPIO_H__
 
 #include "platform_logging.h"
 #include <hal/soc/gpio.h>
