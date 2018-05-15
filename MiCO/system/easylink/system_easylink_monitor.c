@@ -344,6 +344,9 @@ OSStatus mico_easylink_monitor_save_result( network_InitTypeDef_st *nwkpara )
     system_context_t * context = system_context( );
 
     if( context == NULL ) return kNotPreparedErr;
+#ifdef MICO_EXTRA_AP_NUM
+    system_network_update(context, nwkpara->wifi_ssid);
+#endif
 
     memcpy( context->flashContentInRam.micoSystemConfig.ssid, nwkpara->wifi_ssid, maxSsidLen );
     memset( context->flashContentInRam.micoSystemConfig.bssid, 0x0, 6 );
