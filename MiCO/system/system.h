@@ -84,6 +84,14 @@ typedef struct  _boot_table_t {
 #endif
 }boot_table_t;
 
+typedef struct _extra_ap_info
+{
+  uint8_t         valid;
+  char            ssid[maxSsidLen+1];
+  char            key[maxKeyLen]; 
+  uint8_t         key_len;
+}extra_ap_info_t;
+
 typedef struct _mico_sys_config_t
 {
   /*Device identification*/
@@ -120,6 +128,7 @@ typedef struct _mico_sys_config_t
 
   /*Update seed number when configuration is changed*/
   int32_t         seed;
+  
 } mico_sys_config_t;
 
 

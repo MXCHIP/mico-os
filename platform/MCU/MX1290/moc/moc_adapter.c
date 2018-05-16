@@ -477,3 +477,9 @@ OSStatus MicoRtcSetalarm(time_t *time, rtc_irq_handler handler)
     return _kernel_api.rtc_apis->MicoRtcSetalarm( time, handler );
 }
 
+/* Insert an AP info */
+OSStatus micoWlanAddExtraNetowrk(char *ssid, char *key, uint8_t key_len)
+{
+    return _kernel_api.wifi_apis->wlan_add_extra_network(ssid, key, key_len);
+}
+

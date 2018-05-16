@@ -100,6 +100,9 @@ typedef enum
 #endif
     PARA_SYS_END_SECTION,
     PARA_APP_DATA_SECTION,
+#if MICO_WLAN_EXTRA_AP_NUM
+    PARA_SYS_EXTRA_SECTION,
+#endif
     PARA_END_SECTION
 } para_section_t;
 

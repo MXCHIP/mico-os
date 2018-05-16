@@ -148,6 +148,17 @@ extern "C" {
 #define MICO_WLAN_AUTO_SOFTAP_WHEN_DISCONNECTED  0
 #endif
 
+/* 
+ * Please define MICO_WLAN_EXTRA_AP_NUM in mico_config.h to save more than one AP info.
+ * Example: #define MICO_WLAN_EXTRA_AP_NUM 3
+ * MiCO will save 1 main AP and 3 extra APs info in flash. System try to connect the main AP first,  
+ * then try to connect extra and main AP. 
+ * Please enter configure mode to add extra AP information. 
+ */
+#if !defined MICO_WLAN_EXTRA_AP_NUM
+#define MICO_WLAN_EXTRA_AP_NUM  0
+#endif
+
 /**
  *  EasyLink_TimeOut: Easylink configuration timeout, Default: 60 secs
  */
@@ -162,6 +173,7 @@ extern "C" {
 #if !defined EasyLink_ConnectWlan_Timeout
 #define EasyLink_ConnectWlan_Timeout            20000 
 #endif
+
 
 /******************************************************************************
  *                             TCPIP Stack Options

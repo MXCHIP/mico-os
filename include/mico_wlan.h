@@ -449,6 +449,23 @@ void mico_wlan_set_default_interface(netif_t interface);
  */
 OSStatus micoWlanStart(network_InitTypeDef_st* inNetworkInitPara);
 
+/** @brief  Add an extra Wi-Fi network in station mode.
+ * 
+ *  @detail Use this function to add extra AP in station mode. MICO scan all added network, try to
+ *          connect them. If you want to remove the added extra network, please call 
+ *          micoWlanSuspend or micoWlanSuspendStation.
+ *
+ *  @param  ssid: SSID of the extra network. 
+ *
+ *  @param  key: key of the extra network. 
+ *
+ *  @param  key_len: key length of the extra network. 
+ *
+ *  @return In station mode, allways retrurn kWlanNoErr.
+ *          In soft ap mode, return kWlanXXXErr
+ */
+OSStatus micoWlanAddExtraNetowrk(char *ssid, char *key, uint8_t key_len);
+
 /** @brief  Connect to a Wi-Fi network with advantage settings (station mode only)
  * 
  *  @detail This function can connect to an access point with precise settings,

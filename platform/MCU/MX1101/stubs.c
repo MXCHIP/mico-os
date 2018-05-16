@@ -59,7 +59,7 @@ void socket_show_Command(char *pcWriteBuffer, int xWriteBufferLen, int argc, cha
     socket_show(pcWriteBuffer, xWriteBufferLen);
 }
 
-#define LIBRARY_VER "EMW5062.001"
+#define LIBRARY_VER "EMG5062.001"
 
 char* system_lib_version(void)
 {

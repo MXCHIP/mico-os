@@ -329,7 +329,11 @@ const mico_logic_partition_t mico_partitions[] =
   },
   [MICO_PARTITION_ATE] =
   {
-    .partition_owner           = MICO_FLASH_NONE,
+    .partition_owner           = MICO_FLASH_EMBEDDED,
+    .partition_description     = "ATE",
+    .partition_start_addr      = 0x08060000,
+    .partition_length          = 0x60000, //384k bytes
+    .partition_options         = PAR_OPT_READ_EN | PAR_OPT_WRITE_EN,
   }
 };
 

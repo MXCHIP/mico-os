@@ -193,6 +193,7 @@ typedef struct {
     int (*wifi_off_fastly)(void);
     int (*OpenEasylink_softap)(int timeout, char *ssid, char*key, int channel);
     int (*mico_wlan_monitor_with_easylink)(void);
+    int (*wlan_add_extra_network)(char *ssid, char *key, uint8_t key_len);
 } wifi_api_v1_t;
 
 typedef struct {

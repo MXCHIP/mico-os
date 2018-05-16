@@ -172,7 +172,8 @@ OSStatus SocketReadHTTPBody( int inSock, HTTPHeader_t *inHeader )
 
           if( readResult  > 0 ) inHeader->extraDataLen += readResult;
           else { err = kConnectionErr; goto exit; }
-          (inHeader->onReceivedDataCallback)(inHeader, inHeader->extraDataLen - readResult, (uint8_t *)inHeader->extraDataPtr, readResult, inHeader->userContext);
+          err = (inHeader->onReceivedDataCallback)(inHeader, inHeader->extraDataLen - readResult, (uint8_t *)inHeader->extraDataPtr, readResult, inHeader->userContext);
+          if( err != kNoErr ) goto exit;
         }
 
         err = kNoErr;
@@ -185,10 +186,11 @@ OSStatus SocketReadHTTPBody( int inSock, HTTPHeader_t *inHeader )
                           *(inHeader->extraDataPtr + inHeader->contentLength + 1 ) == '\n', 
                           exit, err = kMalformedErr);
 
-          (inHeader->onReceivedDataCallback)(inHeader,  pos, 
+          err = (inHeader->onReceivedDataCallback)(inHeader,  pos, 
                                                         (uint8_t *)inHeader->extraDataPtr, 
                                                         inHeader->contentLength, 
                                                         inHeader->userContext);
+          if( err != kNoErr ) goto exit;
           pos+=inHeader->contentLength;
 
           /* Move next chunk to chunked data buffer header point */
@@ -204,10 +206,11 @@ OSStatus SocketReadHTTPBody( int inSock, HTTPHeader_t *inHeader )
           require_action( *(inHeader->chunkedDataBufferPtr + inHeader->extraDataLen - 1) == '\r' ,
                           exit, err = kMalformedErr);
 
-          (inHeader->onReceivedDataCallback)(inHeader,  pos, 
+          err = (inHeader->onReceivedDataCallback)(inHeader,  pos, 
                                                         (uint8_t *)inHeader->extraDataPtr, 
                                                         inHeader->extraDataLen - chunckheaderLen-1, 
                                                         inHeader->userContext);
+          if( err != kNoErr ) goto exit;
           pos+=inHeader->extraDataLen - chunckheaderLen-1;
           selectResult = select( inSock + 1, &readSet, NULL, NULL, NULL );
           require_action( selectResult >= 1, exit, err = kNotReadableErr );
@@ -222,10 +225,11 @@ OSStatus SocketReadHTTPBody( int inSock, HTTPHeader_t *inHeader )
         }
         else{
           /* Callback , read , callback , read CRLF */
-          (inHeader->onReceivedDataCallback)(inHeader, pos, 
+          err = (inHeader->onReceivedDataCallback)(inHeader, pos, 
                                                        (uint8_t *)inHeader->extraDataPtr, 
                                                        inHeader->extraDataLen - chunckheaderLen, 
                                                        inHeader->userContext);
+          if( err != kNoErr ) goto exit;
           pos += inHeader->extraDataLen - chunckheaderLen;
 
           while ( inHeader->extraDataLen < inHeader->contentLength + chunckheaderLen  ){
@@ -244,10 +248,11 @@ OSStatus SocketReadHTTPBody( int inSock, HTTPHeader_t *inHeader )
             if( readResult  > 0 ) inHeader->extraDataLen += readResult;
             else { err = kConnectionErr; goto exit; }
 
-            (inHeader->onReceivedDataCallback)(inHeader, pos, 
+            err = (inHeader->onReceivedDataCallback)(inHeader, pos, 
                                                          (uint8_t *)inHeader->extraDataPtr, 
                                                          readResult, 
                                                          inHeader->userContext);
+            if( err != kNoErr ) goto exit;
             pos += readResult;
           } 
 
@@ -373,7 +378,8 @@ OSStatus SocketReadHTTPSBody( mico_ssl_t ssl, HTTPHeader_t *inHeader )
 
           if( readResult  > 0 ) inHeader->extraDataLen += readResult;
           else { err = kConnectionErr; goto exit; }
-          (inHeader->onReceivedDataCallback)(inHeader, inHeader->extraDataLen - readResult, (uint8_t *)inHeader->extraDataPtr, readResult, inHeader->userContext);
+          err = (inHeader->onReceivedDataCallback)(inHeader, inHeader->extraDataLen - readResult, (uint8_t *)inHeader->extraDataPtr, readResult, inHeader->userContext);
+          if( err != kNoErr ) goto exit;
         }
 
         err = kNoErr;
@@ -386,10 +392,11 @@ OSStatus SocketReadHTTPSBody( mico_ssl_t ssl, HTTPHeader_t *inHeader )
                           *(inHeader->extraDataPtr + inHeader->contentLength + 1 ) == '\n', 
                           exit, err = kMalformedErr);
 
-          (inHeader->onReceivedDataCallback)(inHeader,  pos, 
+          err = (inHeader->onReceivedDataCallback)(inHeader,  pos, 
                                                         (uint8_t *)inHeader->extraDataPtr, 
                                                         inHeader->contentLength, 
                                                         inHeader->userContext);
+          if( err != kNoErr ) goto exit;
           pos+=inHeader->contentLength;
 
           /* Move next chunk to chunked data buffer header point */
@@ -405,10 +412,11 @@ OSStatus SocketReadHTTPSBody( mico_ssl_t ssl, HTTPHeader_t *inHeader )
           require_action( *(inHeader->chunkedDataBufferPtr + inHeader->extraDataLen - 1) == '\r' ,
                           exit, err = kMalformedErr);
 
-          (inHeader->onReceivedDataCallback)(inHeader,  pos, 
+          err = (inHeader->onReceivedDataCallback)(inHeader,  pos, 
                                                         (uint8_t *)inHeader->extraDataPtr, 
                                                         inHeader->extraDataLen - chunckheaderLen-1, 
                                                         inHeader->userContext);
+          if( err != kNoErr ) goto exit;
           pos+=inHeader->extraDataLen - chunckheaderLen-1;
           selectResult = select( inSock + 1, &readSet, NULL, NULL, NULL );
           require_action( selectResult >= 1, exit, err = kNotReadableErr );
@@ -423,10 +431,11 @@ OSStatus SocketReadHTTPSBody( mico_ssl_t ssl, HTTPHeader_t *inHeader )
         }
         else{
           /* Callback , read , callback , read CRLF */
-          (inHeader->onReceivedDataCallback)(inHeader, pos, 
+          err = (inHeader->onReceivedDataCallback)(inHeader, pos, 
                                                        (uint8_t *)inHeader->extraDataPtr, 
                                                        inHeader->extraDataLen - chunckheaderLen, 
                                                        inHeader->userContext);
+          if( err != kNoErr ) goto exit;
           pos += inHeader->extraDataLen - chunckheaderLen;
 
           while ( inHeader->extraDataLen < inHeader->contentLength + chunckheaderLen  ){
@@ -445,10 +454,11 @@ OSStatus SocketReadHTTPSBody( mico_ssl_t ssl, HTTPHeader_t *inHeader )
             if( readResult  > 0 ) inHeader->extraDataLen += readResult;
             else { err = kConnectionErr; goto exit; }
 
-            (inHeader->onReceivedDataCallback)(inHeader, pos, 
+            err = (inHeader->onReceivedDataCallback)(inHeader, pos, 
                                                          (uint8_t *)inHeader->extraDataPtr, 
                                                          readResult, 
                                                          inHeader->userContext);
+            if( err != kNoErr ) goto exit;
             pos += readResult;
           } 
 

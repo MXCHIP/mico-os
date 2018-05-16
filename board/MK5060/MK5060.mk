@@ -21,38 +21,30 @@
 #  IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 ############################################################################### 
 
-NAME := Board_MK3162
+NAME := Board_MK5060
 
-WLAN_CHIP            	:= 43362
-WLAN_CHIP_REVISION   	:= A2
-WLAN_CHIP_FAMILY     	:= 43362
-WLAN_CHIP_FIRMWARE_VER  := 5.90.230.22
+WLAN_CHIP            	:= NONE
+WLAN_CHIP_REVISION   	:= NONE
+WLAN_CHIP_FAMILY     	:= NONE
+WLAN_CHIP_FIRMWARE_VER  := NONE
 
-MODULE              	:= 1062
-HOST_MCU_FAMILY      	:= STM32F2xx
-HOST_MCU_VARIANT     	:= STM32F205
-HOST_MCU_PART_NUMBER 	:= STM32F205RGT6
+NO_WIFI_FIRMWARE		:= YES
 
-BUS := SDIO
+MODULE              	:= 3060
+HOST_MCU_FAMILY      	:= MOC108
+HOST_MCU_VARIANT     	:= MOC108_5V
+HOST_MCU_PART_NUMBER 	:= MOC108
 
-# Extra build target in mico_standard_targets.mk, include bootloader, and copy output file to eclipse debug file (copy_output_for_eclipse)
-EXTRA_TARGET_MAKEFILES +=  $(MAKEFILES_PATH)/mico_standard_targets.mk
+BUS := NONE
+
+JTAG := jlink
 
 # Global includes
 GLOBAL_INCLUDES  := .
 
-# Global defines
-# HSE_VALUE = STM32 crystal frequency = 26MHz (needed to make UART work correctly)
-GLOBAL_DEFINES += $$(if $$(NO_CRLF_STDIO_REPLACEMENT),,CRLF_STDIO_REPLACEMENT)
-GLOBAL_LDFLAGS += -L $(MICO_OS_PATH)/board/MK3162
-
 # Components
-$(NAME)_COMPONENTS += drivers/keypad/gpio_button
+$(NAME)_COMPONENTS += drivers/spi_flash
+$(NAME)_COMPONENTS += drivers/MiCOKit_EXT
 
 # Source files
-$(NAME)_SOURCES := mico_board.c wifi_nvram.c
-
-WIFI_FIRMWARE := $(MICO_OS_PATH)/resources/wifi_firmware/$(WLAN_CHIP)/$(WLAN_CHIP)$(WLAN_CHIP_REVISION)$(WLAN_CHIP_BIN_TYPE)-$(WLAN_CHIP_FIRMWARE_VER).bin
-
-
-
+$(NAME)_SOURCES := platform.c

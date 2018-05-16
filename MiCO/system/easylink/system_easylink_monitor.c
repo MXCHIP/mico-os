@@ -85,6 +85,9 @@ static void easylink_complete_cb( network_InitTypeDef_st *nwkpara, system_contex
     OSStatus err = kNoErr;
 
     require_action_string( nwkpara, exit, err = kTimeoutErr, "EasyLink Timeout or terminated" );
+#if MICO_WLAN_EXTRA_AP_NUM
+    system_network_update(inContext, nwkpara->wifi_ssid);
+#endif
 
     /* Store SSID and KEY*/
     mico_rtos_lock_mutex( &inContext->flashContentInRam_mutex );
@@ -348,6 +351,9 @@ OSStatus mico_easylink_monitor_save_result( network_InitTypeDef_st *nwkpara )
     system_context_t * context = system_context( );
 
     if( context == NULL ) return kNotPreparedErr;
+#if MICO_WLAN_EXTRA_AP_NUM
+    system_network_update(context, nwkpara->wifi_ssid);
+#endif
 
     memcpy( context->flashContentInRam.micoSystemConfig.ssid, nwkpara->wifi_ssid, maxSsidLen );
     memset( context->flashContentInRam.micoSystemConfig.bssid, 0x0, 6 );
