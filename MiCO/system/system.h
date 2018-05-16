@@ -169,9 +169,6 @@ typedef struct _mico_sys_config_t
   /*Update seed number when configuration is changed*/
   int32_t         seed;
   
-#ifdef MICO_EXTRA_AP_NUM
-  extra_ap_info_t extra_ap[MICO_EXTRA_AP_NUM];
-#endif
 } mico_sys_config_t;
 
 

@@ -54,11 +54,22 @@ static const uint32_t mico_context_section_offsets[ ] =
 #endif
     [PARA_SYS_END_SECTION]               = sizeof( system_config_t ),
     [PARA_APP_DATA_SECTION]              = sizeof( system_config_t ),
+#ifdef MICO_EXTRA_AP_NUM
+    [PARA_SYS_EXTRA_SECTION]             = PARA_SYS_EXTRA_OFFSET,
+#endif
+
 };
 
 void* mico_system_context_init( uint32_t user_config_data_size )
 {
   void *user_config_data = NULL;
+
+#ifdef MICO_EXTRA_AP_NUM
+  if (user_config_data_size + mico_context_section_offsets[ PARA_APP_DATA_SECTION ] > 
+    mico_context_section_offsets[ PARA_SYS_EXTRA_SECTION ]) {
+    system_log("!!Please change PARA_SYS_EXTRA_OFFSET in mico_config.h!!");
+  }
+#endif
 
   if( sys_context !=  NULL) {
     if( sys_context->user_config_data != NULL )
@@ -165,6 +176,11 @@ static OSStatus internal_update_config( system_context_t * const inContext )
   para_offset = mico_context_section_offsets[ PARA_APP_DATA_SECTION ];
   err = MicoFlashWrite( MICO_PARTITION_PARAMETER_1, &para_offset, inContext->user_config_data, inContext->user_config_data_size );
   require_noerr(err, exit);
+#ifdef MICO_EXTRA_AP_NUM
+  para_offset = mico_context_section_offsets[ PARA_SYS_EXTRA_SECTION ];
+  err = MicoFlashWrite( MICO_PARTITION_PARAMETER_1, &para_offset, (uint8_t *)inContext->extra_ap, sizeof(inContext->extra_ap) );
+  require_noerr(err, exit);
+#endif
 
   crc_result = para_crc16(MICO_PARTITION_PARAMETER_1);
   para_offset = partition->partition_length - CRC_SIZE;
@@ -192,6 +208,11 @@ static OSStatus internal_update_config( system_context_t * const inContext )
   para_offset = mico_context_section_offsets[ PARA_APP_DATA_SECTION ];
   err = MicoFlashWrite( MICO_PARTITION_PARAMETER_2, &para_offset, inContext->user_config_data, inContext->user_config_data_size );
   require_noerr(err, exit);
+#ifdef MICO_EXTRA_AP_NUM
+  para_offset = mico_context_section_offsets[ PARA_SYS_EXTRA_SECTION ];
+  err = MicoFlashWrite( MICO_PARTITION_PARAMETER_2, &para_offset, (uint8_t *)inContext->extra_ap, sizeof(inContext->extra_ap) );
+  require_noerr(err, exit);
+#endif
 
   para_offset = partition->partition_length - CRC_SIZE;
   err = MicoFlashWrite( MICO_PARTITION_PARAMETER_2, &para_offset, (uint8_t *)&crc_result, CRC_SIZE );
@@ -250,54 +271,60 @@ exit:
 }
 #endif
 
+static int para_copy(mico_partition_t dst, mico_partition_t src)
+{
+    uint32_t offset, len = 1024, end, dst_offset;
+    uint8_t *tmp;
+    mico_logic_partition_t *partition;
+    
+    tmp = (uint8_t*)malloc(1024);
+    if (tmp == NULL)
+        return -1;
+    
+    partition = MicoFlashGetInfo( dst );
+
+    MicoFlashErase( dst ,0x0, partition->partition_length );
+
+    offset = mico_context_section_offsets[ PARA_MICO_DATA_SECTION ]; // ignore boottable
+    dst_offset = offset;
+    end = partition->partition_length;
+    while(offset < end) {
+        if (offset + len > end)
+            len = end - offset;
+        MicoFlashRead( src, &offset, tmp, len);
+        MicoFlashWrite( dst, &dst_offset, tmp, len);
+    }
+
+    free(tmp);
+    
+    return 0;
+}
+
 OSStatus MICOReadConfiguration(system_context_t *inContext)
 {
   uint32_t para_offset = 0x0;
-  //uint32_t config_offset = CONFIG_OFFSET;
-  uint32_t crc_offset = mico_context_section_offsets[ PARA_APP_DATA_SECTION ] + inContext->user_config_data_size;;
+  uint32_t crc_offset;
   uint16_t crc_result, crc_target;
   uint16_t crc_backup_result, crc_backup_target;
   mico_logic_partition_t *partition; 
-  uint8_t *sys_backup_data = NULL;
-  uint8_t *user_backup_data = NULL;
+
   mico_Context_t *mico_context = mico_system_context_get();
   
   OSStatus err = kNoErr;
 
   require_action(inContext, exit, err = kNotPreparedErr);
 
-  sys_backup_data = malloc( SYS_CONFIG_SIZE );
-  require_action( sys_backup_data, exit, err = kNoMemoryErr );
-
-  user_backup_data = malloc( inContext->user_config_data_size );
-  require_action( user_backup_data, exit, err = kNoMemoryErr );
-
   partition = MicoFlashGetInfo( MICO_PARTITION_PARAMETER_1 );
-  /* Load data and crc from main partition */
-  para_offset = 0x0;
-  err = MicoFlashRead( MICO_PARTITION_PARAMETER_1, &para_offset, (uint8_t *)&inContext->flashContentInRam, sizeof( system_config_t ) );
-  para_offset = mico_context_section_offsets[ PARA_APP_DATA_SECTION ];
-  err = MicoFlashRead( MICO_PARTITION_PARAMETER_1, &para_offset, (uint8_t *)inContext->user_config_data, inContext->user_config_data_size );
-
   crc_result = para_crc16(MICO_PARTITION_PARAMETER_1);
   para_log( "crc_result = %d", crc_result);
-
   crc_offset = partition->partition_length - CRC_SIZE;
   err = MicoFlashRead( MICO_PARTITION_PARAMETER_1, &crc_offset, (uint8_t *)&crc_target, CRC_SIZE );
   para_log( "crc_target = %d", crc_target);
 
-  /* Load data and crc from backup partition */
-  partition = MicoFlashGetInfo( MICO_PARTITION_PARAMETER_2 );
-  para_offset = mico_context_section_offsets[ PARA_MICO_DATA_SECTION ];
-  err = MicoFlashRead( MICO_PARTITION_PARAMETER_2, &para_offset, sys_backup_data, SYS_CONFIG_SIZE );
-  para_offset = mico_context_section_offsets[ PARA_APP_DATA_SECTION ];
-  err = MicoFlashRead( MICO_PARTITION_PARAMETER_2, &para_offset, user_backup_data, inContext->user_config_data_size );
-
   crc_backup_result = para_crc16(MICO_PARTITION_PARAMETER_2);
   para_log( "crc_backup_result = %d", crc_backup_result);
-
   crc_offset = partition->partition_length - CRC_SIZE;
-  err = MicoFlashRead( MICO_PARTITION_PARAMETER_2, &crc_offset, (uint8_t *)&crc_backup_target, CRC_SIZE );  
+  err = MicoFlashRead( MICO_PARTITION_PARAMETER_2, &crc_offset, (uint8_t *)&crc_backup_target, CRC_SIZE );
   para_log( "crc_backup_target = %d", crc_backup_target);
   
   /* Data collapsed at main partition */
@@ -312,29 +339,7 @@ OSStatus MICOReadConfiguration(system_context_t *inContext)
     else {
       para_log("Config failed on main, recover!");
 
-      /* Copy back data to RAM */
-      memset(&inContext->flashContentInRam, 0x0, sizeof(inContext->flashContentInRam));
-      memcpy( (uint8_t *)&inContext->flashContentInRam.micoSystemConfig, sys_backup_data, SYS_CONFIG_SIZE);
-
-      memset(inContext->user_config_data, 0x0, inContext->user_config_data_size);
-      memcpy( (uint8_t *)inContext->user_config_data, user_backup_data, inContext->user_config_data_size );
-
-      /* Save data to main Flash  */
-      partition = MicoFlashGetInfo( MICO_PARTITION_PARAMETER_1 );
-      err = MicoFlashErase( MICO_PARTITION_PARAMETER_1 ,0x0, partition->partition_length );
-      require_noerr(err, exit);
-
-      para_offset = 0x0;
-      err = MicoFlashWrite( MICO_PARTITION_PARAMETER_1, &para_offset, (uint8_t *)&inContext->flashContentInRam, sizeof(system_config_t) );
-      require_noerr(err, exit);
-
-      para_offset = mico_context_section_offsets[ PARA_APP_DATA_SECTION ];
-      err = MicoFlashWrite( MICO_PARTITION_PARAMETER_1, &para_offset, inContext->user_config_data, inContext->user_config_data_size );
-      require_noerr(err, exit);
-
-      crc_offset = partition->partition_length - CRC_SIZE;
-      err = MicoFlashWrite( MICO_PARTITION_PARAMETER_1, &crc_offset, (uint8_t *)&crc_backup_result, CRC_SIZE );
-      require_noerr(err, exit);
+      para_copy(MICO_PARTITION_PARAMETER_1, MICO_PARTITION_PARAMETER_2);
     }
   }   
   /* main correct */
@@ -343,30 +348,21 @@ OSStatus MICOReadConfiguration(system_context_t *inContext)
     if( is_crc_match( crc_result, crc_backup_result ) == false || is_crc_match( crc_backup_result, crc_backup_target ) == false ){
       para_log("Config failed on backup, recover!");
 
-      /* Save data to backup Flash  */
-      partition = MicoFlashGetInfo( MICO_PARTITION_PARAMETER_2 );
-
-      err = MicoFlashErase( MICO_PARTITION_PARAMETER_2 ,0x0, partition->partition_length );
-      require_noerr(err, exit);
-  
-      para_offset = 0x0;
-      err = MicoFlashWrite( MICO_PARTITION_PARAMETER_2, &para_offset, (uint8_t *)&inContext->flashContentInRam, sizeof(system_config_t) );
-      require_noerr(err, exit);
-
-      para_offset = mico_context_section_offsets[ PARA_APP_DATA_SECTION ];
-      err = MicoFlashWrite( MICO_PARTITION_PARAMETER_2, &para_offset, inContext->user_config_data, inContext->user_config_data_size );
-      require_noerr(err, exit);
-
-      crc_offset = partition->partition_length - CRC_SIZE;
-      err = MicoFlashWrite( MICO_PARTITION_PARAMETER_2, &crc_offset, (uint8_t *)&crc_target, CRC_SIZE );
-      require_noerr(err, exit);
+      para_copy(MICO_PARTITION_PARAMETER_2, MICO_PARTITION_PARAMETER_1);
     }
   }
 
-  para_log(" Config read, seed = %d!", inContext->flashContentInRam.micoSystemConfig.seed);
-
-  seedNum = inContext->flashContentInRam.micoSystemConfig.seed;
-  if(seedNum == -1) seedNum = 0;
+  partition = MicoFlashGetInfo( MICO_PARTITION_PARAMETER_1 );
+  /* Load data and crc from main partition */
+  para_offset = 0x0;
+  err = MicoFlashRead( MICO_PARTITION_PARAMETER_1, &para_offset, (uint8_t *)&inContext->flashContentInRam, sizeof( system_config_t ) );
+  para_offset = mico_context_section_offsets[ PARA_APP_DATA_SECTION ];
+  err = MicoFlashRead( MICO_PARTITION_PARAMETER_1, &para_offset, (uint8_t *)inContext->user_config_data, inContext->user_config_data_size );
+#ifdef MICO_EXTRA_AP_NUM
+  para_offset = mico_context_section_offsets[ PARA_SYS_EXTRA_SECTION ];
+  err = MicoFlashRead( MICO_PARTITION_PARAMETER_1, &para_offset, (uint8_t *)inContext->extra_ap, sizeof(inContext->extra_ap) );
+#endif
+  
 
   if(inContext->flashContentInRam.micoSystemConfig.magic_number != SYS_MAGIC_NUMBR){
     para_log("Magic number error, restore to default");
@@ -377,7 +373,10 @@ OSStatus MICOReadConfiguration(system_context_t *inContext)
 #endif
     require_noerr(err, exit);
   }
-
+  para_log(" Config read, seed = %d!", inContext->flashContentInRam.micoSystemConfig.seed);
+  
+  seedNum = inContext->flashContentInRam.micoSystemConfig.seed;
+  if(seedNum == -1) seedNum = 0;
 
   if(inContext->flashContentInRam.micoSystemConfig.dhcpEnable == DHCP_Disable){
     strcpy((char *)inContext->micoStatus.localIp, inContext->flashContentInRam.micoSystemConfig.localIp);
@@ -387,8 +386,7 @@ OSStatus MICOReadConfiguration(system_context_t *inContext)
   }
 
 exit: 
-  if( sys_backup_data!= NULL) free( sys_backup_data );
-  if( user_backup_data!= NULL) free( user_backup_data );
+
   return err;
 }
 

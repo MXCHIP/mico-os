@@ -235,10 +235,10 @@ static int find_ap_index_by_ssid(system_context_t * const inContext, char *ssid)
         return -1;
 
     for (i=0; i<MICO_EXTRA_AP_NUM-1; i++) {// don't check the last one, just replace it.
-        if (inContext->flashContentInRam.micoSystemConfig.extra_ap[i].valid != 1)
+        if (inContext->extra_ap[i].valid != 1)
             break;
         
-        if (strcmp(inContext->flashContentInRam.micoSystemConfig.extra_ap[i].ssid, ssid) == 0) {
+        if (strcmp(inContext->extra_ap[i].ssid, ssid) == 0) {
             break;
         }
     }
@@ -256,7 +256,7 @@ void system_network_update(system_context_t * const inContext, char *ssid)
         return;
 
     system_log("find ap return %d", index);
-    extra = inContext->flashContentInRam.micoSystemConfig.extra_ap;
+    extra = inContext->extra_ap;
 
     for (i=index; i>0; i--) {
         memcpy(&extra[i], &extra[i-1], sizeof(extra_ap_info_t));
@@ -281,7 +281,7 @@ void system_network_add(system_context_t * const inContext)
     int i;
     extra_ap_info_t *p_extra;
 
-    p_extra = inContext->flashContentInRam.micoSystemConfig.extra_ap;
+    p_extra = inContext->extra_ap;
     for(i=0; i<MICO_EXTRA_AP_NUM; i++) {
         if (p_extra[i].valid == 1) {
             system_log("Append AP %s - %02x-%02x(%d).....", p_extra[i].ssid,
