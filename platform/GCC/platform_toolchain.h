@@ -74,8 +74,8 @@ extern "C"
 #define MICO_WEAK        __attribute__((weak))
 #endif
 
-#ifndef MICO_FORCEINLINE
-#define MICO_FORCEINLINE static inline __attribute__((always_inline))
+#ifndef MICO_FORCE_INLINE
+#define MICO_FORCE_INLINE inline __attribute__((always_inline))
 #endif
 
 #ifndef MICO_NORETURN

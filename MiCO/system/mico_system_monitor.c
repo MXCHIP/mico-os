@@ -72,7 +72,7 @@ void mico_system_monitor_thread_main( uint32_t arg )
     }
     
     MicoWdgReload();
-    mico_thread_msleep(DEFAULT_SYSTEM_MONITOR_PERIOD);
+    mico_rtos_delay_milliseconds(DEFAULT_SYSTEM_MONITOR_PERIOD);
   }
 }
 

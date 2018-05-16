@@ -46,6 +46,12 @@ extern "C" {
 #include "platform_spi.h"
 #endif
 
+#ifdef ALIOS_DEV_WDG
+#include "aos_wdg.h"
+#else
+#include "platform_wdg.h"
+#endif
+
 #include "platform_flash.h"
 #include "platform_iis.h"
 

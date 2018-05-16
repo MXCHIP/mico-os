@@ -18,6 +18,37 @@ extern "C" {
 
 #ifdef ALIOS_SUPPORT
 #include "aos/cli.h"
+
+MICO_FORCE_INLINE int cli_init(void) 
+{ 
+	return 0; //AliOS start CLi before application_start
+}
+
+MICO_FORCE_INLINE int cli_register_command(const struct cli_command *command) 
+{ 
+	return aos_cli_register_command(command);
+}
+
+MICO_FORCE_INLINE int cli_unregister_command(const struct cli_command *command)
+{
+	return aos_cli_unregister_command(command);
+}
+
+MICO_FORCE_INLINE int cli_stop(void)
+{
+	return aos_cli_stop();
+}
+
+MICO_FORCE_INLINE int cli_register_commands(const struct cli_command *commands, int num_commands)
+{
+	return aos_cli_register_commands(commands, num_commands);
+}
+
+MICO_FORCE_INLINE int cli_unregister_commands(const struct cli_command *commands, int num_commands)
+{
+	return aos_cli_unregister_commands(commands, num_commands);
+}
+
 #else
 /** Structure for registering CLI commands */
 struct cli_command {

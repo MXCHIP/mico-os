@@ -224,7 +224,9 @@ void localConfig_thread(uint32_t inFd)
 
   t.tv_sec = 60;
   t.tv_usec = 0;
-  system_log("Free memory %d bytes", MicoGetMemoryInfo()->free_memory) ; 
+#ifndef ALIOS_SUPPORT
+  system_log("Free memory %d bytes", MicoGetMemoryInfo()->free_memory);
+#endif
 
   while(1){
     FD_ZERO(&readfds);
@@ -625,7 +627,7 @@ OSStatus _LocalConfigRespondInComingMessage(int fd, HTTPHeader_t* inHeader, syst
       mico_system_context_update( &inContext->flashContentInRam );
       SocketClose( &fd );
       mico_system_power_perform( &inContext->flashContentInRam, eState_Software_Reset );
-      mico_thread_sleep( MICO_WAIT_FOREVER );
+      mico_rtos_delay_milliseconds( MICO_WAIT_FOREVER );
     }
     goto exit;
   }

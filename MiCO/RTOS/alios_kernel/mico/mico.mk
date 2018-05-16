@@ -11,6 +11,7 @@ NAME := MiCO_alios_Interface
 
 GLOBAL_INCLUDES := . 
 
-$(NAME)_SOURCES := ../../mico_rtos_common.c
+$(NAME)_SOURCES :=   mico_rtos.c \
+                     ../../mico_rtos_common.c
 
 #$(NAME)_CFLAGS  = $(COMPILER_SPECIFIC_PEDANTIC_CFLAGS)

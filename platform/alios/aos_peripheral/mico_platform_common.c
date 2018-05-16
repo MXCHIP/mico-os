@@ -300,6 +300,20 @@ OSStatus MicoI2cTransfer( mico_i2c_device_t* device, mico_i2c_message_t* message
 }
 #endif
 
+#ifdef ALIOS_DEV_PS
+void MicoMcuPowerSaveConfig( int enable )
+{
+//    if (enable == 1)
+//        platform_mcu_powersave_enable( );
+//    else
+//        platform_mcu_powersave_disable( );
+}
+
+void MicoSystemStandBy( uint32_t secondsToWakeup )
+{
+//    platform_mcu_enter_standby( secondsToWakeup );
+}
+#endif
 
 #ifdef ALIOS_DEV_PWM
 OSStatus MicoPwmInitialize(mico_pwm_t pwm, uint32_t frequency, float duty_cycle)

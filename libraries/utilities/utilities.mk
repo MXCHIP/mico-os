@@ -21,13 +21,17 @@ $(NAME)_SOURCES := AESUtils.c \
                    
 ifeq ($(ALIOS_SUPPORT),y)
 # AliOS + moc108 source codes
-ifneq ($(filter moc108 rtl8710bn stm32f4xx,$(HOST_MCU_FAMILY)),)
+ifneq ($(filter moc108 rtl8710bn,$(HOST_MCU_FAMILY)),)
 
+else
+ifneq ($(filter stm32f4xx,$(HOST_MCU_FAMILY)),)
+$(NAME)_SOURCES += StringUtils.c
 else
 # AliOS source codes
 $(NAME)_SOURCES += RingBufferUtils.c \
                    StringUtils.c
-endif
+endif #stm32f4xx
+endif #moc108 rtl8710bn
 
 else
 # MiCO source codes

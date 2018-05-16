@@ -221,7 +221,9 @@ OSStatus system_network_daemen_start( system_context_t * const inContext )
 
   MicoInit();
   MicoSysLed(true);
+#ifndef ALIOS_SUPPORT
   system_log("Free memory %d bytes", MicoGetMemoryInfo()->free_memory); 
+#endif
   micoWlanGetIPStatus(&para, Station);
   formatMACAddr(inContext->micoStatus.mac, (char *)&para.mac);
   MicoGetRfVer(inContext->micoStatus.rf_version, sizeof(inContext->micoStatus.rf_version));

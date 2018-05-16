@@ -26,6 +26,7 @@ NAME := alios_peripheral
 
 $(NAME)_SOURCES := src/aos_gpio.c \
                    src/aos_uart.c \
+                   src/aos_wdg.c \
                    mico_platform_common.c
                    
 GLOBAL_INCLUDES := . inc

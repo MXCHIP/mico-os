@@ -32,11 +32,9 @@
 #define EXIT_MSG		"exit"
 #define NUM_BUFFERS		1
 
-#ifndef ALIOS_SUPPORT
 #define MAX_COMMANDS	50
 #define INBUF_SIZE      80
 #define OUTBUF_SIZE     1024
-#endif
 
 #ifndef MOC
 static void task_Command( char *pcWriteBuffer, int xWriteBufferLen, int argc, char **argv );
@@ -65,7 +63,6 @@ mico_semaphore_t log_rx_interrupt_sema;
 
 #else
 
-#ifndef ALIOS_SUPPORT
 struct cli_st {
   int initialized;
   
@@ -77,7 +74,6 @@ struct cli_st {
   int echo_disabled;
   
 } ;
-#endif
 
 static struct cli_st *pCli = NULL;
 static uint8_t *cli_rx_data;
@@ -793,9 +789,6 @@ void log_service_init(void)
 
 int cli_init(void)
 {
-#ifdef ALIOS_SUPPORT
-    aos_cli_stop();
-#endif
 
   int ret;
 
@@ -842,9 +835,6 @@ int cli_init(void)
 {
   int ret;
 
-#ifdef ALIOS_SUPPORT
-    aos_cli_stop();
-#endif
 
   pCli = (struct cli_st*)malloc(sizeof(struct cli_st));
   if (pCli == NULL)
