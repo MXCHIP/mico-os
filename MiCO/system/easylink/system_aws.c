@@ -285,7 +285,9 @@ OSStatus mico_easylink_aws( mico_Context_t * const in_context, mico_bool_t enabl
         system_log("EasyLink processing, force stop..");
         aws_thread_force_exit = true;
         mico_rtos_thread_force_awake( &aws_thread_handler );
-        mico_rtos_thread_join( &aws_thread_handler );
+        while(aws_thread_handler) {
+            mico_rtos_delay_milliseconds(10);
+        }
     }
 
     if ( enable == MICO_TRUE ) {
