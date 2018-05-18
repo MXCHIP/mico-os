@@ -27,7 +27,7 @@ with open(map_file, 'r') as f:
 		ram_config += [{'start':int(ram[0], 16), 'end':int(ram[0], 16) + int(ram[1], 16)}]
 
 	# find memory map (without discard and debug sections)
-	mem_map = re.findall('Linker script and memory map([\s\S]+?)START GROUP', s)[0]
+	mem_map = re.findall('Linker script and memory map([\s\S]+?).ARM.attributes', s)[0]
 
 	# find sections address - length in memory map
 	modules = list(set(item[0] for item in re.findall('0x\w+\s+0x\w+\s+.+?([^/\\\]+\.[ao])(\(.+\.o\))?\n', mem_map)))
