@@ -194,3 +194,23 @@ void vApplicationMallocFailedHook( void )
 
 #endif
 
+void *mico_malloc( size_t xWantedSize )
+{
+    return aos_malloc(xWantedSize);
+}
+
+void mico_free( void *pv )
+{
+   aos_free(pv);
+}
+
+void *mico_realloc( void *pv, size_t xWantedSize )
+{
+    return aos_realloc(pv, xWantedSize);
+}
+
+
+void vTaskDelay( const uint32_t xTicksToDelay )
+{
+    krhino_task_sleep((tick_t)xTicksToDelay);
+}

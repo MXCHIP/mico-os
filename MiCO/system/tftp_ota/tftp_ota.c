@@ -11,7 +11,6 @@
 #include "mico.h"
 #include "tftp.h"
 #include "CheckSumUtils.h"
-#include "mico_system.h"
 
 
 #define DEFAULT_OTA_AP "MICO_OTA_AP"
@@ -267,7 +266,7 @@ OSStatus start_forceota_check()
 		require_noerr( err, exit );
 		fota_log("Start scan");
 		mico_rtos_init_semaphore(&force_ota_sem,1);
-		mxchip_active_scan(FORCE_OTA_AP,0);
+		mico_wlan_start_active_scan(FORCE_OTA_AP,0);
 		err = mico_rtos_get_semaphore(&force_ota_sem,MICO_WAIT_FOREVER);
 		if(NULL != force_ota_sem)
 		mico_rtos_deinit_semaphore(&force_ota_sem);

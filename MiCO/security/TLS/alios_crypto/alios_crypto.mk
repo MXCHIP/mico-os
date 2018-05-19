@@ -10,6 +10,10 @@
 NAME := alios_crypto
 
 
-$(NAME)_COMPONENTS := alicrypto
 
-$(NAME)_SOURCES := mico_wrap.c
+ifeq ($(ALIOS_NATIVE_APP),y)
+$(NAME)_COMPONENTS := alicrypto
+$(NAME)_SOURCES := md5_wrap.c
+else
+$(NAME)_COMPONENTS := wolfSSL
+endif

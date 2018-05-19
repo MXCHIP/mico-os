@@ -67,6 +67,8 @@ extern "C" {
 #define WiFi_Interface  wlanInterfaceTypedef
 #define net_para_st     IPStatusTypedef
 
+
+#define mico_wlan_start_active_scan       mxchip_active_scan
 #define mico_wlan_get_mac_address wlan_get_mac_address
 
 /** @addtogroup MICO_Core_APIs
@@ -544,7 +546,7 @@ void micoWlanStartScanAdv(void);
  *          void (*function)(ScanResultAdv *pApList, mico_Context_t * const inContext)
  *          Register callback function using @ref mico_add_notification() before scan.
  */
-int mxchip_active_scan(char*ssid, int is_adv);
+int mico_wlan_start_active_scan(char*ssid, int is_adv);
 
 
 /** @brief  Close the RF chip's power supply, all network connection is lost.

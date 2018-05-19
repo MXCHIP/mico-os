@@ -136,7 +136,11 @@ extern "C" {
 #endif
 
 #if !defined MICO_WLAN_FORCE_OTA_ENABLE
+#ifdef ALIOS_SUPPORT
+#define MICO_WLAN_FORCE_OTA_ENABLE               0
+#else
 #define MICO_WLAN_FORCE_OTA_ENABLE               1
+#endif
 #endif
 
 #if !defined MICO_WLAN_AUTO_CONFIG

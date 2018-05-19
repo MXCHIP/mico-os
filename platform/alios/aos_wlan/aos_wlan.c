@@ -107,7 +107,7 @@ OSStatus wifi_power_down(void)
     return hal_wifi_power_off(aos_wlan);
 }
 
-OSStatus getNetPara(IPStatusTypedef *outNetpara, WiFi_Interface inInterface)
+OSStatus getNetPara(IPStatusTypedef *outNetpara, netif_t inInterface)
 {
     return hal_wifi_get_ip_stat(aos_wlan, (hal_wifi_ip_stat_t *)outNetpara, (hal_wifi_type_t)inInterface);
 }
@@ -153,6 +153,16 @@ int mico_wlan_start_monitor(void)
 void mico_wlan_register_monitor_cb(monitor_cb_t fn)
 {
     hal_wifi_register_monitor_cb(aos_wlan, (monitor_data_cb_t)fn);
+}
+
+int mxchip_active_scan(char*ssid, int is_adv)
+{
+    return 0;
+}
+
+int micoWlanGetLinkStatus(LinkStatusTypeDef *outStatus)
+{
+    return hal_wifi_get_link_stat(aos_wlan, (hal_wifi_link_stat_t *)outStatus);
 }
 
 #endif

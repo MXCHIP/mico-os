@@ -52,7 +52,12 @@ extern "C" {
 #include "platform_wdg.h"
 #endif
 
+#ifdef ALIOS_DEV_FLASH
+#include "aos_flash.h"
+#else
 #include "platform_flash.h"
+#endif
+
 #include "platform_iis.h"
 
 
