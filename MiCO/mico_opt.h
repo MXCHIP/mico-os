@@ -38,7 +38,11 @@ extern "C" {
  ******************************************************************************/
 
 #if !defined APP_INFO
+#ifdef ALIOS_SUPPORT
+#define APP_INFO                                 SYSINFO_APP_VERSION
+#else
 #define APP_INFO                                 "MiCO BASIC Demo"
+#endif
 #endif
 
 #if !defined FIRMWARE_REVISION

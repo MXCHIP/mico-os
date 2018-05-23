@@ -8,8 +8,8 @@
 ******************************************************************************
 */
 
-#ifndef __MICO_CONFIG_H
-#define __MICO_CONFIG_H
+#ifndef _ALIOS_NATIVE_APP_CONFIG_H_
+#define _ALIOS_NATIVE_APP_CONFIG_H_
 
 
 #endif
