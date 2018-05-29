@@ -230,7 +230,7 @@ $(if $(TEST_COMPONENTS), $(call RECURSE_DIR_COMPONENT_SEARCH, $(patsubst %/,%,$(
 $(eval TEST_COMPONENTS := $(addprefix %., $(addsuffix _test, $(TEST_COMPONENTS)))) \
 $(eval COMPONENTS += $(filter $(TEST_COMPONENTS),  $(subst /,.,$(strip $(TEST_COMPONENT_LIST)))))))
 
-COMPONENTS += alios.AliOS-Things.test.testcase.certificate_test
+COMPONENTS += testcase.certificate_test
 else
 $(error alios component not found, use mico cube command: "mico add alios".)
 endif
