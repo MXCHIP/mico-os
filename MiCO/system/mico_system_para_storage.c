@@ -240,6 +240,10 @@ OSStatus mico_system_context_restore( mico_Context_t * const inContext )
 #ifdef MICO_BLUETOOTH_ENABLE
   memset(&sys_context->flashContentInRam.bt_config, 0xFF, sizeof(mico_bt_config_t));
 #endif
+#ifdef MICO_EXTRA_AP_NUM
+  memset(&sys_context->extra_ap, 0, sizeof(sys_context->extra_ap));
+#endif
+
   /*Application's default configuration*/
   appRestoreDefault_callback(sys_context->user_config_data, sys_context->user_config_data_size);
 
