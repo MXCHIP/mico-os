@@ -201,6 +201,36 @@ ifneq ($(wildcard $(SOURCE_ROOT)alios/alios.mk),)
 ALIOS_TARGETS ?= GENERAL
 COMPONENTS += alios_kernel alios_crypto
 include $(SOURCE_ROOT)alios/alios.mk
+
+#AliOS auto generated component
+AUTO_COMPONENT_DIR := $(OUTPUT_DIR)/auto_component
+AUTO_COMPONENT = $(AUTO_COMPONENT_DIR)/auto_component.mk
+ifneq ($(test), )
+TEST_COMPONENT_COLLECTION = $(AUTO_COMPONENT_DIR)/test_collection.$(test)
+else
+TEST_COMPONENT_COLLECTION = $(AUTO_COMPONENT_DIR)/test_collection.default
+endif
+
+$(shell $(PYTHON) $(ALIOS_PATH)build/scripts/auto_component.py $(AUTO_COMPONENT_DIR))
+$(shell $(PYTHON) $(ALIOS_PATH)build/scripts/gen_test_collection.py $(AUTO_COMPONENT_DIR) $(TEST_COMPONENT_COLLECTION))
+
+TEST_COMPONENT_DIRECTORIES := alios/AliOS-Things/test
+
+##########
+# Recurse directories to find valid AOS components.
+# $(1) = starting directory
+# $(2) = name of variable to which to add components that are found
+define RECURSE_DIR_COMPONENT_SEARCH
+$(foreach file, $(wildcard $(1)/*), $(if $(wildcard $(file)/*), $(if $(wildcard $(file)/$(notdir $(file)).mk), $(eval $(2) += $(file)),) $(call RECURSE_DIR_COMPONENT_SEARCH,$(file),$(2)),))
+endef
+
+$(if $(filter alios.AliOS-Things.example.yts, $(COMPONENTS)), \
+$(if $(test), $(eval TEST_COMPONENTS := $(strip $(subst $(COMMA), $(SPACE), $(test)))),) \
+$(if $(TEST_COMPONENTS), $(call RECURSE_DIR_COMPONENT_SEARCH, $(patsubst %/,%,$(TEST_COMPONENT_DIRECTORIES)), TEST_COMPONENT_LIST) \
+$(eval TEST_COMPONENTS := $(addprefix %., $(addsuffix _test, $(TEST_COMPONENTS)))) \
+$(eval COMPONENTS += $(filter $(TEST_COMPONENTS),  $(subst /,.,$(strip $(TEST_COMPONENT_LIST)))))))
+
+COMPONENTS += alios.AliOS-Things.test.testcase.certificate_test
 else
 $(error alios component not found, use mico cube command: "mico add alios".)
 endif
@@ -297,8 +327,10 @@ $(info processing components: $(COMPONENTS))
 CURDIR :=
 $(eval $(call PROCESS_COMPONENT, $(COMPONENTS)))
 
+$(addprefix -I$($(NAME)_LOCATION),$(GLOBAL_INCLUDES))
+
 # Add some default values
-MiCO_SDK_INCLUDES += -I$(MICO_OS_PATH)/include -I$(APP_FULL) -I.
+MiCO_SDK_INCLUDES += -I$(MICO_OS_PATH)/include $(addprefix -I,$(APP_FULL)) -I.
 MiCO_SDK_DEFINES += $(EXTERNAL_MiCO_GLOBAL_DEFINES)
 
 ALL_RESOURCES := $(sort $(foreach comp,$(PROCESSED_COMPONENTS),$($(comp)_RESOURCES_EXPANDED)))
@@ -423,7 +455,9 @@ $(CONFIG_FILE): $(MiCO_SDK_MAKEFILES) | $(CONFIG_FILE_DIR)
 	$(QUIET)$(call WRITE_FILE_APPEND, $(CONFIG_FILE) ,MiCO_RAM_STUB_LIST_FILE 			:= $(MiCO_RAM_STUB_LIST_FILE))
 	$(QUIET)$(call WRITE_FILE_APPEND, $(CONFIG_FILE) ,MOC_KERNEL_BIN_FILE 				:= $(MOC_KERNEL_BIN_FILE))
 	$(QUIET)$(call WRITE_FILE_APPEND, $(CONFIG_FILE) ,MOC_APP_OFFSET 				:= $(MOC_APP_OFFSET))
-	
+ifeq ($(ALIOS_SUPPORT),y)
+	$(QUIET)$(PYTHON) $(MAKEFILES_PATH)/scripts/gen_auto_code.py $(OUTPUT_DIR)/config.mk $(AUTO_COMPONENT_DIR)
+endif
 	
 
 	

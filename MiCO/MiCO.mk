@@ -23,8 +23,12 @@ ifneq ($(filter $(subst ., ,$(COMPONENTS)),mocOS mocIP),)
 $(NAME)_SOURCES += moc_main.c
 endif
 
+ifneq ($(ALIOS_NATIVE_APP),y)
 $(NAME)_COMPONENTS += MiCO/security \
-                      MiCO/system
+                      MiCO/system \
+                      drivers/keypad/gpio_button
+                      
+endif
 
 $(NAME)_COMPONENTS += utilities
 
@@ -41,8 +45,7 @@ $(NAME)_COMPONENTS += platform/MCU/$(HOST_MCU_FAMILY)
 endif
 endif
 
-# Easylink Button
-$(NAME)_COMPONENTS += drivers/keypad/gpio_button
+
 
 # Define the default ThreadX and FreeRTOS starting stack sizes
 FreeRTOS_START_STACK := 800

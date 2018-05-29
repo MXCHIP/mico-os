@@ -20,7 +20,6 @@ endif
 endif
 
 ifeq ($(ALIOS_SUPPORT),y)
-GLOBAL_DEFINES += WITH_LWIP
 VERSION := 2.0.2
 endif
 
