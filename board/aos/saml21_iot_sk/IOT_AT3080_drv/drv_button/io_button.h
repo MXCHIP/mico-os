@@ -86,7 +86,7 @@ typedef struct {
  *
  * @return    none
  */
-void button_init(btn_instance_t * const btn);
+void io_button_init(btn_instance_t * const btn);
 
 /**
  * @brief Button driver service, should be called in main loop.
@@ -95,7 +95,7 @@ void button_init(btn_instance_t * const btn);
  *
  * @return none
  */
-void button_srv(btn_instance_t * const btn);
+void io_button_srv(btn_instance_t * const btn);
 
 /**
  * @brief This function should be called by IRQ routine.
@@ -104,7 +104,7 @@ void button_srv(btn_instance_t * const btn);
  *
  * @return none
  */
-void button_irq_handler(btn_instance_t * const btn);
+void io_button_irq_handler(btn_instance_t * const btn);
 
 /** @}*/
 /** @}*/

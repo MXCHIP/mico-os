@@ -327,8 +327,6 @@ $(info processing components: $(COMPONENTS))
 CURDIR :=
 $(eval $(call PROCESS_COMPONENT, $(COMPONENTS)))
 
-$(addprefix -I$($(NAME)_LOCATION),$(GLOBAL_INCLUDES))
-
 # Add some default values
 MiCO_SDK_INCLUDES += -I$(MICO_OS_PATH)/include $(addprefix -I,$(APP_FULL)) -I.
 MiCO_SDK_DEFINES += $(EXTERNAL_MiCO_GLOBAL_DEFINES)

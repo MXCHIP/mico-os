@@ -40,6 +40,10 @@ extern "C"
 
 #define MCU_CLOCK_HZ (100000000)
 
+#define HARDWARE_REVISION   "1.0"
+#define DEFAULT_NAME        "SAML21"
+#define MODEL               "SAML21_IOT_SK"
+
 #ifdef __cplusplus
 } /*extern "C" */
 #endif

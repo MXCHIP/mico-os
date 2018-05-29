@@ -123,6 +123,14 @@ uint32_t  ms_to_tick_ratio = 1;
  *               Function Definitions
  ******************************************************/
 
+MICO_WEAK int application_start( void )
+{
+    mico_main();
+    __real_main();
+    return 0;
+}
+
+
 OSStatus mico_time_get_time(mico_time_t* time_ptr)
 {
     *time_ptr = (mico_time_t) krhino_ticks_to_ms(krhino_sys_tick_get()) + mico_time_offset;

@@ -23,13 +23,10 @@ ifneq ($(filter $(subst ., ,$(COMPONENTS)),mocOS mocIP),)
 $(NAME)_SOURCES += moc_main.c
 endif
 
-ifneq ($(ALIOS_NATIVE_APP),y)
 $(NAME)_COMPONENTS += MiCO/security \
                       MiCO/system \
                       drivers/keypad/gpio_button
                       
-endif
-
 $(NAME)_COMPONENTS += utilities
 
 GLOBAL_DEFINES += 

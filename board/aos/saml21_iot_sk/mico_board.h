@@ -38,6 +38,29 @@ extern "C"
 #endif
 
 #define EasyLink_BUTTON        0
+#define MICO_SYS_LED           0
+#define MICO_I2C_CP            0
+#define MICO_MFG_TEST           0
+
+    enum
+    {
+      MICO_PARTITION_FILESYS,
+      MICO_PARTITION_USER_MAX
+    };
+
+    enum
+    {
+        MICO_PARTITION_ERROR = -1,
+        MICO_PARTITION_BOOTLOADER = MICO_PARTITION_USER_MAX,
+        MICO_PARTITION_APPLICATION,
+        MICO_PARTITION_ATE,
+        MICO_PARTITION_OTA_TEMP,
+        MICO_PARTITION_RF_FIRMWARE,
+        MICO_PARTITION_PARAMETER_1,
+        MICO_PARTITION_PARAMETER_2,
+        MICO_PARTITION_MAX,
+        MICO_PARTITION_NONE,
+    };
 
 #ifdef __cplusplus
 } /*extern "C" */

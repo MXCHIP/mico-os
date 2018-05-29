@@ -35,7 +35,7 @@
  *                              Function Definitions
  ******************************************************************************/
 
-void button_irq_handler(btn_instance_t * const btn)
+void io_button_irq_handler(btn_instance_t * const btn)
 {
     int interval = -1;
 
@@ -55,7 +55,7 @@ void button_irq_handler(btn_instance_t * const btn)
 }
 
 
-void button_srv(btn_instance_t * const btn)
+void io_button_srv(btn_instance_t * const btn)
 {
 	bool clicked = false;
 	bool long_pressed = false;
@@ -82,7 +82,7 @@ void button_srv(btn_instance_t * const btn)
 	
 }
 
-void button_init(btn_instance_t * const btn)
+void io_button_init(btn_instance_t * const btn)
 {
     btn->start_time = 0;
 	btn->clicked = false;
