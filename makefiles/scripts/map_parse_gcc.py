@@ -27,11 +27,17 @@ with open(map_file, 'r') as f:
 		ram_config += [{'start':int(ram[0], 16), 'end':int(ram[0], 16) + int(ram[1], 16)}]
 
 	# find memory map (without discard and debug sections)
-	mem_map = re.findall('Linker script and memory map([\s\S]+?).ARM.attributes', s)[0]
+	mem_map = re.findall('Linker script and memory map([\s\S]+?)OUTPUT', s)[0]
 
 	# find sections address - length in memory map
-	modules = list(set(item[0] for item in re.findall('0x\w+\s+0x\w+\s+.+?([^/\\\]+\.[ao])(\(.+\.o\))?\n', mem_map)))
-	modules.sort(key = lambda x : x.upper())
+	mem_map = mem_map.replace('\r', '')
+	modules = []
+	for l in mem_map.split('\n'):
+		m = re.search('0x\w+\s+0x\w+\s+.+?([^/\\\]+\.[ao])(\(.+\.o\))', l)
+		if m == None:
+			continue
+		modules.append(m.groups()[0])
+	modules = list(set(modules))
 	modules += ['*fill*']
 
 	for module in modules:
