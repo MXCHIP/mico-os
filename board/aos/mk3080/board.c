@@ -68,6 +68,14 @@ const hal_logic_partition_t hal_partitions[] =
         .partition_length           = 0x2000,// 8k bytes
         .partition_options          = PAR_OPT_READ_EN | PAR_OPT_WRITE_EN,
     },
+    [HAL_PARTITION_LINK_KEY] =
+    {
+        .partition_owner            = HAL_FLASH_EMBEDDED,
+        .partition_description      = "LINK KEY",
+        .partition_start_addr       = 0x1FF000,
+        .partition_length           = 0x1000,// 4k bytes
+        .partition_options          = PAR_OPT_READ_EN | PAR_OPT_WRITE_EN,
+    },
 };
 
 #define KEY_AWSS   12
@@ -117,11 +125,14 @@ static void handle_awss_key(void *arg)
     }
 }
 
+void Board_SecrectInit(void);
+
 void board_init(void)
 {
     gpio_key_awss.port = KEY_AWSS;
     gpio_key_awss.config = INPUT_PULL_UP;
 
+    Board_SecrectInit();
     hal_gpio_init(&gpio_key_awss);
     hal_gpio_enable_irq(&gpio_key_awss, IRQ_TRIGGER_FALLING_EDGE, handle_awss_key, NULL);
 }

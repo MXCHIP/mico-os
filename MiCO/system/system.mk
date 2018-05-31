@@ -48,9 +48,10 @@ $(NAME)_INCLUDES += tftp_ota
 $(NAME)_COMPONENTS := protocols/mdns \
                       system/qc_test \
                       system/easylink/MFi_WAC
-                      
+
+ifneq ($(ALIOS_NATIVE_APP),y)                   
 ifneq ($(DISABLE_MICO_AWS),1)
 $(NAME)_COMPONENTS += system/easylink/aws
 $(NAME)_DEFINES += CONFIG_MICO_AWS
 endif
-
+endif
