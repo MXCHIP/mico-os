@@ -131,6 +131,12 @@ struct addrinfo {
 
 #define O_NONBLOCK 1
 
+/**
+ * LWIP_SO_SNDRCVTIMEO_NONSTANDARD==1: SO_RCVTIMEO/SO_SNDTIMEO take an int
+ * (milliseconds, much like winsock does).
+ */
+#define LWIP_SO_SNDRCVTIMEO_NONSTANDARD 1
+
 /*
  * Options for level IPPROTO_IP
  */

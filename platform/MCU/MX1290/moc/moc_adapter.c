@@ -484,3 +484,8 @@ OSStatus micoWlanAddExtraNetowrk(char *ssid, char *key, uint8_t key_len)
     return _kernel_api.wifi_apis->wlan_add_extra_network(ssid, key, key_len);
 }
 
+char *mico_current_task_name(void)
+{
+    return _kernel_api.os_apis->get_current_task_name();
+}
+
