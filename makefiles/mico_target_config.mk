@@ -249,7 +249,11 @@ $(foreach comp, $(COMPONENTS), $(if $(wildcard $(foreach dir, $(COMPONENT_DIRECT
 NET_FULL	    ?=$(strip $(foreach comp,$(subst .,/,$(COMPONENTS)),$(if $(wildcard $(MICO_OS_PATH)/MiCO/net/$(comp)),$(comp),)))
 RTOS_FULL       ?=$(strip $(foreach comp,$(subst .,/,$(COMPONENTS)),$(if $(wildcard $(MICO_OS_PATH)/MiCO/RTOS/$(comp)),$(comp),)))
 TLS_FULL        ?=$(strip $(foreach comp,$(subst .,/,$(COMPONENTS)),$(if $(wildcard $(MICO_OS_PATH)/MiCO/security/TLS/$(comp)),$(comp),)))
+ifeq ($(ALIOS_SUPPORT),y)
+APP_FULL        :=$(strip $(foreach comp,$(subst .,/,$(COMPONENTS)),$(if $(wildcard $(SOURCE_ROOT)$(comp)),$(SOURCE_ROOT)$(comp),$(if $(wildcard $(MICO_OS_PATH)/$(comp)),$(MICO_OS_PATH)/$(comp),$(if $(wildcard $(SOURCE_ROOT)/alios/AliOS-Things/example/$(comp)),$(SOURCE_ROOT)/alios/AliOS-Things/example/$(comp),)))))
+else
 APP_FULL        :=$(strip $(foreach comp,$(subst .,/,$(COMPONENTS)),$(if $(wildcard $(SOURCE_ROOT)$(comp)),$(SOURCE_ROOT)$(comp),$(if $(wildcard $(MICO_OS_PATH)/$(comp)),$(MICO_OS_PATH)/$(comp),))))
+endif
 
 NET			:=$(notdir $(NET_FULL))
 RTOS        :=$(notdir $(RTOS_FULL))

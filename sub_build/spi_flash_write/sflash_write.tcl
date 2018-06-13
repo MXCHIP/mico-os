@@ -128,11 +128,15 @@ proc sflash_init { PlatBusDebug } {
     if {[file exists mico-os/board/$PlatBusDebug/flash_prog.elf]} {
         load_image mico-os/board/$PlatBusDebug/flash_prog.elf
     } else {
-        if {[file exists board/$PlatBusDebug/flash_prog.elf]} {
-            load_image board/$PlatBusDebug/flash_prog.elf
+        if {[file exists mico-os/board/aos/$PlatBusDebug/flash_prog.elf]} {
+            load_image mico-os/board/aos/$PlatBusDebug/flash_prog.elf
         } else {
-            error "Error: Cann't find flash_prog.elf in $PlatBusDebug directory"
-            exit -1;            
+            if {[file exists board/$PlatBusDebug/flash_prog.elf]} {
+                load_image board/$PlatBusDebug/flash_prog.elf
+            } else {
+                error "Error: Cann't find flash_prog.elf in $PlatBusDebug directory"
+                exit -1;            
+            }
         }
     }
     
