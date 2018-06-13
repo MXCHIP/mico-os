@@ -13,7 +13,7 @@ const hal_logic_partition_t hal_partitions[] =
 	{
 	    .partition_owner            = HAL_FLASH_EMBEDDED,
 	    .partition_description      = "Bootloader",
-	    .partition_start_addr       = 0x0,
+	    .partition_start_addr       = 0x0000B000,
 	    .partition_length           = 0x8000,    //32k bytes
 	    .partition_options          = PAR_OPT_READ_EN | PAR_OPT_WRITE_DIS,
 	},
@@ -21,8 +21,8 @@ const hal_logic_partition_t hal_partitions[] =
 	{
 	    .partition_owner            = HAL_FLASH_EMBEDDED,
 	    .partition_description      = "Application",
-	    .partition_start_addr       = 0xB000,
-	    .partition_length           = 0xF2000, //568k bytes
+	    .partition_start_addr       = 0x13000,
+	    .partition_length           = 0xB5000, //724 bytes
 	    .partition_options          = PAR_OPT_READ_EN | PAR_OPT_WRITE_EN,
 	},
         
@@ -30,8 +30,8 @@ const hal_logic_partition_t hal_partitions[] =
         {
         .partition_owner            = HAL_FLASH_EMBEDDED,
         .partition_description      = "PARAMETER1",
-        .partition_start_addr       = 0xFD000,
-        .partition_length           = 0x1000, // 4k bytes
+        .partition_start_addr       = 0x000C8000,
+        .partition_length           = 0x4000, // 16k bytes
         .partition_options          = PAR_OPT_READ_EN | PAR_OPT_WRITE_EN,
         },
         
@@ -39,8 +39,8 @@ const hal_logic_partition_t hal_partitions[] =
         {
         .partition_owner            = HAL_FLASH_EMBEDDED,
         .partition_description      = "PARAMETER2",
-        .partition_start_addr       = 0xFE000,
-        .partition_length           = 0x2000, // 8k bytes
+        .partition_start_addr       = 0x000CC000,
+        .partition_length           = 0x4000, // 16k bytes
         .partition_options          = PAR_OPT_READ_EN | PAR_OPT_WRITE_EN,
         },
 
@@ -48,15 +48,15 @@ const hal_logic_partition_t hal_partitions[] =
         {
         .partition_owner           = HAL_FLASH_EMBEDDED,
         .partition_description     = "OTA Storage",
-        .partition_start_addr      = 0x100000,
-        .partition_length          = 0x8E000, //568k bytes
+        .partition_start_addr      = 0x00110000,
+        .partition_length          = 0xB5000, //724k bytes
         .partition_options         = PAR_OPT_READ_EN | PAR_OPT_WRITE_EN,
         },
     [HAL_PARTITION_PARAMETER_3] =
     {
         .partition_owner            = HAL_FLASH_EMBEDDED,
         .partition_description      = "PARAMETER3",
-        .partition_start_addr       = 0x1FD000,
+        .partition_start_addr       = 0x001C5000,
         .partition_length           = 0x1000, // 4k bytes
         .partition_options          = PAR_OPT_READ_EN | PAR_OPT_WRITE_EN,
     },
@@ -64,8 +64,8 @@ const hal_logic_partition_t hal_partitions[] =
     {
         .partition_owner            = HAL_FLASH_EMBEDDED,
         .partition_description      = "PARAMETER4",
-        .partition_start_addr       = 0x1FE000,
-        .partition_length           = 0x2000,// 8k bytes
+        .partition_start_addr       = 0x001C6000,
+        .partition_length           = 0x1000,// 4k bytes
         .partition_options          = PAR_OPT_READ_EN | PAR_OPT_WRITE_EN,
     },
     [HAL_PARTITION_LINK_KEY] =
@@ -125,14 +125,13 @@ static void handle_awss_key(void *arg)
     }
 }
 
-void Board_SecrectInit(void);
-
 void board_init(void)
 {
     gpio_key_awss.port = KEY_AWSS;
     gpio_key_awss.config = INPUT_PULL_UP;
 
     Board_SecrectInit();
+
     hal_gpio_init(&gpio_key_awss);
     hal_gpio_enable_irq(&gpio_key_awss, IRQ_TRIGGER_FALLING_EDGE, handle_awss_key, NULL);
 }
@@ -170,7 +169,7 @@ void Board_SecrectInit(void)
     uint8_t len;
     hal_flash_read(HAL_PARTITION_LINK_KEY, &offset, &len, 1);
 
-    char *data = malloc(len);
+    uint8_t *data = malloc(len);
     hal_flash_read(HAL_PARTITION_LINK_KEY, &offset, data, len);
 
     uint16_t crc;
@@ -187,8 +186,8 @@ void Board_SecrectInit(void)
         free(data);
         return;
     }
-
-    char *tmp = data;
+    
+    uint8_t *tmp = data;
     // Product key
     len = strlen(tmp);
     strcpy(pk, tmp);
@@ -198,7 +197,7 @@ void Board_SecrectInit(void)
     len = strlen(tmp);
     strcpy(ps, tmp);
     tmp += len + 1;
-
+    
     // Device secrect
     len = strlen(tmp);
     strcpy(ds, tmp);
@@ -275,4 +274,3 @@ void Board_SecrectUpdate(int argc, char **argv)
     hal_flash_write(HAL_PARTITION_LINK_KEY, &offset, &crc, 2);
 }
 #endif
-
