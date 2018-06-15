@@ -22,7 +22,7 @@ $(NAME)_SOURCES := AESUtils.c \
 ifeq ($(ALIOS_SUPPORT),y)
 # AliOS + moc108 source codes
 ifneq ($(filter moc108 rtl8710bn,$(HOST_MCU_FAMILY)),)
-
+$(NAME)_SOURCES += StringUtils.c
 else
 ifneq ($(filter stm32f4xx,$(HOST_MCU_FAMILY)),)
 $(NAME)_SOURCES += StringUtils.c
