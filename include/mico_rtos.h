@@ -34,6 +34,9 @@
 
 #include "common.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 /** @addtogroup MICO_Core_APIs
   * @{
@@ -698,6 +701,10 @@ int mico_rtos_init_event_fd(mico_event_t event_handle);
   * @retval   0 for success. On error, -1 is returned.
   */
 int mico_rtos_deinit_event_fd(int fd);
+
+#ifdef __cplusplus
+} /*extern "C" */
+#endif
 
 /**
   * @}
