@@ -107,7 +107,7 @@ ifneq ($(filter $(subst ., ,$(COMPONENTS)),mocOS),)
 # Building standard moc application
 ####################################################################################
 
-DEFAULT_LINK_SCRIPT := $(TOOLCHAIN_NAME)/app_with_moc$(LINK_SCRIPT_SUFFIX)
+DEFAULT_LINK_SCRIPT := $(TOOLCHAIN_NAME)/app_with_moc$(USER_PART_BIG)$(LINK_SCRIPT_SUFFIX)
 
 endif # APP=moc
 endif # APP=spi_flash_write
