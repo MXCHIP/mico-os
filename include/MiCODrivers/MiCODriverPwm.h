@@ -97,6 +97,17 @@ OSStatus MicoPwmStart(mico_pwm_t pwm);
  */
 OSStatus MicoPwmStop(mico_pwm_t pwm);
 
+/**@brief Set duty_cycle on a PWM pin
+ *
+ * @note  Sets duty_cycle no matter PWM is used
+ *
+ * @param pwm        : the PWM interface which should be initialised
+ * @param duty_cycle : Duty cycle of signal as a floating-point percentage (0.0 to 100.0)
+ *
+ * @return    kNoErr        : on success.
+ * @return    kParamErr   : if an error occurred with any step
+ */
+OSStatus MicoPwmSetDuty(mico_pwm_t pwm, uint32_t frequency, float duty_cycle);
 /** @} */
 /** @} */
 

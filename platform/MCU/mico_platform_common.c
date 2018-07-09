@@ -339,6 +339,13 @@ OSStatus MicoPwmStop( mico_pwm_t pwm )
   return (OSStatus) platform_pwm_stop( &platform_pwm_peripherals[pwm] );
 }
 
+OSStatus MicoPwmSetDuty(mico_pwm_t pwm,uint32_t frequency, float duty_cycle)
+{
+    if ( pwm >= MICO_PWM_NONE )
+       return kUnsupportedErr;
+    return (OSStatus) platform_pwm_set_duty( &platform_pwm_peripherals[pwm],frequency, duty_cycle );
+}
+
 OSStatus MicoRtcGetTime(mico_rtc_time_t* time)
 {
   return (OSStatus) platform_rtc_get_time( time );

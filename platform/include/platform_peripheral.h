@@ -785,6 +785,16 @@ OSStatus platform_pwm_start( const platform_pwm_t* pwm );
  */
 OSStatus platform_pwm_stop( const platform_pwm_t* pwm );
 
+/**
+ * set duty
+ *
+ * @param[in] pwm_interface : PWM interface
+ * @param[in] frequency     : PWM signal frequency in Hz
+ * @param[in] duty_cycle    : PWM signal duty cycle in percentage point
+ *
+ * @return @ref OSStatus
+ */
+OSStatus platform_pwm_set_duty( const platform_pwm_t* pwm, uint32_t frequency,float duty_cycle);
 
 /**
  * Get current real-time clock
