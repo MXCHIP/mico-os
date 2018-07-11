@@ -119,32 +119,22 @@ static void handle_elink_key(void *arg)
     }
 }
 
+#define BOOT_MODE_REG (*(uint32_t *)0x40001C)
+
+#define BOOT_MODE_APP   0
+#define BOOT_MODE_ATE   1
+#define BOOT_MODE_QC    2
+
+bool MicoShouldEnterMFGMode(void)
+{
+    return BOOT_MODE_REG == BOOT_MODE_QC ? true : false;
+}
+
 /* For QC test */
 static void board_qc_check(void)
 {
-    uint32_t gpio_value = 1;
-
-    gpio_key_boot.port = KEY_BOOT;
-    gpio_key_boot.config = INPUT_PULL_UP;
-    hal_gpio_init(&gpio_key_boot);
-    hal_gpio_input_get(&gpio_key_boot, &gpio_value);
-    
-    if (gpio_value != 0) {
-        return;
-    }
-
-    gpio_value = 1;
-    gpio_key_status.port = KEY_STATUS;
-    gpio_key_status.config = INPUT_PULL_UP;
-    hal_gpio_init(&gpio_key_status);
-    hal_gpio_input_get(&gpio_key_status, &gpio_value);
-    if (gpio_value != 0) {
-        return;
-    }
-
-    // QC:
-    printf("Enter QC mode\r\n");
-    qc_test();
+    if(MicoShouldEnterMFGMode())
+        _qc_test();
     return;
 }
 
