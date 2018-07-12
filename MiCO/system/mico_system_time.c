@@ -79,6 +79,7 @@ static const uint32_t secondsPerMonth[ 12 ] =
 
 static mico_utc_time_ms_t current_utc_time = 0;
 static mico_time_t        last_utc_time_mico_reference = 0;
+static mico_mutex_t utc_time_mutex = NULL;
 
 /******************************************************
  *               Function Definitions
@@ -96,6 +97,9 @@ OSStatus mico_time_get_utc_time( mico_utc_time_t* utc_time )
 
 OSStatus mico_time_get_utc_time_ms( mico_utc_time_ms_t* utc_time_ms )
 {
+    if( utc_time_mutex == NULL ) mico_rtos_init_mutex( &utc_time_mutex );
+    mico_rtos_lock_mutex(& utc_time_mutex );
+
     mico_time_t temp_mico_time;
     uint32_t     time_since_last_reference;
 
@@ -110,13 +114,20 @@ OSStatus mico_time_get_utc_time_ms( mico_utc_time_ms_t* utc_time_ms )
     }
 
     *utc_time_ms = current_utc_time;
+
+    mico_rtos_unlock_mutex(& utc_time_mutex );
     return kNoErr;
 }
 
 OSStatus mico_time_set_utc_time_ms( const mico_utc_time_ms_t* utc_time_ms )
 {
+    if( utc_time_mutex == NULL ) mico_rtos_init_mutex( &utc_time_mutex );
+    mico_rtos_lock_mutex(& utc_time_mutex );
+
     mico_time_get_time( &last_utc_time_mico_reference );
     current_utc_time = *utc_time_ms;
+
+    mico_rtos_unlock_mutex(& utc_time_mutex );
     return kNoErr;
 }
 
