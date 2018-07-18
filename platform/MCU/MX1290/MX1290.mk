@@ -55,6 +55,7 @@ ifneq ($(filter $(subst ., ,$(COMPONENTS)),mocOS),)
 ####################################################################################
 $(NAME)_SOURCES += ../moc_platform_common.c
 $(NAME)_SOURCES += moc/moc_adapter.c
+$(NAME)_SOURCES += peripherals/gpio_fast.c
 else
 ####################################################################################
 # Building stand-alone image( sub build: spi_flash_write )
