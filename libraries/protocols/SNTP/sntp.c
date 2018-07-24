@@ -53,8 +53,6 @@
  *                    Constants
  ******************************************************/
 
-#define DEFAULT_NTP_Server   "pool.ntp.org"
-
 #define NTP_EPOCH            (86400U * (365U * 70U + 17U))
 #define NTP_PORT             123
 
@@ -117,7 +115,8 @@ static time_synced_fun time_synced_call_back = NULL;
 static mico_timed_event_t sync_ntp_time_event;
 /* Only support primary and secondary servers */
 static struct in_addr ntp_server[2];
-
+static const char ntp_dns_name[3][32] = 
+    {"ntp1.aliyun.com", "cn.pool.ntp.org", "time.asia.apple.com"};
 /******************************************************
  *               Function Definitions
  ******************************************************/
@@ -244,7 +243,7 @@ static OSStatus sync_ntp_time( void* arg )
     struct hostent *     hostent_content = NULL;
     struct in_addr       ntp_server_ip;
     char **              pptr = NULL;
-    uint32_t             i;
+    uint32_t             i, j;
 
     UNUSED_PARAMETER( arg );
 
@@ -267,17 +266,21 @@ static OSStatus sync_ntp_time( void* arg )
         /* only fall back to global servers if we can't get local */
         if ( err != kNoErr )
         {
-            ntp_log("Resolving SNTP server address ...");
-            hostent_content = gethostbyname( DEFAULT_NTP_Server );
+            for(j=0; j<3; j++) {
+                ntp_log("Resolving SNTP server address %s...", ntp_dns_name[j]);
+                hostent_content = gethostbyname( ntp_dns_name[j] );
             if( hostent_content == NULL )
             {
                 ntp_log("SNTP server address can not be resolved");
-                return kNotFoundErr;
+                    continue;
             }
             pptr=hostent_content->h_addr_list;
             ntp_server_ip.s_addr = *(uint32_t *)(*pptr);
-            ntp_log("SNTP server address: %s, host ip: %s", DEFAULT_NTP_Server, inet_ntoa(ntp_server_ip));
+                ntp_log("SNTP server address: %s, host ip: %s", ntp_dns_name[j], inet_ntoa(ntp_server_ip));
             err = sntp_get_time( &ntp_server_ip, &current_time );
+                if ( err == kNoErr )
+                    break;
+            }
         }
 
         if ( err == kNoErr )
