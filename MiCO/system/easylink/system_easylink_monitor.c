@@ -219,8 +219,6 @@ static void switch_channel_thread(mico_thread_arg_t arg)
             mico_wlan_monitor_set_channel( wlan_channel );
             lock_channel = wlan_channel;
             mico_easylink_monitor_delegate_channel_changed( wlan_channel );
-            
-            mico_rtos_delay_milliseconds(wlan_channel_walker_interval);
         } else {
             if (lock_channel != wlan_channel) {
                 system_log("Lock channel from %d to %d", wlan_channel, lock_channel);
@@ -230,6 +228,7 @@ static void switch_channel_thread(mico_thread_arg_t arg)
                 mico_easylink_monitor_delegate_channel_changed( wlan_channel );
             }
         }
+        mico_rtos_delay_milliseconds(wlan_channel_walker_interval);
     }
     switch_channel_thread_handler = NULL;
     mico_rtos_delete_thread(NULL);
