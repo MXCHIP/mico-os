@@ -43,7 +43,7 @@ extern void mico_wlan_monitor_no_easylink(void);
  *               Variables Definitions
  ******************************************************/
 
-static uint8_t wlan_channel = 1;
+static uint8_t lock_channel = 1;
 static mico_bool_t wlan_channel_walker = MICO_TRUE;
 static uint32_t wlan_channel_walker_interval = 100;
 
@@ -192,10 +192,18 @@ static void easylink_extra_data_cb( int datalen, char* data, system_context_t * 
     return;
 }
 
+void mico_easylink_monitor_set_channel(uint8_t ch)
+{
+    if (ch < 1 || ch > 13)
+        return;
+    lock_channel = ch;
+}
+
 static void switch_channel_thread(mico_thread_arg_t arg)
 {
     mico_time_t current;
-
+    uint8_t wlan_channel = 0;
+    
     while(switch_channel_flag)
     {
         mico_time_get_time( &current );
@@ -206,11 +214,21 @@ static void switch_channel_thread(mico_thread_arg_t arg)
         }
 
         if( wlan_channel_walker == MICO_TRUE){
-            mico_wlan_monitor_set_channel( wlan_channel );
-            mico_easylink_monitor_delegate_channel_changed( wlan_channel );
             wlan_channel++;
             if ( wlan_channel >= 14 ) wlan_channel = 1;
+            mico_wlan_monitor_set_channel( wlan_channel );
+            lock_channel = wlan_channel;
+            mico_easylink_monitor_delegate_channel_changed( wlan_channel );
+            
             mico_rtos_delay_milliseconds(wlan_channel_walker_interval);
+        } else {
+            if (lock_channel != wlan_channel) {
+                system_log("Lock channel from %d to %d", wlan_channel, lock_channel);
+                wlan_channel = lock_channel;
+                mico_wlan_monitor_set_channel( wlan_channel );
+                lock_channel = wlan_channel;
+                mico_easylink_monitor_delegate_channel_changed( wlan_channel );
+            }
         }
     }
     switch_channel_thread_handler = NULL;
