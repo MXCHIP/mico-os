@@ -395,6 +395,22 @@ void mico_easylink_monitor_delegate_channel_changed( uint8_t currnet_channel );
 void mico_easylink_monitor_delegate_package_recved( uint8_t * frame, int len );
 
 /**
+  * @brief  Check application need lock channel for a while
+  * @note   This a delegate function, can be completed by developer.
+  * @param  none
+  * @retval delay time in ms, 0=don't delay.
+  */
+uint16_t mico_easylinK_monitor_delay_switch(void);
+
+/**
+  * @brief  Executed when application want to lock channel in monitor mode
+  * @note   This a delegate function, can be completed by developer.
+  * @param  ch, the lock channel. It can be 1~13.
+  * @retval none.
+  */
+void mico_easylink_monitor_set_lock_channel(uint8_t ch);
+
+/**
   * @brief  Execute when access point is connected in monitor mode
   * @note   This a delegate function, can be completed by developer.
   * @note   source: wlan configuration method, user monitor extension or build-in easylink

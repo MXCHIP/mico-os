@@ -160,3 +160,9 @@ WEAK void mico_easylink_aws_delegate_recv_notify_msg(char *aws_notify_msg)
 {
     
 }
+
+WEAK uint16_t mico_easylinK_monitor_delay_switch(void)
+{
+    return 0;
+}
+ 
