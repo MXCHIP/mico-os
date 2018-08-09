@@ -73,3 +73,8 @@ exit:
     free(WAC_Params);
     return err; 
 }
+
+OSStatus system_easylink_wac_stop( void )
+{
+  return mfi_wac_stop();
+}

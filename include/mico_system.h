@@ -286,6 +286,7 @@ mico_connect_fail_config_t mico_system_delegate_config_result( mico_config_sourc
   */
 OSStatus mico_easylink_wac( mico_Context_t * const inContext, mico_bool_t enable );
 
+OSStatus system_easylink_wac_stop( void );
 /**
   * @brief  Start wlan configuration mode: EasyLink protocol
   * @param  inContext: MiCO system core data, initialized by @ref mico_system_context_init
