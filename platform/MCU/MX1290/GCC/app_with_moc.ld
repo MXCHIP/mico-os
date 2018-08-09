@@ -136,6 +136,7 @@ SECTIONS
         *(.glue*)
     }
 	_ram_end_ = ORIGIN(SRAM) + LENGTH(SRAM);
+	_code_end_ = ORIGIN(APP_FLASH) + LENGTH(APP_FLASH);
 }
  
 
