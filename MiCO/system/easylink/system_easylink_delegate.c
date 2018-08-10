@@ -114,7 +114,6 @@ WEAK void mico_system_delegate_easylink_timeout( system_context_t *context )
     }
     else {
         /*module should power down in default setting*/
-        micoWlanPowerOff();
     }
 }
 

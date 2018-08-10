@@ -186,6 +186,13 @@ static int aws_broadcast_notification(char *msg, int msg_num)
     return result;
 }
 
+#if PLATFORM_CONFIG_AWS_SOFTAP_COEXISTENCE
+void mico_notify_ap_up( void )
+{
+	system_log("ap is up");
+}
+#endif
+
 static void aws_thread( uint32_t arg )
 {
     OSStatus err = kNoErr;
@@ -209,8 +216,17 @@ static void aws_thread( uint32_t arg )
 restart:
     mico_system_delegate_config_will_start( );
     system_log("Start AWS mode");
+#if PLATFORM_CONFIG_AWS_SOFTAP_COEXISTENCE
+    char wifi_ssid[32];
+    sprintf(wifi_ssid, "AWS_%c%c%c%c%c%c",
+            context->micoStatus.mac[9], context->micoStatus.mac[10], context->micoStatus.mac[12],
+            context->micoStatus.mac[13], context->micoStatus.mac[15], context->micoStatus.mac[16]);
 
+    system_log("Enable softap %s in aws", wifi_ssid);
+    mico_wlan_aws_uap_start(EasyLink_TimeOut / 1000, wifi_ssid, NULL, 6,mico_notify_ap_up);
+#else
     micoWlanStartAws( EasyLink_TimeOut / 1000 );
+#endif
     while( mico_rtos_get_semaphore( &aws_sem, 0 ) == kNoErr );
     err = mico_rtos_get_semaphore( &aws_sem, MICO_WAIT_FOREVER );
 
@@ -229,6 +245,7 @@ restart:
     {
         mico_system_delegate_config_recv_ssid( context->flashContentInRam.micoSystemConfig.ssid,
                                                context->flashContentInRam.micoSystemConfig.user_key );
+        micoWlanSuspend();
         system_connect_wifi_normal( context );
 
         /* Wait for station connection */
@@ -253,9 +270,11 @@ restart:
 #endif
         goto exit;
     }
-    else /* EasyLink failed */
+    else /* aws failed */
     {
+#ifndef PLATFORM_CONFIG_AWS_SOFTAP_COEXISTENCE
         mico_system_delegate_easylink_timeout(context);
+#endif
     }
 
 exit:

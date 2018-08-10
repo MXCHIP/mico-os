@@ -329,6 +329,21 @@ int mico_wlan_easylink_uap_start(int timeout, char *ssid, char*key, int channel)
     return _kernel_api.wifi_apis->OpenEasylink_softap(timeout, ssid, key, channel);
 }
 
+void mico_wlan_start_ap_with_asso_cb(char *ssid, char *key, int channel, asso_event_handler_t fn)
+{
+    _kernel_api.wifi_apis->mico_wlan_start_ap_with_asso_cb(ssid, key, channel, fn);
+}
+
+int mico_wlan_start_monitor_awss()
+{
+	return _kernel_api.wifi_apis->mico_wlan_start_monitor_awss();
+}
+
+int mico_wlan_stop_monitor_awss()
+{
+	return _kernel_api.wifi_apis->mico_wlan_stop_monitor_awss();
+}
+
 void ssl_set_ecc(int enable)
 {
     _kernel_api.ssl_crypto_apis->ssl_set_ecc(enable);

@@ -89,6 +89,9 @@
  * Support Easylink&softap mode */
 #define PLATFORM_CONFIG_EASYLINK_SOFTAP_COEXISTENCE        1
 
+/* Support AWS&softap mode */
+#define PLATFORM_CONFIG_AWS_SOFTAP_COEXISTENCE 1
+
 /******************************************************
 *                   Enumerations
 ******************************************************/
