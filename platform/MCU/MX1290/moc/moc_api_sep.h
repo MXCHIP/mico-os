@@ -5,6 +5,11 @@ enum {
 	API_VERSION_MAX,
 };
 
+/* MicoWakeupSource set the wakeup source, standby mode*/
+#define USER_WAKEUP_SRC_TIMER BIT(0)
+#define USER_WAKEUP_SRC_GPIO  BIT(1)
+#define USER_WAKEUP_SRC_RTC   BIT(2) // only valid when RTC alarm is enabled
+
 typedef void* mico_event;
 typedef void (*ssl_log_cb)(const int logLevel, const char *const logMessage);
 
