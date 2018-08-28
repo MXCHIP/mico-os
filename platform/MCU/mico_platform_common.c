@@ -735,21 +735,44 @@ exit:
   return err;
 }
 
+#define XTX_FLASH_ID 0x0B4015
+#define XTX_FLASH_LOCK 9
+#define MX_FLASH_ID 0xC22315
+#define MX_FLASH_LOCK 1
+
 char *mico_get_bootloader_ver(void)
 {
   #ifdef CONFIG_MX108
   static char boot_ver[64];
   uint16_t reg_status;
   uint8_t blocks;
+  uint8_t lock;
+  uint32_t id;
 
   strncpy(boot_ver, (const char *)0x00000020, sizeof(boot_ver) - 3);
 
   flash_ctrl(0xe240000 + 6, &reg_status);
   blocks = (reg_status >> 2) & 0x0F;
-  if(blocks != 1)
+
+  flash_ctrl(0xe240000 + 14, &id);
+  if(XTX_FLASH_ID == id)
   {
-    strcat(boot_ver, "-x");
+      lock = XTX_FLASH_LOCK;
   }
+  else if(MX_FLASH_ID == id)
+  {
+      lock = MX_FLASH_LOCK;
+  }
+  else
+  {
+      lock = blocks + 1;
+  }
+
+  if(blocks != lock)
+  {
+      strcat(boot_ver, "-x");
+  }
+
   return boot_ver;
   #else
   static char ver[33];

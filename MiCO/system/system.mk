@@ -51,4 +51,4 @@ $(NAME)_COMPONENTS += system/easylink/aws
 $(NAME)_DEFINES += CONFIG_MICO_AWS
 endif
 
-$(NAME)_COMPONENTS += system/kv
+# $(NAME)_COMPONENTS += system/kv
