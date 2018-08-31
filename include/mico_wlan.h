@@ -532,6 +532,8 @@ OSStatus micoWlanStartEasyLink(int inTimeout);
 OSStatus micoWlanStartEasyLinkPlus(int inTimeout);
 OSStatus micoWlanStartAws(int inTimeout);
 
+typedef void (*notify_ap_up_callback)           (void);
+OSStatus mico_wlan_aws_uap_start(int inTimeout,char *ssid,char *key,int channel,notify_ap_up_callback fn);
 
 /** @brief  Start EasyLink plus configuration with UAP coexistence
  *
@@ -666,6 +668,7 @@ void wifimgr_debug_enable(bool enable);
   * @param rssi: the rssi of the received packet.
   */
 typedef void (*monitor_cb_t)(uint8_t*data, int len);
+typedef void (*asso_event_handler_t)(char *buf, int buf_len, int flags, void *handler_user_data);
 enum {
 	WLAN_RX_BEACON,    /* receive beacon packet */
 	WLAN_RX_PROBE_REQ, /* receive probe request packet */

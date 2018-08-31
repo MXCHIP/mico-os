@@ -203,6 +203,9 @@ typedef struct {
     int (*wlan_add_extra_network)(char *ssid, char *key, uint8_t key_len);
     
     int (*mico_wlan_monitor_rx_mimo)(int enable);
+	void (*mico_wlan_start_ap_with_asso_cb)(char *ssid, char *key, int channel, asso_event_handler_t fn);
+	int (*mico_wlan_start_monitor_awss)(void);
+	int (*mico_wlan_stop_monitor_awss)(void);
 } wifi_api_v1_t;
 
 typedef struct {
