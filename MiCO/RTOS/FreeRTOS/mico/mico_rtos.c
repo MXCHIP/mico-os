@@ -701,6 +701,30 @@ OSStatus mico_rtos_stop_timer( mico_timer_t* timer )
     return kNoErr;
 }
 
+OSStatus mico_rtos_change_timer( mico_timer_t* timer, uint32_t ntime )
+{
+    signed portBASE_TYPE result;
+
+	if (platform_is_in_interrupt_context() == MICO_TRUE) {
+		/* This call is from Cortex-M3 handler mode, i.e. exception
+		 * context, hence use FromISR FreeRTOS APIs.
+		 */
+        signed portBASE_TYPE xHigherPriorityTaskWoken;
+		result = xTimerChangePeriodFromISR(timer->handle, ntime,
+						&xHigherPriorityTaskWoken);
+		portEND_SWITCHING_ISR(xHigherPriorityTaskWoken);
+	} else {
+		/* Fixme: What should be value of xBlockTime? */
+		result = xTimerChangePeriod(timer->handle, ntime, 100);
+    }
+    if ( result != pdPASS )
+    {
+        return kGeneralErr;
+    }
+
+    return kNoErr;
+}
+
 OSStatus mico_rtos_reload_timer( mico_timer_t* timer )
 {
     signed portBASE_TYPE result;
