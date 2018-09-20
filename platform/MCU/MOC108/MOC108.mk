@@ -25,6 +25,9 @@ GLOBAL_INCLUDES := . \
                    ../../$(HOST_ARCH)/CMSIS \
                    peripherals
 
+GLOBAL_INCLUDES += lwip/include/
+
+
 # Global flags
 GLOBAL_CFLAGS   += $$(CPU_CFLAGS) -fno-builtin-printf -Wno-implicit-function-declaration -Wno-int-conversion -Wno-unused-variable -Wno-unused-function
 GLOBAL_CXXFLAGS += $$(CPU_CXXFLAGS)

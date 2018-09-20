@@ -36,7 +36,7 @@
 #include <stdint.h>
 #include <stddef.h>
 #include <inttypes.h>
-#include "../../../mico/cpu.h"
+#include "../../mico/cpu.h"
 
 #ifdef __cplusplus
 extern "C" {
