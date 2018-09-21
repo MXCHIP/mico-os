@@ -10,7 +10,7 @@
 
 /** @file
  *  NVRAM variables which define BCM43362 Parameters for the 
- *  MXCHIP EMW3166 module.
+ *  MXCHIP EMW3162 module.
  *
  */
 
@@ -41,10 +41,10 @@ static const char wifi_nvram_image[] =
 "wl0id=0x431b"                                                       "\x00"
 "macaddr=C8:93:46:00:00:02"                                          "\x00"
 "aa2g=1"                                                             "\x00"
-"ag0=0x02"                                                              "\x00"
+"ag0=2"                                                              "\x00"
 "maxp2ga0=0x48"                                                        "\x00"
-"ofdm2gpo=0x65443333"                                                "\x00"
-"mcs2gpo0=0x4433"                                                    "\x00"
+"ofdm2gpo=0x54443334"                                                "\x00"
+"mcs2gpo0=0x4434"                                                    "\x00"
 "mcs2gpo1=0x8755"                                                    "\x00"
 "pa0maxpwr=80"                                                       "\x00"
 "pa0b0=5447"                                                       "\x00"
@@ -65,7 +65,7 @@ static const char wifi_nvram_image[] =
 "tx_cck_dutycy_1=40"                                                 "\x00"
 "tx_tone_power_index=40"                                             "\x00"
 "tx_tone_power_index.fab.3=48"                                       "\x00"
-"cckPwrOffset=5"                                                     "\x00"
+"cckPwrOffset=0"                                                     "\x00"
 "ccode=0"                                                            "\x00"
 "rssismf2g=0xa"                                                      "\x00"
 "rssismc2g=0x3"                                                      "\x00"
@@ -74,7 +74,7 @@ static const char wifi_nvram_image[] =
 "noise_cal_enable_2g=0"                                              "\x00"
 "noise_cal_po_2g=0"                                                  "\x00"
 "noise_cal_po_2g.fab.3=-2"                                            "\x00"
-"swctrlmap_2g=0x050c050c,0x030a030a,0x030a030a,0x0,0x1ff"           "\x00"
+"swctrlmap_2g=0x04040404,0x02020202,0x02020202,0x010101,0x1ff"           "\x00"
 "temp_add=29767"                                                     "\x00"
 "temp_mult=425"                                                      "\x00"
 "temp_q=10"                                                          "\x00"
@@ -84,7 +84,7 @@ static const char wifi_nvram_image[] =
 "rfreg033_cck=0x1f"                                                  "\x00"
 "cckPwrIdxCorr=-8"                                                   "\x00"
 "spuravoid_enable2g=1"                                               "\x00"
-"edonthd=-70"                                                        "\x00"
+"edonthd=-71"                                                        "\x00"
 "edoffthd=-76"                                                       "\x00"
 "\x00\x00";
 
