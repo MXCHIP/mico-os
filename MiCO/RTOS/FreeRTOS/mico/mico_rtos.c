@@ -662,6 +662,22 @@ OSStatus mico_rtos_init_timer( mico_timer_t* timer, uint32_t time_ms, timer_hand
     return kNoErr;
 }
 
+int mico_init_once_timer( mico_timer_t* timer, uint32_t time_ms, timer_handler_t function, void* arg )
+{
+    check_string(timer != NULL, "Bad args");
+
+    timer->function = function;
+    timer->arg      = arg;
+
+    timer->handle = _xTimerCreate( "", (portTickType)( time_ms / ms_to_tick_ratio ), pdFALSE, timer, (native_timer_handler_t) timer_callback );
+    if ( timer->handle == NULL )
+    {
+        return kGeneralErr;
+    }
+
+    return kNoErr;
+}
+
 
 OSStatus mico_rtos_start_timer( mico_timer_t* timer )
 {
@@ -916,6 +932,11 @@ void *mico_realloc( void *pv, size_t xWantedSize )
 	return pvPortRealloc(pv, xWantedSize);
 }
 
+
+char *mico_current_task_name(void)
+{
+    return pcTaskGetName(NULL);
+}
 
 //#endif
 

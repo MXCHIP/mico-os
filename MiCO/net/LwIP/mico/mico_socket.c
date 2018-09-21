@@ -265,3 +265,17 @@ char *inet_ntoa (struct in_addr addr)
 #endif
 }
 
+#if LWIP_IPV6
+char * inet_ntop(int af, const void *src, char *dst, socklen_t size)
+{
+    return (((af) == AF_INET6) ? ip6addr_ntoa_r((const ip6_addr_t*)(src),(dst),(size)) \
+     : (((af) == AF_INET) ? ip4addr_ntoa_r((const ip4_addr_t*)(src),(dst),(size)) : NULL));
+}
+
+#else
+char * inet_ntop(int af, const void *src, char *dst, socklen_t size)
+{
+    return (((af) == AF_INET) ? ip4addr_ntoa_r((const ip4_addr_t*)(src),(dst),(size)) : NULL);
+}
+#endif
+
