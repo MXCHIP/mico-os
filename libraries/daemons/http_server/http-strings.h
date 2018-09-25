@@ -52,6 +52,7 @@ extern const char http_index_html[12];
 extern const char http_404_html[10];
 extern const char http_referer[9];
 extern const char http_header_server[];
+extern const char http_header_gzip[];
 extern const char http_header_conn_close[];
 extern const char http_header_conn_keep_alive[];
 extern const char http_header_keep_alive_ctrl[];

@@ -184,7 +184,7 @@ int httpd_recv(int fd, void *buf, size_t n, int flags)
 		return tls_recv(httpd_tls_handle, buf, n);
 	else
 #endif /* ENABLE_HTTPS */
-		return recv(fd, buf, n, flags);
+
     select( fd + 1, &readfds, NULL, NULL, &t );
 
     if( FD_ISSET( fd, &readfds) )

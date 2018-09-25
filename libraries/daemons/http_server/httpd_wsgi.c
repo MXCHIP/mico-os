@@ -269,7 +269,14 @@ int httpd_send_default_headers(int sock, int hdr_fields)
 			return -kInProgressErr;
 	}
 
-	return kNoErr;
+	if (hdr_fields & HTTPD_HDR_ADD_GZIP) {
+		ret = httpd_send(sock, http_header_gzip,
+			strlen(http_header_gzip));
+		if (ret != 0)
+			return -1;
+	}
+
+	return 0;
 }
 
 static inline bool chunked_encoding(httpd_request_t *req)
@@ -392,12 +399,6 @@ int httpd_send_all_header(httpd_request_t *req, const char *first_line, int body
       httpd_d("Error in sending default headers");
       return ret;
     }
-  }
-  /*send Connection heafer*/
-  ret = httpd_send(req->sock, http_header_keep_alive_ctrl, strlen(http_header_keep_alive_ctrl));
-  if (ret != kNoErr) {
-    httpd_d("Error in sending Connection");
-    return ret;
   }
   
   ret = httpd_send_header(req->sock, "Content-Type", content_type);

@@ -105,6 +105,7 @@ const char http_header_server[] = "Server: MXCHIP\r\n";
 const char http_header_conn_close[] = "Connection: close\r\n";
 const char http_header_conn_keep_alive[] = "Connection: keep-alive\r\n";
 const char http_header_keep_alive_ctrl[] = "Keep-Alive: timeout=5, max=100\r\n";
+const char http_header_gzip[] = "Vary: Accept-Encoding\r\nContent-Encoding: gzip\r\n";
 const char http_header_type_chunked[] = "Transfer-Encoding: chunked\r\n";
 const char http_header_cache_ctrl[] =
 	"Cache-Control: no-store, no-cache, must-revalidate\r\n";
@@ -114,7 +115,7 @@ const char http_header_pragma_no_cache[] = "Pragma: no-cache\r\n";
 const char httpd_authrized[] = {
 "HTTP/1.1 401 Authorization Required\r\n"
 "Server: MySocket Server\r\n"
-"WWW-Authenticate: Basic realm=\""MODEL"\"\r\n"
+"WWW-Authenticate: Basic realm=\"MXCHIP\"\r\n"
 "Content-Type: text/html\r\n"
 "Content-Length: 169\r\n\r\n"
 "<HTML>\r\n<HEAD>\r\n<TITLE>Error</TITLE>\r\n"

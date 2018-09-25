@@ -898,6 +898,8 @@ typedef enum {
 	HTTPD_HDR_ADD_CACHE_CTRL_NO_CHK         = 0x0020,
 	/** "Pragma: no-cache\r\n" */
 	HTTPD_HDR_ADD_PRAGMA_NO_CACHE           = 0x0040,
+	/* "Vary: Accept-Encoding\r\nContent-Encoding: gzip\r\n" */
+	HTTPD_HDR_ADD_GZIP                      = 0x0080,
 } httpd_hdr_field_sel_t;
 
 /** Default HTTP headers from \ref httpd_hdr_field_sel_t */
