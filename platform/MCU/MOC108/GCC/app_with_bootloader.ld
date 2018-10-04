@@ -54,7 +54,7 @@
 /* Split memory into area for vectors and ram */
 MEMORY
 {
-	flash  (rx) : ORIGIN = 0x0012000, LENGTH = 892k
+	flash  (rx) : ORIGIN = 0x0012000, LENGTH = 1000k
 	ram   (rwx): ORIGIN = 0x00400020, LENGTH = 256k - 32
 }
 
