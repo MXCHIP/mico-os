@@ -156,7 +156,7 @@ ifeq ($(SUB_BUILD),)
 	$(QUIET)$(ECHO) source [find $(OPENOCD_PATH)$(JTAG).cfg] > $@
 	$(QUIET)$(ECHO) source [find $(OPENOCD_PATH)$(HOST_OPENOCD).cfg] >> $@
 	$(QUIET)$(ECHO) source [find $(OPENOCD_PATH)$(HOST_OPENOCD)_gdb_jtag.cfg] >> $@
-	$(QUIET)$(PYTHON) mico-os/makefiles/scripts/fortune.py
+	$(QUIET)$(PYTHON) mico-os/makefiles/scripts/fortune.py -x show -i mico-os/makefiles/scripts/fortune.dat
 endif
 
 ifneq ($(SFLASH),)
