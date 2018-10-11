@@ -6,7 +6,7 @@ proc memread32 {address} {
 proc load_image_bin {fname foffset address length } {
     # Load data from fname filename at foffset offset to
     # target at address. Load at most length bytes.
-    puts "loadimage address $address foffset $foffset $length"
+    # puts "loadimage address $address foffset $foffset $length"
     load_image $fname [expr $address - $foffset] bin $address $length
 }
 
@@ -41,7 +41,7 @@ proc flash_program { file_name dest_addr } {
     set pos 0
     set bin_file_size [file size $file_name]
 
-    puts "Write $file_name to flash, total size is $bin_file_size"
+    # puts "Write $file_name to flash, total size is $bin_file_size"
     mww $update_dest_addr $dest_addr
     mww $update_file_size $bin_file_size
     while { $pos < $bin_file_size } {
@@ -52,7 +52,7 @@ proc flash_program { file_name dest_addr } {
             set writesize $buffer_size
         }
 
-        puts "Writing $writesize bytes at [expr $dest_addr + $pos]"
+        # puts "Writing $writesize bytes at [expr $dest_addr + $pos]"
         # Load the binary data into the RAM
         load_image_bin $file_name $pos $update_data_buffer $writesize
         mww $update_stream_size $writesize
@@ -68,7 +68,7 @@ proc flash_program { file_name dest_addr } {
             incr loops
         }
 
-        puts "**************** Result: $resultval"
+        # puts "**************** Result: $resultval"
 
         if { $resultval != $UPDATE_STATUS_SUCCESS } {
             reg
@@ -77,5 +77,6 @@ proc flash_program { file_name dest_addr } {
         }
 
         set pos [expr $pos + $writesize]
+        puts "$pos"
     }
 }
