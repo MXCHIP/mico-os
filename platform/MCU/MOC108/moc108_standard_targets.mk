@@ -102,7 +102,7 @@ total:
 download_app: $(STRIPPED_LINK_OUTPUT_FILE) display_map_summary download_bootloader sflash_write_app kill_openocd
 	$(eval IMAGE_SIZE := $(shell $(PYTHON) $(IMAGE_SIZE_SCRIPT) $(BIN_OUTPUT_FILE)))
 	$(QUIET)$(ECHO) Downloading application to partition: $(APPLICATION_FIRMWARE_PARTITION_TCL) size: $(IMAGE_SIZE) bytes... 
-	$(PYTHON) mico-os/sub_build/spi_flash_write_progressbar/sflash_write_moc108.py -o $(OPENOCD_FULL_NAME) -f build/$(CLEANED_BUILD_STRING)/resources/filesystem.bin -a 0x200000
+	$(PYTHON) mico-os/sub_build/spi_flash_write_progressbar/sflash_write_moc108.py -o $(OPENOCD_FULL_NAME) -f $(LINK_OUTPUT_FILE:$(LINK_OUTPUT_SUFFIX)=.ota$(BIN_OUTPUT_SUFFIX)) -a 0x13200
 
 ifeq (download,$(filter download,$(MAKECMDGOALS)))
 EXT_IMAGES_DOWNLOAD_DEP := download_app
