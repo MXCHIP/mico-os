@@ -1,0 +1,5 @@
+NAME := PROGRESSBAR
+
+$(NAME)_SOURCES := progressbar.c
+
+GLOBAL_INCLUDES += .
