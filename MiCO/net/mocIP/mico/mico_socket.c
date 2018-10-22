@@ -206,6 +206,22 @@ struct hostent* gethostbyname(const char *name)
     return lib_api_p->lwip_apis->lwip_gethostbyname(name);
 }
 
+/** Callback which is invoked when a hostname is found.
+ * A function of this type must be implemented by the application using the DNS resolver.
+ * @param name pointer to the name that was looked up.
+ * @param ipaddr pointer to an ip_addr_t containing the IP address of the hostname,
+ *        or NULL if the name could not be found (or on any other error).
+ * @param callback_arg a user-specified callback argument passed to dns_gethostbyname
+*/
+typedef void (*dns_found_callback)(const char *name, ip_addr_t *ipaddr, void *callback_arg);
+
+
+int dns_gethostbyname(const char *hostname, ip_addr_t *addr, dns_found_callback found,
+                  void *callback_arg)
+{
+	return lib_api_p->lwip_apis->dns_gethostbyname(hostname,addr,found,callback_arg);
+}
+
 int getaddrinfo(const char *nodename,
        const char *servname,
        const struct addrinfo *hints,

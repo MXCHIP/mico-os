@@ -8,7 +8,14 @@ typedef struct ip_addr {
   uint32_t addr;
 } ip_addr_t;
 
-
+/** Callback which is invoked when a hostname is found.
+ * A function of this type must be implemented by the application using the DNS resolver.
+ * @param name pointer to the name that was looked up.
+ * @param ipaddr pointer to an ip_addr_t containing the IP address of the hostname,
+ *        or NULL if the name could not be found (or on any other error).
+ * @param callback_arg a user-specified callback argument passed to dns_gethostbyname
+*/
+typedef void (*dns_found_callback)(const char *name, ip_addr_t *ipaddr, void *callback_arg);
 
 typedef struct _lwip_api_ {
 	int (*lwip_accept)(int s, struct sockaddr *addr, socklen_t *addrlen);
@@ -51,6 +58,8 @@ typedef struct _lwip_api_ {
     /* For inet_ntop and inet_pton */
     const char * (*inet_ntop) (int af, const void *cp, char *buf, socklen_t len);
     int (*inet_pton) (int af, const char *cp, void *buf);
+	int (*dns_gethostbyname) (const char *hostname, ip_addr_t *addr, dns_found_callback found,
+                  void *callback_arg);
 } lwip_api_t;
 
 #endif
