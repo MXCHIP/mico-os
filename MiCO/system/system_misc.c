@@ -354,3 +354,8 @@ void mico_app_info(char *str, int len)
 }
 
 
+void __attribute__ ((noreturn)) __stack_chk_fail(void)
+{
+  printf("PANIC!!! Stack check failed, caller address = %p\r\n", __builtin_return_address(0));
+  while(1);
+}
