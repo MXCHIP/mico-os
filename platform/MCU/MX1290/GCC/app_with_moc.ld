@@ -11,6 +11,7 @@
 
 ENTRY( moc_app_main );
 
+__stack_chk_guard = 0x47554152;
 
 MEMORY
 {
