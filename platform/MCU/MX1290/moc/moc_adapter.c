@@ -387,83 +387,83 @@ int FreeRng(CyaSSL_RNG* rng)
 
 
 int  RsaPublicKeyDecode(const byte* input, word32* inOutIdx, RsaKey* key, word32 inSz)
-{
+{
     EXTRA_CRYPTO_CHECK();
     return extra_apis->RsaPublicKeyDecode(input, inOutIdx, key, inSz);
 }
 int  InitRsaKey(RsaKey* key, void* ptr)
-{
+{
     EXTRA_CRYPTO_CHECK();
     return extra_apis->InitRsaKey(key, ptr);
 }
 int  FreeRsaKey(RsaKey* key)
-{
+{
     EXTRA_CRYPTO_CHECK();
     return extra_apis->FreeRsaKey(key);
 }
 int  RsaPublicEncrypt(const byte* in, word32 inLen, byte* out,
                          word32 outLen, RsaKey* key, CyaSSL_RNG* rng)
-{
+{
     EXTRA_CRYPTO_CHECK();
     return extra_apis->RsaPublicEncrypt(in, inLen, out,
                          outLen, key, rng);
 }
 int  RsaSSL_Verify(const byte* in, word32 inLen, byte* out,
                       word32 outLen, RsaKey* key)
-{
+{
     EXTRA_CRYPTO_CHECK();
     return extra_apis->RsaSSL_Verify(in, inLen, out, outLen, key);
 }
 int  RsaEncryptSize(RsaKey* key)
-{
+{
     EXTRA_CRYPTO_CHECK();
     return extra_apis->RsaEncryptSize(key);
 }
 
 int InitSha256(Sha256* sha)
-{
+{
     EXTRA_CRYPTO_CHECK();
     return extra_apis->InitSha256(sha);
 }
 int Sha256Update(Sha256* sha, const byte* data, word32 len)
-{
+{
     EXTRA_CRYPTO_CHECK();
     return extra_apis->Sha256Update(sha, data, len);
 }
 int Sha256Final(Sha256* sha, byte* out)
-{
+{
     EXTRA_CRYPTO_CHECK();
     return extra_apis->Sha256Final(sha, out);
 }
 
 int InitSha(Sha* sha)
-{
+{
     EXTRA_CRYPTO_CHECK();
     return extra_apis->InitSha(sha);
 }
 int ShaUpdate(Sha* sha, const byte* data, word32 len)
-{
+{
     EXTRA_CRYPTO_CHECK();
     return extra_apis->ShaUpdate(sha, data, len);
 }
 int ShaFinal(Sha* sha, byte* out)
-{
+{
     EXTRA_CRYPTO_CHECK();
     return extra_apis->ShaFinal(sha, out);
 }
 
 int HmacSetKey(Hmac* hmac, int type, const byte* key, word32 keySz)
-{
+{
     EXTRA_CRYPTO_CHECK();
     return extra_apis->HmacSetKey(hmac, type, key, keySz);
 }
 int HmacUpdate(Hmac* hmac, const byte* in, word32 sz)
-{
+{
     EXTRA_CRYPTO_CHECK();
     return extra_apis->HmacUpdate(hmac, in, sz);
 }
 int HmacFinal(Hmac* hmac, byte* out)
-{
+{
     EXTRA_CRYPTO_CHECK();
     return extra_apis->HmacFinal(hmac, out);
 }
@@ -509,3 +509,7 @@ char *mico_current_task_name(void)
     return _kernel_api.os_apis->get_current_task_name();
 }
 
+int mico_rtos_get_task_status(mico_thread_t* thread)
+{
+	return _kernel_api.os_apis->mico_rtos_get_task_status(thread);
+}

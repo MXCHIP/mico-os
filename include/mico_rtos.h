@@ -70,6 +70,20 @@ typedef enum
     WAIT_FOR_ALL_EVENTS,
 } mico_event_flags_wait_option_t;
 
+typedef enum
+{
+  eRunning = 0,  /* A task is querying the state of itself, so must be running. */
+
+  eReady,      /* The task being queried is in a read or pending ready list. */
+
+  eBlocked,    /* The task being queried is in the Blocked state. */
+
+  eSuspended,    /* The task being queried is in the Suspended state, or is in the Blocked state with an infinite time out. */
+
+  eDeleted    /* The task being queried has been deleted, but its TCB has not yet been freed. */
+
+}mico_thread_State;
+
 typedef uint32_t  mico_event_flags_t;
 typedef void * mico_semaphore_t;
 typedef void * mico_mutex_t;
@@ -702,6 +716,13 @@ int mico_rtos_init_event_fd(mico_event_t event_handle);
   */
 int mico_rtos_deinit_event_fd(int fd);
 
+/** @brief    Returns as an enumerated type the state in which a task existed at the time was executed.
+  *
+  * @param    thread : Pointer to variable that will receive the thread handle (can be null)
+  *
+  * @retval   Enumeration type of mico_thread_State for success
+  */
+int mico_rtos_get_task_status(mico_thread_t* thread);
 #ifdef __cplusplus
 } /*extern "C" */
 #endif
@@ -715,7 +736,7 @@ int mico_rtos_deinit_event_fd(int fd);
 /**
   * @}
   */
-
+ 
 /**
   * @}
   */
