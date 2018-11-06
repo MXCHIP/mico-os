@@ -460,6 +460,15 @@ static void partShow_Command(char *pcWriteBuffer, int xWriteBufferLen,int argc, 
 
 }
 
+volatile char *trace_file;
+volatile uint32_t trace_line;
+volatile void *trace_arg;
+
+static void trace_cmd(char *pcWriteBuffer, int xWriteBufferLen,int argc, char **argv)
+{
+  cmd_printf("[%s:%ld] %p\r\n", trace_file, trace_line, trace_arg);
+}
+
 static void uptime_Command(char *pcWriteBuffer, int xWriteBufferLen,int argc, char **argv)
 {
     cmd_printf("UP time %ldms\r\n", mico_rtos_get_time());
@@ -599,6 +608,7 @@ static const struct cli_command built_ins[] = {
   {"ota",      "system ota",                  ota_Command},
 #endif
   {"flash",    "Flash memory map",            partShow_Command},
+  {"trace",     "show last \"[file:line] arg\"",              trace_cmd},
 };
 
 /* Built-in "help" command: prints all registered commands and their help

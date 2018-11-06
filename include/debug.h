@@ -55,6 +55,16 @@
 #ifndef NO_MICO_RTOS
    extern int mico_debug_enabled;
    extern mico_mutex_t stdio_tx_mutex;
+   extern volatile char *trace_file;
+   extern volatile uint32_t trace_line;
+   extern volatile void *trace_arg;
+
+    #define trace(arg)\
+    do {\
+    trace_file = SHORT_FILE;\
+    trace_line = __LINE__;\
+    trace_arg = (void *)arg;\
+    } while(0)
 
     #define custom_log(N, M, ...) do {if (mico_debug_enabled==0)break;\
                                       mico_rtos_lock_mutex( &stdio_tx_mutex );\
