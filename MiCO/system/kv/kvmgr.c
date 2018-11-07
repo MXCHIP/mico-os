@@ -669,13 +669,16 @@ int aos_kv_del(const char *key)
     kv_item_t *item;
     int ret;
 
+    kv_lock();
     item = kv_item_get(key);
     if (!item) {
+        kv_unlock();
         return RES_ITEM_NOT_FOUND;
     }
 
     ret = kv_item_del(item, KV_SELF_REMOVE);
     kv_item_free(item);
+    kv_unlock();
     return ret;
 }
 
@@ -683,10 +686,12 @@ int aos_kv_set(const char *key, const void *val, int len, int sync)
 {
     kv_item_t *item;
     int ret;
+
     if (!key || !val || len <= 0 || strlen(key) > ITEM_MAX_KEY_LEN || len > ITEM_MAX_VAL_LEN) {
         return RES_INVALID_PARAM;
     }
 
+    kv_lock();
     item = kv_item_get(key);
     if (item) {
         ret = kv_item_update(item, key, val, len);
@@ -694,6 +699,7 @@ int aos_kv_set(const char *key, const void *val, int len, int sync)
     } else {
         ret = kv_item_store(key, val, len, 0);
     }
+    kv_unlock();
 
     return ret;
 }
@@ -706,15 +712,18 @@ int aos_kv_get(const char *key, void *buffer, int *buffer_len)
         return RES_INVALID_PARAM;
     }
 
+    kv_lock();
     item = kv_item_get(key);
 
     if (!item) {
+        kv_unlock();
         return RES_ITEM_NOT_FOUND;
     }
 
     if (*buffer_len < item->hdr.val_len) {
         *buffer_len = item->hdr.val_len;
         kv_item_free(item);
+        kv_unlock();
         return RES_NO_SPACE;
     } else {
         memcpy(buffer, (item->store + item->hdr.key_len), item->hdr.val_len);
@@ -722,6 +731,7 @@ int aos_kv_get(const char *key, void *buffer, int *buffer_len)
     }
 
     kv_item_free(item);
+    kv_unlock();
     return RES_OK;
 }
 
@@ -826,9 +836,7 @@ int aos_kv_init(void)
 
     memset(&g_kv_mgr, 0, sizeof(g_kv_mgr));
 
-#ifdef CONFIG_AOS_CLI
-    aos_cli_register_command(&ncmd);
-#endif
+    kv_lock_init();
 
     if ((ret = kv_init()) != RES_OK) {
         return ret;
