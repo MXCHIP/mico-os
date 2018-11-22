@@ -513,3 +513,13 @@ int mico_rtos_get_task_status(mico_thread_t* thread)
 {
 	return _kernel_api.os_apis->mico_rtos_get_task_status(thread);
 }
+
+OSStatus MicoRtcGetSeconds(uint32_t* time)
+{
+	return _kernel_api.rtc_apis->MicoRtcGetSeconds(time); 
+}
+
+OSStatus MicoRtcSetSeconds(uint32_t* time)
+{
+	return _kernel_api.rtc_apis->MicoRtcSetSeconds(time); 
+}

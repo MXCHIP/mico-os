@@ -268,6 +268,8 @@ typedef struct {
 	OSStatus (*MicoRtcGetTime)(mico_rtc_time_t *time);
 	OSStatus (*MicoRtcSetTime)(mico_rtc_time_t *time);
     OSStatus (*MicoRtcSetalarm)(mico_rtc_time_t *time, rtc_irq_handler handler);
+	OSStatus (*MicoRtcGetSeconds)(uint32_t* time);
+	OSStatus (*MicoRtcSetSeconds)(uint32_t* time);
 } rtc_api_t;
 
 typedef struct {
