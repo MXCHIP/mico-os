@@ -523,3 +523,28 @@ OSStatus MicoRtcSetSeconds(uint32_t* time)
 {
 	return _kernel_api.rtc_apis->MicoRtcSetSeconds(time); 
 }
+
+OSStatus mico_rtos_eventgroup_init(void *handler)
+{
+    return _kernel_api.os_apis->mico_rtos_eventgroup_init(handler);
+}
+
+OSStatus mico_rtos_eventgroup_deinit(void * handler)
+{
+    return _kernel_api.os_apis->mico_rtos_eventgroup_deinit(handler);
+}
+
+int mico_rtos_eventgroup_set_bits(void * handler, int bits)
+{
+    return _kernel_api.os_apis->mico_rtos_eventgroup_set_bits(handler, bits);
+}
+
+int mico_rtos_eventgroup_clear_bits(void * handler, int bits)
+{
+    return _kernel_api.os_apis->mico_rtos_eventgroup_clear_bits(handler, bits);
+}
+
+int mico_rtos_eventgroup_wait_bits(void * handler, int bits, int isClearOnExit, int isWaitForAllBits, int waitMs)
+{
+    return _kernel_api.os_apis->mico_rtos_eventgroup_wait_bits(handler, bits, isClearOnExit, isWaitForAllBits, waitMs);
+}

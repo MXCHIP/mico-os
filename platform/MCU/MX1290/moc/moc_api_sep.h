@@ -112,6 +112,12 @@ typedef struct {
 
     char *(*get_current_task_name)(void);
 	int (*mico_rtos_get_task_status)(mico_thread_t* thread);
+
+	int (*mico_rtos_eventgroup_init)(void *handler);
+	int (*mico_rtos_eventgroup_deinit)(void * handler);
+	int (*mico_rtos_eventgroup_set_bits)(void * handler, int bits);
+	int (*mico_rtos_eventgroup_clear_bits)(void * handler, int bits);
+	int (*mico_rtos_eventgroup_wait_bits)(void * handler, int bits, int isClearOnExit, int isWaitForAllBits, int waitMs);
 } os_api_v1_t;
 
 typedef struct {
