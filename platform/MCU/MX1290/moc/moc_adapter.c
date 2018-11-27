@@ -548,3 +548,8 @@ int mico_rtos_eventgroup_wait_bits(void * handler, int bits, int isClearOnExit, 
 {
     return _kernel_api.os_apis->mico_rtos_eventgroup_wait_bits(handler, bits, isClearOnExit, isWaitForAllBits, waitMs);
 }
+
+OSStatus MicoPwmSwitchPin( mico_pwm_t pwm, mico_gpio_t gpio )
+{
+    return _kernel_api.pwm_apis->pwm_switch_pin(pwm, gpio);
+}

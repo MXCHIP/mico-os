@@ -91,6 +91,7 @@ typedef struct
     OSStatus (*pwm_init)( mico_pwm_t pwm, uint32_t frequency, float duty_cycle );
     OSStatus (*pwm_start)( mico_pwm_t pwm );
     OSStatus (*pwm_stop)( mico_pwm_t pwm );
+    OSStatus (*pwm_switch_pin)(mico_pwm_t pwm, mico_gpio_t gpio);
 } pwm_api_t;
 
 typedef struct
