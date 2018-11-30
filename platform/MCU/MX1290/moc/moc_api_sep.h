@@ -118,6 +118,9 @@ typedef struct {
 	int (*mico_rtos_eventgroup_set_bits)(void * handler, int bits);
 	int (*mico_rtos_eventgroup_clear_bits)(void * handler, int bits);
 	int (*mico_rtos_eventgroup_wait_bits)(void * handler, int bits, int isClearOnExit, int isWaitForAllBits, int waitMs);
+	mico_thread_t (*mico_rtos_get_current_thread)( void );
+	void (*mico_rtos_set_thread_arg)(mico_thread_t *thread, void *arg);
+	void *(*mico_rtos_get_thread_arg)(mico_thread_t *thread);
 } os_api_v1_t;
 
 typedef struct {

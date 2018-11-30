@@ -553,3 +553,18 @@ OSStatus MicoPwmSwitchPin( mico_pwm_t pwm, mico_gpio_t gpio )
 {
     return _kernel_api.pwm_apis->pwm_switch_pin(pwm, gpio);
 }
+
+mico_thread_t mico_rtos_get_current_thread( void )
+{
+    return _kernel_api.os_apis->mico_rtos_get_current_thread();
+}
+
+void mico_rtos_set_thread_arg(mico_thread_t *thread, void *arg)
+{
+    _kernel_api.os_apis->mico_rtos_set_thread_arg(thread, arg);
+}
+
+void *mico_rtos_get_thread_arg(mico_thread_t *thread)
+{
+    return _kernel_api.os_apis->mico_rtos_get_thread_arg(thread);
+}

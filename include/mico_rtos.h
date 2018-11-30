@@ -301,7 +301,7 @@ bool mico_rtos_is_current_thread( mico_thread_t* thread );
   *
   * @return   Current MiCO RTOS thread handler
   */
-mico_thread_t* mico_rtos_get_current_thread( void );
+mico_thread_t mico_rtos_get_current_thread( void );
 
 /** @brief    Suspend current thread for a specific time
   *
