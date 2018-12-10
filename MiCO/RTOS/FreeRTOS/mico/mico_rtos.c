@@ -246,7 +246,7 @@ bool mico_rtos_is_current_thread( mico_thread_t* thread )
     }
 }
 
-mico_thread_t* mico_rtos_get_current_thread( void )
+mico_thread_t mico_rtos_get_current_thread( void )
 {
     return (mico_thread_t *)xTaskGetCurrentTaskHandle();
 }
