@@ -9,7 +9,7 @@
 
 NAME := LwIP
 
-ifneq ($(filter $(HOST_MCU_FAMILY),MOC108),)
+ifneq ($(filter $(HOST_MCU_FAMILY),MOC108 MOC109),)
 VERSION := 2.0.2
 else
 ifneq ($(filter $(HOST_MCU_FAMILY),MTK7697),)

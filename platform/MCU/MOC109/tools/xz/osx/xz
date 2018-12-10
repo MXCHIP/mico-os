@@ -1,0 +1,3 @@
+#!/bin/bash
+export DYLD_LIBRARY_PATH=`$0_dirname $0`:
+${0}_run "$@"
