@@ -568,3 +568,13 @@ void *mico_rtos_get_thread_arg(mico_thread_t *thread)
 {
     return _kernel_api.os_apis->mico_rtos_get_thread_arg(thread);
 }
+
+mico_thread_t* mico_rtos_create_thread_static(uint8_t priority, const char* name, mico_thread_function_t function, uint32_t stack_size, void* arg, uint8_t *stackbuf, uint8_t *threadbuf )
+{
+    return _kernel_api.os_apis->mico_rtos_create_thread_static(priority, name, function, stack_size, arg, stackbuf, threadbuf);
+}
+
+OSStatus mico_rtos_try_lock_mutex( mico_mutex_t* mutex )
+{
+    return _kernel_api.os_apis->mico_rtos_try_lock_mutex(mutex);
+}
