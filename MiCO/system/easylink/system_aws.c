@@ -47,6 +47,10 @@ static mico_semaphore_t aws_connect_sem; /**< Used to suspend thread while conne
 static bool aws_success = false;         /**< true: connect to wlan, false: start soft ap mode or roll back to previous settings */
 static mico_thread_t aws_thread_handler = NULL;
 static bool aws_thread_force_exit = false;
+static uint32_t awsIndentifier = 0;      /**< Unique for an aws instance. */
+static bool is_config_by_softap = false;
+static bool is_config_by_aws = false;
+static bool is_ap_up = false;
 
 
 /******************************************************
@@ -91,13 +95,20 @@ static void aws_complete_cb( network_InitTypeDef_st *nwkpara, system_context_t *
     mico_rtos_unlock_mutex( &inContext->flashContentInRam_mutex );
     system_log("Get SSID: %s, Key: %s", inContext->flashContentInRam.micoSystemConfig.ssid, inContext->flashContentInRam.micoSystemConfig.user_key);
     aws_success = true;
+    is_config_by_softap = false;
+    is_config_by_aws = true;
     exit:
     if ( err != kNoErr )
     {
         /*EasyLink timeout or error*/
         aws_success = false;
     }
-    mico_rtos_set_semaphore( &aws_sem );
+
+    if ( is_ap_up == false )
+    {
+        mico_rtos_set_semaphore( &aws_sem );
+    }
+
     return;
 }
 
@@ -190,6 +201,17 @@ static int aws_broadcast_notification(char *msg, int msg_num)
 void mico_notify_ap_up( void )
 {
 	system_log("ap is up");
+	is_ap_up = true;
+}
+
+void aws_uap_configured_cd( uint32_t id )
+{
+    aws_success = true;
+    awsIndentifier = id;
+    is_config_by_softap = true;
+    is_config_by_aws = false;
+    micoWlanSuspendSoftAP( );
+    mico_rtos_set_semaphore( &aws_sem );
 }
 #endif
 
@@ -223,6 +245,7 @@ restart:
             context->micoStatus.mac[13], context->micoStatus.mac[15], context->micoStatus.mac[16]);
 
     system_log("Enable softap %s in aws", wifi_ssid);
+    config_server_set_uap_cb( aws_uap_configured_cd );
     mico_wlan_aws_uap_start(EasyLink_TimeOut / 1000, wifi_ssid, NULL, 6,mico_notify_ap_up);
 #else
     micoWlanStartAws( EasyLink_TimeOut / 1000 );
@@ -261,13 +284,24 @@ restart:
 
         /*SSID or Password is not correct, module cannot connect to wlan, so restart AWS again*/
         require_noerr_action_string( err, restart, micoWlanSuspend(), "Re-start AWS mode" );
-        mico_system_delegate_config_success( CONFIG_BY_AWS );
+        if ( is_config_by_aws == true )
+        {
+            mico_system_delegate_config_success( CONFIG_BY_AWS );
+        }
 
-/* mico_config.h can define MICO_AWS_NOTIFY_DISABLE to disable send aws notification */
+        if ( is_config_by_softap == true )
+        {
+            mico_system_delegate_config_success( CONFIG_BY_SOFT_AP );
+        }
+
+        if ( is_config_by_aws == true )
+        {
+            /* mico_config.h can define MICO_AWS_NOTIFY_DISABLE to disable send aws notification */
 #ifndef MICO_AWS_NOTIFY_DISABLE
-        /* Start AWS udp notify */
-        aws_broadcast_notification(aws_msg, AWS_NOTIFY_TIMES);
+            /* Start AWS udp notify */
+            aws_broadcast_notification(aws_msg, AWS_NOTIFY_TIMES);
 #endif
+        }
         goto exit;
     }
     else /* aws failed */

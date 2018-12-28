@@ -372,6 +372,7 @@ OSStatus _LocalConfigRespondInComingMessage(int fd, HTTPHeader_t* inHeader, syst
   configContext_t *http_context = (configContext_t *)inHeader->userContext;
   mico_logic_partition_t* ota_partition = MicoFlashGetInfo( MICO_PARTITION_OTA_TEMP );
   char name[50];
+  const char *response_body = "{\"code\":0}";
 
   json_object *sectors, *sector = NULL;
 
@@ -590,10 +591,12 @@ OSStatus _LocalConfigRespondInComingMessage(int fd, HTTPHeader_t* inHeader, syst
       mico_rtos_unlock_mutex(&inContext->flashContentInRam_mutex);
       json_object_put( config );
 
-      err = CreateSimpleHTTPOKMessage( &httpResponse, &httpResponseLen );
+      err = CreateSimpleHTTPMessageNoCopy( kMIMEType_JSON, strlen( response_body ), &httpResponse, &httpResponseLen );
       require_noerr( err, exit );
-
+      require( httpResponse, exit );
       err = SocketSend( fd, httpResponse, httpResponseLen );
+      require_noerr( err, exit );
+      err = SocketSend( fd, (uint8_t *) response_body, strlen( response_body ) );
       require_noerr( err, exit );
 
       if ( _uap_configured_cb ) {
