@@ -703,10 +703,12 @@ int ssl_socket( mico_ssl_t ssl );
  *
  *  @param      _cert_pem: Point to the certificate string in PEM format.
  *  @param      private_key_pem: Point to the private key string in PEM format.
+ *  @param      verify_ca: Point to the CA certificate string in PEM format to verify client's certificate,
+ *              NULL = do not verify client's certificate.
  *
  *  @retval     void
  */
-void ssl_set_cert(const char *_cert_pem, const char *private_key_pem);
+void ssl_set_cert(const char *_cert_pem, const char *private_key_pem, const char *verify_ca);
 
 /** @brief      SSL client create a SSL connection.
  *
