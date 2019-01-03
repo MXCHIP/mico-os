@@ -55,7 +55,7 @@ extern const mico_api_t *lib_api_p;
  ******************************************************/
 
 /* SSL */
-void ssl_set_cert(const char *_cert_pem, const char *private_key_pem)
+void ssl_set_cert(const char *_cert_pem, const char *private_key_pem, const char *verify_ca)
 {
     lib_api_p->ssl_set_cert(_cert_pem, private_key_pem);
 }
