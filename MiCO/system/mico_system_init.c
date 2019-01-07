@@ -72,6 +72,10 @@ OSStatus mico_system_wlan_start_autoconf( void )
 #endif
 }
 
+WEAK OSStatus user_application_callback( void )
+{
+    return kNoErr;
+}
 
 OSStatus mico_system_init( mico_Context_t* in_context )
 {
@@ -98,6 +102,10 @@ OSStatus mico_system_init( mico_Context_t* in_context )
   err = system_network_daemen_start( sys_context );
   require_noerr( err, exit ); 
 
+#ifdef MICO_USER_APPLICATION_CALLBACK_ENABLE
+    err = user_application_callback( );
+    require_noerr( err, exit );
+#endif
   
 #ifdef MICO_FORCE_OTA_ENABLE
 	err = start_forceota_check();
