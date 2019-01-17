@@ -309,6 +309,11 @@ int wlan_rx_mgnt_set(int enable, mgnt_handler_t cb)
 	return _kernel_api.wifi_apis->wlan_rx_mgnt_set(enable, cb);
 }
 
+OSStatus mico_wlan_register_recv_mgnt(monitor_cb_t fn)
+{
+    return _kernel_api.wifi_apis->wlan_rx_mgnt_set(true, fn);
+}
+
 void autoconfig_start(int seconds, int mode)
 {
 	_kernel_api.wifi_apis->autoconfig_start(seconds, mode);

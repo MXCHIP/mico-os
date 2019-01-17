@@ -760,6 +760,11 @@ OSStatus mico_wlan_custom_ie_delete(wlan_if_t wlan_if, custom_ie_delete_op_t op,
  * @return    None
  */
 void mico_wlan_get_mac_address_by_interface( wlan_if_t wlan_if, uint8_t *mac );
+
+/** @brief  Register the monitor callback function at station mode
+ *        Once received a 802.11 packet call the registered function to return the packet.
+ */
+OSStatus mico_wlan_register_recv_mgnt(monitor_cb_t fn);
 /**
   * @}
   */
