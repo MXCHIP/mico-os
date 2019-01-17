@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include "vcall.h"
 #include "mico.h"
+#include "platform.h"
 
 static mico_mutex_t kv_mutex;
 

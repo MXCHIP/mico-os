@@ -52,7 +52,11 @@ static OSStatus system_config_mode_worker( void *arg )
 #elif ( MICO_WLAN_CONFIG_MODE == CONFIG_MODE_WAC)
     err = mico_easylink_wac( in_context, MICO_TRUE );
 #elif ( MICO_WLAN_CONFIG_MODE == CONFIG_MODE_AWS)
+#ifdef CONFIG_MICO_AWS
     err = mico_easylink_aws( in_context, MICO_TRUE );
+#else
+    err = kUnsupportedErr;
+#endif
 #elif ( MICO_WLAN_CONFIG_MODE == CONFIG_MODE_NONE)
 #else
     #error "Wi-Fi configuration mode is not defined"

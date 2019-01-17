@@ -193,6 +193,14 @@ const mico_logic_partition_t mico_partitions[] =
         .partition_length           = 0x2000,    //8k bytes
         .partition_options          = PAR_OPT_READ_EN | PAR_OPT_WRITE_DIS,
     },
+    [MICO_PARTITION_KV] = 
+    {
+        .partition_owner            = MICO_FLASH_EMBEDDED,
+        .partition_description      = "KV",
+        .partition_start_addr       = 0x1A5E66,
+        .partition_length           = 0x2000,    //8k bytes
+        .partition_options          = PAR_OPT_READ_EN | PAR_OPT_WRITE_EN,
+    },    
 };
 
 const platform_adc_t platform_adc_peripherals[] = {};
