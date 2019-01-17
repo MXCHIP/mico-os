@@ -220,7 +220,7 @@ void localConfig_thread(uint32_t inFd)
   require_action( httpHeader, exit, err = kNoMemoryErr );
   HTTPHeaderClear( httpHeader );
 
-  t.tv_sec = 60;
+  t.tv_sec = 3;
   t.tv_usec = 0;
   system_log("Free memory %d bytes", MicoGetMemoryInfo()->free_memory) ; 
 
@@ -231,7 +231,7 @@ void localConfig_thread(uint32_t inFd)
     clientFdIsSet = 0;
 
     if(httpHeader->len == 0){
-      require(select( Max(clientFd, close_client_fd) + 1 , &readfds, NULL, NULL, &t) >= 0, exit);
+      require(select( Max(clientFd, close_client_fd) + 1 , &readfds, NULL, NULL, &t) > 0, exit);
       clientFdIsSet = FD_ISSET(clientFd, &readfds);
     }
 
@@ -256,7 +256,6 @@ void localConfig_thread(uint32_t inFd)
             err = _LocalConfigRespondInComingMessage( clientFd, httpHeader, sys_context );
             require_noerr(err, exit);
             err = kConnectionErr;
-            goto exit;
           }else{
             require_noerr(err, exit);
             err = _LocalConfigRespondInComingMessage( clientFd, httpHeader, sys_context );
@@ -264,6 +263,7 @@ void localConfig_thread(uint32_t inFd)
           }
 
           HTTPHeaderClear( httpHeader );
+          goto exit;
         break;
 
         case EWOULDBLOCK:
