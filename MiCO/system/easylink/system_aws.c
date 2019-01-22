@@ -115,7 +115,7 @@ static void aws_complete_cb( network_InitTypeDef_st *nwkpara, system_context_t *
 #define UDP_TX_PORT         (65123)
 #define UDP_RX_PORT         (65126)
 
-static int aws_broadcast_notification(char *msg, int msg_num)
+MAY_BE_UNUSED static int aws_broadcast_notification(char *msg, int msg_num)
 {
     int i, ret, result = 0;
     int fd;

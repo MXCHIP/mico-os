@@ -14,7 +14,7 @@ typedef struct Md5 {
 } Md5;
 
 
-typedef void (*mgnt_handler_t)(char *buf, int buf_len);
+typedef void (*mgnt_handler_t)(uint8_t *buf, int buf_len);
 
 typedef struct {
 	/* OS Layer*/
