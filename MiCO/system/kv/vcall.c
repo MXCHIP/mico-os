@@ -38,7 +38,7 @@ int32_t hal_flash_erase(hal_partition_t in_partition, uint32_t off_set, uint32_t
 
 int32_t hal_flash_write(hal_partition_t in_partition, uint32_t *off_set, const void *in_buf, uint32_t in_buf_len)
 {
-    return MicoFlashWrite(MICO_PARTITION_KV, off_set, in_buf, in_buf_len);
+    return MicoFlashWrite(MICO_PARTITION_KV, off_set, (uint8_t *)in_buf, in_buf_len);
 }
 
 int32_t hal_flash_read(hal_partition_t in_partition, uint32_t *off_set, void *out_buf, uint32_t out_buf_len)
