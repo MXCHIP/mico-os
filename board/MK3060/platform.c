@@ -198,7 +198,7 @@ const mico_logic_partition_t mico_partitions[] =
         .partition_owner            = MICO_FLASH_EMBEDDED,
         .partition_description      = "KV",
         .partition_start_addr       = 0x1A6000,
-        .partition_length           = 0x2000,    //8k bytes
+        .partition_length           = 0x4000,    //16k bytes
         .partition_options          = PAR_OPT_READ_EN | PAR_OPT_WRITE_EN,
     },    
 };

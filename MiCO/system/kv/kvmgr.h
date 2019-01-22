@@ -12,7 +12,7 @@ extern "C"
 
 /* The totally storage size for key-value store */
 #ifndef CONFIG_AOS_KV_BUFFER_SIZE
-#define KV_TOTAL_SIZE   (8 * 1024)
+#define KV_TOTAL_SIZE   (16 * 1024)
 #else
 #define KV_TOTAL_SIZE   CONFIG_AOS_KV_BUFFER_SIZE
 #endif
