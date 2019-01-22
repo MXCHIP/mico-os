@@ -146,6 +146,7 @@ void init_platform( void )
 #if defined (MOC) && (MOC == 1)
     button_init_t init;
     extern int get_last_reset_reason(void);
+    extern int (*hardfault_get)(char *msg, int len);
     
     if ( get_last_reset_reason() & LAST_RST_CAUSE_WDT )
     {
