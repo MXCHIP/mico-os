@@ -150,18 +150,18 @@ void init_platform( void )
     
     if ( get_last_reset_reason() & LAST_RST_CAUSE_WDT )
     {
-       char *msg = malloc(1024);
+      //  char *msg = malloc(1024);
        platform_log( "WARNING: Watchdog reset occured previously." );
-       platform_log("msg return %p", msg);
-       if (msg != NULL) {
+      //  platform_log("msg return %p", msg);
+      //  if (msg != NULL) {
             
-            if (hardfault_get(msg, 1024) > 0) {
-                platform_log("%s", msg);
-            } else {
-                platform_log("get 0");
-            }
-            free(msg);
-       }
+      //       if (hardfault_get(msg, 1024) > 0) {
+      //           platform_log("%s", msg);
+      //       } else {
+      //           platform_log("get 0");
+      //       }
+      //       free(msg);
+      //  }
     }
 
     MicoGpioInitialize( (mico_gpio_t)MICO_SYS_LED, OUTPUT_PUSH_PULL );
