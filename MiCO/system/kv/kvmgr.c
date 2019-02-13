@@ -850,7 +850,9 @@ int aos_kv_init(void)
         trigger_gc();
     }
 
+#ifdef MICO_CLI_ENABLE
     cli_register_command(&ncmd);
+#endif
 
     return RES_OK;
 }
