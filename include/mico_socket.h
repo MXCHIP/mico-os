@@ -282,6 +282,16 @@ typedef struct fd_set {
 
 #define MAX_TCP_CLIENT_PER_SERVER  5
 
+enum {
+    NID_COMMON_NAME   = 0x03,   /* CN */
+    NID_SUR_NAME      = 0x04,   /* SN */
+    NID_SERIAL_NUMBER = 0x05,   /* serialNumber */
+    NID_COUNTRY_NAME  = 0x06,   /* C  */
+    NID_LOCALITY_NAME = 0x07,   /* L  */
+    NID_STATE_NAME    = 0x08,   /* ST */
+    NID_ORG_NAME      = 0x0a,   /* O  */
+    NID_ORGUNIT_NAME  = 0x0b    /* OU */
+};
 
 /** @defgroup MICO_SOCKET_GROUP_1 MICO BSD-like Socket Functions
   * @brief Provide basic APIs for socket function
@@ -782,9 +792,12 @@ int ssl_close(mico_ssl_t ssl);
 
 
 int ssl_pending(void*ssl);
+
 int ssl_get_error(void* ssl, int ret);
+
 void ssl_set_using_nonblock(void* ssl, int nonblock);
 
+int ssl_x509_get_text_by_nid(int nid, const char *pem, int pemsz, char *text, int textsz);
 
 /** Callback which is invoked when a hostname is found.
  * A function of this type must be implemented by the application using the DNS resolver.
