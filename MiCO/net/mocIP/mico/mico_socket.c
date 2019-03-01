@@ -206,6 +206,14 @@ struct hostent* gethostbyname(const char *name)
     return lib_api_p->lwip_apis->lwip_gethostbyname(name);
 }
 
+#if defined (CONFIG_CPU_MX1290)
+int gethostbyname_r(const char *name, struct hostent *ret, char *buf,
+                size_t buflen, struct hostent **result, int *h_errnop);
+{
+    return lib_api_p->lwip_apis->lwip_gethostbyname_r(name, ret, buf, buflen, result, h_errnop);
+}
+#endif
+
 /** Callback which is invoked when a hostname is found.
  * A function of this type must be implemented by the application using the DNS resolver.
  * @param name pointer to the name that was looked up.

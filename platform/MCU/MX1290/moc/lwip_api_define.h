@@ -60,6 +60,8 @@ typedef struct _lwip_api_ {
     int (*inet_pton) (int af, const char *cp, void *buf);
 	int (*dns_gethostbyname) (const char *hostname, ip_addr_t *addr, dns_found_callback found,
                   void *callback_arg);
+	int (*lwip_gethostbyname_r)(const char *name, struct hostent *ret, char *buf,
+                size_t buflen, struct hostent **result, int *h_errnop);
 } lwip_api_t;
 
 #endif
