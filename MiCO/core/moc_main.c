@@ -75,6 +75,7 @@ extern void dns_ip_set( uint8_t *hostname, uint32_t ip );
 extern void join_fail( OSStatus err );
 extern void wifi_reboot_event( void );
 extern void mico_rtos_stack_overflow( char *taskname );
+extern int user_qc_output(char *buffer, int len);
 
 /* MOC main function, called by MOC kernel */
 void moc_app_main( const mico_api_t *lib_api_t );
@@ -133,6 +134,7 @@ USED const user_api_t user_handler = {
     .pinmaps = &peripherals_pinmap,
     .gpio_init = gpio_init,
     .stdio_break_in = 1, // 1=enable: bootloader use user uart to enter boot mode.
+    .user_qc_output = user_qc_output,
 #endif
 };
 

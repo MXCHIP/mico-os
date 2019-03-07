@@ -586,3 +586,11 @@ OSStatus mico_rtos_try_lock_mutex( mico_mutex_t* mutex )
 {
     return _kernel_api.os_apis->mico_rtos_try_lock_mutex(mutex);
 }
+
+/* 用户实现这个函数，把用户希望QC额外输出的内容填写到buffer中, len是buffer的最大长度 
+   QC会把buffer的内容输出到QC的SDS之后，扫描之前
+ */
+WEAK int user_qc_output(char *buffer, int len)
+{
+    return snprintf(buffer, len, "ID list: 11 22 33 44\r\n");
+}
