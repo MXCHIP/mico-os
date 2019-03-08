@@ -24,6 +24,10 @@
 
 #include "StringUtils.h"
 
+#ifndef MICO_AWS_AP_SSID_HEADER
+#define MICO_AWS_AP_SSID_HEADER     "AWS_"
+#endif
+
 #define AWS_NOTIFY_INTERVAL (20*1000)
 #define AWS_NOTIFY_TIMES    500
 //#if (MICO_WLAN_CONFIG_MODE == CONFIG_MODE_EASYLINK) || (MICO_WLAN_CONFIG_MODE == CONFIG_MODE_EASYLINK_WITH_SOFTAP)
@@ -240,7 +244,7 @@ restart:
     system_log("Start AWS mode");
 #if PLATFORM_CONFIG_AWS_SOFTAP_COEXISTENCE
     char wifi_ssid[32];
-    sprintf(wifi_ssid, "AWS_%c%c%c%c%c%c",
+    sprintf(wifi_ssid, "%s%c%c%c%c%c%c", MICO_AWS_AP_SSID_HEADER,
             context->micoStatus.mac[9], context->micoStatus.mac[10], context->micoStatus.mac[12],
             context->micoStatus.mac[13], context->micoStatus.mac[15], context->micoStatus.mac[16]);
 
