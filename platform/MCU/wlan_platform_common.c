@@ -84,7 +84,8 @@ OSStatus host_platform_init( void )
 #endif
     
 #if defined ( MICO_USE_WIFI_POWER_PIN )
-    platform_gpio_init( &wifi_control_pins[WIFI_PIN_POWER], OUTPUT_PUSH_PULL );
+    host_platform_power_wifi( false );
+    platform_gpio_init( &wifi_control_pins[WIFI_PIN_POWER], OUTPUT_OPEN_DRAIN_PULL_UP );
     host_platform_power_wifi( false ); /* Start wifi chip with regulators off */
 #endif
 
@@ -99,7 +100,7 @@ OSStatus host_platform_deinit( void )
 #endif
     
 #if defined ( MICO_USE_WIFI_POWER_PIN )
-    platform_gpio_init( &wifi_control_pins[WIFI_PIN_POWER], OUTPUT_PUSH_PULL );
+    platform_gpio_init( &wifi_control_pins[WIFI_PIN_POWER], OUTPUT_OPEN_DRAIN_PULL_UP );
     host_platform_power_wifi( false ); /* Start wifi chip with regulators off */
 #endif
 
