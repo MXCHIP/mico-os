@@ -157,6 +157,8 @@ OSStatus mico_system_context_update( mico_Context_t* const in_context );
 OSStatus mico_system_para_read(void** info_ptr, int section, uint32_t offset, uint32_t size);
 OSStatus mico_system_para_write(const void* info_ptr, int section, uint32_t offset, uint32_t size);
 OSStatus mico_system_para_read_release( void* info_ptr );
+void mico_system_context_set_passwd_encrypt(uint8_t *key);
+void mico_system_context_set_ssid_passwd(char *ssid, char *passwd);
 
 /** @} */
 

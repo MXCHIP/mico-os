@@ -45,6 +45,12 @@ WEAK void appRestoreDefault_callback(void *user_data, uint32_t size)
 #define OFFSETOF( type, member )  ( (uintptr_t)&((type *)0)->member )
 #endif /* OFFSETOF */
 
+#define ENCRYPT_KEY_LEN 16
+
+static bool _encrypt_use;
+static uint8_t _encrypt_key[ENCRYPT_KEY_LEN];
+static uint8_t _buffered_user_key[maxKeyLen];
+
 static const uint32_t mico_context_section_offsets[ ] =
 {
     [PARA_BOOT_TABLE_SECTION]            = OFFSETOF( system_config_t, bootTable ),
@@ -162,6 +168,18 @@ static OSStatus internal_update_config( system_context_t * const inContext )
   mico_logic_partition_t *partition; 
 
   require_action(inContext, exit, err = kNotPreparedErr);
+
+  if (_encrypt_use)
+  {
+    if (memcmp(_buffered_user_key, inContext->flashContentInRam.micoSystemConfig.user_key, maxKeyLen) != 0)
+    {
+      Aes aes;
+
+      AesSetKey(&aes, _encrypt_key, AES_BLOCK_SIZE, _encrypt_key, AES_ENCRYPTION);
+      AesCbcEncrypt(&aes, (byte *)inContext->flashContentInRam.micoSystemConfig.user_key, (const byte *)inContext->flashContentInRam.micoSystemConfig.user_key, maxKeyLen);
+      memcpy(_buffered_user_key, inContext->flashContentInRam.micoSystemConfig.user_key, maxKeyLen);
+    }
+  }
 
   para_log("Flash write!");
   mico_rtos_lock_mutex( &para_flash_mutex);
@@ -389,6 +407,14 @@ OSStatus MICOReadConfiguration(system_context_t *inContext)
     strcpy((char *)inContext->micoStatus.dnsServer, inContext->flashContentInRam.micoSystemConfig.dnsServer);
   }
 
+  if (_encrypt_use)
+  {
+    Aes aes;
+
+    AesSetKey(&aes, _encrypt_key, AES_BLOCK_SIZE, _encrypt_key, AES_DECRYPTION);
+    AesCbcDecrypt(&aes, (byte *)sys_context->flashContentInRam.micoSystemConfig.user_key, (const byte *)sys_context->flashContentInRam.micoSystemConfig.user_key, maxKeyLen);
+  }
+
 exit: 
 
   return err;
@@ -402,15 +428,27 @@ OSStatus mico_system_context_update( mico_Context_t *in_context )
   sys_context->flashContentInRam.micoSystemConfig.seed = ++seedNum;
 
   err = internal_update_config( sys_context );
-  require_noerr(err, exit);
+  require_noerr(err, exit); 
 
 exit:
   return err;
 }
 
+void mico_system_context_set_passwd_encrypt(uint8_t key[ENCRYPT_KEY_LEN])
+{
+  _encrypt_use = true;
+  memcpy(_encrypt_key, key, ENCRYPT_KEY_LEN);
+}
 
-
-
+void mico_system_context_set_ssid_passwd(char *ssid, char *passwd)
+{
+  strncpy(sys_context->flashContentInRam.micoSystemConfig.ssid, ssid, maxSsidLen);
+  if (passwd != NULL)
+  {
+    strncpy(sys_context->flashContentInRam.micoSystemConfig.user_key, passwd, maxKeyLen);
+    sys_context->flashContentInRam.micoSystemConfig.user_keyLength = strlen(passwd);
+  }
+}
 
 //static mico_Context_t * inContext=0;
 /******************************************************
