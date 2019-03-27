@@ -17,6 +17,12 @@ extern "C"
 #define KV_TOTAL_SIZE   CONFIG_AOS_KV_BUFFER_SIZE
 #endif
 
+#ifndef CONFIG_AOS_KV_VAL_LEN
+#define KV_VAL_LEN   (512)
+#else
+#define KV_VAL_LEN   CONFIG_AOS_KV_VAL_LEN
+#endif
+
 /* The physical parition for key-value store */
 #ifndef CONFIG_AOS_KV_PTN
 #define KV_PTN    HAL_PARTITION_PARAMETER_2
