@@ -1,6 +1,11 @@
+NAME := kv
 
-NAME = kv
+$(NAME)_SOURCES := \
+kv.c \
+kv_cli.c \
+mkv.c \
+mkv_adapt.c
 
-$(NAME)_SOURCES := kvmgr.c vcall.c
-                   
-GLOBAL_INCLUDES += .
+GLOBAL_INCLUDES := \
+. \
+include
