@@ -373,6 +373,7 @@ OSStatus _LocalConfigRespondInComingMessage(int fd, HTTPHeader_t* inHeader, syst
   mico_logic_partition_t* ota_partition = MicoFlashGetInfo( MICO_PARTITION_OTA_TEMP );
   char name[50];
   const char *response_body = "{\"code\":0}";
+  char *http_body_buff = NULL;
 
   json_object *sectors, *sector = NULL;
 
@@ -474,7 +475,13 @@ OSStatus _LocalConfigRespondInComingMessage(int fd, HTTPHeader_t* inHeader, syst
       err = SocketSend( fd, httpResponse, httpResponseLen );
       require_noerr( err, exit );
 
-      config = json_tokener_parse(inHeader->extraDataPtr);
+      http_body_buff = malloc( inHeader->extraDataLen + 1 );
+      require_action( http_body_buff != NULL, exit, err = kUnknownErr );
+
+      memset( http_body_buff, 0, inHeader->extraDataLen + 1 );
+      memcpy( http_body_buff, inHeader->extraDataPtr, inHeader->extraDataLen );
+
+      config = json_tokener_parse(http_body_buff);
       require_action(config, exit, err = kUnknownErr);
       system_log("Recv config object=%s", json_object_to_json_string(config));
       mico_rtos_lock_mutex(&inContext->flashContentInRam_mutex);
@@ -544,7 +551,15 @@ OSStatus _LocalConfigRespondInComingMessage(int fd, HTTPHeader_t* inHeader, syst
 
       inContext->flashContentInRam.micoSystemConfig.easyLinkByPass = EASYLINK_BYPASS_NO;
 
-      config = json_tokener_parse(inHeader->extraDataPtr);
+      http_body_buff = malloc( inHeader->extraDataLen + 1 );
+      require_action( http_body_buff != NULL, exit, err = kUnknownErr );
+
+      memset( http_body_buff, 0, inHeader->extraDataLen + 1 );
+      memcpy( http_body_buff, inHeader->extraDataPtr, inHeader->extraDataLen );
+
+      system_log("get data:%s", http_body_buff);
+
+      config = json_tokener_parse(http_body_buff);
       require_action(config, exit, err = kUnknownErr);
       system_log("Recv config object from uap =%s", json_object_to_json_string(config));
       mico_rtos_lock_mutex(&inContext->flashContentInRam_mutex);
@@ -635,6 +650,13 @@ OSStatus _LocalConfigRespondInComingMessage(int fd, HTTPHeader_t* inHeader, syst
  exit:
   if(inHeader->persistent == false)  //Return an err to close socket and exit the current thread
     err = kConnectionErr;
+
+    if ( http_body_buff != NULL )
+    {
+        free( http_body_buff );
+        http_body_buff = NULL;
+    }
+
   if(httpResponse)  free(httpResponse);
   if(report)        json_object_put(report);
   if(config)        json_object_put(config);
