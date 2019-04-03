@@ -587,10 +587,20 @@ OSStatus mico_rtos_try_lock_mutex( mico_mutex_t* mutex )
     return _kernel_api.os_apis->mico_rtos_try_lock_mutex(mutex);
 }
 
-/* ÓÃ»§ÊµÏÖÕâ¸öº¯Êý£¬°ÑÓÃ»§Ï£ÍûQC¶îÍâÊä³öµÄÄÚÈÝÌîÐ´µ½bufferÖÐ, lenÊÇbufferµÄ×î´ó³¤¶È 
-   QC»á°ÑbufferµÄÄÚÈÝÊä³öµ½QCµÄSDSÖ®ºó£¬É¨ÃèÖ®Ç°
+/* ï¿½Ã»ï¿½Êµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ã»ï¿½Ï£ï¿½ï¿½QCï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ð´ï¿½ï¿½bufferï¿½ï¿½, lenï¿½ï¿½bufferï¿½ï¿½ï¿½ï¿½ó³¤¶ï¿½ 
+   QCï¿½ï¿½ï¿½bufferï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½QCï¿½ï¿½SDSÖ®ï¿½ï¿½É¨ï¿½ï¿½Ö®Ç°
  */
 WEAK int user_qc_output(char *buffer, int len)
 {
     return snprintf(buffer, len, "ID list: 11 22 33 44\r\n");
+}
+
+void mico_rtos_enter_critical(void)
+{
+    _kernel_api.os_apis->mico_rtos_enter_critical();
+}
+
+void mico_rtos_exit_critical(void)
+{
+    _kernel_api.os_apis->mico_rtos_exit_critical();
 }
