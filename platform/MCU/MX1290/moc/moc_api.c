@@ -1,5 +1,6 @@
 #include "common.h"
 #include "moc_api.h"
+#include "mico_config.h"
 
 extern const mico_api_t *lib_api_p;
 
@@ -218,7 +219,9 @@ uint32_t MicoUartGetLengthInBuffer( mico_uart_t uart )
 
 void wifistate_Command(char *pcWriteBuffer, int xWriteBufferLen, int argc, char **argv)
 {
+#ifndef MICO_SYSTEM_SUPPRESS_PRIVACY_INFO
 	lib_api_p->wifistate_Command(pcWriteBuffer, xWriteBufferLen, argc, argv);
+#endif
 }
 
 void wifidebug_Command(char *pcWriteBuffer, int xWriteBufferLen, int argc, char **argv)
