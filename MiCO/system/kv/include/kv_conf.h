@@ -7,7 +7,7 @@
 
 /* The totally storage size for key-value store */
 #ifndef KV_CONFIG_TOTAL_SIZE
-#define KV_TOTAL_SIZE (8 * 1024)
+#define KV_TOTAL_SIZE (16 * 1024)
 #else
 #define KV_TOTAL_SIZE KV_CONFIG_TOTAL_SIZE
 #endif
