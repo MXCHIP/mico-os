@@ -604,3 +604,8 @@ void mico_rtos_exit_critical(void)
 {
     _kernel_api.os_apis->mico_rtos_exit_critical();
 }
+
+void mico_disable_health_monitor(void)
+{
+    _kernel_api.os_apis->system_config(0, 0);
+}
