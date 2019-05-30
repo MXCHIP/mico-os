@@ -43,9 +43,9 @@
 *                    Constants
 ******************************************************/
 
-#define HARDWARE_REVISION   "3080B"
-#define DEFAULT_NAME        "EMW3080B Module"
-#define MODEL               "EMW3080B"
+#define HARDWARE_REVISION   "MX1290"
+#define DEFAULT_NAME        "MX1290 Module"
+#define MODEL               "MX1290"
 
 /* MICO RTOS tick rate in Hz */
 #define MICO_DEFAULT_TICK_RATE_HZ                   (1000) 
@@ -88,6 +88,9 @@
 /************************************************************************
  * Support Easylink&softap mode */
 #define PLATFORM_CONFIG_EASYLINK_SOFTAP_COEXISTENCE        1
+
+/* Support AWS&softap mode */
+#define PLATFORM_CONFIG_AWS_SOFTAP_COEXISTENCE 1
 
 /******************************************************
 *                   Enumerations
