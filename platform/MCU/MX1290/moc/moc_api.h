@@ -4,7 +4,7 @@
 #include "lwip_api_define.h"
 #include "mico.h"
 
-#define INTERFACE_VERSION 4
+#define INTERFACE_VERSION 5
 
 typedef void (*ssl_Logging_cb)( const int logLevel,
                                 const char * const logMessage );
@@ -498,6 +498,8 @@ typedef struct user_api_struct
     const uint8_t stdio_break_in;
 
     int (*user_qc_output)(char *buffer, int len);
+
+    void (*dhcps_client_up)(uint32_t client_ip);
 } user_api_t;
 
 typedef enum {

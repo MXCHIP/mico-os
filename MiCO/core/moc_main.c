@@ -76,6 +76,7 @@ extern void join_fail( OSStatus err );
 extern void wifi_reboot_event( void );
 extern void mico_rtos_stack_overflow( char *taskname );
 extern int user_qc_output(char *buffer, int len);
+extern void dhcps_client_new(uint32_t client_ip);
 
 /* MOC main function, called by MOC kernel */
 void moc_app_init( const mico_api_t *lib_api_t );
@@ -136,6 +137,7 @@ USED const user_api_t user_handler = {
     .gpio_init = gpio_init,
     .stdio_break_in = 1, // 1=enable: bootloader use user uart to enter boot mode.
     .user_qc_output = user_qc_output,
+    .dhcps_client_up = dhcps_client_new,
 #endif
 };
 

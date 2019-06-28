@@ -595,6 +595,10 @@ WEAK int user_qc_output(char *buffer, int len)
     return snprintf(buffer, len, "ID list: 11 22 33 44\r\n");
 }
 
+WEAK void dhcps_client_new(uint32_t client_ip)
+{
+}
+
 void mico_rtos_enter_critical(void)
 {
     _kernel_api.os_apis->mico_rtos_enter_critical();
