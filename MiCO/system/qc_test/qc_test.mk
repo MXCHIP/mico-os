@@ -14,7 +14,8 @@ $(NAME)_SOURCES := qc_test.c \
                    internal/qc_test_tcpip.c \
                    internal/qc_test_wlan.c \
                    internal/qc_test_ble.c \
-                   internal/qc_test_cli.c
+                   internal/qc_test_cli.c \
+                   internal/qc_test.blenrg.c
                    
 GLOBAL_INCLUDES := . 
 $(NAME)_INCLUDES := internal

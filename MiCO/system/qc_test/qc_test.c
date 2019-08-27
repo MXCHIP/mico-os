@@ -159,6 +159,10 @@ static void _qc_test_thread( mico_thread_arg_t arg )
     QC_TEST_PRINT_STRING( "MAC:", str );
 
     qc_scan( );
+#ifdef QC_TEST_BlUENRG_ENABLE
+    mico_rtos_delay_milliseconds(3000);
+    qc_test_blenrg();
+#endif
 
     qc_test_tcpip( );
 #else
