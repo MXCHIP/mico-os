@@ -38,9 +38,13 @@ void connection_StateMachine(void)
 
 void QC_read_DeviceAddress(void)
 {
-    uint8_t bdaddr[] = {0x00, 0x00, 0x00, 0xE1, 0x80, 0x02};
+    uint8_t bdaddr[] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
     uint8_t Data_Length;
 
+    mico_wlan_get_mac_address( bdaddr );
+    bdaddr[5] = bdaddr[5] + 1;
+    aci_hal_write_config_data(0x00, 6, bdaddr);
+    
     aci_hal_read_config_data(0x00,&Data_Length,bdaddr);
     printf(BD_ADDR_FMT,BD_ADDR_ARG(bdaddr));
 }
