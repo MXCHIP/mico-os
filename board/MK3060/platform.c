@@ -203,7 +203,13 @@ const mico_logic_partition_t mico_partitions[] =
     },    
 };
 
-const platform_adc_t platform_adc_peripherals[] = {};
+const platform_adc_t platform_adc_peripherals[] = 
+{
+  [MICO_ADC_1]  = 
+  { 
+    .channel = 1,
+  },
+};
 
 /******************************************************
 *               Function Definitions

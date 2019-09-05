@@ -110,7 +110,6 @@ typedef enum
 typedef enum
 {
     MICO_ADC_1,
-    MICO_ADC_2,
     MICO_ADC_MAX, /* Denotes the total number of ADC port aliases. Not a valid ADC alias */
     MICO_ADC_NONE,
 } mico_adc_t;

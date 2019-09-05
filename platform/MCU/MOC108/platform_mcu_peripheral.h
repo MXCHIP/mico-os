@@ -50,7 +50,7 @@ typedef struct
 
 typedef struct
 {
-    uint8_t unimplemented;
+    uint8_t channel;
 } platform_adc_t;
 
 typedef struct
