@@ -105,7 +105,7 @@ typedef struct
  *               Static Function Declarations
  ******************************************************/
 
-static OSStatus sync_ntp_time( void* arg );
+OSStatus sync_ntp_time( void* arg );
 
 /******************************************************
  *               Variable Definitions
@@ -236,7 +236,7 @@ OSStatus sntp_get_time( const struct in_addr *ntp_server_ip, ntp_timestamp_t* ti
     return err;
 }
 
-static OSStatus sync_ntp_time( void* arg )
+OSStatus sync_ntp_time( void* arg )
 {
     OSStatus             err = kGeneralErr;
     ntp_timestamp_t      current_time;
