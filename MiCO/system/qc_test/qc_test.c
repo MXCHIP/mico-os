@@ -68,6 +68,11 @@ static volatile ring_buffer_t  rx_buffer;
 *               Function Definitions
 ******************************************************/
 
+WEAK int user_qc_output(char *buffer, int len)
+{
+    return snprintf(buffer, len, "ID list: 11 22 33 44\r\n");
+}
+
 /* Initialize QC test UART interface */
 static uint8_t* _qc_test_uart_init( void )
 {
@@ -157,6 +162,9 @@ static void _qc_test_thread( mico_thread_arg_t arg )
     mico_wlan_get_mac_address( mac );
     sprintf( str, "%02X-%02X-%02X-%02X-%02X-%02X", mac[0], mac[1], mac[2], mac[3], mac[4], mac[5] );
     QC_TEST_PRINT_STRING( "MAC:", str );
+
+    user_qc_output(str, 128);
+    QC_TEST_PRINT_STRING( "ID List:", str );
 
     qc_scan( );
 
