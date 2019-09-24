@@ -342,6 +342,11 @@ void mico_wlan_start_ap_with_asso_cb(char *ssid, char *key, int channel, asso_ev
     _kernel_api.wifi_apis->mico_wlan_start_ap_with_asso_cb(ssid, key, channel, fn);
 }
 
+void wifi_ap_sta_reg_hdl(void *usr_hdl)
+{
+    _kernel_api.wifi_apis->wifi_ap_sta_reg_hdl(usr_hdl);
+}
+
 int mico_wlan_start_monitor_awss()
 {
 	return _kernel_api.wifi_apis->mico_wlan_start_monitor_awss();

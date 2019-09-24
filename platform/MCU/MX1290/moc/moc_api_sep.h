@@ -220,6 +220,7 @@ typedef struct {
 	void (*mico_wlan_start_ap_with_asso_cb)(char *ssid, char *key, int channel, asso_event_handler_t fn);
 	int (*mico_wlan_start_monitor_awss)(void);
 	int (*mico_wlan_stop_monitor_awss)(void);
+	void (*wifi_ap_sta_reg_hdl)(void *usr_hdl);
 } wifi_api_v1_t;
 
 typedef struct {
