@@ -592,15 +592,13 @@ OSStatus mico_rtos_try_lock_mutex( mico_mutex_t* mutex )
     return _kernel_api.os_apis->mico_rtos_try_lock_mutex(mutex);
 }
 
-/* �û�ʵ��������������û�ϣ��QC���������������д��buffer��, len��buffer����󳤶� 
-   QC���buffer�����������QC��SDS֮��ɨ��֮ǰ
- */
+
 WEAK int user_qc_output(char *buffer, int len)
 {
     return snprintf(buffer, len, "ID list: 11 22 33 44\r\n");
 }
 
-WEAK void dhcps_client_new(uint32_t client_ip)
+WEAK void dhcps_client_new(uint32_t client_ip, uint8_t *chaddr)
 {
 }
 
@@ -617,4 +615,13 @@ void mico_rtos_exit_critical(void)
 void mico_disable_health_monitor(void)
 {
     _kernel_api.os_apis->system_config(0, 0);
+}
+
+int wext_set_sta_num(unsigned char ap_sta_num)
+{
+    return _kernel_api.wifi_apis->wext_set_sta_num(ap_sta_num);
+}
+int wext_del_station(const char *ifname, unsigned char* hwaddr)
+{
+    return _kernel_api.wifi_apis->wext_del_station(ifname, hwaddr);
 }

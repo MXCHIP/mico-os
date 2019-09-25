@@ -221,6 +221,8 @@ typedef struct {
 	int (*mico_wlan_start_monitor_awss)(void);
 	int (*mico_wlan_stop_monitor_awss)(void);
 	void (*wifi_ap_sta_reg_hdl)(void *usr_hdl);
+	int (*wext_set_sta_num)(unsigned char ap_sta_num);
+    int (*wext_del_station)(const char *ifname, unsigned char* hwaddr);
 } wifi_api_v1_t;
 
 typedef struct {

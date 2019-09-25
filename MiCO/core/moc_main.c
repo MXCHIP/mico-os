@@ -76,7 +76,7 @@ extern void join_fail( OSStatus err );
 extern void wifi_reboot_event( void );
 extern void mico_rtos_stack_overflow( char *taskname );
 extern int user_qc_output(char *buffer, int len);
-extern void dhcps_client_new(uint32_t client_ip);
+extern void dhcps_client_new(uint32_t client_ip, uint8_t *chaddr);
 
 /* MOC main function, called by MOC kernel */
 void moc_app_init( const mico_api_t *lib_api_t );
