@@ -80,7 +80,6 @@ typedef enum
 #ifdef MICO_USE_BT_PARTITION
     MICO_PARTITION_BT_FIRMWARE,
 #endif
-    MICO_PARTITION_KV,
     MICO_PARTITION_MAX,
     MICO_PARTITION_NONE,
 } mico_partition_t;
