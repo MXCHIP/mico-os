@@ -243,12 +243,6 @@ int getsockname (int s, struct sockaddr *name, socklen_t *namelen)
 	return lwip_getsockname (s, name, namelen);
 }
 
-int shutdown(int s, int how)
-{
-	return lwip_shutdown(s, how);
-}
-
-
 uint32_t inet_addr (const char *name)
 {
     return ipaddr_addr( name );
@@ -276,14 +270,15 @@ char * inet_ntop(int af, const void *src, char *dst, socklen_t size)
 }
 
 #else
+
 char * inet_ntop(int af, const void *src, char *dst, socklen_t size)
 {
-    return (((af) == AF_INET) ? ip4addr_ntoa_r((const ip4_addr_t*)(src),(dst),(size)) : NULL);
+    return (((af) == AF_INET) ? ipaddr_ntoa_r((void*)(src),(dst),(size)) : NULL);
 }
 
 int inet_pton (int af, const char *cp, void *buf)
 {
-	return (((af) == AF_INET) ? ip4addr_aton((cp),(ip4_addr_t*)(buf)) : 0);
+	return (((af) == AF_INET) ? ipaddr_aton((cp),(void*)(buf)) : 0);
 }
 
 #endif
