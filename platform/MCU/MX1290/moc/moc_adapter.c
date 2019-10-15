@@ -491,6 +491,11 @@ void ssl_set_alpn_list(char*list)
     _kernel_api.ssl_crypto_apis->ssl_set_alpn_list(list);
 }
 
+void *ssl_connect_with_domain(int fd, int calen, char*ca, int *errno, char *domain)
+{
+    _kernel_api.ssl_crypto_apis->ssl_connect_with_domain(fd, calen, ca, errno, domain);
+}
+
 int hardfault_get(char *msg, int len)
 {
     return _kernel_api.os_apis->hardfault_get(msg, len);

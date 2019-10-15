@@ -171,6 +171,7 @@ typedef struct {
 
     void* (*ssl_connect_dtls)(int fd, int calen, char*ca, int *errno);
     void (*ssl_set_alpn_list)(char*list);
+	void* (*ssl_connect_with_domain)(int fd, int calen, char*ca, int *errno, char *domain); 
 } ssl_crypto_api_v1_t;
 
 typedef struct {

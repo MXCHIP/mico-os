@@ -735,6 +735,7 @@ void ssl_set_cert(const char *_cert_pem, const char *private_key_pem, const char
  */
 mico_ssl_t ssl_connect(int fd, int calen, char*ca, int *errno);
 
+mico_ssl_t ssl_connect_with_domain(int fd, int calen, char*ca, int *errno, char *domain);
 /** @brief      SSL client create a SSL connection.
  *
  * @details    This function is called on the client side and initiates an SSL/TLS handshake with a 
