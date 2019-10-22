@@ -210,12 +210,14 @@ int close (int filedes)
 {
     return lwip_close( filedes );
 }
-/*
+
+#ifdef CONFIG_MX108
 int shutdown(int s, int how)
 {
 	return lwip_shutdown(s, how);
 }
-*/
+#endif
+
 struct hostent * gethostbyname (const char *name)
 {
     return lwip_gethostbyname( name );
