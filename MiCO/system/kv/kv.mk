@@ -6,6 +6,9 @@ kv_cli.c \
 mkv.c \
 mkv_adapt.c
 
-GLOBAL_INCLUDES := \
+GLOBAL_INCLUDES += \
 . \
 include
+
+$(NAME)_COMPONENTS := \
+system/kvro

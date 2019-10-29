@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include "mkv.h"
+#include "kvro.h"
 
 enum
 {
@@ -34,7 +35,10 @@ static void mkv_daemon(void)
             msg->rc = kv_item_set(msg->key, (const void *)msg->val, msg->len);
             break;
         case MKV_CMD_GET:
-            msg->rc = kv_item_get(msg->key, msg->val, (int32_t *)&msg->len);
+            if ((msg->rc = kv_item_get(msg->key, msg->val, (int32_t *)&msg->len)) != KV_OK)
+            {
+                msg->rc = kvro_item_get(msg->key, msg->val, (int *)&msg->len);
+            }
             break;
         case MKV_CMD_DEL:
             msg->rc = kv_item_delete(msg->key);
@@ -49,7 +53,10 @@ static void mkv_daemon(void)
 int mkv_init(void)
 {
     int rc;
-    if ((rc = kv_init()) != 0)
+    if ((rc = kv_init()) != KV_OK)
+        return rc;
+
+    if ((rc = kvro_init()) != KV_OK)
         return rc;
 
     if ((mkv_msg_queue = mkv_queue_new(10)) == NULL)
@@ -136,17 +143,17 @@ void *kv_lock_create(void)
 
 int32_t kv_lock_free(void *lock)
 {
-    return 0;
+    return KV_OK;
 }
 
 int32_t kv_lock(void *lock)
 {
-    return 0;
+    return KV_OK;
 }
 
 int32_t kv_unlock(void *lock)
 {
-    return 0;
+    return KV_OK;
 }
 
 void *kv_sem_create(void)
@@ -156,23 +163,23 @@ void *kv_sem_create(void)
 
 int32_t kv_sem_free(void *sem)
 {
-    return 0;
+    return KV_OK;
 }
 
 int32_t kv_sem_wait(void *sem)
 {
-    return 0;
+    return KV_OK;
 }
 
 int32_t kv_sem_post_all(void *sem)
 {
-    return 0;
+    return KV_OK;
 }
 
 int32_t kv_start_task(const char *name, void (*fn)(void *), void *arg,
                       uint32_t stack)
 {
-    return 0;
+    return KV_OK;
 }
 
 void kv_delete_task(void)

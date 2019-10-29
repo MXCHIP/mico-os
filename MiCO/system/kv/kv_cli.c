@@ -10,6 +10,26 @@
 
 extern kv_item_t *kv_item_traverse(item_func func, uint8_t blk_idx, const char *key);
 
+static void print_val(char *val, int n)
+{
+    int i;
+    for (i = 0; i < n && isascii(val[i]); i++)
+        ;
+    if (i == n)
+    {
+        printf("%s\r\n", val);
+    }
+    else
+    {
+        printf("(HEX) ");
+        for (i = 0; i < n; i++)
+        {
+            printf("%02X ", val[i]);
+        }
+        printf("\r\n");
+    }
+}
+
 static int __item_print_cb(kv_item_t *item, const char *key)
 {
     kv_size_t off;
@@ -36,7 +56,9 @@ static int __item_print_cb(kv_item_t *item, const char *key)
     off = item->pos + KV_ITEM_HDR_SIZE + item->hdr.key_len;
     kv_flash_read(off, p_val, item->hdr.val_len);
 
-    printf("%s = %s\r\n", p_key, p_val);
+    printf("%s = ", p_key);
+    print_val(p_val, item->hdr.val_len);
+
     kv_free(p_key);
     kv_free(p_val);
 
@@ -79,7 +101,8 @@ void handle_kv_cmd(char *pwbuf, int blen, int argc, char **argv)
         if (res != 0) {
             printf("cli: no paired kv\r\n");
         } else {
-            printf("value is %s\r\n", buffer);
+            printf("value is ");
+            print_val(buffer, len);
         }
 
         if (buffer) {
@@ -98,30 +121,8 @@ void handle_kv_cmd(char *pwbuf, int blen, int argc, char **argv)
         for (i = 0; i < KV_BLOCK_NUMS; i++) {
             kv_item_traverse((item_func)__item_print_cb, i, NULL);
         }
-    } else if (strcmp(rtype, "seti") == KV_OK) {
-        if (argc != 4) {
-            return;
-        }
-
-        num = atoi(argv[3]);
-        res = mkv_item_set(argv[2], (void *)(&num), sizeof(int));
-        if (res != KV_OK) {
-            printf("cli set integer kv failed %d.\r\n", res);
-        }
-    } else if (strcmp(rtype, "geti") == KV_OK) {
-        num = 0;
-        len = sizeof(int);
-
-        if (argc != 3) {
-            return;
-        }
-
-        res = mkv_item_get(argv[2], &num, &len);
-        if (res != 0) {
-            printf("cli: no paired kv\r\n");
-        } else {
-            printf("value is %d\r\n", num);
-        }
+        printf("\r\n-------- read-only kv list --------\r\n\r\n");
+        handle_kvro_cmd(pwbuf, blen, argc, argv);
     }
 
     return;

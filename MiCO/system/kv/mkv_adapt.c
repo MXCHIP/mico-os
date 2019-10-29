@@ -57,16 +57,25 @@ int mkv_thread_new(void (*func)(void))
 
 int32_t kv_flash_read(uint32_t offset, void *buf, uint32_t nbytes)
 {
+#ifdef CONFIG_CPU_MX1290
+    offset += 0x4000;
+#endif
     return MicoFlashRead(MICO_PARTITION_KV, &offset, buf, nbytes);
 }
 
 int32_t kv_flash_write(uint32_t offset, void *buf, uint32_t nbytes)
 {
+#ifdef CONFIG_CPU_MX1290
+    offset += 0x4000;
+#endif
     return MicoFlashWrite(MICO_PARTITION_KV, &offset, buf, nbytes);
 }
 
 int32_t kv_flash_erase(uint32_t offset, uint32_t size)
 {
+#ifdef CONFIG_CPU_MX1290
+    offset += 0x4000;
+#endif
     return MicoFlashErase(MICO_PARTITION_KV, offset, size);
 }
 
