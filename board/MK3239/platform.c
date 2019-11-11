@@ -352,7 +352,23 @@ const mico_logic_partition_t mico_partitions[] =
     .partition_owner           = MICO_FLASH_QSPI,
     .partition_description     = "FILESYS",
     .partition_start_addr      = 0x168000,
-    .partition_length          = 0x090000, //576k bytes
+    .partition_length          = 0x088000, //544k bytes
+    .partition_options         = PAR_OPT_READ_EN | PAR_OPT_WRITE_EN,
+  },
+  [MICO_PARTITION_KVRO] =
+  {
+    .partition_owner           = MICO_FLASH_QSPI,
+    .partition_description     = "KVRO",
+    .partition_start_addr      = 0x1F0000,
+    .partition_length          = 0x4000, //16k bytes
+    .partition_options         = PAR_OPT_READ_EN | PAR_OPT_WRITE_EN,
+  },
+  [MICO_PARTITION_KV] =
+  {
+    .partition_owner           = MICO_FLASH_QSPI,
+    .partition_description     = "KV",
+    .partition_start_addr      = 0x1F4000,
+    .partition_length          = 0x4000, //16k bytes
     .partition_options         = PAR_OPT_READ_EN | PAR_OPT_WRITE_EN,
   },
   [MICO_PARTITION_PARAMETER_1] =
