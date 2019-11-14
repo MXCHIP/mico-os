@@ -315,23 +315,27 @@ static void ota_server_thread( mico_thread_arg_t arg )
 
         if ( ota_server_context->download_state.download_len == ota_server_context->download_state.download_begin_pos )
         {
-            if( httpHeader->statusCode != 200 ){
-                goto DELETE;
-            }
-            CRC16_Final( &crc_context, &crc16 );
-            if( ota_server_context->ota_check.is_md5 == true ){
-                Md5Final( &md5, (unsigned char *) md5_value );
-                hex2str((uint8_t *)md5_value, 16, md5_value_string);
-            }
-            if ( memcmp( md5_value_string, ota_server_context->ota_check.md5, OTA_MD5_LENTH ) == 0 ){
-                ota_server_progress_set(OTA_SUCCE);
-                mico_ota_switch_to_new_fw( ota_server_context->download_state.download_len, crc16 );
-                mico_system_power_perform( mico_system_context_get( ), eState_Software_Reset );
+            if( httpHeader->statusCode == 200 || httpHeader->statusCode == 206 )
+            {
+                CRC16_Final( &crc_context, &crc16 );
+                if( ota_server_context->ota_check.is_md5 == true ){
+                    Md5Final( &md5, (unsigned char *) md5_value );
+                    hex2str((uint8_t *)md5_value, 16, md5_value_string);
+                }
+                if ( memcmp( md5_value_string, ota_server_context->ota_check.md5, OTA_MD5_LENTH ) == 0 ){
+                    ota_server_progress_set(OTA_SUCCE);
+                    mico_ota_switch_to_new_fw( ota_server_context->download_state.download_len, crc16 );
+                    mico_system_power_perform( mico_system_context_get( ), eState_Software_Reset );
+                }else{
+                    ota_server_log("OTA md5 check err, Calculation:%s, Get:%s", md5_value_string, ota_server_context->ota_check.md5);
+                    ota_server_progress_set(OTA_FAIL);
+                    goto DELETE;
+                }
             }else{
-                ota_server_log("OTA md5 check err, Calculation:%s, Get:%s", md5_value_string, ota_server_context->ota_check.md5);
-                ota_server_progress_set(OTA_FAIL);
+                    ota_server_log( "http response error, statusCode = %d !!!", httpHeader->statusCode);
+                    ota_server_progress_set(OTA_FAIL);
+                    goto DELETE;
             }
-            goto DELETE;
         }
 
     RECONNECTED:
