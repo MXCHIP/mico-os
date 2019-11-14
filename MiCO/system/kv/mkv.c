@@ -7,6 +7,7 @@ enum
     MKV_CMD_SET,
     MKV_CMD_GET,
     MKV_CMD_DEL,
+    MKV_CMD_DEL_PREFIX,
 };
 
 typedef struct
@@ -20,9 +21,11 @@ typedef struct
 } mkv_msg_t;
 
 static void *mkv_msg_queue;
+static int mkv_inited = 0;
 
 static void mkv_daemon(void)
 {
+    int rc;
     mkv_msg_t *msg;
 
     while (1)
@@ -42,6 +45,13 @@ static void mkv_daemon(void)
             break;
         case MKV_CMD_DEL:
             msg->rc = kv_item_delete(msg->key);
+            if (kvro_item_delete(msg->key) == KV_OK)
+            {
+                msg->rc = KV_OK;
+            }
+            break;
+        case MKV_CMD_DEL_PREFIX:
+            msg->rc = kv_item_delete_by_prefix(msg->key);
             break;
         default:
             msg->rc = -1;
@@ -53,16 +63,23 @@ static void mkv_daemon(void)
 int mkv_init(void)
 {
     int rc;
-    if ((rc = kv_init()) != KV_OK)
+
+    if (mkv_inited)
+        return 0;
+
+    if ((rc = kv_init()) != 0)
         return rc;
 
-    if ((rc = kvro_init()) != KV_OK)
+    if ((rc = kvro_init()) != 0)
         return rc;
 
     if ((mkv_msg_queue = mkv_queue_new(10)) == NULL)
         return -1;
 
-    return mkv_thread_new(mkv_daemon);
+    rc = mkv_thread_new(mkv_daemon);
+    if (rc == 0)
+        mkv_inited = 1;
+    return rc;
 }
 
 int mkv_item_set(const char *key, const void *val, int len)
@@ -136,6 +153,28 @@ int mkv_item_delete(const char *key)
     return rc;
 }
 
+int mkv_item_delete_by_prefix(const char *prefix)
+{
+    int rc;
+    mkv_msg_t *msg, msg_storage;
+
+    msg = &msg_storage;
+    msg->cmd = MKV_CMD_DEL_PREFIX;
+    msg->key = prefix;
+    if ((msg->sem = mkv_sem_new()) == NULL)
+        return -1;
+
+    mkv_queue_push(mkv_msg_queue, &msg);
+
+    mkv_sem_acquire(msg->sem);
+
+    rc = msg->rc;
+
+    mkv_sem_delete(msg->sem);
+
+    return rc;
+}
+
 void *kv_lock_create(void)
 {
     return (void *)0xDEADBEEF;
@@ -143,17 +182,17 @@ void *kv_lock_create(void)
 
 int32_t kv_lock_free(void *lock)
 {
-    return KV_OK;
+    return 0;
 }
 
 int32_t kv_lock(void *lock)
 {
-    return KV_OK;
+    return 0;
 }
 
 int32_t kv_unlock(void *lock)
 {
-    return KV_OK;
+    return 0;
 }
 
 void *kv_sem_create(void)
@@ -163,23 +202,23 @@ void *kv_sem_create(void)
 
 int32_t kv_sem_free(void *sem)
 {
-    return KV_OK;
+    return 0;
 }
 
 int32_t kv_sem_wait(void *sem)
 {
-    return KV_OK;
+    return 0;
 }
 
 int32_t kv_sem_post_all(void *sem)
 {
-    return KV_OK;
+    return 0;
 }
 
 int32_t kv_start_task(const char *name, void (*fn)(void *), void *arg,
                       uint32_t stack)
 {
-    return KV_OK;
+    return 0;
 }
 
 void kv_delete_task(void)
