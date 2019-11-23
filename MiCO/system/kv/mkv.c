@@ -25,7 +25,6 @@ static int mkv_inited = 0;
 
 static void mkv_daemon(void)
 {
-    int rc;
     mkv_msg_t *msg;
 
     while (1)
