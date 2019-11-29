@@ -27,10 +27,10 @@ CFLAGS += -c -MD -ggdb $(CPU_CFLAGS) $(ENDIAN_CFLAGS_LITTLE) -Wall -fsigned-char
 CFLAGS += $(addprefix -I,$(GLOBAL_INCLUDES)) $(addprefix -D,$(GLOBAL_DEFINES)) $(addprefix -I$(LIB_DIR)/,$($(NAME)_INCLUDES)) $(addprefix -D,$($(NAME)_DEFINES)) $($(NAME)_CFLAGS)
 
 CFLAGS += -I$(MICO_OS_PATH)/include \
-          -I$(MICO_OS_PATH)/mico/security \
-          -I$(MICO_OS_PATH)/mico/security/Sodium/inc \
-          -I$(MICO_OS_PATH)/mico/security/SRP_6a/inc \
-          -I$(MICO_OS_PATH)/mico/system \
+          -I$(MICO_OS_PATH)/MiCO/security \
+          -I$(MICO_OS_PATH)/MiCO/security/Sodium/inc \
+          -I$(MICO_OS_PATH)/MiCO/security/SRP_6a/inc \
+          -I$(MICO_OS_PATH)/MiCO/system \
           -I$(MICO_OS_PATH)/libraries/drivers \
           -I$(MICO_OS_PATH)/libraries/drivers/MiCOKit_EXT \
           -I$(MICO_OS_PATH)/libraries/utilities \
