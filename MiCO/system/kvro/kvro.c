@@ -6,6 +6,7 @@
 #include <stdint.h>
 #include <stddef.h>
 #include <string.h>
+#include <ctype.h>
 #include "kvro.h"
 
 #define KV_BLOCK_SIZE_BITS 12
@@ -46,6 +47,9 @@ typedef uint16_t kvro_size_t;
 #pragma pack(push, 1)
 #endif
 
+#define in_range(c, lo, up) ((char)c >= lo && (char)c <= up)
+#define kvro_isprint(c) in_range(c, 0x20, 0x7f)
+
 typedef struct _block_header_t
 {
     uint8_t magic;
@@ -83,6 +87,10 @@ typedef struct _item_header_t
 #define KV_ITEM_STATE_NORMAL 0xEE
 #define KV_ALIGN_MASK ~(4 - 1)
 #define KV_RESERVED_BLOCKS 1
+
+#define KV_DELETE_FLAG 0
+#define KV_ITEM_STATE_DELETE 0x00
+#define KV_STATE_OFFSET 1
 
 #define KV_ALIGN(x) ((x + ~KV_ALIGN_MASK) & KV_ALIGN_MASK)
 
@@ -131,6 +139,7 @@ kvro_item_t *kvro_item_traverse(item_func func, uint8_t blk_idx, const char *key
 void *kvro_malloc(uint32_t size);
 void kvro_free(void *ptr);
 int kvro_flash_read(uint32_t offset, void *buf, uint32_t nbytes);
+int kvro_flash_write(uint32_t offset, void *buf, uint32_t nbytes);
 /******************************************************/
 /****************** Internal Interface ****************/
 /******************************************************/
@@ -266,11 +275,6 @@ kvro_item_t *kvro_item_traverse(item_func func, uint8_t blk_idx, const char *key
         {
             pos += KV_ITEM_HDR_SIZE;
             kvro_item_free(item);
-
-            if (g_kvro_mgr.block_info[blk_idx].state == KV_BLOCK_STATE_USED)
-            {
-                g_kvro_mgr.block_info[blk_idx].state = KV_BLOCK_STATE_DIRTY;
-            }
             continue;
         }
 
@@ -292,13 +296,6 @@ kvro_item_t *kvro_item_traverse(item_func func, uint8_t blk_idx, const char *key
                 return NULL;
             }
         }
-        else
-        {
-            if (g_kvro_mgr.block_info[blk_idx].state == KV_BLOCK_STATE_USED)
-            {
-                g_kvro_mgr.block_info[blk_idx].state = KV_BLOCK_STATE_DIRTY;
-            }
-        }
 
         kvro_item_free(item);
         pos += len;
@@ -314,6 +311,38 @@ kvro_item_t *kvro_item_traverse(item_func func, uint8_t blk_idx, const char *key
     }
 
     return NULL;
+}
+
+static int32_t kvro_set_item_state(kvro_size_t pos, uint8_t state)
+{
+    return kvro_flash_write(pos + KV_STATE_OFFSET, &state, 1);
+}
+
+static int32_t kvro_item_del(kvro_item_t *item, int flag)
+{
+    uint8_t i;
+    kvro_size_t off;
+    item_hdr_t hdr;
+
+    int res = KV_OK;
+    char *ori = NULL;
+    char *new = NULL;
+
+    if (flag == KV_DELETE_FLAG)
+    {
+        off = item->pos;
+    }
+    else
+    {
+        return KV_ERR_INVALID_PARAM;
+    }
+
+    if ((res = kvro_set_item_state(off, KV_ITEM_STATE_DELETE)) != KV_OK)
+    {
+        return res;
+    }
+
+    return res;
 }
 
 /******************************************************/
@@ -379,12 +408,49 @@ int kvro_item_get(const char *key, void *buffer, int *buffer_len)
     return KV_OK;
 }
 
+int kvro_item_delete(const char *key)
+{
+    int32_t res;
+    kvro_item_t *item = NULL;
+
+    item = kvro_item_search(key);
+    if (!item)
+    {
+        return KV_ERR_NOT_FOUND;
+    }
+
+    res = kvro_item_del(item, KV_DELETE_FLAG);
+    kvro_item_free(item);
+
+    return res;
+}
+
 static void print_val(char *val, int n)
 {
-    int i;
-    for (i = 0; i < n && isascii(val[i]); i++)
-        ;
-    if (i == n)
+    int i = 0;
+    int is_str = 0;
+
+    for (i = 0; i < n; i++)
+    {
+        if (kvro_isprint(val[i]))
+        {
+            is_str = 1;
+        }
+        else
+        {
+            if (is_str == 1 && val[i] == 0x00)
+            {
+                is_str = 1;
+            }
+            else
+            {
+                is_str = 0;
+                break;
+            }
+        }
+    }
+
+    if (is_str == 1)
     {
         printf("%s\r\n", val);
     }
