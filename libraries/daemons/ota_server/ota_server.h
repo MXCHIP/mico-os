@@ -64,7 +64,7 @@ typedef enum _OTA_CONTROL_E{
 typedef struct _download_url_t{
     char              *url;
     HTTP_SECURITY_E   HTTP_SECURITY;
-    char              host[30];
+    char              host[128];
     char              ip[16];
     int               port;
     int               ota_fd;
