@@ -459,7 +459,7 @@ static void print_val(char *val, int n)
         printf("(HEX) ");
         for (i = 0; i < n; i++)
         {
-            printf("%02X ", val[i]);
+            printf("%02X ", (uint8_t)val[i]);
         }
         printf("\r\n");
     }
