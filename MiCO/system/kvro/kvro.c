@@ -320,13 +320,8 @@ static int32_t kvro_set_item_state(kvro_size_t pos, uint8_t state)
 
 static int32_t kvro_item_del(kvro_item_t *item, int flag)
 {
-    uint8_t i;
     kvro_size_t off;
-    item_hdr_t hdr;
-
     int res = KV_OK;
-    char *ori = NULL;
-    char *new = NULL;
 
     if (flag == KV_DELETE_FLAG)
     {
