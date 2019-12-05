@@ -38,7 +38,7 @@
 static void task_Command( char *pcWriteBuffer, int xWriteBufferLen, int argc, char **argv );
 #endif
 
-
+extern void handle_kv_cmd(char *pwbuf, int blen, int argc, char **argv);
 
 #if (defined CONFIG_PLATFORM_8195A) & (!defined MOC100)
 #define LOG_SERVICE_BUFLEN 100
@@ -609,6 +609,7 @@ static const struct cli_command built_ins[] = {
 #endif
   {"flash",    "Flash memory map",            partShow_Command},
   {"trace",     "show last \"[file:line] arg\"",              trace_cmd},
+  {"kv", "kv [set key value | get key | del key | list]", handle_kv_cmd},
 };
 
 /* Built-in "help" command: prints all registered commands and their help
