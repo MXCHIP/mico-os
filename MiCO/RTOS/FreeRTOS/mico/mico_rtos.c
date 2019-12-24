@@ -636,6 +636,11 @@ bool mico_rtos_is_queue_full( mico_queue_t* queue )
     return ( result != 0 ) ? true : false;
 }
 
+int mico_rtos_queue_waiting_number(mico_queue_t* queue)
+{
+    return uxQueueMessagesWaiting(*queue);
+}
+
 static void timer_callback( xTimerHandle handle )
 {
     mico_timer_t* timer = (mico_timer_t*) pvTimerGetTimerID( handle );

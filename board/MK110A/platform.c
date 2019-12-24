@@ -215,6 +215,14 @@ const mico_logic_partition_t mico_partitions[] =
         .partition_length           = 0x4000,    //16k bytes
         .partition_options          = PAR_OPT_READ_EN | PAR_OPT_WRITE_EN,
     },   
+    [MICO_PARTITION_FILESYS] = 
+    {
+        .partition_owner            = MICO_FLASH_EMBEDDED,
+        .partition_description      = "FTFS",
+        .partition_start_addr       = 0x1AE000,
+        .partition_length           = 0x52000,    //328k bytes
+        .partition_options          = PAR_OPT_READ_EN | PAR_OPT_WRITE_EN,
+    },   
 };
 
 const platform_adc_t platform_adc_peripherals[] = {};
