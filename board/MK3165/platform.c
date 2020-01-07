@@ -154,7 +154,7 @@ const platform_uart_t platform_uart_peripherals[] =
       .channel                    = DMA_Channel_4,
       .irq_vector                 = DMA1_Stream6_IRQn,
       .complete_flags             = DMA_HISR_TCIF6,
-      .error_flags                = ( DMA_HISR_TEIF6 | DMA_HISR_FEIF6 ),
+      .error_flags                = ( DMA_HISR_TEIF6 ),
     },
     .rx_dma_config =
     {
@@ -163,7 +163,7 @@ const platform_uart_t platform_uart_peripherals[] =
       .channel                    = DMA_Channel_4,
       .irq_vector                 = DMA1_Stream5_IRQn,
       .complete_flags             = DMA_HISR_TCIF5,
-      .error_flags                = ( DMA_HISR_TEIF5 | DMA_HISR_FEIF5 | DMA_HISR_DMEIF5 ),
+      .error_flags                = ( DMA_HISR_TEIF5 | DMA_HISR_DMEIF5 ),
     },
   },
   [MICO_UART_2] =
@@ -180,7 +180,7 @@ const platform_uart_t platform_uart_peripherals[] =
       .channel                    = DMA_Channel_4,
       .irq_vector                 = DMA2_Stream7_IRQn,
       .complete_flags             = DMA_HISR_TCIF7,
-      .error_flags                = ( DMA_HISR_TEIF7 | DMA_HISR_FEIF7 ),
+      .error_flags                = ( DMA_HISR_TEIF7  ),
     },
     .rx_dma_config =
     {
@@ -189,7 +189,7 @@ const platform_uart_t platform_uart_peripherals[] =
       .channel                    = DMA_Channel_4,
       .irq_vector                 = DMA2_Stream2_IRQn,
       .complete_flags             = DMA_LISR_TCIF2,
-      .error_flags                = ( DMA_LISR_TEIF2 | DMA_LISR_FEIF2 | DMA_LISR_DMEIF2 ),
+      .error_flags                = ( DMA_LISR_TEIF2 | DMA_LISR_DMEIF2 ),
     },
   },
 };

@@ -24,7 +24,7 @@
 *                    Constants
 ******************************************************/
 
-#define DMA_INTERRUPT_FLAGS  ( DMA_IT_TC | DMA_IT_TE | DMA_IT_DME | DMA_IT_FE )
+#define DMA_INTERRUPT_FLAGS  ( DMA_IT_TC | DMA_IT_TE | DMA_IT_DME )
 
 /******************************************************
 *                   Enumerations
