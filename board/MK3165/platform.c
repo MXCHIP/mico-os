@@ -303,6 +303,14 @@ const mico_logic_partition_t mico_partitions[] =
   {
     .partition_owner           = MICO_FLASH_SPI,
     .partition_description     = "KV",
+    .partition_start_addr      = 0xF8000,
+    .partition_length          = 0x4000, //16k bytes
+    .partition_options         = PAR_OPT_READ_EN | PAR_OPT_WRITE_EN,
+  },
+  [MICO_PARTITION_KVRO] =
+  {
+    .partition_owner           = MICO_FLASH_SPI,
+    .partition_description     = "KVRO",
     .partition_start_addr      = 0xFC000,
     .partition_length          = 0x4000, //16k bytes
     .partition_options         = PAR_OPT_READ_EN | PAR_OPT_WRITE_EN,
