@@ -19,6 +19,7 @@
 
 #include <string.h>
 #include <stdlib.h>
+#include <stdarg.h>
 #include "common.h"
 #include "lwip/sockets.h"
 #include "lwip/netdb.h"
@@ -217,6 +218,15 @@ int shutdown(int s, int how)
 	return lwip_shutdown(s, how);
 }
 #endif
+
+int ioctl(int s, int cmd, ...)
+{
+	va_list ap;
+	va_start( ap, cmd );
+	void *para = va_arg( ap, void *);
+	va_end( ap );
+    return lwip_ioctl(s, cmd, para);
+}
 
 struct hostent * gethostbyname (const char *name)
 {
