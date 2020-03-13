@@ -51,6 +51,7 @@ typedef struct _lwip_api_ {
     /* For inet_ntop and inet_pton */
     const char * (*inet_ntop) (int af, const void *cp, char *buf, socklen_t len);
     int (*inet_pton) (int af, const char *cp, void *buf);
+	int (*dns_gethostbyname)(const char *hostname, ip_addr_t *addr, dns_found_callback found, void *callback_arg);
 } lwip_api_t;
 
 #endif
