@@ -213,7 +213,7 @@ COMPONENTS += $(NET)
 endif
 
 ifndef TLS
-TLS := wolfSSL
+TLS := mbedtls
 COMPONENTS += $(TLS)
 endif
 
