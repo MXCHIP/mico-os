@@ -96,7 +96,8 @@ $(NAME)_SOURCES +=	mbedtls-2.16.5/mxchip/library/platform.c \
                     mbedtls-2.16.5/mxchip/library/threading_alt.c \
                     mbedtls-2.16.5/mxchip/library/net_sockets.c\
                     mbedtls-2.16.5/mxchip/library/ssl_wrap.c \
-                    mbedtls-2.16.5/mxchip/library/crypto_wrap.c
+                    mbedtls-2.16.5/mxchip/library/crypto_wrap.c \
+                    mbedtls-2.16.5/mxchip/library/hc128.c
 
 					
 
