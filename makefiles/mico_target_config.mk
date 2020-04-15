@@ -212,10 +212,14 @@ NET := LwIP
 COMPONENTS += $(NET)
 endif
 
+# use make cmd to choose TLS.
+# 1. Choose wolfSSL: "mico make xxx TLS=wolfSSL"
+# 2. Choose mbedtls: "mico make xxx TLS=mbedtls" or "mico make xxx", default is mbedtls
+# 3. Do not use mico-os's TLS: "mico make xxx TLS="
 ifndef TLS
 TLS := mbedtls
-COMPONENTS += $(TLS)
 endif
+COMPONENTS += $(TLS)
 
 EXTRA_CFLAGS :=    -DMiCO_SDK_VERSION_MAJOR=$(MiCO_SDK_VERSION_MAJOR) \
                    -DMiCO_SDK_VERSION_MINOR=$(MiCO_SDK_VERSION_MINOR) \
