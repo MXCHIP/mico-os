@@ -496,6 +496,11 @@ void *ssl_connect_with_domain(int fd, int calen, char*ca, int *errno, char *doma
     _kernel_api.ssl_crypto_apis->ssl_connect_with_domain(fd, calen, ca, errno, domain);
 }
 
+void ssl_set_max_fragment(int enable)
+{
+    _kernel_api.ssl_crypto_apis->ssl_set_max_fragment(enable);
+}
+
 int hardfault_get(char *msg, int len)
 {
     return _kernel_api.os_apis->hardfault_get(msg, len);
