@@ -321,6 +321,8 @@ typedef struct Aes {
   word32  rounds;
   word32 reg[AES_BLOCK_SIZE / sizeof(word32)];      
   word32 tmp[AES_BLOCK_SIZE / sizeof(word32)];
+  word32 pad[1];// mbedtls aes context is bigger.
+  uint8_t iv[16];
 } Aes;
 
 /**
