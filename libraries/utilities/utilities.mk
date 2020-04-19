@@ -22,9 +22,10 @@ $(NAME)_SOURCES := AESUtils.c \
                    TLVUtils.c \
                    URLUtils.c
                    
+ifneq ($(OS_DISABLE_JSON_C), 1)   
 $(NAME)_COMPONENTS += utilities/json_c
+endif
 
-                   
 $(NAME)_CFLAGS   += -Wno-char-subscripts
 
 

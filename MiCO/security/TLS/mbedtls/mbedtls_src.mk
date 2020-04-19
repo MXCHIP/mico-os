@@ -9,8 +9,8 @@
 
 GLOBAL_DEFINES      += MBEDTLS_CONFIG_FILE=\"mbedtls_config.h\"
 
-					
-$(NAME)_INCLUDES     += mbedtls-2.16.5/include/ mbedtls-2.16.5/mxchip/include
+GLOBAL_INCLUDES     += 	mbedtls-2.16.5/include/ \
+						mbedtls-2.16.5/mxchip/include
 
 $(NAME)_SOURCES :=	mbedtls-2.16.5/library/aes.c			\
     mbedtls-2.16.5/library/entropy_poll.c		\

@@ -13,6 +13,8 @@ NAME = Lib_MiCO_Security
 $(NAME)_SOURCES  += Curve25519/curve25519-donna.c 
 GLOBAL_INCLUDES += Curve25519
 
+
+ifneq ($(OS_DISABLE_SHAUTILS), 1)  
 # SHA
 $(NAME)_SOURCES  += SHAUtils/hkdf.c \
                     SHAUtils/hmac.c \
@@ -20,6 +22,7 @@ $(NAME)_SOURCES  += SHAUtils/hkdf.c \
                     SHAUtils/sha224-256.c \
                     SHAUtils/sha384-512.c \
                     SHAUtils/usha.c
+endif
                    
 GLOBAL_INCLUDES += SHAUtils
 
