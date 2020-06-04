@@ -107,6 +107,7 @@ typedef struct
 #define LAST_RST_CAUSE_SOFTRST (1<<3)
 #define LAST_RST_CAUSE_LOCKUP  (1<<4)
 #define LAST_RST_CAUSE_WDT     (1<<5)
+#define LAST_RST_SOFTWARE_RESET (1<<6)
 
 #define USER_APP_ADDR 0x1f064000 /* 400KB offset */
 #define USER_MAGIC_NUM 0xC89346

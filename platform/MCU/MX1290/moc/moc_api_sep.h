@@ -125,6 +125,7 @@ typedef struct {
 	OSStatus (*mico_rtos_try_lock_mutex)( mico_mutex_t* mutex );
 	void (*mico_rtos_enter_critical)( void );
 	void (*mico_rtos_exit_critical)( void );
+    void (*mico_softwarereboot)(void);
 } os_api_v1_t;
 
 typedef struct {

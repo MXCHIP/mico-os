@@ -635,3 +635,9 @@ int wext_del_station(const char *ifname, unsigned char* hwaddr)
 {
     return _kernel_api.wifi_apis->wext_del_station(ifname, hwaddr);
 }
+
+void mico_softwarereboot(void)
+{
+    _kernel_api.os_apis->mico_softwarereboot();
+}
+
