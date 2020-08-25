@@ -127,6 +127,40 @@ void mico_system_qc_test( void )
 }
 
 
+/* flash partition MD5 */
+static void kvro_hash(char *str, int len)
+{
+    md5_context ctx;
+    uint8_t hash[16], *tmp;
+    uint32_t offset = 0, i, rxlen;
+
+    str[0] = 0;
+    
+    if (len < 32)
+        return;
+    
+
+    tmp = (uint8_t*)malloc(1024);
+    if (tmp == NULL)
+        return;
+    
+    InitMd5(&ctx);
+    while(offset < 0x4000) { // KVRO length is 16KB
+        rxlen = 1024;
+        kvro_flash_read(offset, tmp, rxlen);
+        Md5Update(&ctx, tmp, rxlen);
+    }
+    Md5Final(&ctx, hash);
+
+    free(tmp);
+    if (len < 32)
+        return;
+
+    for(i=0; i<16; i++) {
+        sprintf(str, "%s%02X", str, hash[i]);
+    }
+}
+
 /* MXCHIP standard QC test function main entrance, available for all modules */
 static void _qc_test_thread( mico_thread_arg_t arg )
 {
@@ -157,6 +191,9 @@ static void _qc_test_thread( mico_thread_arg_t arg )
 #ifdef QC_TEST_BLUETOOTH_ENABLE
     qc_test_ble();
 #endif
+
+    kvro_hash(str, sizeof(str));
+    QC_TEST_PRINT_STRING( "KVRO:", str );
 
 #ifndef PPP_IF
     mico_wlan_get_mac_address( mac );
