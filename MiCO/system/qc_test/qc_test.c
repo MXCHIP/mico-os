@@ -148,6 +148,7 @@ static void kvro_hash(char *str, int len)
     while(offset < 0x4000) { // KVRO length is 16KB
         rxlen = 1024;
         kvro_flash_read(offset, tmp, rxlen);
+        offset+=1024;
         Md5Update(&ctx, tmp, rxlen);
     }
     Md5Final(&ctx, hash);
