@@ -226,6 +226,12 @@ typedef struct {
 	void (*wifi_ap_sta_reg_hdl)(void *usr_hdl);
 	int (*wext_set_sta_num)(unsigned char ap_sta_num);
     int (*wext_del_station)(const char *ifname, unsigned char* hwaddr);
+
+    void (*lota_monitor_start)(monitor_cb_t func, uint8_t channel);
+    void (*lota_monitor_stop)(void);
+    void (*lota_wifi_init)(void);
+    int (*lota_wifi_connect)(char *ssid, char *psk, char*pass, mwifi_connect_attr_t *attr, mwifi_ip_attr_t *ip);
+    int (*lota_wifi_disconnect)(void);
 } wifi_api_v1_t;
 
 typedef struct {

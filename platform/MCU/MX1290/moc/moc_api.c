@@ -355,6 +355,7 @@ int  AesCbcDecrypt(Aes* aes, uint8_t* out,
 
 OSStatus mxchipInit(void)
 {
+    wait_lota_end();
 	lib_api_p->mxchipInit();
 	return kNoErr;
 }

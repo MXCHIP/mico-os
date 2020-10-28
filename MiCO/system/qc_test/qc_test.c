@@ -128,7 +128,7 @@ void mico_system_qc_test( void )
 
 
 /* flash partition MD5 */
-static void kvro_hash(char *str, int len)
+void kvro_hash(char *str, int len)
 {
     md5_context ctx;
     uint8_t hash[16], *tmp;
@@ -160,6 +160,11 @@ static void kvro_hash(char *str, int len)
     for(i=0; i<16; i++) {
         sprintf(str, "%s%02X", str, hash[i]);
     }
+}
+
+char *mico_get_serial_number(void)
+{
+    return SERIAL_NUMBER;
 }
 
 /* MXCHIP standard QC test function main entrance, available for all modules */

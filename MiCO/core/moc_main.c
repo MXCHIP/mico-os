@@ -211,6 +211,7 @@ void moc_app_main( void )
     /* Init nano second clock counter */
     platform_init_nanosecond_clock();
 
+    lota_start();
     mico_rtos_create_thread( NULL, MICO_APPLICATION_PRIORITY, "app_thread", application_thread_main, app_stack_size,
                              0 );
    

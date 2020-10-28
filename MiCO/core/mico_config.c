@@ -62,3 +62,11 @@ int sdio_1_bit_mode = 1;
 int sdio_1_bit_mode = 0;
 #endif
 
+#ifdef MICO_DISABLE_LOTA
+const uint8_t lota_disabled = 1;
+#else
+const uint8_t lota_disabled = 0;
+#endif
+
+
+

@@ -84,6 +84,12 @@ typedef enum
     MICO_PARTITION_NONE,
 } mico_partition_t;
 
+/* This partition is uesd to access flash by address only. */
+#define MODULE_PARTITION_ALL 0x7F
+#define LOTA_FLASH_PART_ALL  MODULE_PARTITION_ALL
+#define LOTA_FLASH_PART_OTA  MICO_PARTITION_OTA_TEMP
+#define LOTA_FLASH_PART_KVRO MICO_PARTITION_KVRO
+
 typedef platform_logic_partition_t  mico_logic_partition_t;
 
 

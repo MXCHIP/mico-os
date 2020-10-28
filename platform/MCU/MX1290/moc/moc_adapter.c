@@ -641,3 +641,24 @@ void mico_softwarereboot(void)
     _kernel_api.os_apis->mico_softwarereboot();
 }
 
+void lota_monitor_start(monitor_cb_t func, uint8_t channel)
+{
+    _kernel_api.wifi_apis->lota_monitor_start(func, channel);
+}
+void lota_monitor_stop(void)
+{
+    _kernel_api.wifi_apis->lota_monitor_stop();
+}
+void lota_wifi_init(void)
+{
+    _kernel_api.wifi_apis->lota_wifi_init();
+}
+int lota_wifi_connect(char *ssid, char *psk, char*pass, mwifi_connect_attr_t *attr, mwifi_ip_attr_t *ip)
+{
+    return _kernel_api.wifi_apis->lota_wifi_connect(ssid, psk, pass, attr, ip);
+}
+int lota_wifi_disconnect(void)
+{
+    return _kernel_api.wifi_apis->lota_wifi_disconnect();
+}
+

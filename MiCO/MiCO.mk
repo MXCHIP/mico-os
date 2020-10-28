@@ -26,7 +26,7 @@ endif
 
 $(NAME)_COMPONENTS += utilities
 
-GLOBAL_DEFINES += 
+GLOBAL_DEFINES += MODULE=\"$(MODULE)\" HOST_MCU_FAMILY=\"$(HOST_MCU_FAMILY)\"
 
 # Add MCU component
 $(NAME)_COMPONENTS += platform/MCU/$(HOST_MCU_FAMILY)

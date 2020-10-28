@@ -353,6 +353,21 @@ void mico_app_info(char *str, int len)
   snprintf( str, len, "%s %s, build at %s %s", APP_INFO, FIRMWARE_REVISION, __TIME__, __DATE__);
 }
 
+char *mico_get_firmware_revision(void)
+{
+    return FIRMWARE_REVISION;
+}
+
+char *mxos_module_get(void)
+{
+    return MODULE;
+}
+
+char *mxos_mcu_get(void)
+{
+    return HOST_MCU_FAMILY;
+}
+
 
 void __attribute__ ((noreturn)) __stack_chk_fail(void)
 {

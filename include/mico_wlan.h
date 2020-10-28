@@ -167,6 +167,28 @@ enum wlan_sec_type_e{
 };
 
 typedef uint8_t wlan_sec_type_t;
+typedef uint8_t mwifi_security_t;
+
+/** 
+ * @brief IP address attributes
+ */
+typedef struct
+{
+  char localip[16];  /**< lcoal ip address */
+  char netmask[16];  /**< netmask */
+  char gateway[16];  /**< gateway ip address */
+  char dnserver[16]; /**< dns server ip address */
+} mwifi_ip_attr_t;
+
+/** 
+ * @brief Advanced Access-Point attributes
+ */
+typedef struct
+{
+  uint8_t bssid[6];          /**< bssid of access-point */
+  uint8_t channel;           /**< channel of access-point */
+  mwifi_security_t security; /**< security of access-point */
+} mwifi_connect_attr_t;
 
 /** 
  *  @brief  wlan local IP information structure definition.  
